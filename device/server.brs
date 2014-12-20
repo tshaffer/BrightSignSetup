@@ -3,11 +3,15 @@ Sub InitializeServer()
     m.localServer = CreateObject("roHttpServer", { port: 8080 })
     m.localServer.SetPort(m.msgPort)
 
-	m.RecordingsAA =                { HandleEvent: Recordings, mVar: m }
-	m.RecordAA =					{ HandleEvent: Record, mVar: m }
+	m.TestRecordAA =					{ HandleEvent: TestRecord, mVar: m }
+	m.RecordAA =						{ HandleEvent: Record, mVar: m }
+	m.RecordingsAA =					{ HandleEvent: Recordings, mVar: m }
 
+'	m.localServer.AddGetFromEvent({ url_path: "/", user_data: m.TestRecordAA })
+	m.localServer.AddGetFromEvent({ url_path: "/TestRecord", user_data: m.TestRecordAA })
+
+	m.localServer.AddGetFromEvent({ url_path: "/Record", user_data: m.RecordAA })
 	m.localServer.AddGetFromEvent({ url_path: "/Recordings", user_data: m.RecordingsAA })
-	m.localServer.AddPostToFile({ url_path: "/Record", destination_directory: GetDefaultDrive(), user_data: m.RecordAA })
 
 '    service = { name: "JTR Web Service", type: "_http._tcp", port: 8080, _functionality: BSP.lwsConfig$, _serialNumber: sysInfo.deviceUniqueID$, _unitName: unitName$, _unitNamingMethod: unitNamingMethod$,  }
 '    JTR.advert = CreateObject("roNetworkAdvertisement", service)
@@ -59,6 +63,25 @@ End Sub
 Sub Record(userData as Object, e as Object)
 End Sub
 
+
+Sub TestRecord(userData as Object, e as Object)
+
+	' fileName = <file name>
+	' duration = <duration in seconds>
+    mVar = userData.mVar
+
+	requestParams = e.GetRequestParams()
+
+	fileName$ = requestParams["fileName"]
+	duration$ = requestParams["duration"]
+
+	mVar.StartRecord(fileName$, int(val(duration$)))
+
+    e.AddResponseHeader("Content-type", "text/plain")
+    e.SetResponseBodyString("recording to file " + fileName$)
+    e.SendResponse(200)
+
+End Sub
 
 
 Function GetFileExtension(file as String) as Object
