@@ -29,8 +29,6 @@ Sub AddHandlers(serverDirectory$ As String, listOfHandlers As Object)
 	' first filePath = www/remote-snapshot/angular.min.js
 	' parts = www/remote-snapshot/angular.min.js
 	' serverDirectory$ = www
-'	regex = CreateObject("roRegEx","/","i")
-'	regex = CreateObject("roRegEx",serverDirectory$,"i")
 
 	for each filePath in listOfHandlers
 
@@ -39,8 +37,6 @@ Sub AddHandlers(serverDirectory$ As String, listOfHandlers As Object)
 
 			contentType$ = GetMimeTypeByExtension(ext)
 	
-	'		parts = regex.Split(filePath)
-
 			url$ = Right(filePath, len(filePath) - len(serverDirectory$))
 
 			m.localServer.AddGetFromFile({ url_path: url$, filename: filePath, content_type: contentType$ })

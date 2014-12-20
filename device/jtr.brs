@@ -26,8 +26,6 @@ Sub RunJtr()
 
     JTR.EventLoop()
 
-stop
-
 End Sub
 
 
