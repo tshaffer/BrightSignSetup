@@ -57,6 +57,8 @@ Function newJTR(msgPort As Object) As Object
 	JTR.StartRecord				= StartRecord
 	JTR.StopRecord				= StopRecord
 
+	JTR.Tune					= Tune
+
 	return JTR
 
 End Function
@@ -162,6 +164,7 @@ Sub StartManualRecord(scheduledRecording As Object)
 	print "StartManualRecord " + scheduledRecording.title$
 
 	' tune channel
+	m.Tune(scheduledRecording.channel$)
 
 	endDateTime = scheduledRecording.dateTime
 	endDateTime.AddSeconds(scheduledRecording.duration% * 60)
@@ -178,12 +181,43 @@ Sub StartManualRecord(scheduledRecording As Object)
 	' start recording
 	scheduledRecording.path$ = Left(scheduledRecording.dateTime.ToIsoString(), 15) + ".ts"
 
+	if type(m.mediaStreamer) = "roMediaStreamer" then
+
+'		ok = m.mediaStreamer.SetPipeline("hdmi:,encoder:,file:///myfilename.ts")
+		ok = m.mediaStreamer.SetPipeline("hdmi:,encoder:,file:///" + scheduledRecording.path$)
+		if not ok then stop
+
+		ok = m.mediaStreamer.Start()
+		if not ok then stop
+
+	endif
+
+End Sub
+
+
+Sub Tune(channelName$)
+
+	url$ = "http://192.168.2.23:8080/Tune?channelName=" + channelName$
+
+	print "Tune using URL=";url$
+
+	tunerUrl = CreateObject("roUrlTransfer")
+	tunerUrl.SetUrl(url$)
+	tunerUrl.SetTimeout(10000)
+
+	' no need to set msgPort - no response required
+	response$ = tunerUrl.GetToString()
+
+	print "Tune response = ";response$
+
 End Sub
 
 
 Sub EndManualRecord(scheduledRecordingTimerIdentity As Object, scheduledRecording As Object)
 
 	print "EndManualRecord " + scheduledRecording.title$
+
+	m.StopRecord()
 
 	' Add or upate record in database
 	m.AddDBRecording(scheduledRecording)
