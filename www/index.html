@@ -1,0 +1,115 @@
+
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="">
+    <meta name="author" content="">
+
+    <title>JTR</title>
+
+    <link href="./bootstrap/css/bootstrap.min.css" rel="stylesheet">
+    <link href="./css/main.css" rel="stylesheet">
+    <script src="./js/jquery-2.1.1.min.js"></script>
+    <script src="./bootstrap/js/bootstrap.js"></script>
+    <script src="./js/script.js"></script>
+  </head>
+
+  <body>
+
+    <div id="cont" class="container">
+
+      <div id="homePage" class="row">
+        <div class="col-lg-6">
+          <button id="channelGuide" class="btn btn-primary" onclick="selectChannelGuide()" autofocus>Channel Guide</button><br><br>
+          <button id="recordedShows" class="btn btn-secondary" onclick="selectRecordedShows()">Recorded Shows</button><br><br>
+          <button id="toDoList" class="btn btn-secondary" onclick="selectToDoList()">To Do List</button><br>
+        </div>
+
+        <div class="col-lg-6">
+          <button id="setManualRecord" class="btn btn-secondary" onclick="selectSetManualRecord()">Set Manual Record</button><br><br>
+          <button id="userSelection" class="btn btn-secondary" onclick="selectUserSelection()">User Selection</button><br><br>
+          <button id="" class="btn btn-secondary" onclick="">Subheading</button><br>
+        </div>
+      </div>
+
+      <div id="manualRecordPage" style="display: none;">
+        <h3>Create a Manual Recording</h3>
+        <form class="navbar-form navbar-left" role="search">
+          <div class="form-group">
+            <p id="manualRecordDateId">Date  </p><br>
+            <p id="manualRecordTimeId">Time  </p><br>
+            <p>Duration (mins)  <input id="manualRecordDuration" type="number" class="form-control" value="1" step="1"></p><br>
+            <p>Channel  <input id="manualRecordChannel" type="text" value="KPIX-TV" class="form-control"></p><br><br>
+          </div>
+          <br>
+          <button type="submit" class="btn btn-primary" onclick="createManualRecording()">Record</button>
+        </form>
+      </div>
+
+      <div id="recordedShowsPage" style="display: none;">
+        <h3>Recorded Shows</h3>
+        <table class="table table-striped">
+          <thead>
+            <tr>
+              <th>Title</th>
+              <th>Date Recorded</th>
+              <th>Last Played On</th>
+            </tr>
+          </thead>
+          
+          <tbody id="recordedShowsTableBody">
+            <tr>
+              <td onclick="recordedShowDetails('test')"><p class="btn btn-primary">Pizza</p></td>
+              <td>Ice Cream</td>
+              <td>Donuts</td>
+            </tr>
+            <tr>
+              <td>Pizza</td>  
+              <td>Ice Cream</td>
+              <td>Donuts</td>
+            </tr>
+            
+          </tbody>
+
+        </table><br><br>
+      </div>
+
+      <div id="toDoListPage" style="display: none;">
+        <h3>To Do List</h3>
+        <table class="table table-striped">
+          <thead>
+            <tr>
+              <th>Date To Be Recorded</th>
+              <th>Title</th>
+            </tr>
+          </thead>
+          
+          <tbody id="toDoListTableBody">
+            <tr>
+              <td>Pizza</td>
+              <td>Ice Cream</td>
+            </tr>
+            <tr>
+              <td>Pizza</td>  
+              <td>Ice Cream</td>
+            </tr>
+          </tbody>
+        </table><br><br>
+      </div>
+
+      <div id="recordedShowDetailsPage" style="display: none;">
+        
+      </div>
+
+      
+
+    </div> <!-- /container -->
+    <br><br>
+    <footer id="footerArea" class="footer container">
+        
+    </footer>
+  </body>
+</html>

@@ -4,11 +4,14 @@ Sub InitializeServer()
     m.localServer.SetPort(m.msgPort)
 
 	m.TestRecordAA =					{ HandleEvent: TestRecord, mVar: m }
+	m.ManualRecordAA =					{ HandleEvent: ManualRecord, mVar: m }
 	m.RecordAA =						{ HandleEvent: Record, mVar: m }
 	m.RecordingsAA =					{ HandleEvent: Recordings, mVar: m }
 
 '	m.localServer.AddGetFromEvent({ url_path: "/", user_data: m.TestRecordAA })
 	m.localServer.AddGetFromEvent({ url_path: "/TestRecord", user_data: m.TestRecordAA })
+
+	m.localServer.AddGetFromEvent({ url_path: "/manualRecord", user_data: m.ManualRecordAA })
 
 	m.localServer.AddGetFromEvent({ url_path: "/Record", user_data: m.RecordAA })
 	m.localServer.AddGetFromEvent({ url_path: "/Recordings", user_data: m.RecordingsAA })
@@ -57,6 +60,17 @@ End Sub
 
 
 Sub Record(userData as Object, e as Object)
+End Sub
+
+
+Sub ManualRecord(userData as Object, e as Object)
+
+	print "Manual Record invoked"
+	
+    e.AddResponseHeader("Content-type", "text/plain")
+    e.SetResponseBodyString("herro Joel")
+    e.SendResponse(200)
+
 End Sub
 
 
