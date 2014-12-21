@@ -49,6 +49,7 @@ Function newJTR(msgPort As Object) As Object
 	JTR.ExecuteDBInsert			= ExecuteDBInsert
 	JTR.ExecuteDBSelect			= ExecuteDBSelect
 	JTR.GetDBVersionCallback	= GetDBVersionCallback
+	JTR.AddDBRecording			= AddDBRecording
 
 	JTR.AddManualRecord			= AddManualRecord
 	JTR.StartManualRecord		= StartManualRecord
@@ -175,6 +176,7 @@ Sub StartManualRecord(scheduledRecording As Object)
 	m.recordingInProgressTimerId$ = scheduledRecording.timerId$
 
 	' start recording
+	scheduledRecording.path$ = Left(scheduledRecording.dateTime.ToIsoString(), 15) + ".ts"
 
 End Sub
 
@@ -184,6 +186,7 @@ Sub EndManualRecord(scheduledRecordingTimerIdentity As Object, scheduledRecordin
 	print "EndManualRecord " + scheduledRecording.title$
 
 	' Add or upate record in database
+	m.AddDBRecording(scheduledRecording)
 
 	' Remove from list of pending records
 	ok = m.scheduledRecordings.Delete(scheduledRecordingTimerIdentity)

@@ -17,7 +17,7 @@ Sub OpenDatabase()
 
 		m.SetDBVersion(m.dbSchemaVersion$)
 
-		m.CreateDBTable("CREATE TABLE Recordings (RecordingId INTEGER PRIMARY KEY AUTOINCREMENT, FileName TEXT, FilePath TEXT, Duration INT);")
+		m.CreateDBTable("CREATE TABLE Recordings (RecordingId INTEGER PRIMARY KEY AUTOINCREMENT, Title TEXT, StartDateTime TEXT, Duration INT, Path TEXT);")
 
 		m.CreateDBTable("CREATE TABLE ScheduledRecordings (ScheduledRecordingId INTEGER PRIMARY KEY AUTOINCREMENT, StartDateTime INT, Channel TEXT);")
 
@@ -145,3 +145,20 @@ Function GetDBVersion() As String
 	return selectData.version$
 
 End Function
+
+
+Sub AddDBRecording(scheduledRecording As Object)
+
+	insertSQL$ = "INSERT INTO Recordings (Title, StartDateTime, Duration, Path) VALUES(?,?,?,?);"
+
+	params = CreateObject("roArray", 4, false)
+	params[ 0 ] = scheduledRecording.title$
+	params[ 1 ] = scheduledRecording.dateTime.GetString()
+	params[ 2 ] = scheduledRecording.duration%
+	params[ 3 ] = scheduledRecording.path$
+
+	m.ExecuteDBInsert(insertSQL$, params)
+
+End Sub
+
+
