@@ -4,14 +4,14 @@ Sub InitializeServer()
     m.localServer.SetPort(m.msgPort)
 
 	m.TestRecordAA =					{ HandleEvent: TestRecord, mVar: m }
-	m.ManualRecordAA =					{ HandleEvent: ManualRecord, mVar: m }
+	m.manualRecordAA =					{ HandleEvent: manualRecord, mVar: m }
 	m.RecordAA =						{ HandleEvent: Record, mVar: m }
 	m.RecordingsAA =					{ HandleEvent: Recordings, mVar: m }
 
 '	m.localServer.AddGetFromEvent({ url_path: "/", user_data: m.TestRecordAA })
 	m.localServer.AddGetFromEvent({ url_path: "/TestRecord", user_data: m.TestRecordAA })
 
-	m.localServer.AddGetFromEvent({ url_path: "/manualRecord", user_data: m.ManualRecordAA })
+	m.localServer.AddGetFromEvent({ url_path: "/manualRecord", user_data: m.manualRecordAA })
 
 	m.localServer.AddGetFromEvent({ url_path: "/Record", user_data: m.RecordAA })
 	m.localServer.AddGetFromEvent({ url_path: "/Recordings", user_data: m.RecordingsAA })
@@ -63,10 +63,33 @@ Sub Record(userData as Object, e as Object)
 End Sub
 
 
-Sub ManualRecord(userData as Object, e as Object)
+Sub manualRecord(userData as Object, e as Object)
 
 	print "Manual Record invoked"
-	
+
+    mVar = userData.mVar
+
+	requestParams = e.GetRequestParams()
+
+	year% = int(val(requestParams["year"]))
+	month% = int(val(requestParams["month"]))
+	day% = int(val(requestParams["day"]))
+	hour% = int(val(requestParams["startTimeHours"]))
+	minute% = int(val(requestParams["startTimeMinutes"]))
+	duration% = int(val(requestParams["duration"]))
+	channel$ = requestParams["channel"]
+
+	dateTime = CreateObject("roDateTime")
+	dateTime.SetYear(year%)
+	dateTime.SetMonth(month% + 1)
+	dateTime.SetHour(hour%)
+	dateTime.SetDay(day%)
+	dateTime.SetMinute(minute%)
+
+	title$ = "MR at " + dateTime.GetString() + " on " + channel$
+
+	mVar.AddManualRecord(title$, channel$, dateTime, duration%)
+
     e.AddResponseHeader("Content-type", "text/plain")
     e.SetResponseBodyString("herro Joel")
     e.SendResponse(200)

@@ -14,6 +14,9 @@ Sub RunJtr()
 
     JTR = newJTR(msgPort)
 
+	JTR.scheduledRecordings = {}
+	JTR.recordingInProgressTimerId$ = ""
+
 	JTR.InitializeServer()
 	JTR.OpenDatabase()
 
@@ -47,6 +50,9 @@ Function newJTR(msgPort As Object) As Object
 	JTR.ExecuteDBSelect			= ExecuteDBSelect
 	JTR.GetDBVersionCallback	= GetDBVersionCallback
 
+	JTR.AddManualRecord			= AddManualRecord
+	JTR.StartManualRecord		= StartManualRecord
+	JTR.EndManualRecord			= EndManualRecord
 	JTR.StartRecord				= StartRecord
 	JTR.StopRecord				= StopRecord
 
@@ -83,7 +89,7 @@ print "entering event loop"
 
     while true
         
-        msg = wait(2000, m.msgPort)
+        msg = wait(0, m.msgPort)
 
 		print "msg received - type=" + type(msg)
 
@@ -96,13 +102,92 @@ print "entering event loop"
 
 		else if type(msg) = "roTimerEvent" then
 
-			if type(m.recordingTimer) = "roTimer" and stri(m.recordingTimer.GetIdentity()) = stri(msg.GetSourceIdentity()) then
+			eventIdentity$ = stri(msg.GetSourceIdentity())
+
+			' check for a scheduled recording
+			for each scheduledRecordingTimerIdentity in m.scheduledRecordings
+				if eventIdentity$ = scheduledRecordingTimerIdentity then
+					scheduledRecording = m.scheduledRecordings[scheduledRecordingTimerIdentity]
+					m.StartManualRecord(scheduledRecording)
+					exit for
+				endif
+			next
+
+			if type(m.endRecordingTimer) = "roTimer" and stri(m.endRecordingTimer.GetIdentity()) = eventIdentity$ then
+				for each scheduledRecordingTimerIdentity in m.scheduledRecordings
+					if scheduledRecordingTimerIdentity = m.recordingInProgressTimerId$ then
+						scheduledRecording = m.scheduledRecordings[scheduledRecordingTimerIdentity]
+						m.EndManualRecord(scheduledRecordingTimerIdentity, scheduledRecording)
+						exit for
+					endif
+				next
+			endif
+
+			if type(m.recordingTimer) = "roTimer" and stri(m.recordingTimer.GetIdentity()) = eventIdentity$ then
 				m.StopRecord()
 			endif
 
 		endif
 
     end while
+
+End Sub
+
+
+Sub AddManualRecord(title$, channel$ As String, dateTime As Object, duration% As Integer)
+
+	print "Add scheduledRecording: " + title$
+
+	m.scheduledRecordingTimer = CreateObject("roTimer")
+	m.scheduledRecordingTimer.SetPort(m.msgPort)
+	m.scheduledRecordingTimer.SetDateTime(dateTime)
+
+	scheduledRecording = {}
+	scheduledRecording.timerId$ = stri(m.scheduledRecordingTimer.GetIdentity())
+	scheduledRecording.title$ = title$
+	scheduledRecording.channel$ = channel$
+	scheduledRecording.dateTime = dateTime
+	scheduledRecording.duration% = duration%
+
+	m.scheduledRecordingTimer.Start()
+
+	m.scheduledRecordings.AddReplace(scheduledRecording.timerId$, scheduledRecording)
+
+End Sub
+
+
+Sub StartManualRecord(scheduledRecording As Object)
+
+	print "StartManualRecord " + scheduledRecording.title$
+
+	' tune channel
+
+	endDateTime = scheduledRecording.dateTime
+	endDateTime.AddSeconds(scheduledRecording.duration% * 60)
+
+	print "Manual record will end at " + endDateTime.GetString()
+
+	m.endRecordingTimer = CreateObject("roTimer")
+	m.endRecordingTimer.SetPort(m.msgPort)
+	m.endRecordingTimer.SetDateTime(endDateTime)
+	m.endRecordingTimer.Start()
+
+	m.recordingInProgressTimerId$ = scheduledRecording.timerId$
+
+	' start recording
+
+End Sub
+
+
+Sub EndManualRecord(scheduledRecordingTimerIdentity As Object, scheduledRecording As Object)
+
+	print "EndManualRecord " + scheduledRecording.title$
+
+	' Add or upate record in database
+
+	' Remove from list of pending records
+	ok = m.scheduledRecordings.Delete(scheduledRecordingTimerIdentity)
+	if not ok then stop
 
 End Sub
 
