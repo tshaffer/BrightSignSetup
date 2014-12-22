@@ -26,6 +26,11 @@ Sub RunJtr()
 
 	JTR.videoPlayer = CreateObject("roVideoPlayer")
 	JTR.videoPlayer.SetPort(msgPort)
+    JTR.videoPlayer.SetLoopMode(0)
+	JTR.videoPaused = false
+
+	JTR.remote = CreateObject("roIRRemote")
+	JTR.remote.SetPort(msgPort)
 
     JTR.EventLoop()
 
@@ -57,6 +62,13 @@ Function newJTR(msgPort As Object) As Object
 	JTR.StartRecord				= StartRecord
 	JTR.StopRecord				= StopRecord
 
+	JTR.PlayVideo				= PlayVideo
+	JTR.PauseVideo				= PauseVideo
+	JTR.QuickSkipVideo			= QuickSkipVideo
+	JTR.FastForwardVideo		= FastForwardVideo
+	JTR.RewindVideo				= RewindVideo
+	JTR.AddVideoEvents			= AddVideoEvents
+		
 	JTR.Tune					= Tune
 
 	return JTR
@@ -87,6 +99,7 @@ End Sub
 Sub EventLoop()
 
 	SQLITE_COMPLETE = 100
+	VIDEO_TIME_CODE = 12
 
 print "entering event loop"
 
@@ -128,6 +141,34 @@ print "entering event loop"
 
 			if type(m.recordingTimer) = "roTimer" and stri(m.recordingTimer.GetIdentity()) = eventIdentity$ then
 				m.StopRecord()
+			endif
+
+		else if type(msg) = "roVideoEvent" then
+			if msg.GetInt() = VIDEO_TIME_CODE then
+				m.currentVideoPosition% = m.anchorPosition% + msg.GetData()
+				print "currentVideoPosition=";stri(m.currentVideoPosition%)
+			endif
+
+		else if type(msg) = "roIRRemotePress" then
+	
+			remoteEvent% = msg.GetInt()
+			remoteEvent$ = ConvertToRemoteCommand(remoteEvent%)
+			print "remoteEvent=";remoteEvent$
+
+			' hardcode for now
+'			fileName$ = "20141221T093400.ts"
+			fileName$ = "20141221T093400.mp4"
+
+			if remoteEvent$ = "PLAY" then
+				m.PlayVideo(fileName$)
+			else if remoteEvent$ = "PAUSE" then
+				m.PauseVideo()
+			else if remoteEvent$ = "REPEAT" or remoteEvent$ = "ADD" then
+				m.QuickSkipVideo()
+			else if remoteEvent$ = "FF" then
+				m.FastForwardVideo()
+			else if remoteEvent$ = "RW" then
+				m.RewindVideo()
 			endif
 
 		endif
@@ -261,4 +302,97 @@ print "StopRecord"
 	ok = m.mediaStreamer.Stop()
 	if not ok then stop
 
+End Sub
+
+
+Function ConvertToRemoteCommand(remoteCommand% As Integer) As String
+
+	Dim remoteCommands[19]
+	remoteCommands[0]="WEST"
+	remoteCommands[1]="EAST"
+	remoteCommands[2]="NORTH"
+	remoteCommands[3]="SOUTH"
+	remoteCommands[4]="SEL"
+	remoteCommands[5]="EXIT"
+	remoteCommands[6]="PWR"
+	remoteCommands[7]="MENU"
+	remoteCommands[8]="SEARCH"
+	remoteCommands[9]="PLAY"
+	remoteCommands[10]="FF"
+	remoteCommands[11]="RW"
+	remoteCommands[12]="PAUSE"
+	remoteCommands[13]="ADD"
+	remoteCommands[14]="SHUFFLE"
+	remoteCommands[15]="REPEAT"
+	remoteCommands[16]="VOLUP"
+	remoteCommands[17]="VOLDWN"
+	remoteCommands[18]="BRIGHT"
+
+    if remoteCommand% < 0 or remoteCommand% > 18 return ""
+    
+    return remoteCommands[remoteCommand%]
+    
+End Function
+
+
+Sub AddVideoEvents()
+
+	for i% = 1 to 1000
+		timeInMS% = i% * 1000
+		m.videoPlayer.AddEvent(timeInMS%, timeInMS%)
+	next
+
+End Sub
+
+
+Sub PlayVideo(path$)
+
+	' only do this when first launching a video
+	m.currentVideoPosition% = 0
+	m.anchorPosition% = 0
+	m.AddVideoEvents()
+
+	if m.videoPaused then
+		ok = m.videoPlayer.Resume()
+	else
+		ok = m.videoPlayer.PlayFile(path$)
+	endif
+
+	m.videoPaused = false
+
+End Sub
+
+
+Sub PauseVideo()
+
+	if m.videoPaused then
+		ok = m.videoPlayer.Resume()
+	else
+		ok = m.videoPlayer.Pause()
+	endif
+
+	m.videoPaused = not m.videoPaused
+
+End Sub
+
+
+Sub QuickSkipVideo()
+
+	seekTarget% = m.currentVideoPosition% + 10000
+	print "seekTarget=" + stri(seekTarget%)
+
+	ok = m.videoPlayer.Seek(seekTarget%)
+	print "Seek result=";ok
+
+	m.anchorPosition% = seekTarget%
+
+	' m.AddVideoEvents()
+
+End Sub
+
+
+Sub FastForwardVideo()
+End Sub
+
+Sub RewindVideo()
 End Sub
