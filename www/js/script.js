@@ -39,12 +39,21 @@ function here (argument) {
 
 function setDefaultDateTimeFields () {
 	var date = new Date();
-	console.log(date);
+    
+    var hours = "" + date.getHours();
+    if(hours.length === 1) {
+        hours = '0' + hours.slice(-2);
+    }
+    var minutes = "" + date.getMinutes();
+    if(minutes.length === 1) {
+        minutes = '0' + minutes.slice(-2);     
+    }
+    
 
 	var toAppendDate = "<input id=\"manualRecordDate\"  type=\"date\" class=\"form-control\" value=\"" +  date.getFullYear() + "-" + (date.getMonth() + 1) + "-" + date.getDate() + "\">";
-	var toAppendTime = "<input id=\"manualRecordTime\" type=\"time\" class=\"form-control\" value=\"" + date.getHours() + ":" + date.getMinutes() + "\">";
+	var toAppendTime = "<input id=\"manualRecordTime\" type=\"time\" class=\"form-control\" value=\"" + hours + ":" + minutes + "\">";
 
-	if($("#manualRecordDate").length) {
+	if($("#manualRecordDate").length) {   
 		$("#manualRecordDate").remove();
 		$("#manualRecordTime").remove();
 	}
@@ -54,20 +63,26 @@ function setDefaultDateTimeFields () {
 }
 
 function createManualRecording() {
-	var date = $("#manualRecordDate").val();
-	var time = $("#manualRecordTime").val();
-	var duration = $("#manualRecordDuration").val();
-	var channel = $("#manualRecordChannel").val();
-
-	var dateObj = new Date(date + " " + time);
-	var todayObj = new Date();
+    var date = $("#manualRecordDate").val();
+    var time = $("#manualRecordTime").val();
+    var dateObj = new Date(date + " " + time);
+    var duration = $("#manualRecordDuration").val();
+    var channel = $("#manualRecordChannel").val();
+    var useTuner = $("#manualRecordAuxInCheckbox").is(':checked');
+    var title = $("#manualRecordTitle").val();
+    if(!title) {
+        title = 'MR ' + dateObj.getFullYear() + "-" + (dateObj.getMonth() + 1) + "-" + dateObj.getDate() + " " + dateObj.getHours() + ":" + dateObj.getMinutes();
+    }
+	
+	
+	//var todayObj = new Date();
 
 
 	//if(todayObj.parse() > dateObj.parse()) {
 		//give error -- the specified time is in the past
 	//} else {
 		var aUrl = baseURL + "manualRecord";
-		var recordData = {"year" : dateObj.getFullYear(), "month" : dateObj.getMonth(), "day" : dateObj.getDate(), "startTimeHours" : dateObj.getHours(), "startTimeMinutes" : dateObj.getMinutes(), "duration" : duration, "channel" :  channel}
+		var recordData = {"year" : dateObj.getFullYear(), "month" : dateObj.getMonth(), "day" : dateObj.getDate(), "startTimeHours" : dateObj.getHours(), "startTimeMinutes" : dateObj.getMinutes(), "duration" : duration, "channel" :  channel, "title" : title, "useTuner" : useTuner}
 
 		$.get(aUrl, recordData)
             .done(function (result) {
