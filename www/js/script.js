@@ -1,5 +1,5 @@
 var currentActiveElementId = "#homePage";
-var baseURL = "http://192.168.2.20:8080/";
+var baseURL = "http://192.168.2.26:8080/";
 
 function setNav() {
 
