@@ -37,21 +37,29 @@ function here (argument) {
 	console.log(argument);
 }
 
+function twoDigitFormat(val) {
+    val = '' + val;
+    if(val.length === 1) {
+        val = '0' + val.slice(-2);
+    }
+    return val;
+}
+
 function setDefaultDateTimeFields () {
 	var date = new Date();
-    
-    var hours = "" + date.getHours();
-    if(hours.length === 1) {
-        hours = '0' + hours.slice(-2);
-    }
-    var minutes = "" + date.getMinutes();
-    if(minutes.length === 1) {
-        minutes = '0' + minutes.slice(-2);     
-    }
+
+    // var hours = "" + date.getHours();
+    // if(hours.length === 1) {
+    //     hours = '0' + hours.slice(-2);
+    // }
+    // var minutes = "" + date.getMinutes();
+    // if(minutes.length === 1) {
+    //     minutes = '0' + minutes.slice(-2);     
+    // }
     
 
-	var toAppendDate = "<input id=\"manualRecordDate\"  type=\"date\" class=\"form-control\" value=\"" +  date.getFullYear() + "-" + (date.getMonth() + 1) + "-" + date.getDate() + "\">";
-	var toAppendTime = "<input id=\"manualRecordTime\" type=\"time\" class=\"form-control\" value=\"" + hours + ":" + minutes + "\">";
+	var toAppendDate = "<input id=\"manualRecordDate\"  type=\"date\" class=\"form-control\" value=\"" +  date.getFullYear() + "-" + twoDigitFormat((date.getMonth() + 1)) + "-" + twoDigitFormat(date.getDate()) + "\">";
+	var toAppendTime = "<input id=\"manualRecordTime\" type=\"time\" class=\"form-control\" value=\"" + twoDigitFormat(date.getHours()) + ":" + twoDigitFormat(date.getMinutes()) + "\">";
 
 	if($("#manualRecordDate").length) {   
 		$("#manualRecordDate").remove();
@@ -71,48 +79,25 @@ function createManualRecording() {
     var useTuner = $("#manualRecordAuxInCheckbox").is(':checked');
     var title = $("#manualRecordTitle").val();
     if(!title) {
-        title = 'MR ' + dateObj.getFullYear() + "-" + (dateObj.getMonth() + 1) + "-" + dateObj.getDate() + " " + dateObj.getHours() + ":" + dateObj.getMinutes();
+        title = 'MR ' + dateObj.getFullYear() + "-" + twoDigitFormat((dateObj.getMonth() + 1)) + "-" + twoDigitFormat(dateObj.getDate()) + " " + twoDigitFormat(dateObj.getHours()) + ":" + twoDigitFormat(dateObj.getMinutes());
     }
 	
-	
-	//var todayObj = new Date();
+	var aUrl = baseURL + "manualRecord";
+	var recordData = {"year" : dateObj.getFullYear(), "month" : dateObj.getMonth(), "day" : dateObj.getDate(), "startTimeHours" : dateObj.getHours(), "startTimeMinutes" : dateObj.getMinutes(), "duration" : duration, "channel" :  channel, "title" : title, "useTuner" : useTuner}
 
-
-	//if(todayObj.parse() > dateObj.parse()) {
-		//give error -- the specified time is in the past
-	//} else {
-		var aUrl = baseURL + "manualRecord";
-		var recordData = {"year" : dateObj.getFullYear(), "month" : dateObj.getMonth(), "day" : dateObj.getDate(), "startTimeHours" : dateObj.getHours(), "startTimeMinutes" : dateObj.getMinutes(), "duration" : duration, "channel" :  channel, "title" : title, "useTuner" : useTuner}
-
-		$.get(aUrl, recordData)
-            .done(function (result) {
-                console.log("manual record successfully sent");
-            })
-            .fail(function (jqXHR, textStatus, errorThrown) {
-                debugger;
-                console.log("manual record failure");
-            })
-            .always(function () {
-                alert("finished");
-            });
-
-
-//		$.ajax({
-//		    type: 'GET',
-//		    data: recordData,
-//		    url: aUrl,
-//		    error: function () { alert('Failed!'); }
-//		})
-//	    .done(function (result) {
-//	        console.log("manual record successfully sent");
-//	        // var toAppend = "";
-
-//	        // for (i = 0; i < result.length; i++) {
-//	        //     toAppend += "<tr id=\"recordedShowRow" +  i + " \"><td>a title</td><td>a recorded date</td><td>a last played date</td></tr>";
-//	        // }
-//	        // $("#recordedShowsTableBody").append(toAppend);
-//	    });
-//	//}
+	$.get(aUrl, recordData)
+        .done(function (result) {
+            console.log("manual record successfully sent");
+        })
+        .fail(function (jqXHR, textStatus, errorThrown) {
+            debugger;
+            console.log("manual record failure");
+        })
+        .always(function () {
+            alert("finished");
+        });
+    
+    console.log("here");
 }
 
 function getRecordedShows() {
