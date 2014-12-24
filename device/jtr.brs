@@ -1,5 +1,10 @@
+Library "utils.brs"
 Library "db.brs"
 Library "server.brs"
+Library "hsm.brs"
+Library "eventHandler.brs"
+Library "recordingEngine.brs"
+Library "playbackEngine.brs"
 
 Sub Main()
 
@@ -10,9 +15,18 @@ End Sub
 
 Sub RunJtr()
 
+	CreateDirectory("brightsign-dumps")
+	CreateDirectory("content")
+
     msgPort = CreateObject("roMessagePort")
 
     JTR = newJTR(msgPort)
+
+	EnableZoneSupport(true)
+
+	JTR.eventHandler = newEventHandler(JTR.msgPort)
+	JTR.recordingEngine = newRecordingEngine(JTR)
+	JTR.playbackEngine = newPlaybackEngine(JTR)
 
 	JTR.scheduledRecordings = {}
 	JTR.recordingInProgressTimerId$ = ""
@@ -30,7 +44,14 @@ Sub RunJtr()
 	JTR.remote = CreateObject("roIRRemote")
 	JTR.remote.SetPort(msgPort)
 
-    JTR.EventLoop()
+    ' JTR.EventLoop()
+	JTR.recordingEngine.Initialize()
+	JTR.playbackEngine.Initialize()
+
+	JTR.eventHandler.AddHSM(JTR.recordingEngine)
+	JTR.eventHandler.AddHSM(JTR.playbackEngine)
+
+	JTR.eventHandler.EventLoop()
 
 End Sub
 
@@ -404,3 +425,5 @@ End Sub
 
 Sub RewindVideo()
 End Sub
+
+
