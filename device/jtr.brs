@@ -36,11 +36,6 @@ Sub RunJtr()
 
 	JTR.mediaStreamer = CreateObject("roMediaStreamer")
 
-	JTR.videoPlayer = CreateObject("roVideoPlayer")
-	JTR.videoPlayer.SetPort(msgPort)
-    JTR.videoPlayer.SetLoopMode(0)
-	JTR.videoPaused = false
-
 	JTR.remote = CreateObject("roIRRemote")
 	JTR.remote.SetPort(msgPort)
 
@@ -392,32 +387,32 @@ Sub PauseVideo()
 End Sub
 
 
-Sub QuickSkipVideo()
+'Sub QuickSkipVideo()
 
-	m.currentVideoPosition% = m.currentVideoPosition% + 10
-	print "seekTarget=" + stri(m.currentVideoPosition% * 1000)
-	print "m.currentVideoPosition%=";m.currentVideoPosition%
+'	m.currentVideoPosition% = m.currentVideoPosition% + 10
+'	print "seekTarget=" + stri(m.currentVideoPosition% * 1000)
+'	print "m.currentVideoPosition%=";m.currentVideoPosition%
 
-	ok = m.videoPlayer.Seek(m.currentVideoPosition% * 1000)
-	print "Seek result=";ok
+'	ok = m.videoPlayer.Seek(m.currentVideoPosition% * 1000)
+'	print "Seek result=";ok
 
-End Sub
+'End Sub
 
 
-Sub InstantReplayVideo()
+'Sub InstantReplayVideo()
 
-	m.currentVideoPosition% = m.currentVideoPosition% - 7
-	if m.currentVideoPosition% < 0 then
-		m.currentVideoPosition% = 0
-	endif
+'	m.currentVideoPosition% = m.currentVideoPosition% - 7
+'	if m.currentVideoPosition% < 0 then
+'		m.currentVideoPosition% = 0
+'	endif
 
-	print "seekTarget=" + stri(m.currentVideoPosition% * 1000)
-	print "m.currentVideoPosition%=";m.currentVideoPosition%
+'	print "seekTarget=" + stri(m.currentVideoPosition% * 1000)
+'	print "m.currentVideoPosition%=";m.currentVideoPosition%
 
-	ok = m.videoPlayer.Seek(m.currentVideoPosition% * 1000)
-	print "Seek result=";ok
+'	ok = m.videoPlayer.Seek(m.currentVideoPosition% * 1000)
+'	print "Seek result=";ok
 
-End Sub
+'End Sub
 
 
 Sub FastForwardVideo()
