@@ -75,13 +75,6 @@ Function newJTR(msgPort As Object) As Object
 	JTR.EndManualRecord			= EndManualRecord
 	JTR.StartRecord				= StartRecord
 	JTR.StopRecord				= StopRecord
-
-	JTR.PlayVideo				= PlayVideo
-	JTR.PauseVideo				= PauseVideo
-	JTR.QuickSkipVideo			= QuickSkipVideo
-	JTR.InstantReplayVideo		= InstantReplayVideo
-	JTR.FastForwardVideo		= FastForwardVideo
-	JTR.RewindVideo				= RewindVideo
 		
 	JTR.Tune					= Tune
 
@@ -113,7 +106,6 @@ End Sub
 Sub EventLoop()
 
 	SQLITE_COMPLETE = 100
-	VIDEO_TIME_CODE = 12
 
 print "entering event loop"
 
@@ -133,13 +125,6 @@ print "entering event loop"
 		else if type(msg) = "roTimerEvent" then
 
 			eventIdentity$ = stri(msg.GetSourceIdentity())
-
-			' video progress timer
-			if type(m.videoProgressTimer) = "roTimer" and stri(m.videoProgressTimer.GetIdentity()) = eventIdentity$ then
-				m.currentVideoPosition% = m.currentVideoPosition% + 1
-				print "m.currentVideoPosition%=";m.currentVideoPosition%
-				m.videoProgressTimer.Start()
-			endif
 
 			' check for a scheduled recording
 			for each scheduledRecordingTimerIdentity in m.scheduledRecordings
@@ -162,30 +147,6 @@ print "entering event loop"
 
 			if type(m.recordingTimer) = "roTimer" and stri(m.recordingTimer.GetIdentity()) = eventIdentity$ then
 				m.StopRecord()
-			endif
-
-		else if type(msg) = "roIRRemotePress" then
-	
-			remoteEvent% = msg.GetInt()
-			remoteEvent$ = ConvertToRemoteCommand(remoteEvent%)
-			print "remoteEvent=";remoteEvent$
-
-			' hardcode for now
-'			fileName$ = "20141221T093400.ts"
-			fileName$ = "20141221T093400.mp4"
-
-			if remoteEvent$ = "PLAY" then
-				m.PlayVideo(fileName$)
-			else if remoteEvent$ = "PAUSE" then
-				m.PauseVideo()
-			else if remoteEvent$ = "REPEAT" then
-				m.QuickSkipVideo()
-			else if remoteEvent$ = "ADD" then
-				m.InstantReplayVideo()
-			else if remoteEvent$ = "FF" then
-				m.FastForwardVideo()
-			else if remoteEvent$ = "RW" then
-				m.RewindVideo()
 			endif
 
 		endif
@@ -350,69 +311,3 @@ Function ConvertToRemoteCommand(remoteCommand% As Integer) As String
     return remoteCommands[remoteCommand%]
     
 End Function
-
-
-Sub PlayVideo(path$)
-
-	' only do this when first launching a video
-	m.currentVideoPosition% = 0
-	print "m.currentVideoPosition%=";m.currentVideoPosition%
-
-	if m.videoPaused then
-		ok = m.videoPlayer.Resume()
-	else
-		ok = m.videoPlayer.PlayFile(path$)
-	endif
-
-	m.videoPaused = false
-
-	m.videoProgressTimer = CreateObject("roTimer")
-	m.videoProgressTimer.SetPort(m.msgPort)
-	m.videoProgressTimer.SetElapsed(1, 0)
-	m.videoProgressTimer.Start()
-
-End Sub
-
-
-'Sub PauseVideo()
-
-'	if m.videoPaused then
-'		ok = m.videoPlayer.Resume()
-'	else
-'		ok = m.videoPlayer.Pause()
-'	endif
-
-'	m.videoPaused = not m.videoPaused
-	'
-'End Sub
-
-
-'Sub QuickSkipVideo()
-
-'	m.currentVideoPosition% = m.currentVideoPosition% + 10
-'	print "seekTarget=" + stri(m.currentVideoPosition% * 1000)
-'	print "m.currentVideoPosition%=";m.currentVideoPosition%
-
-'	ok = m.videoPlayer.Seek(m.currentVideoPosition% * 1000)
-'	print "Seek result=";ok
-
-'End Sub
-
-
-'Sub InstantReplayVideo()
-
-'	m.currentVideoPosition% = m.currentVideoPosition% - 7
-'	if m.currentVideoPosition% < 0 then
-'		m.currentVideoPosition% = 0
-'	endif
-
-'	print "seekTarget=" + stri(m.currentVideoPosition% * 1000)
-'	print "m.currentVideoPosition%=";m.currentVideoPosition%
-
-'	ok = m.videoPlayer.Seek(m.currentVideoPosition% * 1000)
-'	print "Seek result=";ok
-
-'End Sub
-
-
-

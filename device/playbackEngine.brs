@@ -5,8 +5,6 @@ Function newPlaybackEngine(jtr As Object) As Object
 
 	PlaybackEngine.msgPort = jtr.msgPort
 
-'	PlaybackEngine.InitializeDisplay			= playbackEngine_Initialize
-
 	PlaybackEngine.LaunchVideo					= LaunchVideo
 	PlaybackEngine.PauseVideo					= PauseVideo
 	PlaybackEngine.ResumeVideo					= ResumeVideo
