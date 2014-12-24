@@ -8,9 +8,12 @@ Function newPlaybackEngine(jtr As Object) As Object
 '	PlaybackEngine.InitializeDisplay			= playbackEngine_Initialize
 
 	PlaybackEngine.LaunchVideo					= LaunchVideo
+	PlaybackEngine.PauseVideo					= PauseVideo
 	PlaybackEngine.ResumeVideo					= ResumeVideo
 	PlaybackEngine.QuickSkipVideo				= QuickSkipVideo
 	PlaybackEngine.InstantReplayVideo			= InstantReplayVideo
+	PlaybackEngine.FastForwardVideo				= FastForwardVideo
+	PlaybackEngine.RewindVideo					= RewindVideo
 
     PlaybackEngine.stTop = PlaybackEngine.newHState(PlaybackEngine, "Top")
     PlaybackEngine.stTop.HStateEventHandler = STTopEventHandler
@@ -174,6 +177,10 @@ Function STPlayingEventHandler(event As Object, stateData As Object) As Object
 		else if remoteCommand$ = "ADD" then
 			m.stateMachine.InstantReplayVideo()
 			return "HANDLED"
+		else if remoteCommand$ = "FF" then
+			m.FastForwardVideo()
+		else if remoteCommand$ = "RW" then
+			m.RewindVideo()
 		endif
 
     endif
@@ -196,8 +203,7 @@ Function STPausedEventHandler(event As Object, stateData As Object) As Object
             
                 print m.id$ + ": entry signal"
 
-				ok = m.stateMachine.videoPlayer.Pause()
-				if not ok stop
+				m.stateMachine.PauseVideo()
 
                 return "HANDLED"
 
@@ -216,6 +222,12 @@ Function STPausedEventHandler(event As Object, stateData As Object) As Object
 			' temporary and wrong - playing restarts the video; it doesn't resume it.
 			stateData.nextState = m.stateMachine.stPlaying
 			return "TRANSITION"
+		else if remoteCommand$ = "REPEAT" then
+			m.stateMachine.QuickSkipVideo()
+			return "HANDLED"
+		else if remoteCommand$ = "ADD" then
+			m.stateMachine.InstantReplayVideo()
+			return "HANDLED"
 		endif
 
     endif
@@ -281,10 +293,22 @@ Sub LaunchVideo()
 End Sub
 
 
+Sub PauseVideo()
+				
+	ok = m.videoPlayer.Pause()
+	if not ok stop
+
+	m.videoProgressTimer.Stop()
+
+End Sub
+
+
 Sub ResumeVideo()
 
 	ok = m.videoPlayer.Resume()
 	if not ok stop
+
+	m.videoProgressTimer.Start()
 
 End Sub
 
@@ -316,4 +340,10 @@ Sub InstantReplayVideo()
 
 End Sub
 
+
+Sub FastForwardVideo()
+End Sub
+
+Sub RewindVideo()
+End Sub
 

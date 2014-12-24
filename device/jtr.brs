@@ -374,17 +374,17 @@ Sub PlayVideo(path$)
 End Sub
 
 
-Sub PauseVideo()
+'Sub PauseVideo()
 
-	if m.videoPaused then
-		ok = m.videoPlayer.Resume()
-	else
-		ok = m.videoPlayer.Pause()
-	endif
+'	if m.videoPaused then
+'		ok = m.videoPlayer.Resume()
+'	else
+'		ok = m.videoPlayer.Pause()
+'	endif
 
-	m.videoPaused = not m.videoPaused
-
-End Sub
+'	m.videoPaused = not m.videoPaused
+	'
+'End Sub
 
 
 'Sub QuickSkipVideo()
@@ -414,11 +414,5 @@ End Sub
 
 'End Sub
 
-
-Sub FastForwardVideo()
-End Sub
-
-Sub RewindVideo()
-End Sub
 
 
