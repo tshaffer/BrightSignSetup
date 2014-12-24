@@ -48,16 +48,6 @@ function twoDigitFormat(val) {
 function setDefaultDateTimeFields () {
 	var date = new Date();
 
-    // var hours = "" + date.getHours();
-    // if(hours.length === 1) {
-    //     hours = '0' + hours.slice(-2);
-    // }
-    // var minutes = "" + date.getMinutes();
-    // if(minutes.length === 1) {
-    //     minutes = '0' + minutes.slice(-2);     
-    // }
-    
-
 	var toAppendDate = "<input id=\"manualRecordDate\"  type=\"date\" class=\"form-control\" value=\"" +  date.getFullYear() + "-" + twoDigitFormat((date.getMonth() + 1)) + "-" + twoDigitFormat(date.getDate()) + "\">";
 	var toAppendTime = "<input id=\"manualRecordTime\" type=\"time\" class=\"form-control\" value=\"" + twoDigitFormat(date.getHours()) + ":" + twoDigitFormat(date.getMinutes()) + "\">";
 
@@ -101,8 +91,6 @@ function createManualRecording() {
         .always(function () {
             alert("finished");
         });
-    
-    console.log("here");
 }
 
 function getRecordedShows() {
