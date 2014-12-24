@@ -70,7 +70,7 @@ Sub manualRecord(userData as Object, e as Object)
     mVar = userData.mVar
 
 	requestParams = e.GetRequestParams()
-stop
+
 	title$ = requestParams["title"]
 	year% = int(val(requestParams["year"]))
 	month% = int(val(requestParams["month"]))
@@ -90,7 +90,16 @@ stop
 
 	' title$ = "MR at " + dateTime.GetString() + " on " + channel$
 
-	mVar.AddManualRecord(title$, channel$, dateTime, duration%)
+	addManualRecordMessage = CreateObject("roAssociativeArray")
+	addManualRecordMessage["EventType"] = "ADD_MANUAL_RECORD"
+	addManualRecordMessage["Title"] = title$
+	addManualRecordMessage["Channel"] = channel$
+	addManualRecordMessage["DateTime"] = dateTime
+	addManualRecordMessage["Duration"] = duration%
+	addManualRecordMessage["UseTuner"] = useTuner$
+	mVar.msgPort.PostMessage(addManualRecordMessage)
+
+'	mVar.AddManualRecord(title$, channel$, dateTime, duration%)
 
     e.AddResponseHeader("Content-type", "text/plain")
     e.SetResponseBodyString("herro Joel")

@@ -28,13 +28,8 @@ Sub RunJtr()
 	JTR.recordingEngine = newRecordingEngine(JTR)
 	JTR.playbackEngine = newPlaybackEngine(JTR)
 
-	JTR.scheduledRecordings = {}
-	JTR.recordingInProgressTimerId$ = ""
-
 	JTR.InitializeServer()
 	JTR.OpenDatabase()
-
-	JTR.mediaStreamer = CreateObject("roMediaStreamer")
 
 	JTR.remote = CreateObject("roIRRemote")
 	JTR.remote.SetPort(msgPort)
@@ -56,8 +51,6 @@ Function newJTR(msgPort As Object) As Object
     JTR = {}
     JTR.msgPort = msgPort
 
-	JTR.EventLoop				= EventLoop
-
 	JTR.InitializeServer		= InitializeServer
 	JTR.AddHandlers				= AddHandlers
 	
@@ -70,14 +63,8 @@ Function newJTR(msgPort As Object) As Object
 	JTR.GetDBVersionCallback	= GetDBVersionCallback
 	JTR.AddDBRecording			= AddDBRecording
 
-	JTR.AddManualRecord			= AddManualRecord
-	JTR.StartManualRecord		= StartManualRecord
-	JTR.EndManualRecord			= EndManualRecord
 	JTR.StartRecord				= StartRecord
-	JTR.StopRecord				= StopRecord
 		
-	JTR.Tune					= Tune
-
 	return JTR
 
 End Function
@@ -103,151 +90,7 @@ Sub ListFiles(path$ As String, listOfFiles As Object)
 End Sub
 
 
-Sub EventLoop()
-
-	SQLITE_COMPLETE = 100
-
-print "entering event loop"
-
-    while true
-        
-        msg = wait(0, m.msgPort)
-
-		print "msg received - type=" + type(msg)
-
-		if type(msg) = "roHttpEvent" then
-        
-			userdata = msg.GetUserData()
-			if type(userdata) = "roAssociativeArray" and type(userdata.HandleEvent) = "roFunction" then
-				userData.HandleEvent(userData, msg)
-			endif
-
-		else if type(msg) = "roTimerEvent" then
-
-			eventIdentity$ = stri(msg.GetSourceIdentity())
-
-			' check for a scheduled recording
-			for each scheduledRecordingTimerIdentity in m.scheduledRecordings
-				if eventIdentity$ = scheduledRecordingTimerIdentity then
-					scheduledRecording = m.scheduledRecordings[scheduledRecordingTimerIdentity]
-					m.StartManualRecord(scheduledRecording)
-					exit for
-				endif
-			next
-
-			if type(m.endRecordingTimer) = "roTimer" and stri(m.endRecordingTimer.GetIdentity()) = eventIdentity$ then
-				for each scheduledRecordingTimerIdentity in m.scheduledRecordings
-					if scheduledRecordingTimerIdentity = m.recordingInProgressTimerId$ then
-						scheduledRecording = m.scheduledRecordings[scheduledRecordingTimerIdentity]
-						m.EndManualRecord(scheduledRecordingTimerIdentity, scheduledRecording)
-						exit for
-					endif
-				next
-			endif
-
-			if type(m.recordingTimer) = "roTimer" and stri(m.recordingTimer.GetIdentity()) = eventIdentity$ then
-				m.StopRecord()
-			endif
-
-		endif
-
-    end while
-
-End Sub
-
-
-Sub AddManualRecord(title$, channel$ As String, dateTime As Object, duration% As Integer)
-
-	print "Add scheduledRecording: " + title$
-
-	m.scheduledRecordingTimer = CreateObject("roTimer")
-	m.scheduledRecordingTimer.SetPort(m.msgPort)
-	m.scheduledRecordingTimer.SetDateTime(dateTime)
-
-	scheduledRecording = {}
-	scheduledRecording.timerId$ = stri(m.scheduledRecordingTimer.GetIdentity())
-	scheduledRecording.title$ = title$
-	scheduledRecording.channel$ = channel$
-	scheduledRecording.dateTime = dateTime
-	scheduledRecording.duration% = duration%
-
-	m.scheduledRecordingTimer.Start()
-
-	m.scheduledRecordings.AddReplace(scheduledRecording.timerId$, scheduledRecording)
-
-End Sub
-
-
-Sub StartManualRecord(scheduledRecording As Object)
-
-	print "StartManualRecord " + scheduledRecording.title$
-
-	' tune channel
-	m.Tune(scheduledRecording.channel$)
-
-	endDateTime = scheduledRecording.dateTime
-	endDateTime.AddSeconds(scheduledRecording.duration% * 60)
-
-	print "Manual record will end at " + endDateTime.GetString()
-
-	m.endRecordingTimer = CreateObject("roTimer")
-	m.endRecordingTimer.SetPort(m.msgPort)
-	m.endRecordingTimer.SetDateTime(endDateTime)
-	m.endRecordingTimer.Start()
-
-	m.recordingInProgressTimerId$ = scheduledRecording.timerId$
-
-	' start recording
-	scheduledRecording.path$ = Left(scheduledRecording.dateTime.ToIsoString(), 15) + ".ts"
-
-	if type(m.mediaStreamer) = "roMediaStreamer" then
-
-'		ok = m.mediaStreamer.SetPipeline("hdmi:,encoder:,file:///myfilename.ts")
-		ok = m.mediaStreamer.SetPipeline("hdmi:,encoder:,file:///" + scheduledRecording.path$)
-		if not ok then stop
-
-		ok = m.mediaStreamer.Start()
-		if not ok then stop
-
-	endif
-
-End Sub
-
-
-Sub Tune(channelName$)
-
-	url$ = "http://192.168.2.23:8080/Tune?channelName=" + channelName$
-
-	print "Tune using URL=";url$
-
-	tunerUrl = CreateObject("roUrlTransfer")
-	tunerUrl.SetUrl(url$)
-	tunerUrl.SetTimeout(10000)
-
-	' no need to set msgPort - no response required
-	response$ = tunerUrl.GetToString()
-
-	print "Tune response = ";response$
-
-End Sub
-
-
-Sub EndManualRecord(scheduledRecordingTimerIdentity As Object, scheduledRecording As Object)
-
-	print "EndManualRecord " + scheduledRecording.title$
-
-	m.StopRecord()
-
-	' Add or upate record in database
-	m.AddDBRecording(scheduledRecording)
-
-	' Remove from list of pending records
-	ok = m.scheduledRecordings.Delete(scheduledRecordingTimerIdentity)
-	if not ok then stop
-
-End Sub
-
-
+' old test code - remove when appropriate
 Sub StartRecord(fileName$ As String, duration% As Integer)
 
 print "StartRecord: fileName="; fileName$; ", duration=";duration%
@@ -269,16 +112,6 @@ print "StartRecord: fileName="; fileName$; ", duration=";duration%
 	else
 		stop
 	endif
-
-End Sub
-
-
-Sub StopRecord()
-
-print "StopRecord"
-
-	ok = m.mediaStreamer.Stop()
-	if not ok then stop
 
 End Sub
 
