@@ -70,7 +70,8 @@ Sub manualRecord(userData as Object, e as Object)
     mVar = userData.mVar
 
 	requestParams = e.GetRequestParams()
-
+stop
+	title$ = requestParams["title"]
 	year% = int(val(requestParams["year"]))
 	month% = int(val(requestParams["month"]))
 	day% = int(val(requestParams["day"]))
@@ -78,6 +79,7 @@ Sub manualRecord(userData as Object, e as Object)
 	minute% = int(val(requestParams["startTimeMinutes"]))
 	duration% = int(val(requestParams["duration"]))
 	channel$ = requestParams["channel"]
+	useTuner$ = requestParams["useTuner"]	' true or false
 
 	dateTime = CreateObject("roDateTime")
 	dateTime.SetYear(year%)
@@ -86,7 +88,7 @@ Sub manualRecord(userData as Object, e as Object)
 	dateTime.SetDay(day%)
 	dateTime.SetMinute(minute%)
 
-	title$ = "MR at " + dateTime.GetString() + " on " + channel$
+	' title$ = "MR at " + dateTime.GetString() + " on " + channel$
 
 	mVar.AddManualRecord(title$, channel$, dateTime, duration%)
 
