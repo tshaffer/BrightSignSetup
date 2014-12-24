@@ -76,10 +76,15 @@ function createManualRecording() {
     var dateObj = new Date(date + " " + time);
     var duration = $("#manualRecordDuration").val();
     var channel = $("#manualRecordChannel").val();
-    var useTuner = $("#manualRecordAuxInCheckbox").is(':checked');
+    var useTuner = !$("#manualRecordAuxInCheckbox").is(':checked');
     var title = $("#manualRecordTitle").val();
     if(!title) {
         title = 'MR ' + dateObj.getFullYear() + "-" + twoDigitFormat((dateObj.getMonth() + 1)) + "-" + twoDigitFormat(dateObj.getDate()) + " " + twoDigitFormat(dateObj.getHours()) + ":" + twoDigitFormat(dateObj.getMinutes());
+        if(useTuner) {
+            title += " " + channel;
+        } else {
+            title += " Aux-In";
+        }
     }
 	
 	var aUrl = baseURL + "manualRecord";
