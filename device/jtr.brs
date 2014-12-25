@@ -32,7 +32,24 @@ Sub RunJtr()
 	JTR.OpenDatabase()
 
 	JTR.remote = CreateObject("roIRRemote")
+	if type(JTR.remote) <> "roIRRemote" stop
 	JTR.remote.SetPort(msgPort)
+
+'	aa = {}
+'	aa.source = "Iguana"
+'	aa.encodings = "NEC"
+'	JTR.irReceiver = CreateObject("roIRReceiver", aa)
+'	if type(JTR.irReceiver) <> "roIRReceiver" stop
+'	JTR.irReceiver.SetPort(msgPort)
+
+'	r = CreateObject("roRectangle", 0, 0, 1920, 1080)
+'	JTR.imagePlayer = CreateObject("roImageWidget", r)
+
+	' experiment with webkit renderer
+'	JTR.htmlWidget = createobject("roHtmlWidget", r)
+'	JTR.htmlWidget.Show()
+'	JTR.htmlWidget.SetUrl("http://www.brightsign.biz")
+'	JTR.htmlWidget.SetUrl("file:///webkit/index.html")
 
     ' JTR.EventLoop()
 	JTR.recordingEngine.Initialize()
