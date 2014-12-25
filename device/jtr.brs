@@ -91,17 +91,16 @@ Sub ListFiles(path$ As String, listOfFiles As Object)
 
 	listOfFileEntries = ListDir(path$)
 	for each fileEntry in listOfFileEntries
-		childPath$ = path$ + "/" + fileEntry
 
-		' this section of code is meant to determine if childPath$ is a directory or a file.
-		' if there's a direct way to determine if this, it would eliminate this call to ListDir
-		listOfChildEntries = ListDir(childPath$)
-		if listOfChildEntries.Count() = 0 then
-			listOfFiles.push(childPath$)
+		filePath$ = path$ + "/" + fileEntry
+		dirPath$ = filePath$ + "/"
+
+		dir = CreateObject("roReadFile", dirPath$)
+		if type(dir) = "roReadFile" then
+			ListFiles(filePath$, listOfFiles)
 		else
-			ListFiles(childPath$, listOfFiles)
+			listOfFiles.push(filePath$)
 		endif
-
 	next
 
 End Sub
