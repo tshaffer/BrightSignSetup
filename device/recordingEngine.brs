@@ -35,6 +35,8 @@ End Function
 
 Function InitializeRecordingEngine() As Object
 
+	m.contentFolder = "Content/"
+
 	m.scheduledRecordings = {}
 	m.recordingInProgressTimerId$ = ""
 
@@ -203,7 +205,7 @@ Sub StartManualRecord(scheduledRecording As Object)
 	print "StartManualRecord " + scheduledRecording.title$ + " scheduled for " + scheduledRecording.dateTime.GetString()
 
 	' tune channel
-'	m.Tune(scheduledRecording.channel$)
+	m.Tune(scheduledRecording.channel$)
 
 	endDateTime = scheduledRecording.dateTime
 	endDateTime.AddSeconds(scheduledRecording.duration% * 60)
@@ -218,11 +220,12 @@ Sub StartManualRecord(scheduledRecording As Object)
 	m.stateMachine.recordingInProgressTimerId$ = scheduledRecording.timerId$
 
 	' start recording
-	scheduledRecording.path$ = Left(scheduledRecording.dateTime.ToIsoString(), 15) + ".ts"
+	scheduledRecording.path$ = m.stateMachine.contentFolder + Left(scheduledRecording.dateTime.ToIsoString(), 15) + ".ts"
 
 	if type(m.stateMachine.mediaStreamer) = "roMediaStreamer" then
 
 '		ok = m.mediaStreamer.SetPipeline("hdmi:,encoder:,file:///myfilename.ts")
+'		ok = m.stateMachine.mediaStreamer.SetPipeline("hdmi:,encoder:,file:///" + scheduledRecording.path$)
 		ok = m.stateMachine.mediaStreamer.SetPipeline("hdmi:,encoder:,file:///" + scheduledRecording.path$)
 		if not ok then stop
 

@@ -79,6 +79,7 @@ Function newJTR(msgPort As Object) As Object
 	JTR.ExecuteDBSelect			= ExecuteDBSelect
 	JTR.GetDBVersionCallback	= GetDBVersionCallback
 	JTR.AddDBRecording			= AddDBRecording
+	JTR.GetRecordings			= GetRecordings
 
 	JTR.StartRecord				= StartRecord
 		
