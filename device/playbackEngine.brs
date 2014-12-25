@@ -108,7 +108,14 @@ Function STPlaybackIdleEventHandler(event As Object, stateData As Object) As Obj
             else if event["EventType"] = "EXIT_SIGNAL" then
 
                 print m.id$ + ": exit signal"
-            
+
+            else if event["EventType"] = "PLAY_RECORDING" then
+
+				recording = event["Recording"]
+				m.stateMachine.selectedFile$ = recording.path
+				m.stateMachine.currentVideoPosition% = 0
+				stateData.nextState = m.stateMachine.stPlaying
+				return "TRANSITION"            
 			endif
             
         endif
@@ -158,6 +165,13 @@ Function STPlayingEventHandler(event As Object, stateData As Object) As Object
 
                 print m.id$ + ": exit signal"
             
+            else if event["EventType"] = "PLAY_RECORDING" then
+
+				recording = event["Recording"]
+				m.stateMachine.selectedFile$ = recording.path
+				m.stateMachine.currentVideoPosition% = 0
+				m.stateMachine.LaunchVideo()
+				return "HANDLED"            
 			endif
             
         endif

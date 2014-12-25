@@ -225,7 +225,6 @@ Sub StartManualRecord(scheduledRecording As Object)
 	if type(m.stateMachine.mediaStreamer) = "roMediaStreamer" then
 
 '		ok = m.mediaStreamer.SetPipeline("hdmi:,encoder:,file:///myfilename.ts")
-'		ok = m.stateMachine.mediaStreamer.SetPipeline("hdmi:,encoder:,file:///" + scheduledRecording.path$)
 		ok = m.stateMachine.mediaStreamer.SetPipeline("hdmi:,encoder:,file:///" + scheduledRecording.path$)
 		if not ok then stop
 
