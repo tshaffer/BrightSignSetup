@@ -69,6 +69,13 @@ Sub getRecording(userData as Object, e as Object)
 	recordingId = requestParams["recordingId"]
 
 	recording = mVar.GetDBRecording(recordingId)
+	path$ = GetMP4orTS(recording.Path)
+	if path$ = "" then
+		print "recording at path " + recording.Path + " not found."
+		stop
+	else
+		recording.Path = path$
+	endif
 
 	playRecordingMessage = CreateObject("roAssociativeArray")
 	playRecordingMessage["EventType"] = "PLAY_RECORDING"
@@ -134,6 +141,20 @@ Sub PopulateRecordings(mVar As Object, root As Object)
 	next
 
 End Sub
+
+
+Function GetMP4orTS(tsPath$ As String) As String
+
+	mp4Path$ = Left(tsPath$, len(tsPath$) - 2) + "mp4"
+	readFile = CreateObject("roReadFile", mp4Path$)
+	if type(readFile) = "roReadFile" return mp4Path$
+
+	readFile = CreateObject("roReadFile", tsPath$)
+	if type(readFile) = "roReadFile" return tsPath$
+
+	return ""
+
+End Function
 
 
 Sub Record(userData as Object, e as Object)

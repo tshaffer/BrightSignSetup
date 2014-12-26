@@ -12,6 +12,8 @@ Function newPlaybackEngine(jtr As Object) As Object
 	PlaybackEngine.InstantReplayVideo			= InstantReplayVideo
 	PlaybackEngine.FastForwardVideo				= FastForwardVideo
 	PlaybackEngine.RewindVideo					= RewindVideo
+	PlaybackEngine.Jump							= Jump
+	PlaybackEngine.SeekToCurrentVideoPosition	= SeekToCurrentVideoPosition
 
     PlaybackEngine.stTop = PlaybackEngine.newHState(PlaybackEngine, "Top")
     PlaybackEngine.stTop.HStateEventHandler = STTopEventHandler
@@ -44,6 +46,10 @@ Function InitializePlaybackEngine() As Object
 	m.videoPlayer = CreateObject("roVideoPlayer")
 	m.videoPlayer.SetPort(m.msgPort)
     m.videoPlayer.SetLoopMode(0)
+
+	m.currentVideoPosition% = 0
+	m.selectedRecording = invalid
+	m.priorSelectedRecording = invalid
 
 	return m.stIdle
 
@@ -110,9 +116,13 @@ Function STPlaybackIdleEventHandler(event As Object, stateData As Object) As Obj
                 print m.id$ + ": exit signal"
 
             else if event["EventType"] = "PLAY_RECORDING" then
+				
+				m.stateMachine.priorSelectedRecording = m.stateMachine.selectedRecording
+				if type(m.stateMachine.priorSelectedRecording) = "roAssociativeArray" then
+					m.stateMachine.priorSelectedRecording.currentVideoPosition% = m.stateMachine.currentVideoPosition%
+				endif
 
-				recording = event["Recording"]
-				m.stateMachine.selectedFile$ = recording.path
+				m.stateMachine.selectedRecording = event["Recording"]
 				m.stateMachine.currentVideoPosition% = 0
 				stateData.nextState = m.stateMachine.stPlaying
 				return "TRANSITION"            
@@ -123,6 +133,9 @@ Function STPlaybackIdleEventHandler(event As Object, stateData As Object) As Obj
 	else if type(event) = "roIRRemotePress" then
 	
 		if GetRemoteCommand(event) = "PLAY" then
+
+stop
+' need a recording object
 
 			' hardcode for now
 '			fileName$ = "20141221T093400.ts"
@@ -167,8 +180,13 @@ Function STPlayingEventHandler(event As Object, stateData As Object) As Object
             
             else if event["EventType"] = "PLAY_RECORDING" then
 
+				m.stateMachine.priorSelectedRecording = m.stateMachine.selectedRecording
+				if type(m.stateMachine.priorSelectedRecording) = "roAssociativeArray" then
+					m.stateMachine.priorSelectedRecording.currentVideoPosition% = m.stateMachine.currentVideoPosition%
+				endif
+
 				recording = event["Recording"]
-				m.stateMachine.selectedFile$ = recording.path
+				m.stateMachine.selectedRecording = recording
 				m.stateMachine.currentVideoPosition% = 0
 				m.stateMachine.LaunchVideo()
 				return "HANDLED"            
@@ -188,6 +206,9 @@ Function STPlayingEventHandler(event As Object, stateData As Object) As Object
 			return "HANDLED"
 		else if remoteCommand$ = "ADD" then
 			m.stateMachine.InstantReplayVideo()
+			return "HANDLED"
+		else if remoteCommand$ = "EXIT" then
+			m.stateMachine.Jump()
 			return "HANDLED"
 		else if remoteCommand$ = "FF" then
 			m.FastForwardVideo()
@@ -294,7 +315,7 @@ Sub LaunchVideo()
 
 	print "LaunchVideo"
 
-	ok = m.videoPlayer.PlayFile(m.selectedFile$)
+	ok = m.videoPlayer.PlayFile(m.selectedRecording.Path)
 	if not ok stop
 
 	m.videoProgressTimer = CreateObject("roTimer")
@@ -328,11 +349,8 @@ End Sub
 Sub QuickSkipVideo()
 
 	m.currentVideoPosition% = m.currentVideoPosition% + 10	' quick skip currently jumps ahead 10 seconds
-	print "seekTarget=" + stri(m.currentVideoPosition% * 1000)
-	print "m.currentVideoPosition%=";m.currentVideoPosition%
 
-	ok = m.videoPlayer.Seek(m.currentVideoPosition% * 1000)
-	print "Seek result=";ok
+	m.SeekToCurrentVideoPosition()
 
 End Sub
 
@@ -344,11 +362,43 @@ Sub InstantReplayVideo()
 		m.currentVideoPosition% = 0
 	endif
 
+	m.SeekToCurrentVideoPosition()
+
+End Sub
+
+
+Sub SeekToCurrentVideoPosition()
+
 	print "seekTarget=" + stri(m.currentVideoPosition% * 1000)
 	print "m.currentVideoPosition%=";m.currentVideoPosition%
 
 	ok = m.videoPlayer.Seek(m.currentVideoPosition% * 1000)
 	print "Seek result=";ok
+
+End Sub
+
+
+Sub Jump()
+
+	print "Jump"
+
+	if type(m.priorSelectedRecording) <> "roAssociativeArray" then
+		print "No prior recording"
+		return
+	endif
+
+	tmpRecording = m.selectedRecording
+	priorSelectedRecordingVideoPosition% = m.priorSelectedRecording.currentVideoPosition%
+	m.selectedRecording = m.priorSelectedRecording
+	m.priorSelectedRecording = tmpRecording
+	m.priorSelectedRecording.currentVideoPosition% = m.currentVideoPosition%
+
+	ok = m.videoPlayer.PlayFile(m.selectedRecording.Path)
+	if not ok stop
+
+	' seek to last watched position
+	m.currentVideoPosition% = priorSelectedRecordingVideoPosition%
+	m.SeekToCurrentVideoPosition()
 
 End Sub
 
