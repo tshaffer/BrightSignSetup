@@ -37,6 +37,17 @@ function here (argument) {
 	console.log(argument);
 }
 
+function selectPlayVideo() {
+    switchToPage("playVideoPage");
+    playVideo();
+}
+
+function playVideo () {
+    var toAppend = '<div><video id="videoZone" hwz="on" autoplay><source src="20141221T093400.mp4" type="video/mp4"></source></video></div>';
+    $("#playVideoPage").append(toAppend);
+    $("#footerArea").remove();
+}
+
 function twoDigitFormat(val) {
     val = '' + val;
     if(val.length === 1) {
@@ -165,13 +176,35 @@ function switchToPage(newPage) {
 
 
 //keyboard event listener
-$(document).ready(function () {
-    $("body").keydown(function (e) {
-        //console.log(e);
-        //console.log(e.which);
-        if (e.which == 9) {
-            $("#channelGuide").removeClass("btn-primary");
-            $("#recordedShows").addClass("btn-primary");
+$(document).ready(function(){
+	$("body").keydown(function(e){
+		console.log(e.which);
+		
+		// if(e.which == 9) {
+		// 	$("#channelGuide").removeClass("btn-primary");
+		// 	$("#recordedShows").addClass("btn-primary");
+		// }
+
+        if(e.which === 80) { //'p'
+            if(!$("#playIcon").length) {
+                var toAppend = '<span id="playIcon" class="glyphicon glyphicon-play controlIcon" aria-hidden="true"></span>';
+                $("#videoControlRegion").append(toAppend);
+            } else {
+                $("#playIcon").remove();
+            }
+        } else if(e.which === 72) { //'h'
+            switchToPage("homePage");
+            $("#videoZone").remove();
+        } else if(e.which === 32) { //' '
+            if(!$("#progressBar").length) {
+                var percentComplete = 25;
+                var toAppend = '<div id="progressBar" class="meter"><span class="meter-span" style="width: ' + percentComplete + '%;"></span></div>';
+                $("#videoControlRegion").append(toAppend);
+            } else {
+                $("#progressBar").remove();
+            }
+
         }
-    });
+
+	});
 });
