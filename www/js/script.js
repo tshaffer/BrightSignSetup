@@ -1,5 +1,5 @@
 var currentActiveElementId = "#homePage";
-var baseURL = "http://192.168.2.26:8080/";
+var baseURL = "http://192.168.2.11:8080/";
 
 function setNav() {
 
@@ -165,13 +165,13 @@ function switchToPage(newPage) {
 
 
 //keyboard event listener
-$(document).ready(function(){
-	$("body").keydown(function(e){
-		//console.log(e);
-		//console.log(e.which);
-		if(e.which == 9) {
-			$("#channelGuide").removeClass("btn-primary");
-			$("#recordedShows").addClass("btn-primary");
-		}
-	});
+$(document).ready(function () {
+    $("body").keydown(function (e) {
+        //console.log(e);
+        //console.log(e.which);
+        if (e.which == 9) {
+            $("#channelGuide").removeClass("btn-primary");
+            $("#recordedShows").addClass("btn-primary");
+        }
+    });
 });

@@ -205,7 +205,7 @@ Sub StartManualRecord(scheduledRecording As Object)
 	print "StartManualRecord " + scheduledRecording.title$ + " scheduled for " + scheduledRecording.dateTime.GetString()
 
 	' tune channel
-	m.Tune(scheduledRecording.channel$)
+'	m.Tune(scheduledRecording.channel$)
 
 	endDateTime = scheduledRecording.dateTime
 	endDateTime.AddSeconds(scheduledRecording.duration% * 60)
