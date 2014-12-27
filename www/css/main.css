@@ -38,3 +38,63 @@ body {
     padding-left: 0;
   }
 }
+
+#videoZone {
+  position: absolute;
+  top: 0px;
+  width: auto;
+  height: auto;
+  z-index: 1;
+}
+
+span.glyphicon {
+    font-size: 5em;
+    color: white;
+}
+
+.controlIcon {
+  position: fixed;
+  top: 50px;
+  left: 2%;
+  z-index: 2;
+}
+
+.meter { 
+  height: 30px;
+  position: absolute;
+  z-index: 3;
+  top: 65%;
+  left: 2%;
+  width: 75%;
+  background: #555;
+  -webkit-border-radius: 25px;
+  padding: 10px;
+  -webkit-box-shadow: inset 0 -1px 1px rgba(255,255,255,0.3);
+}
+
+.meter-span {
+  display: block;
+  height: 100%;
+  -webkit-border-top-right-radius: 8px;
+  -webkit-border-bottom-right-radius: 8px;
+  -webkit-border-top-left-radius: 20px;
+  -webkit-border-bottom-left-radius: 20px;
+  background-color: rgb(43,194,83);
+  background-image: -webkit-gradient(
+    linear,
+    left bottom,
+    left top,
+    color-stop(0, rgb(43,194,83)),
+    color-stop(1, rgb(84,240,84))
+   );
+  background-image: -webkit-linear-gradient(
+    center bottom,
+    rgb(43,194,83) 37%,
+    rgb(84,240,84) 69%
+   );
+  -webkit-box-shadow: 
+    inset 0 2px 9px  rgba(255,255,255,0.3),
+    inset 0 -2px 6px rgba(0,0,0,0.4);
+  position: relative;
+  overflow: hidden;
+}
