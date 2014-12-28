@@ -42,16 +42,6 @@ Sub RunJtr()
 '	if type(JTR.irReceiver) <> "roIRReceiver" stop
 '	JTR.irReceiver.SetPort(msgPort)
 
-'	r = CreateObject("roRectangle", 0, 0, 1920, 1080)
-'	JTR.imagePlayer = CreateObject("roImageWidget", r)
-
-	' experiment with webkit renderer
-'	JTR.htmlWidget = createobject("roHtmlWidget", r)
-'	JTR.htmlWidget.Show()
-'	JTR.htmlWidget.SetUrl("http://www.brightsign.biz")
-'	JTR.htmlWidget.SetUrl("file:///webkit/index.html")
-
-    ' JTR.EventLoop()
 	JTR.recordingEngine.Initialize()
 	JTR.playbackEngine.Initialize()
 
@@ -71,6 +61,8 @@ Function newJTR(msgPort As Object) As Object
 	JTR.InitializeServer		= InitializeServer
 	JTR.AddHandlers				= AddHandlers
 	
+	JTR.LaunchWebkit			= LaunchWebkit
+
 	JTR.OpenDatabase			= OpenDatabase
 	JTR.CreateDBTable			= CreateDBTable
 	JTR.GetDBVersion			= GetDBVersion
@@ -162,3 +154,38 @@ Function ConvertToRemoteCommand(remoteCommand% As Integer) As String
     return remoteCommands[remoteCommand%]
     
 End Function
+
+
+Sub LaunchWebkit()
+
+	print "LaunchWebkit invoked"
+
+	r = CreateObject("roRectangle", 0, 0, 1920, 1080)
+
+	m.imagePlayer = CreateObject("roImageWidget", r)
+	m.imagePlayer.Show()
+
+	' experiment with webkit renderer
+	videoMode = CreateObject("roVideoMode")
+	resX = videoMode.GetResX()
+	resY = videoMode.GetResY()
+	videoMode = invalid
+	m.touchScreen = CreateObject("roTouchScreen")
+	m.touchScreen.SetPort(m.msgPort)
+	m.touchScreen.EnableCursor(true)
+	m.touchScreen.SetCursorBitmap("cursor.bmp", 16, 16)
+	m.touchScreen.SetCursorPosition(resX / 2, resY / 2)
+
+	m.htmlWidget = CreateObject("roHtmlWidget", r)
+	m.htmlWidget.SetPort(m.msgPort)
+	m.htmlWidget.Show()
+	m.htmlWidget.EnableMouseEvents(true)
+	m.htmlWidget.SetHWZDefault("on")
+	m.htmlWidget.EnableJavascript(true)
+	m.htmlWidget.AllowJavaScriptUrls({ all: "*" })
+	m.htmlWidget.StartInspectorServer(2999)
+
+	m.htmlWidget.SetUrl("file:///webkit/index.html")
+
+End Sub
+
