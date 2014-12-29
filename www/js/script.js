@@ -1,10 +1,17 @@
 var currentActiveElementId = "#homePage";
 var baseURL = "http://192.168.2.11:8080/";
+var converter;  //xml to JSON singleton object
+
+function XML2JSON (xml) {
+    if(!converter) {
+        converter = new X2JS();
+    }
+    return converter.xml2json(xml);
+}
 
 function setNav() {
 
 }
-
 
 function selectChannelGuide() {
 
@@ -111,13 +118,39 @@ function getRecordedShows() {
         type: "GET",
         url: aUrl
     })
-    .done(function( result ) {
+    .done(function(shows) {
+        var toAppend = "";
+        var result = [ {"series": "The Good Wife", "episode": "episode 1", "recordedDate": "12/25/14", "lastPlayedDate": "n/a", "duration": "30", "channel": "6"},
+            {"series" : "Brooklyn Nine-Nine", "episode": "episode 3", "recordedDate": "12/25/14", "lastPlayedDate": "n/a", "duration": "30", "channel": "6"},
+            {"series": "HIMYM", "episode": "episode 10", "recordedDate": "12/25/14", "lastPlayedDate": "n/a", "duration": "30", "channel": "6"} ];    
+
+        // sort data by series name alphabetically
+        result.sort(function(a, b) {
+                if (a.series < b.series) return -1;
+                else if (a.series > b.series) return 1;
+                else return 0;
+        });
+
+        for (i = 0; i < result.length; i++) {
+            toAppend += "<tr><td><button type='button' class='btn btn-default' aria-label='Left Align'><span class='glyphicon glyphicon-play-circle' aria-hidden='true'></span></button></td>" +
+            "<td>" + result[i].series + "</td>" +
+            "<td>" + result[i].episode + "</td>" + 
+            "<td>" + result[i].recordedDate + "</td>" + 
+            "<td>" + result[i].lastPlayedDate + "</td>" + 
+            "<td>" + result[i].duration + "</td>" + 
+            "<td>" + result[i].channel + "</td></tr>";
+        }
+        // is there a reason do this all at the end instead of once for each row?
+        $("#recordedShowsTableBody").append(toAppend);
+
+        /*
         var toAppend = "";
 
         for (i = 0; i < result.length; i++) {
             toAppend += "<tr onclick=\"recordedShowDetails(\'" + result[i].showId + "\')\" id=\"recordedShowRow" +  i + " \"><td><p class=\"btn btn-primary\">a title</p></td><td>a recorded date</td><td>a last played date</td></tr>";
         }
         $("#recordedShowsTableBody").append(toAppend);
+        */
     });
 }
 
