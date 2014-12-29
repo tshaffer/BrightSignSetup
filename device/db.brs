@@ -162,3 +162,41 @@ Sub AddDBRecording(scheduledRecording As Object)
 End Sub
 
 
+Sub GetDBRecordingsCallback(resultsData As Object, selectData As Object)
+
+	selectData.recordings.push(resultsData)
+
+End Sub
+
+
+Function GetDBRecordings() As Object
+
+	selectData = {}
+	selectData.recordings = []
+
+	select$ = "SELECT RecordingId, Title, StartDateTime, Duration, Path FROM Recordings;"
+	m.ExecuteDBSelect(select$, GetDBRecordingsCallback, selectData, invalid)
+
+	return selectData.recordings
+
+End Function
+
+
+Sub GetDBRecordingCallback(resultsData As Object, selectData As Object)
+
+	selectData.recording = resultsData
+
+End Sub
+
+
+Function GetDBRecording(recordingId As String) As Object
+
+	selectData = {}
+	selectData.recording = invalid
+
+	select$ = "SELECT RecordingId, Title, StartDateTime, Duration, Path FROM Recordings WHERE RecordingId='" + recordingId + "';"
+	m.ExecuteDBSelect(select$, GetDBRecordingCallback, selectData, invalid)
+
+	return selectData.recording
+
+End Function
