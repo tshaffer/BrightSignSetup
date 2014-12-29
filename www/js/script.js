@@ -1,5 +1,6 @@
 var currentActiveElementId = "#homePage";
-var baseURL = "http://192.168.2.11:8080/";
+//var baseURL = "http://192.168.2.11:8080/";
+var baseURL = "http://10.1.0.134:8080/";
 var converter;  //xml to JSON singleton object
 
 function XML2JSON (xml) {
@@ -111,47 +112,67 @@ function createManualRecording() {
         });
 }
 
-function getRecordedShows() {
-	var aUrl = baseURL + "recordedShows";
+function playSelectedShow(event) {
+    var recordingId = event.data.recordingId;
+    console.log("playSelectedShow " + recordingId);
 
-    $.ajax({
-        type: "GET",
-        url: aUrl
-    })
-    .done(function(shows) {
-        var toAppend = "";
-        var result = [ {"series": "The Good Wife", "episode": "episode 1", "recordedDate": "12/25/14", "lastPlayedDate": "n/a", "duration": "30", "channel": "6"},
-            {"series" : "Brooklyn Nine-Nine", "episode": "episode 3", "recordedDate": "12/25/14", "lastPlayedDate": "n/a", "duration": "30", "channel": "6"},
-            {"series": "HIMYM", "episode": "episode 10", "recordedDate": "12/25/14", "lastPlayedDate": "n/a", "duration": "30", "channel": "6"} ];    
+    var aUrl = baseURL + "recording";
 
-        // sort data by series name alphabetically
-        result.sort(function(a, b) {
-                if (a.series < b.series) return -1;
-                else if (a.series > b.series) return 1;
-                else return 0;
+    var recordingData = { "recordingId": recordingId };
+
+    $.get(aUrl, recordingData)
+        .done(function (result) {
+            console.log("recording successfully sent");
+        })
+        .fail(function (jqXHR, textStatus, errorThrown) {
+            debugger;
+            console.log("recording failure");
+        })
+        .always(function () {
+            alert("recording transmission finished");
         });
+}
 
-        for (i = 0; i < result.length; i++) {
-            toAppend += "<tr><td><button type='button' class='btn btn-default' aria-label='Left Align'><span class='glyphicon glyphicon-play-circle' aria-hidden='true'></span></button></td>" +
-            "<td>" + result[i].series + "</td>" +
-            "<td>" + result[i].episode + "</td>" + 
-            "<td>" + result[i].recordedDate + "</td>" + 
-            "<td>" + result[i].lastPlayedDate + "</td>" + 
-            "<td>" + result[i].duration + "</td>" + 
-            "<td>" + result[i].channel + "</td></tr>";
-        }
-        // is there a reason do this all at the end instead of once for each row?
-        $("#recordedShowsTableBody").append(toAppend);
+function getRecordedShows() {
+	var aUrl = baseURL + "recordings";
 
-        /*
-        var toAppend = "";
+	$.ajax({
+	    type: "GET",
+	    url: aUrl,
+	    dataType: "xml",
+	    success: function (xml) {
+	        var recordings = XML2JSON(xml);
+	        var jtrRecordings = recordings.BrightSignRecordings.BrightSignRecording;
 
-        for (i = 0; i < result.length; i++) {
-            toAppend += "<tr onclick=\"recordedShowDetails(\'" + result[i].showId + "\')\" id=\"recordedShowRow" +  i + " \"><td><p class=\"btn btn-primary\">a title</p></td><td>a recorded date</td><td>a last played date</td></tr>";
-        }
-        $("#recordedShowsTableBody").append(toAppend);
-        */
-    });
+	        var toAppend = "";
+	        var recordingIds = [];
+
+	        $.each(jtrRecordings, function (index, jtrRecording) {
+	            toAppend += "<tr><td><button type='button' class='btn btn-default' id='recording" + jtrRecording.recordingId + "' aria-label='Left Align'><span class='glyphicon glyphicon-play-circle' aria-hidden='true'></span></button></td>" +
+	            //                "<td>" + result[i].series + "</td>" +
+	            //                "<td>" + result[i].episode + "</td>" +
+                "<td>" + jtrRecording.title + "</td>" +
+                "<td>" + "" + "</td>" +
+                "<td>" + jtrRecording.startDateTime + "</td>" +
+	            //                "<td>" + result[i].lastPlayedDate + "</td>" +
+                "<td>" + "" + "</td>" +
+                "<td>" + jtrRecording.duration + "</td>" +
+	            //                "<td>" + result[i].channel + "</td></tr>";
+	            "<td>" + "" + "</td></tr>";
+
+	            recordingIds.push(jtrRecording.recordingId);
+	        });
+
+	        // is there a reason do this all at the end instead of once for each row?
+	        $("#recordedShowsTableBody").append(toAppend);
+
+            // add button handlers for each recording - note, the handlers need to be added after the html has been added!!
+	        $.each(recordingIds, function (index, recordingId) {
+	            var btnId = "#recording" + recordingId;
+	            $(btnId).click({ recordingId: recordingId }, playSelectedShow);
+	        });
+	    }
+	});
 }
 
 

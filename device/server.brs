@@ -82,6 +82,11 @@ Sub getRecording(userData as Object, e as Object)
 	playRecordingMessage["Recording"] = recording
 	mVar.msgPort.PostMessage(playRecordingMessage)
 
+
+    e.AddResponseHeader("Content-type", "text/plain")
+    e.SetResponseBodyString("herro Joel")
+    e.SendResponse(200)
+
 End Sub
 
 
