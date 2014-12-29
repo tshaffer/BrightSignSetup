@@ -24,7 +24,7 @@ Sub RunJtr()
 
 	EnableZoneSupport(true)
 
-	JTR.eventHandler = newEventHandler(JTR.msgPort)
+	JTR.eventHandler = newEventHandler(JTR)
 	JTR.recordingEngine = newRecordingEngine(JTR)
 	JTR.playbackEngine = newPlaybackEngine(JTR)
 

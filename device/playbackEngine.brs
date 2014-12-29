@@ -3,6 +3,7 @@ Function newPlaybackEngine(jtr As Object) As Object
     PlaybackEngine = newHSM()
     PlaybackEngine.InitialPseudostateHandler = InitializePlaybackEngine
 
+	PlaybackEngine.jtr = jtr
 	PlaybackEngine.msgPort = jtr.msgPort
 
 	PlaybackEngine.LaunchVideo					= LaunchVideo
@@ -87,6 +88,13 @@ Function STPlaybackControllerEventHandler(event As Object, stateData As Object) 
 			m.stateMachine.currentVideoPosition% = m.stateMachine.currentVideoPosition% + 1
 			print "m.stateMachine.currentVideoPosition%=";m.stateMachine.currentVideoPosition%
 			m.stateMachine.videoProgressTimer.Start()
+		endif
+
+	else if type(event) = "roIRRemotePress" then
+	
+		if GetRemoteCommand(event) = "MENU" then
+			m.stateMachine.jtr.LaunchWebkit()
+			return "HANDLED"
 		endif
 
     endif

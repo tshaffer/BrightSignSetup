@@ -1,8 +1,9 @@
-Function newEventHandler(msgPort As Object) As Object
+Function newEventHandler(jtr As Object) As Object
 
 	EventHandler = {}
 
-	EventHandler.msgPort = msgPort
+	EventHandler.jtr = jtr
+	EventHandler.msgPort = jtr.msgPort
 
 	EventHandler.hsms = []
 
@@ -44,6 +45,19 @@ Sub eventHandler_EventLoop()
 '					m.diagnostics.PrintDebug("roSqliteEvent.GetSqlResult() = " + stri(roSqliteEvent.GetSqlResult()))
 					 print "roSqliteEvent.GetSqlResult() = " + stri(roSqliteEvent.GetSqlResult())
 				endif
+			endif
+		endif
+
+		if type(msg) = "roIRRemotePress" then
+			remoteCommand$ = GetRemoteCommand(msg)
+			if remoteCommand$ = "VOLUP" then
+				aa = {}
+				aa.AddReplace("bsMessage", "togglePlayIcon")
+				m.jtr.htmlWidget.PostJSMessage(aa)
+			else if remoteCommand$ = "VOLDWN" then
+				aa = {}
+				aa.AddReplace("bsMessage", "toggleProgressBar")
+				m.jtr.htmlWidget.PostJSMessage(aa)			
 			endif
 		endif
 
