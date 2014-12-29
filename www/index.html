@@ -56,17 +56,29 @@
         <table class="table table-striped">
           <thead>
             <tr>
-              <th>Title</th>
-              <th>Date Recorded</th>
+              <th>Play</th>
+              <th>Series</th>
+              <th>Episode</th>
+              <th>Date Recorded</th>              
               <th>Last Played On</th>
+              <th>Length</th>
+              <th>Channel</th>
             </tr>
           </thead>
           
           <tbody id="recordedShowsTableBody">
             <tr>
+              <td>
+                <button type="button" class="btn btn-default" aria-label="Left Align">
+                  <span class="glyphicon glyphicon-play-circle" aria-hidden="true"></span>
+                </button>
+              </td>
               <td onclick="recordedShowDetails('test')"><p class="btn btn-primary">Pizza</p></td>
               <td>Ice Cream</td>
               <td>Donuts</td>
+              <td>Meow mix</td>
+              <td>Cookies</td>
+              <td>42</td>
             </tr>
             <tr>
               <td>Pizza</td>  
