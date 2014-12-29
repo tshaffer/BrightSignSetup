@@ -1,10 +1,17 @@
 var currentActiveElementId = "#homePage";
 var baseURL = "http://192.168.2.26:8080/";
+var converter;  //xml to JSON singleton object
+
+function XML2JSON (xml) {
+    if(!converter) {
+        converter = new X2JS();
+    }
+    return converter.xml2json(xml);
+}
 
 function setNav() {
 
 }
-
 
 function selectChannelGuide() {
 
