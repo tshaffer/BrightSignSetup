@@ -24,7 +24,7 @@ Function newRecordingEngine(jtr As Object) As Object
 	RecordingEngine.stRecording.StartManualRecord = StartManualRecord
 	RecordingEngine.stRecording.EndManualRecord	= EndManualRecord
 	RecordingEngine.stRecording.StopRecord = StopRecord
-	RecordingEngine.Tune = Tune
+	RecordingEngine.stRecording.Tune = Tune
 
 	RecordingEngine.topState = RecordingEngine.stTop
 
@@ -34,6 +34,8 @@ End Function
 
 
 Function InitializeRecordingEngine() As Object
+
+	m.contentFolder = "Content/"
 
 	m.scheduledRecordings = {}
 	m.recordingInProgressTimerId$ = ""
@@ -177,20 +179,21 @@ End Function
 
 Sub AddManualRecord(title$, channel$ As String, dateTime As Object, duration% As Integer, useTuner$ As String)
 
-	print "Add scheduledRecording: " + title$
+	print "Add scheduledRecording: " + title$ + " to begin at " + dateTime.GetString()
 
-	m.stateMachine.scheduledRecordingTimer = CreateObject("roTimer")
-	m.stateMachine.scheduledRecordingTimer.SetPort(m.stateMachine.msgPort)
-	m.stateMachine.scheduledRecordingTimer.SetDateTime(dateTime)
+	timer = CreateObject("roTimer")
+	timer.SetPort(m.stateMachine.msgPort)
+	timer.SetDateTime(dateTime)
 
 	scheduledRecording = {}
-	scheduledRecording.timerId$ = stri(m.stateMachine.scheduledRecordingTimer.GetIdentity())
+	scheduledRecording.timerId$ = stri(timer.GetIdentity())
 	scheduledRecording.title$ = title$
 	scheduledRecording.channel$ = channel$
 	scheduledRecording.dateTime = dateTime
 	scheduledRecording.duration% = duration%
+	scheduledRecording.timer = timer
 
-	m.stateMachine.scheduledRecordingTimer.Start()
+	timer.Start()
 
 	m.stateMachine.scheduledRecordings.AddReplace(scheduledRecording.timerId$, scheduledRecording)
 
@@ -199,10 +202,10 @@ End Sub
 
 Sub StartManualRecord(scheduledRecording As Object)
 
-	print "StartManualRecord " + scheduledRecording.title$
+	print "StartManualRecord " + scheduledRecording.title$ + " scheduled for " + scheduledRecording.dateTime.GetString()
 
 	' tune channel
-'	m.Tune(scheduledRecording.channel$)
+	m.Tune(scheduledRecording.channel$)
 
 	endDateTime = scheduledRecording.dateTime
 	endDateTime.AddSeconds(scheduledRecording.duration% * 60)
@@ -217,7 +220,7 @@ Sub StartManualRecord(scheduledRecording As Object)
 	m.stateMachine.recordingInProgressTimerId$ = scheduledRecording.timerId$
 
 	' start recording
-	scheduledRecording.path$ = Left(scheduledRecording.dateTime.ToIsoString(), 15) + ".ts"
+	scheduledRecording.path$ = m.stateMachine.contentFolder + Left(scheduledRecording.dateTime.ToIsoString(), 15) + ".ts"
 
 	if type(m.stateMachine.mediaStreamer) = "roMediaStreamer" then
 

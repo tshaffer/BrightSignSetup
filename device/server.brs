@@ -3,18 +3,21 @@ Sub InitializeServer()
     m.localServer = CreateObject("roHttpServer", { port: 8080 })
     m.localServer.SetPort(m.msgPort)
 
-	m.TestRecordAA =					{ HandleEvent: TestRecord, mVar: m }
 	m.manualRecordAA =					{ HandleEvent: manualRecord, mVar: m }
+	m.recordingAA =						{ HandleEvent: getRecording, mVar: m }
+	m.recordingsAA =					{ HandleEvent: recordings, mVar: m }
+
+	m.TestRecordAA =					{ HandleEvent: TestRecord, mVar: m }
 	m.RecordAA =						{ HandleEvent: Record, mVar: m }
-	m.RecordingsAA =					{ HandleEvent: Recordings, mVar: m }
+
+	m.localServer.AddGetFromEvent({ url_path: "/manualRecord", user_data: m.manualRecordAA })
+	m.localServer.AddGetFromEvent({ url_path: "/recording", user_data: m.recordingAA })
+	m.localServer.AddGetFromEvent({ url_path: "/recordings", user_data: m.recordingsAA })
 
 '	m.localServer.AddGetFromEvent({ url_path: "/", user_data: m.TestRecordAA })
 	m.localServer.AddGetFromEvent({ url_path: "/TestRecord", user_data: m.TestRecordAA })
 
-	m.localServer.AddGetFromEvent({ url_path: "/manualRecord", user_data: m.manualRecordAA })
-
 	m.localServer.AddGetFromEvent({ url_path: "/Record", user_data: m.RecordAA })
-	m.localServer.AddGetFromEvent({ url_path: "/Recordings", user_data: m.RecordingsAA })
 
 '    service = { name: "JTR Web Service", type: "_http._tcp", port: 8080, _functionality: BSP.lwsConfig$, _serialNumber: sysInfo.deviceUniqueID$, _unitName: unitName$, _unitNamingMethod: unitNamingMethod$,  }
 '    JTR.advert = CreateObject("roNetworkAdvertisement", service)
@@ -55,8 +58,103 @@ Sub AddHandlers(serverDirectory$ As String, listOfHandlers As Object)
 End Sub
 
 
-Sub Recordings(userData as Object, e as Object)
+Sub getRecording(userData as Object, e as Object)
+
+	print "recording endpoint invoked"
+
+    mVar = userData.mVar
+
+	requestParams = e.GetRequestParams()
+
+	recordingId = requestParams["recordingId"]
+
+	recording = mVar.GetDBRecording(recordingId)
+	path$ = GetMP4orTS(recording.Path)
+	if path$ = "" then
+		print "recording at path " + recording.Path + " not found."
+		stop
+	else
+		recording.Path = path$
+	endif
+
+	playRecordingMessage = CreateObject("roAssociativeArray")
+	playRecordingMessage["EventType"] = "PLAY_RECORDING"
+	playRecordingMessage["Recording"] = recording
+	mVar.msgPort.PostMessage(playRecordingMessage)
+
 End Sub
+
+
+Sub recordings(userData as Object, e as Object)
+
+	print "recordings endpoint invoked"
+
+    mVar = userData.mVar
+
+    root = CreateObject("roXMLElement")
+    root.SetName("BrightSignRecordings")
+
+	PopulateRecordings(mVar, root)
+
+    xml = root.GenXML({ indent: " ", newline: chr(10), header: true })
+
+    e.AddResponseHeader("Content-type", "text/xml")
+    e.SetResponseBodyString(xml)
+    e.SendResponse(200)
+
+End Sub
+
+
+Sub PopulateRecordings(mVar As Object, root As Object)
+
+	jtrRecordings = mVar.GetDBRecordings()
+
+	for each recording in jtrRecordings
+		
+'		print "recording " + recording.Title
+
+		' only include the entry if the file actually exists
+		readFile = CreateObject("roReadFile", recording.Path)
+		if type(readFile) = "roReadFile" then
+'			print "recording found at " + recording.Path
+
+			recordingElem = root.AddElement("BrightSignRecording")
+
+			recordingIdElem = recordingElem.AddElement("recordingId")
+			recordingIdElem.SetBody(stri(recording.RecordingId))
+
+			titleElem = recordingElem.AddElement("title")
+			titleElem.SetBody(recording.Title)
+
+			startDateTimeElem = recordingElem.AddElement("startDateTime")
+			startDateTimeElem.SetBody(recording.StartDateTime)
+
+			durationElem = recordingElem.AddElement("duration")
+			durationElem.SetBody(stri(recording.Duration))
+
+			pathElem = recordingElem.AddElement("path")
+			pathElem.SetBody(recording.Path)
+
+		else
+			print "recording " + recording.Title + " not found at " + recording.Path + ". Id = " + stri(recording.RecordingId)
+		endif
+	next
+
+End Sub
+
+
+Function GetMP4orTS(tsPath$ As String) As String
+
+	mp4Path$ = Left(tsPath$, len(tsPath$) - 2) + "mp4"
+	readFile = CreateObject("roReadFile", mp4Path$)
+	if type(readFile) = "roReadFile" return mp4Path$
+
+	readFile = CreateObject("roReadFile", tsPath$)
+	if type(readFile) = "roReadFile" return tsPath$
+
+	return ""
+
+End Function
 
 
 Sub Record(userData as Object, e as Object)
@@ -98,8 +196,6 @@ Sub manualRecord(userData as Object, e as Object)
 	addManualRecordMessage["Duration"] = duration%
 	addManualRecordMessage["UseTuner"] = useTuner$
 	mVar.msgPort.PostMessage(addManualRecordMessage)
-
-'	mVar.AddManualRecord(title$, channel$, dateTime, duration%)
 
     e.AddResponseHeader("Content-type", "text/plain")
     e.SetResponseBodyString("herro Joel")

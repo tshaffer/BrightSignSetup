@@ -15,9 +15,15 @@
     <script src="./js/jquery-2.1.1.min.js"></script>
     <script src="./bootstrap/js/bootstrap.js"></script>
     <script src="./js/script.js"></script>
+    <script src="./js/xml2json.js"></script>
   </head>
 
   <body>
+    
+    <div id="videoPlayer">
+      <div id="playVideoPage" style="display: none;"></div>
+      <div id="videoControlRegion"></div>
+    </div>
 
     <div id="cont" class="container">
 
@@ -31,7 +37,7 @@
         <div class="col-lg-6">
           <button id="setManualRecord" class="btn btn-secondary" onclick="selectSetManualRecord()">Set Manual Record</button><br><br>
           <button id="userSelection" class="btn btn-secondary" onclick="selectUserSelection()">User Selection</button><br><br>
-          <button id="" class="btn btn-secondary" onclick="">Subheading</button><br>
+          <button id="" class="btn btn-secondary" onclick="selectPlayVideo()">Play Video</button><br>
         </div>
       </div>
 
@@ -114,9 +120,8 @@
         </table><br><br>
       </div>
 
-      <div id="recordedShowDetailsPage" style="display: none;">
-        
-      </div>
+      <div id="recordedShowDetailsPage" style="display: none;"></div>
+
 
       
 
