@@ -18,8 +18,13 @@ body {
 /*  opacity: 0.0; */
 }
 
+.container {
+  background-color: rgba(200,200,200,255);
+}
+
 /* Custom page footer */
 .footer {
+  background-color: rgba(200,200,200,255);
   padding-top: 19px;
   color: #777;
   border-top: 1px solid #e5e5e5;

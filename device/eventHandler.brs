@@ -48,19 +48,6 @@ Sub eventHandler_EventLoop()
 			endif
 		endif
 
-		if type(msg) = "roIRRemotePress" then
-			remoteCommand$ = GetRemoteCommand(msg)
-			if remoteCommand$ = "VOLUP" then
-				aa = {}
-				aa.AddReplace("bsMessage", "togglePlayIcon")
-				m.jtr.htmlWidget.PostJSMessage(aa)
-			else if remoteCommand$ = "VOLDWN" then
-				aa = {}
-				aa.AddReplace("bsMessage", "toggleProgressBar")
-				m.jtr.htmlWidget.PostJSMessage(aa)			
-			endif
-		endif
-
 		if type(msg) = "roHttpEvent" then
         
 			userdata = msg.GetUserData()

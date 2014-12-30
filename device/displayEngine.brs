@@ -173,18 +173,34 @@ Function STShowingVideoEventHandler(event As Object, stateData As Object) As Obj
 
 	else if type(event) = "roIRRemotePress" then
 	
-		if GetRemoteCommand(event) = "MENU" then
+		remoteCommand$ = GetRemoteCommand(event)
+
+		if remoteCommand$ = "MENU" then
 
 			' TODO - undisplay overlay graphics
 
-			' TODO - send message to js
-			' m.stateMachine.jtr.LaunchWebkit()
+			' send message to js to display the menu
+			aa = {}
+			aa.AddReplace("bsMessage", "showMenu")
+			m.stateMachine.htmlWidget.PostJSMessage(aa)
 			
 			stateData.nextState = m.stateMachine.stShowingUI
 			return "TRANSITION"            
-		else
-			' TODO - toggle progress bar
-		
+
+		else if remoteCommand$ = "VOLUP" then
+			aa = {}
+			aa.AddReplace("bsMessage", "togglePlayIcon")
+			m.stateMachine.htmlWidget.PostJSMessage(aa)
+
+			return "HANDLED"
+
+		else if remoteCommand$ = "VOLDWN" then
+			aa = {}
+			aa.AddReplace("bsMessage", "toggleProgressBar")
+			m.stateMachine.htmlWidget.PostJSMessage(aa)
+					
+			return "HANDLED"
+
 		endif
 
     endif

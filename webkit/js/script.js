@@ -1,6 +1,6 @@
 var currentActiveElementId = "#homePage";
-var baseURL = "http://192.168.2.11:8080/";
-//var baseURL = "http://10.1.0.134:8080/";
+//var baseURL = "http://192.168.2.11:8080/";
+var baseURL = "http://10.1.0.134:8080/";
 var bsMessage;
 var converter;  //xml to JSON singleton object
 
@@ -140,6 +140,7 @@ function playSelectedShow(event) {
     $.get(aUrl, recordingData)
         .done(function (result) {
             console.log("recording successfully sent");
+            eraseUI();
         })
         .fail(function (jqXHR, textStatus, errorThrown) {
             debugger;
@@ -233,6 +234,13 @@ function getShowDescription (showId) {
 	// body...
 }
 
+
+function eraseUI() {
+    $(currentActiveElementId).css("display", "none");
+    $("#footerArea").css("display", "none");
+}
+
+
 function switchToPage(newPage) {
     bsMessage.PostBSMessage({ message: "switch to " + newPage });
 
@@ -264,7 +272,13 @@ $(document).ready(function () {
             console.log('### ' + name + ': ' + msg.data[name]);
 
             if (name == "bsMessage") {
-                if (msg.data[name] == "togglePlayIcon") {
+                if (msg.data[name] == "showMenu") {
+                    console.log("selectHomePage");
+                    selectHomePage();
+                    $("#footerArea").removeAttr("style");
+//                    $("#footerArea").css("display", "block");
+                }
+                else if (msg.data[name] == "togglePlayIcon") {
                     togglePlayIcon();
                 }
                 else if (msg.data[name] == "toggleProgressBar") {
