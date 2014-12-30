@@ -1,6 +1,6 @@
 var currentActiveElementId = "#homePage";
-//var baseURL = "http://192.168.2.11:8080/";
-var baseURL = "http://10.1.0.134:8080/";
+var baseURL = "http://192.168.2.11:8080/";
+//var baseURL = "http://10.1.0.134:8080/";
 var bsMessage;
 var converter;  //xml to JSON singleton object
 
@@ -46,64 +46,6 @@ function selectHomePage() {
 
 function here (argument) {
 	console.log(argument);
-}
-
-function selectPlayVideo() {
-    switchToPage("playVideoPage");
-    playVideo();
-}
-
-function playVideo () {
-//    var toAppend = '<div><video id="videoZone" hwz="on" hwz="z-index:-1" autoplay><source src="20141221T093400.mp4" type="video/mp4"></source></video></div>';
-//    var toAppend = '<div><video id="videoZone" hwz="z-index:-1" autoplay><source src="20141221T093400.mp4" type="video/mp4"></source></video></div>';
-//    var toAppend = '<div><video id="videoZone" hwz="on" autoplay><source src="20141221T093400.mp4" type="video/mp4"></source></video></div>';
-//    var toAppend = '<div><video id="videoZone" autoplay><source src="20141221T093400.mp4" type="video/mp4"></source></video></div>';
-//    var toAppend = '<div><video id="videoZone" hwz="on" hwz="z-index:-1" autoplay><source src="20141221T093400.mp4" type="video/mp4"></source></video></div>';
-//    var toAppend = '<div><p>hello ted</p><br><video id="videoZone" hwz="on" hwz="z-index:-1" autoplay><source src="20141221T093400.mp4" type="video/mp4"></source></video></div>';
-    var toAppend = '<div><p>hello ted</p><br><video id="videoZone" hwz="z-index:-1" autoplay><source src="20141221T093400.mp4" type="video/mp4"></source></video></div>';
-    $("#playVideoPage").append(toAppend);
-    $("#footerArea").remove();
-}
-
-function pauseVideo() {
-    console.log("entering pauseVideo");
-
-    var paused = $('#videoZone')[0].paused;
-    console.log("video paused is " + paused.toString());
-    if (paused.toString() == "true") {
-        $('#videoZone')[0].play();
-    }
-    else {
-        $('#videoZone')[0].pause();
-    }
-    var currentTime = $('#videoZone')[0].currentTime;
-    console.log("current time is " + currentTime);
-}
-
-function quickSkipVideo() {
-    console.log("entering quickSkipVideo");
-//    var currentTime = $('#videoZone')[0].currentTime;
-//    console.log("current time is " + currentTime);
-//    currentTime += 10;
-//    console.log("set current time to " + currentTime);
-//    $('#videoZone')[0].currentTime = currentTime;
-//    currentTime = $('#videoZone')[0].currentTime;
-//    console.log("now, current time is " + currentTime);
-
-    var duration = $('#videoZone')[0].duration;
-    console.log("video duration is " + duration.toString());
-
-    var paused = $('#videoZone')[0].paused;
-    console.log("video paused is " + paused.toString());
-
-    console.log("Video Start: " + $('#videoZone')[0].seekable.start(0) + " End: " + $('#videoZone')[0].seekable.end(0));
-
-    var startDate = $('#videoZone')[0].startDate;
-    console.log("video startDate is " + startDate.toString());
-
-    var startDate = $('#videoZone')[0].volume;
-    console.log("video volume is " + volume.toString());
-
 }
 
 function togglePlayIcon() {
@@ -322,17 +264,7 @@ $(document).ready(function () {
             console.log('### ' + name + ': ' + msg.data[name]);
 
             if (name == "bsMessage") {
-                if (msg.data[name] == "play") {
-                    switchToPage("playVideoPage");
-                    playVideo();
-                }
-                else if (msg.data[name] == "pause") {
-                    pauseVideo();
-                }
-                else if (msg.data[name] == "quickSkip") {
-                    quickSkipVideo();
-                }
-                else if (msg.data[name] == "togglePlayIcon") {
+                if (msg.data[name] == "togglePlayIcon") {
                     togglePlayIcon();
                 }
                 else if (msg.data[name] == "toggleProgressBar") {
@@ -372,7 +304,6 @@ $(document).ready(function () {
             }
         } else if (e.which === 72) { //'h'
             switchToPage("homePage");
-            $("#videoZone").remove();
         } else if (e.which === 32) { //' '
             if (!$("#progressBar").length) {
                 var percentComplete = 25;

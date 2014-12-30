@@ -1,48 +1,50 @@
-Function newPlaybackEngine(jtr As Object) As Object
+Function newDisplayEngine(jtr As Object) As Object
 
-    PlaybackEngine = newHSM()
-    PlaybackEngine.InitialPseudostateHandler = InitializePlaybackEngine
+    DisplayEngine = newHSM()
+    DisplayEngine.InitialPseudostateHandler = InitializeDisplayEngine
 
-	PlaybackEngine.jtr = jtr
-	PlaybackEngine.msgPort = jtr.msgPort
+	DisplayEngine.jtr = jtr
+	DisplayEngine.msgPort = jtr.msgPort
 
-	PlaybackEngine.LaunchVideo					= LaunchVideo
-	PlaybackEngine.PauseVideo					= PauseVideo
-	PlaybackEngine.ResumeVideo					= ResumeVideo
-	PlaybackEngine.QuickSkipVideo				= QuickSkipVideo
-	PlaybackEngine.InstantReplayVideo			= InstantReplayVideo
-	PlaybackEngine.FastForwardVideo				= FastForwardVideo
-	PlaybackEngine.RewindVideo					= RewindVideo
-	PlaybackEngine.Jump							= Jump
-	PlaybackEngine.SeekToCurrentVideoPosition	= SeekToCurrentVideoPosition
+	DisplayEngine.LaunchVideo					= LaunchVideo
+	DisplayEngine.PauseVideo					= PauseVideo
+	DisplayEngine.ResumeVideo					= ResumeVideo
+	DisplayEngine.QuickSkipVideo				= QuickSkipVideo
+	DisplayEngine.InstantReplayVideo			= InstantReplayVideo
+	DisplayEngine.FastForwardVideo				= FastForwardVideo
+	DisplayEngine.RewindVideo					= RewindVideo
+	DisplayEngine.Jump							= Jump
+	DisplayEngine.SeekToCurrentVideoPosition	= SeekToCurrentVideoPosition
 
-    PlaybackEngine.stTop = PlaybackEngine.newHState(PlaybackEngine, "Top")
-    PlaybackEngine.stTop.HStateEventHandler = STTopEventHandler
+	DisplayEngine.LaunchWebkit					= LaunchWebkit
 
-    PlaybackEngine.stPlaybackController = PlaybackEngine.newHState(PlaybackEngine, "PlaybackController")
-    PlaybackEngine.stPlaybackController.HStateEventHandler = STPlaybackControllerEventHandler
-	PlaybackEngine.stPlaybackController.superState = PlaybackEngine.stTop
+    DisplayEngine.stTop = DisplayEngine.newHState(DisplayEngine, "Top")
+    DisplayEngine.stTop.HStateEventHandler = STTopEventHandler
 
-    PlaybackEngine.stIdle = PlaybackEngine.newHState(PlaybackEngine, "PlaybackIdle")
-    PlaybackEngine.stIdle.HStateEventHandler = STPlaybackIdleEventHandler
-	PlaybackEngine.stIdle.superState = PlaybackEngine.stPlaybackController
+    DisplayEngine.stShowingUI = DisplayEngine.newHState(DisplayEngine, "ShowingUI")
+    DisplayEngine.stShowingUI.HStateEventHandler = STShowingUIEventHandler
+	DisplayEngine.stShowingUI.superState = DisplayEngine.stTop
 
-    PlaybackEngine.stPlaying = PlaybackEngine.newHState(PlaybackEngine, "Playing")
-    PlaybackEngine.stPlaying.HStateEventHandler = STPlayingEventHandler
-	PlaybackEngine.stPlaying.superState = PlaybackEngine.stPlaybackController
+    DisplayEngine.stShowingVideo = DisplayEngine.newHState(DisplayEngine, "ShowingVideo")
+    DisplayEngine.stShowingVideo.HStateEventHandler = STShowingVideoEventHandler
+	DisplayEngine.stShowingVideo.superState = DisplayEngine.stTop
 
-    PlaybackEngine.stPaused = PlaybackEngine.newHState(PlaybackEngine, "Paused")
-    PlaybackEngine.stPaused.HStateEventHandler = STPausedEventHandler
-	PlaybackEngine.stPaused.superState = PlaybackEngine.stPlaybackController
+    DisplayEngine.stPlaying = DisplayEngine.newHState(DisplayEngine, "Playing")
+    DisplayEngine.stPlaying.HStateEventHandler = STPlayingEventHandler
+	DisplayEngine.stPlaying.superState = DisplayEngine.stShowingVideo
 
-	PlaybackEngine.topState = PlaybackEngine.stTop
+    DisplayEngine.stPaused = DisplayEngine.newHState(DisplayEngine, "Paused")
+    DisplayEngine.stPaused.HStateEventHandler = STPausedEventHandler
+	DisplayEngine.stPaused.superState = DisplayEngine.stShowingVideo
 
-	return PlaybackEngine
+	DisplayEngine.topState = DisplayEngine.stTop
+
+	return DisplayEngine
 
 End Function
 
 
-Function InitializePlaybackEngine() As Object
+Function InitializeDisplayEngine() As Object
 
 	m.videoPlayer = CreateObject("roVideoPlayer")
 	m.videoPlayer.SetPort(m.msgPort)
@@ -52,12 +54,86 @@ Function InitializePlaybackEngine() As Object
 	m.selectedRecording = invalid
 	m.priorSelectedRecording = invalid
 
-	return m.stIdle
+	' create UI
+	m.LaunchWebkit()
+
+	return m.stShowingUI
 
 End Function
 
 
-Function STPlaybackControllerEventHandler(event As Object, stateData As Object) As Object
+Function STShowingUIEventHandler(event As Object, stateData As Object) As Object
+
+    stateData.nextState = invalid
+    
+    if type(event) = "roAssociativeArray" then      ' internal message event
+
+        if IsString(event["EventType"]) then
+        
+            if event["EventType"] = "ENTRY_SIGNAL" then
+            
+                print m.id$ + ": entry signal"
+
+				' TBD - is it necessary to do anything here? hide video? send message to js?
+
+                return "HANDLED"
+
+            else if event["EventType"] = "EXIT_SIGNAL" then
+
+                print m.id$ + ": exit signal"
+            
+            else if event["EventType"] = "PLAY_RECORDING" then
+
+				' TBD - assumption is that HTML takes down UI
+				' TBD - is this correct? is this the message that comes from the replay guide?
+
+				m.stateMachine.priorSelectedRecording = m.stateMachine.selectedRecording
+				if type(m.stateMachine.priorSelectedRecording) = "roAssociativeArray" then
+					m.stateMachine.priorSelectedRecording.currentVideoPosition% = m.stateMachine.currentVideoPosition%
+				endif
+
+				recording = event["Recording"]
+				m.stateMachine.selectedRecording = recording
+				m.stateMachine.currentVideoPosition% = 0
+				stateData.nextState = m.stateMachine.stPlaying
+				return "TRANSITION"            
+            
+			endif
+            
+        endif
+        
+	else if type(event) = "roIRRemotePress" then
+
+		remoteCommand$ = GetRemoteCommand(event)
+
+		if remoteCommand$ = "MENU" then
+
+			' TBD - UI unclear - may not want to remove UI on this key
+			' TBD - probably just send a message to js that key was hit. let it decide what to do
+			return "HANDLED"
+
+		else if remoteCommand$ = "EXIT" then
+
+			' TBD - what should be done if the user presses this when no show was ever selected
+			' TODO - send message to js to remove UI
+			' TODO - transition to paused?
+			' TODO - return TRANSITION
+
+		else
+
+			' TODO - send all other keys to js (MENU might fall into this category)
+
+		endif
+
+    endif
+            
+    stateData.nextState = m.superState
+    return "SUPER"
+    
+End Function
+
+
+Function STShowingVideoEventHandler(event As Object, stateData As Object) As Object
 
     stateData.nextState = invalid
     
@@ -88,69 +164,27 @@ Function STPlaybackControllerEventHandler(event As Object, stateData As Object) 
 			m.stateMachine.currentVideoPosition% = m.stateMachine.currentVideoPosition% + 1
 			print "m.stateMachine.currentVideoPosition%=";m.stateMachine.currentVideoPosition%
 			m.stateMachine.videoProgressTimer.Start()
+
+			' TODO - send message to UI if progress bar is displayed
+			' TODO - update the database once per minute
+
+			return "HANDLED"
 		endif
 
 	else if type(event) = "roIRRemotePress" then
 	
 		if GetRemoteCommand(event) = "MENU" then
-			m.stateMachine.jtr.LaunchWebkit()
-			return "HANDLED"
-		endif
 
-    endif
-            
-    stateData.nextState = m.superState
-    return "SUPER"
-    
-End Function
+			' TODO - undisplay overlay graphics
 
-
-Function STPlaybackIdleEventHandler(event As Object, stateData As Object) As Object
-
-    stateData.nextState = invalid
-    
-    if type(event) = "roAssociativeArray" then      ' internal message event
-
-        if IsString(event["EventType"]) then
-        
-            if event["EventType"] = "ENTRY_SIGNAL" then
-            
-                print m.id$ + ": entry signal"
-
-                return "HANDLED"
-
-            else if event["EventType"] = "EXIT_SIGNAL" then
-
-                print m.id$ + ": exit signal"
-
-            else if event["EventType"] = "PLAY_RECORDING" then
-				
-				m.stateMachine.priorSelectedRecording = m.stateMachine.selectedRecording
-				if type(m.stateMachine.priorSelectedRecording) = "roAssociativeArray" then
-					m.stateMachine.priorSelectedRecording.currentVideoPosition% = m.stateMachine.currentVideoPosition%
-				endif
-
-				m.stateMachine.selectedRecording = event["Recording"]
-				m.stateMachine.currentVideoPosition% = 0
-				stateData.nextState = m.stateMachine.stPlaying
-				return "TRANSITION"            
-			endif
-            
-        endif
-        
-	else if type(event) = "roIRRemotePress" then
-	
-		if GetRemoteCommand(event) = "PLAY" then
-
-stop
-' need a recording object
-
-			' hardcode for now
-'			fileName$ = "20141221T093400.ts"
-			m.stateMachine.selectedFile$ = "20141221T093400.mp4"
-			m.stateMachine.currentVideoPosition% = 0
-			stateData.nextState = m.stateMachine.stPlaying
-			return "TRANSITION"
+			' TODO - send message to js
+			' m.stateMachine.jtr.LaunchWebkit()
+			
+			stateData.nextState = m.stateMachine.stShowingUI
+			return "TRANSITION"            
+		else
+			' TODO - toggle progress bar
+		
 		endif
 
     endif
@@ -188,6 +222,8 @@ Function STPlayingEventHandler(event As Object, stateData As Object) As Object
             
             else if event["EventType"] = "PLAY_RECORDING" then
 
+				' TBD - is this still appropriate? is this the message that comes from the replay guide?
+
 				m.stateMachine.priorSelectedRecording = m.stateMachine.selectedRecording
 				if type(m.stateMachine.priorSelectedRecording) = "roAssociativeArray" then
 					m.stateMachine.priorSelectedRecording.currentVideoPosition% = m.stateMachine.currentVideoPosition%
@@ -206,7 +242,11 @@ Function STPlayingEventHandler(event As Object, stateData As Object) As Object
 	
 		remoteCommand$ = GetRemoteCommand(event)
 
-		if remoteCommand$ = "PAUSE" then
+		if remoteCommand$ = "MENU" then
+			' TODO - does this do what I want it to do? especially on return to video
+			m.stateMachine.PauseVideo()
+			' fall through to allow command to go to superState
+		else if remoteCommand$ = "PAUSE" then
 			stateData.nextState = m.stateMachine.stPaused
 			return "TRANSITION"
 		else if remoteCommand$ = "REPEAT" then
@@ -252,6 +292,8 @@ Function STPausedEventHandler(event As Object, stateData As Object) As Object
 
                 print m.id$ + ": exit signal"
             
+			else
+				' TODO - internal message / play from replay guide
 			endif
             
         endif
@@ -260,7 +302,7 @@ Function STPausedEventHandler(event As Object, stateData As Object) As Object
 
 		remoteCommand$ = GetRemoteCommand(event)
 		if remoteCommand$ = "PAUSE" or remoteCommand$ = "PLAY"
-			' temporary and wrong - playing restarts the video; it doesn't resume it.
+			' TBD - is the following statement still true? temporary and wrong - playing restarts the video; it doesn't resume it.
 			stateData.nextState = m.stateMachine.stPlaying
 			return "TRANSITION"
 		else if remoteCommand$ = "REPEAT" then
@@ -271,36 +313,6 @@ Function STPausedEventHandler(event As Object, stateData As Object) As Object
 			return "HANDLED"
 		endif
 
-    endif
-            
-    stateData.nextState = m.superState
-    return "SUPER"
-    
-End Function
-
-
-Function STPlaybackEngineFillInNameEventHandler(event As Object, stateData As Object) As Object
-
-    stateData.nextState = invalid
-    
-    if type(event) = "roAssociativeArray" then      ' internal message event
-
-        if IsString(event["EventType"]) then
-        
-            if event["EventType"] = "ENTRY_SIGNAL" then
-            
-                print m.id$ + ": entry signal"
-
-                return "HANDLED"
-
-            else if event["EventType"] = "EXIT_SIGNAL" then
-
-                print m.id$ + ": exit signal"
-            
-			endif
-            
-        endif
-        
     endif
             
     stateData.nextState = m.superState
@@ -414,6 +426,42 @@ End Sub
 Sub FastForwardVideo()
 End Sub
 
+
 Sub RewindVideo()
+End Sub
+
+
+Sub LaunchWebkit()
+
+	print "LaunchWebkit invoked"
+
+	r = CreateObject("roRectangle", 0, 0, 1920, 1080)
+
+	m.imagePlayer = CreateObject("roImageWidget", r)
+	m.imagePlayer.Show()
+
+	videoMode = CreateObject("roVideoMode")
+	resX = videoMode.GetResX()
+	resY = videoMode.GetResY()
+	videoMode = invalid
+	m.touchScreen = CreateObject("roTouchScreen")
+	m.touchScreen.SetPort(m.msgPort)
+	m.touchScreen.EnableCursor(true)
+	m.touchScreen.SetCursorBitmap("cursor.bmp", 16, 16)
+	m.touchScreen.SetCursorPosition(resX / 2, resY / 2)
+
+	m.htmlWidget = CreateObject("roHtmlWidget", r)
+	m.htmlWidget.SetPort(m.msgPort)
+	m.htmlWidget.EnableMouseEvents(true)
+	m.htmlWidget.SetHWZDefault("on")
+	m.htmlWidget.EnableJavascript(true)
+	m.htmlWidget.AllowJavaScriptUrls({ all: "*" })
+	m.htmlWidget.StartInspectorServer(2999)
+
+	m.htmlWidget.SetUrl("file:///webkit/index.html")
+
+' TODO - modify HTML/javascript so that only a transparent background is shown initially
+	m.htmlWidget.Show()
+
 End Sub
 

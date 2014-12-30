@@ -4,7 +4,7 @@ Library "server.brs"
 Library "hsm.brs"
 Library "eventHandler.brs"
 Library "recordingEngine.brs"
-Library "playbackEngine.brs"
+Library "displayEngine.brs"
 
 Sub Main()
 
@@ -26,7 +26,7 @@ Sub RunJtr()
 
 	JTR.eventHandler = newEventHandler(JTR)
 	JTR.recordingEngine = newRecordingEngine(JTR)
-	JTR.playbackEngine = newPlaybackEngine(JTR)
+	JTR.displayEngine = newDisplayEngine(JTR)
 
 	JTR.InitializeServer()
 	JTR.OpenDatabase()
@@ -43,10 +43,10 @@ Sub RunJtr()
 '	JTR.irReceiver.SetPort(msgPort)
 
 	JTR.recordingEngine.Initialize()
-	JTR.playbackEngine.Initialize()
+	JTR.displayEngine.Initialize()
 
 	JTR.eventHandler.AddHSM(JTR.recordingEngine)
-	JTR.eventHandler.AddHSM(JTR.playbackEngine)
+	JTR.eventHandler.AddHSM(JTR.displayEngine)
 
 	JTR.eventHandler.EventLoop()
 
@@ -61,8 +61,6 @@ Function newJTR(msgPort As Object) As Object
 	JTR.InitializeServer		= InitializeServer
 	JTR.AddHandlers				= AddHandlers
 	
-	JTR.LaunchWebkit			= LaunchWebkit
-
 	JTR.OpenDatabase			= OpenDatabase
 	JTR.CreateDBTable			= CreateDBTable
 	JTR.GetDBVersion			= GetDBVersion
@@ -154,38 +152,3 @@ Function ConvertToRemoteCommand(remoteCommand% As Integer) As String
     return remoteCommands[remoteCommand%]
     
 End Function
-
-
-Sub LaunchWebkit()
-
-	print "LaunchWebkit invoked"
-
-	r = CreateObject("roRectangle", 0, 0, 1920, 1080)
-
-	m.imagePlayer = CreateObject("roImageWidget", r)
-	m.imagePlayer.Show()
-
-	' experiment with webkit renderer
-	videoMode = CreateObject("roVideoMode")
-	resX = videoMode.GetResX()
-	resY = videoMode.GetResY()
-	videoMode = invalid
-	m.touchScreen = CreateObject("roTouchScreen")
-	m.touchScreen.SetPort(m.msgPort)
-	m.touchScreen.EnableCursor(true)
-	m.touchScreen.SetCursorBitmap("cursor.bmp", 16, 16)
-	m.touchScreen.SetCursorPosition(resX / 2, resY / 2)
-
-	m.htmlWidget = CreateObject("roHtmlWidget", r)
-	m.htmlWidget.SetPort(m.msgPort)
-	m.htmlWidget.Show()
-	m.htmlWidget.EnableMouseEvents(true)
-	m.htmlWidget.SetHWZDefault("on")
-	m.htmlWidget.EnableJavascript(true)
-	m.htmlWidget.AllowJavaScriptUrls({ all: "*" })
-	m.htmlWidget.StartInspectorServer(2999)
-
-	m.htmlWidget.SetUrl("file:///webkit/index.html")
-
-End Sub
-

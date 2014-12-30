@@ -53,16 +53,6 @@ body {
   }
 }
 
-#videoZone {
-  position: absolute;
-  top: 0px;
-/*  top: 32px; */
-/*  width: auto; */
-/*  height: auto; */
-  width: 100%;
-  z-index: 1;
-}
-
 span.glyphicon {
     font-size: 5em;
     color: white;
