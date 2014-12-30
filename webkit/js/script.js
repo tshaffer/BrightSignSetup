@@ -1,7 +1,16 @@
 var currentActiveElementId = "#homePage";
-var baseURL = "http://192.168.2.11:8080/";
-
+//var baseURL = "http://192.168.2.11:8080/";
+var baseURL = "http://10.1.0.134:8080/";
 var bsMessage;
+var converter;  //xml to JSON singleton object
+
+function XML2JSON(xml) {
+    if (!converter) {
+        converter = new X2JS();
+    }
+    return converter.xml2json(xml);
+}
+
 
 function setNav() {
 
@@ -142,6 +151,7 @@ function setDefaultDateTimeFields () {
 	$("#manualRecordTimeId").append(toAppendTime);
 }
 
+
 function createManualRecording() {
 
     var date = $("#manualRecordDate").val();
@@ -176,20 +186,68 @@ function createManualRecording() {
         });
 }
 
+
+function playSelectedShow(event) {
+    var recordingId = event.data.recordingId;
+    console.log("playSelectedShow " + recordingId);
+
+    var aUrl = baseURL + "recording";
+
+    var recordingData = { "recordingId": recordingId };
+
+    $.get(aUrl, recordingData)
+        .done(function (result) {
+            console.log("recording successfully sent");
+        })
+        .fail(function (jqXHR, textStatus, errorThrown) {
+            debugger;
+            console.log("recording failure");
+        })
+        .always(function () {
+            alert("recording transmission finished");
+        });
+}
+
+
 function getRecordedShows() {
-	var aUrl = baseURL + "recordedShows";
+    var aUrl = baseURL + "recordings";
 
     $.ajax({
         type: "GET",
-        url: aUrl
-    })
-    .done(function( result ) {
-        var toAppend = "";
+        url: aUrl,
+        dataType: "xml",
+        success: function (xml) {
+            var recordings = XML2JSON(xml);
+            var jtrRecordings = recordings.BrightSignRecordings.BrightSignRecording;
 
-        for (i = 0; i < result.length; i++) {
-            toAppend += "<tr onclick=\"recordedShowDetails(\'" + result[i].showId + "\')\" id=\"recordedShowRow" +  i + " \"><td><p class=\"btn btn-primary\">a title</p></td><td>a recorded date</td><td>a last played date</td></tr>";
+            var toAppend = "";
+            var recordingIds = [];
+
+            $.each(jtrRecordings, function (index, jtrRecording) {
+                toAppend += "<tr><td><button type='button' class='btn btn-default' id='recording" + jtrRecording.recordingId + "' aria-label='Left Align'><span class='glyphicon glyphicon-play-circle' aria-hidden='true'></span></button></td>" +
+                //                "<td>" + result[i].series + "</td>" +
+                //                "<td>" + result[i].episode + "</td>" +
+                "<td>" + jtrRecording.title + "</td>" +
+                "<td>" + "" + "</td>" +
+                "<td>" + jtrRecording.startDateTime + "</td>" +
+                //                "<td>" + result[i].lastPlayedDate + "</td>" +
+                "<td>" + "" + "</td>" +
+                "<td>" + jtrRecording.duration + "</td>" +
+                //                "<td>" + result[i].channel + "</td></tr>";
+	            "<td>" + "" + "</td></tr>";
+
+                recordingIds.push(jtrRecording.recordingId);
+            });
+
+            // is there a reason do this all at the end instead of once for each row?
+            $("#recordedShowsTableBody").append(toAppend);
+
+            // add button handlers for each recording - note, the handlers need to be added after the html has been added!!
+            $.each(recordingIds, function (index, recordingId) {
+                var btnId = "#recording" + recordingId;
+                $(btnId).click({ recordingId: recordingId }, playSelectedShow);
+            });
         }
-        $("#recordedShowsTableBody").append(toAppend);
     });
 }
 
