@@ -58,21 +58,22 @@ Function newJTR(msgPort As Object) As Object
     JTR = {}
     JTR.msgPort = msgPort
 
-	JTR.InitializeServer		= InitializeServer
-	JTR.AddHandlers				= AddHandlers
+	JTR.InitializeServer			= InitializeServer
+	JTR.AddHandlers					= AddHandlers
 	
-	JTR.OpenDatabase			= OpenDatabase
-	JTR.CreateDBTable			= CreateDBTable
-	JTR.GetDBVersion			= GetDBVersion
-	JTR.SetDBVersion			= SetDBVersion
-	JTR.ExecuteDBInsert			= ExecuteDBInsert
-	JTR.ExecuteDBSelect			= ExecuteDBSelect
-	JTR.GetDBVersionCallback	= GetDBVersionCallback
-	JTR.AddDBRecording			= AddDBRecording
-	JTR.GetDBRecording			= GetDBRecording
-	JTR.GetDBRecordings			= GetDBRecordings
+	JTR.OpenDatabase				= OpenDatabase
+	JTR.CreateDBTable				= CreateDBTable
+	JTR.GetDBVersion				= GetDBVersion
+	JTR.SetDBVersion				= SetDBVersion
+	JTR.ExecuteDBInsert				= ExecuteDBInsert
+	JTR.ExecuteDBSelect				= ExecuteDBSelect
+	JTR.GetDBVersionCallback		= GetDBVersionCallback
+	JTR.AddDBRecording				= AddDBRecording
+	JTR.GetDBRecording				= GetDBRecording
+	JTR.GetDBRecordings				= GetDBRecordings
+	JTR.UpdateDBLastViewedPosition	= UpdateDBLastViewedPosition
 
-	JTR.StartRecord				= StartRecord
+	JTR.StartRecord					= StartRecord
 		
 	return JTR
 

@@ -307,6 +307,10 @@ Function STPausedEventHandler(event As Object, stateData As Object) As Object
 
 				m.stateMachine.PauseVideo()
 
+				' update last viewed position in database
+
+				m.stateMachine.jtr.UpdateDBLastViewedPosition(m.stateMachine.selectedRecording.RecordingId, m.stateMachine.currentVideoPosition%)
+
                 return "HANDLED"
 
             else if event["EventType"] = "EXIT_SIGNAL" then

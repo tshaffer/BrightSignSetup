@@ -1,6 +1,6 @@
 var currentActiveElementId = "#homePage";
-//var baseURL = "http://192.168.2.11:8080/";
-var baseURL = "http://10.1.0.134:8080/";
+var baseURL = "http://192.168.2.11:8080/";
+//var baseURL = "http://10.1.0.134:8080/";
 var converter;  //xml to JSON singleton object
 
 function XML2JSON (xml) {

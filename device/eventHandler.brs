@@ -24,6 +24,8 @@ End Sub
 
 Sub eventHandler_EventLoop()
 
+	SQLITE_COMPLETE = 100
+
     while true
         
         msg = wait(0, m.msgPort)
