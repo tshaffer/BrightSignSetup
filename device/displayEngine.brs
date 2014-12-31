@@ -114,10 +114,15 @@ Function STShowingUIEventHandler(event As Object, stateData As Object) As Object
 
 		else if remoteCommand$ = "EXIT" then
 
-			' TBD - what should be done if the user presses this when no show was ever selected
-			' TODO - send message to js to remove UI
-			' TODO - transition to paused?
-			' TODO - return TRANSITION
+			' TBD - what should be done if the user presses this when no show was ever selected??
+
+			' send message to js to exit UI
+			aa = {}
+			aa.AddReplace("bsMessage", "exitUI")
+			m.stateMachine.htmlWidget.PostJSMessage(aa)
+			
+			stateData.nextState = m.stateMachine.stPaused
+			return "TRANSITION"            
 
 		else
 
@@ -271,7 +276,7 @@ Function STPlayingEventHandler(event As Object, stateData As Object) As Object
 		else if remoteCommand$ = "ADD" then
 			m.stateMachine.InstantReplayVideo()
 			return "HANDLED"
-		else if remoteCommand$ = "EXIT" then
+		else if remoteCommand$ = "SEARCH" then
 			m.stateMachine.Jump()
 			return "HANDLED"
 		else if remoteCommand$ = "FF" then
@@ -365,7 +370,7 @@ End Sub
 Sub PauseVideo()
 				
 	ok = m.videoPlayer.Pause()
-	if not ok stop
+	' if not ok stop - false is returned if video is already paused
 
 	m.videoProgressTimer.Stop()
 
