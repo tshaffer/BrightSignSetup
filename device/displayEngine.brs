@@ -281,9 +281,16 @@ Function STPlayingEventHandler(event As Object, stateData As Object) As Object
 		remoteCommand$ = GetRemoteCommand(event)
 
 		if remoteCommand$ = "MENU" then
-			' TODO - does this do what I want it to do? especially on return to video
+
+			' pause video
 			m.stateMachine.PauseVideo()
-			' fall through to allow command to go to superState
+
+			' save current position
+			m.stateMachine.jtr.UpdateDBLastViewedPosition(m.stateMachine.selectedRecording.RecordingId, m.stateMachine.currentVideoPosition%)
+			m.stateMachine.selectedRecording.LastViewedPosition = m.stateMachine.currentVideoPosition%
+
+			' fall through to superState
+
 		else if remoteCommand$ = "PAUSE" then
 			stateData.nextState = m.stateMachine.stPaused
 			return "TRANSITION"
