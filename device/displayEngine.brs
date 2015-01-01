@@ -87,8 +87,8 @@ Function STShowingUIEventHandler(event As Object, stateData As Object) As Object
 				' TBD - assumption is that HTML takes down UI
 				' TBD - is this correct? is this the message that comes from the replay guide?
 
-				' if there's a current recording, save its location for later jump - may choose a different implementation in the future.
-'				m.stateMachine.priorSelectedRecording = m.stateMachine.selectedRecording
+				' if there's a current recording, save it for later possible jump
+				m.stateMachine.priorSelectedRecording = m.stateMachine.selectedRecording
 '				if type(m.stateMachine.priorSelectedRecording) = "roAssociativeArray" then
 '					m.stateMachine.priorSelectedRecording.currentVideoPosition% = m.stateMachine.currentVideoPosition%
 '				endif
@@ -327,6 +327,7 @@ Function STPausedEventHandler(event As Object, stateData As Object) As Object
 				' update last viewed position in database
 				print "update last viewed position for ";m.stateMachine.selectedRecording.RecordingId;" to "; m.stateMachine.currentVideoPosition%
 				m.stateMachine.jtr.UpdateDBLastViewedPosition(m.stateMachine.selectedRecording.RecordingId, m.stateMachine.currentVideoPosition%)
+				m.stateMachine.selectedRecording.LastViewedPosition = m.stateMachine.currentVideoPosition%
 
                 return "HANDLED"
 
@@ -473,22 +474,38 @@ Sub Jump()
 
 	print "Jump"
 
+	if type(m.selectedRecording) <> "roAssociativeArray" then
+stop ' should be impossible??
+		print "No selected recording"
+		return
+	endif
+
 	if type(m.priorSelectedRecording) <> "roAssociativeArray" then
 		print "No prior recording"
 		return
 	endif
 
+	' save location of current playback item
+	print "Jump:: update last viewed position for ";m.selectedRecording.RecordingId;" to "; m.currentVideoPosition%
+	m.jtr.UpdateDBLastViewedPosition(m.selectedRecording.RecordingId, m.currentVideoPosition%)
+	m.selectedRecording.LastViewedPosition = m.currentVideoPosition%
+
 	tmpRecording = m.selectedRecording
-	priorSelectedRecordingVideoPosition% = m.priorSelectedRecording.currentVideoPosition%
 	m.selectedRecording = m.priorSelectedRecording
 	m.priorSelectedRecording = tmpRecording
-	m.priorSelectedRecording.currentVideoPosition% = m.currentVideoPosition%
+
+'	tmpRecording = m.selectedRecording
+'	priorSelectedRecordingVideoPosition% = m.priorSelectedRecording.currentVideoPosition%
+'	m.selectedRecording = m.priorSelectedRecording
+'	m.priorSelectedRecording = tmpRecording
+'	m.priorSelectedRecording.currentVideoPosition% = m.currentVideoPosition%
 
 	ok = m.videoPlayer.PlayFile(m.selectedRecording.Path)
 	if not ok stop
 
 	' seek to last watched position
-	m.currentVideoPosition% = priorSelectedRecordingVideoPosition%
+	m.currentVideoPosition% = m.selectedRecording.LastViewedPosition
+	print "Jump:: get last viewed position for ";m.selectedRecording.RecordingId;" it is "; m.currentVideoPosition%
 	m.SeekToCurrentVideoPosition()
 
 End Sub
