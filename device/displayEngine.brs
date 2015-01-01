@@ -84,8 +84,12 @@ Function STShowingUIEventHandler(event As Object, stateData As Object) As Object
             
             else if event["EventType"] = "RESUME_PLAYBACK" then
 
-				' TBD - assumption is that HTML takes down UI
-				' TBD - is this correct? is this the message that comes from the replay guide?
+				' Replay Guide - play recorded show (either on screen or from browser)
+
+				' send message to js to exit UI - necessary if command comes from browser
+				aa = {}
+				aa.AddReplace("bsMessage", "exitUI")
+				m.stateMachine.htmlWidget.PostJSMessage(aa)
 
 				' if there's a current recording, save it for later possible jump
 				m.stateMachine.priorSelectedRecording = m.stateMachine.selectedRecording
