@@ -58,6 +58,7 @@ Sub AddHandlers(serverDirectory$ As String, listOfHandlers As Object)
 End Sub
 
 
+' endpoint invoked when the user wants to playback a specific recording - playback resumes from where it left off
 Sub getRecording(userData as Object, e as Object)
 
 	print "recording endpoint invoked"
@@ -67,6 +68,7 @@ Sub getRecording(userData as Object, e as Object)
 	requestParams = e.GetRequestParams()
 
 	recordingId = requestParams["recordingId"]
+	print "getRecording::play recording ";recordingId
 
 	recording = mVar.GetDBRecording(recordingId)
 	path$ = GetMP4orTS(recording.Path)
@@ -78,7 +80,7 @@ Sub getRecording(userData as Object, e as Object)
 	endif
 
 	playRecordingMessage = CreateObject("roAssociativeArray")
-	playRecordingMessage["EventType"] = "PLAY_RECORDING"
+	playRecordingMessage["EventType"] = "RESUME_PLAYBACK"
 	playRecordingMessage["Recording"] = recording
 	mVar.msgPort.PostMessage(playRecordingMessage)
 

@@ -82,19 +82,35 @@ Function STShowingUIEventHandler(event As Object, stateData As Object) As Object
 
                 print m.id$ + ": exit signal"
             
-            else if event["EventType"] = "PLAY_RECORDING" then
+            else if event["EventType"] = "RESUME_PLAYBACK" then
 
 				' TBD - assumption is that HTML takes down UI
 				' TBD - is this correct? is this the message that comes from the replay guide?
 
-				m.stateMachine.priorSelectedRecording = m.stateMachine.selectedRecording
-				if type(m.stateMachine.priorSelectedRecording) = "roAssociativeArray" then
-					m.stateMachine.priorSelectedRecording.currentVideoPosition% = m.stateMachine.currentVideoPosition%
-				endif
+				' if there's a current recording, save its location for later jump - may choose a different implementation in the future.
+'				m.stateMachine.priorSelectedRecording = m.stateMachine.selectedRecording
+'				if type(m.stateMachine.priorSelectedRecording) = "roAssociativeArray" then
+'					m.stateMachine.priorSelectedRecording.currentVideoPosition% = m.stateMachine.currentVideoPosition%
+'				endif
 
 				recording = event["Recording"]
 				m.stateMachine.selectedRecording = recording
-				m.stateMachine.currentVideoPosition% = 0
+'				m.stateMachine.currentVideoPosition% = 0 - for play from beginning
+				m.stateMachine.currentVideoPosition% = recording.LastViewedPosition
+
+				' new approach - launch video playback here
+				print "LaunchVideo from STShowingUIEventHandler"
+
+				ok = m.stateMachine.videoPlayer.PlayFile(m.stateMachine.selectedRecording.Path)
+				if not ok stop
+		
+				m.stateMachine.SeekToCurrentVideoPosition()
+
+				m.stateMachine.videoProgressTimer = CreateObject("roTimer")
+				m.stateMachine.videoProgressTimer.SetPort(m.stateMachine.msgPort)
+				m.stateMachine.videoProgressTimer.SetElapsed(1, 0)
+				m.stateMachine.videoProgressTimer.Start()
+
 				stateData.nextState = m.stateMachine.stPlaying
 				return "TRANSITION"            
             
@@ -115,6 +131,7 @@ Function STShowingUIEventHandler(event As Object, stateData As Object) As Object
 		else if remoteCommand$ = "EXIT" then
 
 			' TBD - what should be done if the user presses this when no show was ever selected??
+			' TBD - should it go to Paused state? even if it was playing before?
 
 			' send message to js to exit UI
 			aa = {}
@@ -229,11 +246,11 @@ Function STPlayingEventHandler(event As Object, stateData As Object) As Object
                 print m.id$ + ": entry signal"
 
 				' Is this legit?
-				if m.stateMachine.currentVideoPosition% = 0 then
-					m.stateMachine.LaunchVideo()
-				else
-					m.stateMachine.ResumeVideo()
-				endif
+'				if m.stateMachine.currentVideoPosition% = 0 then
+'					m.stateMachine.LaunchVideo()
+'				else
+'					m.stateMachine.ResumeVideo()
+'				endif
 
                 return "HANDLED"
 
@@ -241,8 +258,8 @@ Function STPlayingEventHandler(event As Object, stateData As Object) As Object
 
                 print m.id$ + ": exit signal"
             
-            else if event["EventType"] = "PLAY_RECORDING" then
-
+            else if event["EventType"] = "RESUME_PLAYBACK" then
+' NOT TESTED YET
 				' TBD - is this still appropriate? is this the message that comes from the replay guide?
 
 				m.stateMachine.priorSelectedRecording = m.stateMachine.selectedRecording
@@ -308,7 +325,7 @@ Function STPausedEventHandler(event As Object, stateData As Object) As Object
 				m.stateMachine.PauseVideo()
 
 				' update last viewed position in database
-
+				print "update last viewed position for ";m.stateMachine.selectedRecording.RecordingId;" to "; m.stateMachine.currentVideoPosition%
 				m.stateMachine.jtr.UpdateDBLastViewedPosition(m.stateMachine.selectedRecording.RecordingId, m.stateMachine.currentVideoPosition%)
 
                 return "HANDLED"
@@ -327,7 +344,19 @@ Function STPausedEventHandler(event As Object, stateData As Object) As Object
 
 		remoteCommand$ = GetRemoteCommand(event)
 		if remoteCommand$ = "PAUSE" or remoteCommand$ = "PLAY"
+			' TBD - watch out for case where EXIT is hit when the UI is up
 			' TBD - is the following statement still true? temporary and wrong - playing restarts the video; it doesn't resume it.
+
+			' unpause video before changing state
+			ok = m.stateMachine.videoPlayer.Resume()
+			if not ok stop
+
+			m.stateMachine.videoProgressTimer.SetPort(m.stateMachine.msgPort)
+			m.stateMachine.videoProgressTimer.SetElapsed(1, 0)
+			m.stateMachine.videoProgressTimer.Start()
+			ok = m.stateMachine.videoProgressTimer.Start()
+			if not ok stop
+
 			stateData.nextState = m.stateMachine.stPlaying
 			return "TRANSITION"
 		else if remoteCommand$ = "REPEAT" then
@@ -357,7 +386,7 @@ End Function
 
 
 Sub LaunchVideo()
-
+stop
 	print "LaunchVideo"
 
 	ok = m.videoPlayer.PlayFile(m.selectedRecording.Path)
@@ -381,10 +410,27 @@ Sub PauseVideo()
 End Sub
 
 
+' currently called after being paused or when launched from replay guide and not starting from the beginning
 Sub ResumeVideo()
-
+stop
+' does resume work if it wasn't playing? No.
 	ok = m.videoPlayer.Resume()
-	if not ok stop
+	if not ok then		' implies playback doesn't start from the beginning (error is because playback isn't active in any way)
+		
+		ok = m.videoPlayer.PlayFile(m.selectedRecording.Path)
+		if not ok stop
+
+		m.SeekToCurrentVideoPosition()
+
+		if type(m.videoProgressTimer) <> "roTimer" then
+			m.videoProgressTimer = CreateObject("roTimer")
+			m.videoProgressTimer.SetPort(m.msgPort)
+			m.videoProgressTimer.SetElapsed(1, 0)
+		endif
+
+	else
+		stop
+	endif
 
 	m.videoProgressTimer.Start()
 
@@ -473,7 +519,8 @@ Sub LaunchWebkit()
 	m.touchScreen.SetPort(m.msgPort)
 	m.touchScreen.EnableCursor(true)
 	m.touchScreen.SetCursorBitmap("cursor.bmp", 16, 16)
-	m.touchScreen.SetCursorPosition(resX / 2, resY / 2)
+'	m.touchScreen.SetCursorPosition(resX / 2, resY / 2)
+	m.touchScreen.SetCursorPosition(500, 248)
 
 	m.htmlWidget = CreateObject("roHtmlWidget", r)
 	m.htmlWidget.SetPort(m.msgPort)
