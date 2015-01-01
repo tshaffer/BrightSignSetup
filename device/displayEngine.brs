@@ -142,9 +142,28 @@ Function STShowingUIEventHandler(event As Object, stateData As Object) As Object
 			stateData.nextState = m.stateMachine.stPaused
 			return "TRANSITION"            
 
-		else
+		else 
 
-			' TODO - send all other keys to js (MENU might fall into this category)
+			commandToHtml$ = ""
+			if remoteCommand$ = "NORTH" then
+				commandToHtml$ = "Up"
+			else if remoteCommand$ = "SOUTH" then
+				commandToHtml$ = "Down"
+			else if remoteCommand$ = "WEST" then
+				commandToHtml$ = "Left"
+			else if remoteCommand$ = "EAST" then
+				commandToHtml$ = "Right"
+			else if remoteCommand$ = "SEL" then
+				commandToHtml$ = "Enter"
+			endif
+
+			if commandToHtml$ <> "" then
+				aa = {}
+				aa.AddReplace("bsMessage", commandToHtml$)
+				m.stateMachine.htmlWidget.PostJSMessage(aa)
+			endif
+
+			return "HANDLED"
 
 		endif
 
@@ -261,7 +280,7 @@ Function STPlayingEventHandler(event As Object, stateData As Object) As Object
             
             else if event["EventType"] = "RESUME_PLAYBACK" then
 
-				' Replay Guide On PC - Play show selected while show was playing
+				' Replay Guide from browser on PC - Play show selected while show was playing
 
 				' pause video
 				m.stateMachine.PauseVideo()
