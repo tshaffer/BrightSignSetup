@@ -3,16 +3,18 @@ var baseURL = "http://192.168.2.11:8080/";
 //var baseURL = "http://10.1.0.134:8080/";
 var converter;  //xml to JSON singleton object
 
-function XML2JSON (xml) {
-    if(!converter) {
+function XML2JSON(xml) {
+    if (!converter) {
         converter = new X2JS();
     }
     return converter.xml2json(xml);
 }
 
+
 function setNav() {
 
 }
+
 
 function selectChannelGuide() {
 
@@ -45,17 +47,6 @@ function here (argument) {
 	console.log(argument);
 }
 
-function selectPlayVideo() {
-    switchToPage("playVideoPage");
-    playVideo();
-}
-
-function playVideo () {
-    var toAppend = '<div><video id="videoZone" hwz="on" autoplay><source src="20141221T093400.mp4" type="video/mp4"></source></video></div>';
-    $("#playVideoPage").append(toAppend);
-    $("#footerArea").remove();
-}
-
 function twoDigitFormat(val) {
     val = '' + val;
     if(val.length === 1) {
@@ -79,7 +70,9 @@ function setDefaultDateTimeFields () {
 	$("#manualRecordTimeId").append(toAppendTime);
 }
 
+
 function createManualRecording() {
+
     var date = $("#manualRecordDate").val();
     var time = $("#manualRecordTime").val();
     var dateObj = new Date(date + " " + time);
@@ -112,6 +105,7 @@ function createManualRecording() {
         });
 }
 
+
 function playSelectedShow(event) {
     var recordingId = event.data.recordingId;
     console.log("playSelectedShow " + recordingId);
@@ -133,6 +127,29 @@ function playSelectedShow(event) {
         });
 }
 
+
+function deleteSelectedShow(event) {
+    var recordingId = event.data.recordingId;
+    console.log("deleteSelectedShow " + recordingId);
+
+    var aUrl = baseURL + "deleteRecording";
+
+    var deleteRecordingData = { "recordingId": recordingId };
+
+    $.get(aUrl, deleteRecordingData)
+        .done(function (result) {
+            console.log("deleteRecording successfully sent");
+        })
+        .fail(function (jqXHR, textStatus, errorThrown) {
+            debugger;
+            console.log("deleteRecording failure");
+        })
+        .always(function () {
+            alert("deleteRecording transmission finished");
+        });
+}
+
+
 function getRecordedShows() {
 	var aUrl = baseURL + "recordings";
 
@@ -149,6 +166,8 @@ function getRecordedShows() {
 
 	        $.each(jtrRecordings, function (index, jtrRecording) {
 	            toAppend += "<tr><td><button type='button' class='btn btn-default' id='recording" + jtrRecording.recordingId + "' aria-label='Left Align'><span class='glyphicon glyphicon-play-circle' aria-hidden='true'></span></button></td>" +
+
+	            "<td><button type='button' class='btn btn-default' id='delete" + jtrRecording.recordingId + "' aria-label='Left Align'><span class='glyphicon glyphicon-remove' aria-hidden='true'></span></button></td>" +
 	            //                "<td>" + result[i].series + "</td>" +
 	            //                "<td>" + result[i].episode + "</td>" +
                 "<td>" + jtrRecording.title + "</td>" +
@@ -168,8 +187,14 @@ function getRecordedShows() {
 
             // add button handlers for each recording - note, the handlers need to be added after the html has been added!!
 	        $.each(recordingIds, function (index, recordingId) {
+
+                // play a recording
 	            var btnId = "#recording" + recordingId;
 	            $(btnId).click({ recordingId: recordingId }, playSelectedShow);
+
+                // delete a recording
+	            btnId = "#delete" + recordingId;
+	            $(btnId).click({ recordingId: recordingId }, deleteSelectedShow);
 	        });
 	    }
 	});

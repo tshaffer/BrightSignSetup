@@ -152,6 +152,28 @@ function playSelectedShow(event) {
 }
 
 
+function deleteSelectedShow(event) {
+    var recordingId = event.data.recordingId;
+    console.log("deleteSelectedShow " + recordingId);
+
+    var aUrl = baseURL + "deleteRecording";
+
+    var deleteRecordingData = { "recordingId": recordingId };
+
+    $.get(aUrl, deleteRecordingData)
+        .done(function (result) {
+            console.log("deleteRecording successfully sent");
+        })
+        .fail(function (jqXHR, textStatus, errorThrown) {
+            debugger;
+            console.log("deleteRecording failure");
+        })
+        .always(function () {
+            alert("deleteRecording transmission finished");
+        });
+}
+
+
 function getRecordedShows() {
     var aUrl = baseURL + "recordings";
 
@@ -168,6 +190,8 @@ function getRecordedShows() {
 
             $.each(jtrRecordings, function (index, jtrRecording) {
                 toAppend += "<tr><td><button type='button' class='btn btn-default' id='recording" + jtrRecording.recordingId + "' aria-label='Left Align'><span class='glyphicon glyphicon-play-circle' aria-hidden='true'></span></button></td>" +
+
+	            "<td><button type='button' class='btn btn-default' id='delete" + jtrRecording.recordingId + "' aria-label='Left Align'><span class='glyphicon glyphicon-remove' aria-hidden='true'></span></button></td>" +
                 //                "<td>" + result[i].series + "</td>" +
                 //                "<td>" + result[i].episode + "</td>" +
                 "<td>" + jtrRecording.title + "</td>" +
@@ -187,8 +211,14 @@ function getRecordedShows() {
 
             // add button handlers for each recording - note, the handlers need to be added after the html has been added!!
             $.each(recordingIds, function (index, recordingId) {
+
+                // play a recording
                 var btnId = "#recording" + recordingId;
                 $(btnId).click({ recordingId: recordingId }, playSelectedShow);
+
+                // delete a recording
+                btnId = "#delete" + recordingId;
+                $(btnId).click({ recordingId: recordingId }, deleteSelectedShow);
             });
         }
     });

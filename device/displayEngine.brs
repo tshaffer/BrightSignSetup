@@ -89,13 +89,10 @@ Function STShowingUIEventHandler(event As Object, stateData As Object) As Object
 
 				' if there's a current recording, save it for later possible jump
 				m.stateMachine.priorSelectedRecording = m.stateMachine.selectedRecording
-'				if type(m.stateMachine.priorSelectedRecording) = "roAssociativeArray" then
-'					m.stateMachine.priorSelectedRecording.currentVideoPosition% = m.stateMachine.currentVideoPosition%
-'				endif
 
 				recording = event["Recording"]
 				m.stateMachine.selectedRecording = recording
-'				m.stateMachine.currentVideoPosition% = 0 - for play from beginning
+'				m.stateMachine.currentVideoPosition% = 0 - do this when executing 'play from beginning'
 				m.stateMachine.currentVideoPosition% = recording.LastViewedPosition
 
 				' new approach - launch video playback here
@@ -259,17 +256,24 @@ Function STPlayingEventHandler(event As Object, stateData As Object) As Object
                 print m.id$ + ": exit signal"
             
             else if event["EventType"] = "RESUME_PLAYBACK" then
-' NOT TESTED YET
-				' TBD - is this still appropriate? is this the message that comes from the replay guide?
 
+				' Replay Guide On PC - Play show selected while show was playing
+
+				' pause video
+				m.stateMachine.PauseVideo()
+
+				' save current position
+				m.stateMachine.jtr.UpdateDBLastViewedPosition(m.stateMachine.selectedRecording.RecordingId, m.stateMachine.currentVideoPosition%)
+				m.stateMachine.selectedRecording.LastViewedPosition = m.stateMachine.currentVideoPosition%
+				
+				' save for later jump
 				m.stateMachine.priorSelectedRecording = m.stateMachine.selectedRecording
-				if type(m.stateMachine.priorSelectedRecording) = "roAssociativeArray" then
-					m.stateMachine.priorSelectedRecording.currentVideoPosition% = m.stateMachine.currentVideoPosition%
-				endif
 
+				' launch new video
 				recording = event["Recording"]
 				m.stateMachine.selectedRecording = recording
-				m.stateMachine.currentVideoPosition% = 0
+'				m.stateMachine.currentVideoPosition% = 0 - do this when executing 'play from beginning'
+				m.stateMachine.currentVideoPosition% = recording.LastViewedPosition
 				m.stateMachine.LaunchVideo()
 				return "HANDLED"            
 			endif
@@ -351,7 +355,16 @@ Function STPausedEventHandler(event As Object, stateData As Object) As Object
 	else if type(event) = "roIRRemotePress" then
 
 		remoteCommand$ = GetRemoteCommand(event)
-		if remoteCommand$ = "PAUSE" or remoteCommand$ = "PLAY"
+
+		if remoteCommand$ = "MENU" then
+
+			' save current position
+			m.stateMachine.jtr.UpdateDBLastViewedPosition(m.stateMachine.selectedRecording.RecordingId, m.stateMachine.currentVideoPosition%)
+			m.stateMachine.selectedRecording.LastViewedPosition = m.stateMachine.currentVideoPosition%
+
+			' fall through to superState
+
+		else if remoteCommand$ = "PAUSE" or remoteCommand$ = "PLAY"
 			' TBD - watch out for case where EXIT is hit when the UI is up
 			' TBD - is the following statement still true? temporary and wrong - playing restarts the video; it doesn't resume it.
 
@@ -394,7 +407,7 @@ End Function
 
 
 Sub LaunchVideo()
-stop
+
 	print "LaunchVideo"
 
 	ok = m.videoPlayer.PlayFile(m.selectedRecording.Path)

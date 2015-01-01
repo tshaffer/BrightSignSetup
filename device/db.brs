@@ -163,6 +163,30 @@ Sub AddDBRecording(scheduledRecording As Object)
 End Sub
 
 
+Sub DeleteDBRecording(recordingId$ As String)
+
+	SQLITE_COMPLETE = 100
+
+	delete$ = "DELETE FROM Recordings WHERE RecordingId = " + recordingId$ + ";"
+
+	deleteStatement = m.db.CreateStatement(delete$)
+
+	if type(deleteStatement) <> "roSqliteStatement" then
+        print "DeleteStatement failure - " + delete$
+		stop
+	endif
+
+	sqlResult = deleteStatement.Run()
+
+	if sqlResult <> SQLITE_COMPLETE
+        print "sqlResult <> SQLITE_COMPLETE"
+	endif
+
+	deleteStatement.Finalise()
+
+End Sub
+
+
 Sub GetDBRecordingsCallback(resultsData As Object, selectData As Object)
 
 	selectData.recordings.push(resultsData)

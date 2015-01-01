@@ -5,6 +5,7 @@ Sub InitializeServer()
 
 	m.manualRecordAA =					{ HandleEvent: manualRecord, mVar: m }
 	m.recordingAA =						{ HandleEvent: getRecording, mVar: m }
+	m.deleteRecordingAA =				{ HandleEvent: deleteRecording, mVar: m }
 	m.recordingsAA =					{ HandleEvent: recordings, mVar: m }
 
 	m.TestRecordAA =					{ HandleEvent: TestRecord, mVar: m }
@@ -12,6 +13,7 @@ Sub InitializeServer()
 
 	m.localServer.AddGetFromEvent({ url_path: "/manualRecord", user_data: m.manualRecordAA })
 	m.localServer.AddGetFromEvent({ url_path: "/recording", user_data: m.recordingAA })
+	m.localServer.AddGetFromEvent({ url_path: "/deleteRecording", user_data: m.deleteRecordingAA })
 	m.localServer.AddGetFromEvent({ url_path: "/recordings", user_data: m.recordingsAA })
 
 '	m.localServer.AddGetFromEvent({ url_path: "/", user_data: m.TestRecordAA })
@@ -86,7 +88,31 @@ Sub getRecording(userData as Object, e as Object)
 
 
     e.AddResponseHeader("Content-type", "text/plain")
-    e.SetResponseBodyString("herro Joel")
+    e.SetResponseBodyString("ok")
+    e.SendResponse(200)
+
+End Sub
+
+
+' endpoint invoked when the user selects Delete Recording from Replay Guide
+Sub deleteRecording(userData as Object, e as Object)
+
+	print "delete recording endpoint invoked"
+
+    mVar = userData.mVar
+
+	requestParams = e.GetRequestParams()
+
+	recordingId = requestParams["recordingId"]
+	print "deleteRecording::play recording ";recordingId
+
+	' add to deleted recordings table
+
+	' remove from database
+	mVar.DeleteDBRecording(recordingId)
+
+    e.AddResponseHeader("Content-type", "text/plain")
+    e.SetResponseBodyString("ok")
     e.SendResponse(200)
 
 End Sub
