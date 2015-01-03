@@ -1,5 +1,5 @@
 var currentActiveElementId = "#homePage";
-var baseURL = "http://192.168.2.11:8080/";
+var baseURL = "http://192.168.2.12:8080/";
 //var baseURL = "http://10.1.0.134:8080/";
 
 var bsMessage;
@@ -167,13 +167,100 @@ function togglePlayIcon() {
     }
 }
 
-function toggleProgressBar() {
+function SecondsToHourMinuteLabel(numSeconds) {
+
+    // convert seconds to hh:mm
+    var hours = Math.floor(Number(numSeconds) / 3600).toString();
+    hours = twoDigitFormat(hours);
+    console.log("hours = " + hours);
+
+    var minutes = Math.floor((Number(numSeconds) / 60) % 60).toString();
+    minutes = twoDigitFormat(minutes);
+    console.log("minutes = " + minutes);
+
+    return hours + ":" + minutes;
+}
+
+function UpdateProgressBarGraphics(currentOffset, recordingDuration) {
+
+    // currentOffset in seconds
+    console.log('### currentOffset : ' + currentOffset);
+
+    // duration in seconds
+    console.log('### recordingDuration : ' + recordingDuration);
+
+    var percentCompleteVal = (currentOffset / recordingDuration * 100);
+    var percentComplete = percentCompleteVal.toString() + "%";
+    console.log("percentComplete = " + percentComplete);
+
+    $("#progressBarSpan").width(percentComplete);
+
+    // TODO - should retrieve these attributes dynamically
+    var leftOffset = 5;
+    var rightOffset = 90;
+    var offset = leftOffset + (rightOffset - leftOffset) * (currentOffset / recordingDuration);
+    console.log("offset = " + offset);
+
+    // update progress bar position (width is 4%)
+    var labelOffset = offset - 4.0 / 2;
+    $("#progressBarElapsedTime").css({ left: labelOffset.toString() + '%' });
+
+    // update progress bar position tick (width is 0.25%)
+    var tickOffset = offset - 0.25 / 2;
+    $("#progressBarTickCurrent").css({ left: tickOffset.toString() + '%' });
+    // to show where the tick is when all the way on the left (time=0)
+    //                    var eOffset = leftOffset.toString() + "%";
+    //                    $("#progressBarTickCurrent").css({ left: eOffset });
+
+
+    var elapsedTimeLabel = SecondsToHourMinuteLabel(currentOffset);
+    $("#progressBarElapsedTime").html("<p>" + elapsedTimeLabel + "</p>");
+
+    // TODO - should only need to do this when progress bar is first updated with a recording
+    var totalTimeLabel = SecondsToHourMinuteLabel(recordingDuration);
+    $("#progressBarTotalTime").html("<p>" + totalTimeLabel + "</p>");
+
+}
+
+function toggleProgressBar(currentOffset, recordingDuration) {
     if (!$("#progressBar").length) {
-        var percentComplete = 25;
-        var toAppend = '<div id="progressBar" class="meter"><span class="meter-span" style="width: ' + percentComplete + '%;"></span></div>';
+        var percentComplete = 50;
+        var toAppend = '<div id="progressBar" class="meter"><span id="progressBarSpan" class="meter-span" style="width: ' + percentComplete + '%;"></span></div>';
+
+        var timeLabel = SecondsToHourMinuteLabel(recordingDuration)
+        toAppend += '<div id="progressBarTotalTime" class="meterTotalTime"><p>' + timeLabel + '</p></div>';
+
+        for (i = 1; i < 8; i++) {
+            var theId = "progressBarTick" + i.toString()
+            toAppend += '<div id=' + theId + ' class="meterTick"><p></p></div>';
+        }
+
+        toAppend += '<div id="progressBarElapsedTime" class="meterCurrentPositionLabel"><p>1:00</p></div>';
+        toAppend += '<div id="progressBarTickCurrent" class="meterCurrentPositionTick"><p></p></div>';
+
         $("#videoControlRegion").append(toAppend);
+
+        // TODO - should retrieve these attributes dynamically
+        var leftOffset = 5;
+        var rightOffset = 90;
+        for (i = 1; i < 8; i++) {
+            var tickOffset = leftOffset + (rightOffset - leftOffset) * i / 8.0;
+            console.log("tickOffset=" + tickOffset.toString());
+            $("#progressBarTick" + i.toString()).css({ left: tickOffset.toString() + '%', position: 'absolute' });
+        }
+
+        UpdateProgressBarGraphics(currentOffset, recordingDuration);
+
     } else {
         $("#progressBar").remove();
+        $("#progressBarTotalTime").remove();
+        $("#progressBarElapsedTime").remove();
+        $("#progressBarTickCurrent").remove();
+
+        for (i = 1; i < 8; i++) {
+            var theId = "#progressBarTick" + i.toString()
+            $(theId).remove();
+        }
     }
 }
 
@@ -307,6 +394,24 @@ function executeDeleteSelectedShow(recordingId)
 }
 
 
+function addRecordedShowsLine(jtrRecording) {
+    var toAppend = "<tr><td><button type='button' class='btn btn-default' id='recording" + jtrRecording.recordingId + "' aria-label='Left Align'><span class='glyphicon glyphicon-play-circle' aria-hidden='true'></span></button></td>" +
+
+	            "<td><button type='button' class='btn btn-default' id='delete" + jtrRecording.recordingId + "' aria-label='Left Align'><span class='glyphicon glyphicon-remove' aria-hidden='true'></span></button></td>" +
+    //                "<td>" + result[i].series + "</td>" +
+    //                "<td>" + result[i].episode + "</td>" +
+                "<td>" + jtrRecording.title + "</td>" +
+                "<td>" + "" + "</td>" +
+                "<td>" + jtrRecording.startDateTime + "</td>" +
+    //                "<td>" + result[i].lastPlayedDate + "</td>" +
+                "<td>" + "" + "</td>" +
+                "<td>" + jtrRecording.duration + "</td>" +
+    //                "<td>" + result[i].channel + "</td></tr>";
+	            "<td>" + "" + "</td></tr>";
+
+    return toAppend;
+}
+
 function getRecordedShows() {
     var aUrl = baseURL + "recordings";
 
@@ -323,32 +428,17 @@ function getRecordedShows() {
 
             $("#recordedShowsTableBody").empty();
 
-            var firstLine = true;
-
-            $.each(jtrRecordings, function (index, jtrRecording) {
-                if (firstLine) {
-                    toAppend += "<tr><td><button type='button' class='btn btn-default' id='recording" + jtrRecording.recordingId + "' aria-label='Left Align'><span class='glyphicon glyphicon-play-circle' aria-hidden='true' autofocus></span></button></td>";
-                }
-                else {
-                    toAppend += "<tr><td><button type='button' class='btn btn-default' id='recording" + jtrRecording.recordingId + "' aria-label='Left Align'><span class='glyphicon glyphicon-play-circle' aria-hidden='true'></span></button></td>";
-                }
-
-                toAppend += "<td><button type='button' class='btn btn-default' id='delete" + jtrRecording.recordingId + "' aria-label='Left Align'><span class='glyphicon glyphicon-remove' aria-hidden='true'></span></button></td>" +
-                //                "<td>" + result[i].series + "</td>" +
-                //                "<td>" + result[i].episode + "</td>" +
-                "<td>" + jtrRecording.title + "</td>" +
-                "<td>" + "" + "</td>" +
-                "<td>" + jtrRecording.startDateTime + "</td>" +
-                //                "<td>" + result[i].lastPlayedDate + "</td>" +
-                "<td>" + "" + "</td>" +
-                "<td>" + jtrRecording.duration + "</td>" +
-                //                "<td>" + result[i].channel + "</td></tr>";
-	            "<td>" + "" + "</td></tr>";
-
+            if (jtrRecordings.constructor == Array) {
+                $.each(jtrRecordings, function (index, jtrRecording) {
+                    toAppend += addRecordedShowsLine(jtrRecording);
+                    recordingIds.push(jtrRecording.recordingId);
+                });
+            }
+            else {
+                jtrRecording = jtrRecordings;
+                toAppend += addRecordedShowsLine(jtrRecording);
                 recordingIds.push(jtrRecording.recordingId);
-
-                firstLine = false;
-            });
+            }
 
             // is there a reason do this all at the end instead of once for each row?
             $("#recordedShowsTableBody").append(toAppend);
@@ -473,9 +563,6 @@ $(document).ready(function () {
                 else if (command$ == "togglePlayIcon") {
                     togglePlayIcon();
                 }
-                else if (command$ == "toggleProgressBar") {
-                    toggleProgressBar();
-                }
                 else if (command$ == "Up" || command$ == "Down" || command$ == "Left" || command$ == "Right") {
                     console.log("currentActiveElementId is " + currentActiveElementId);
                     switch (currentActiveElementId) {
@@ -489,7 +576,7 @@ $(document).ready(function () {
                             break;
                     }
                 }
-                else if (command$ = "Enter") {
+                else if (command$ == "Enter") {
                     switch (currentActiveElementId) {
                         case "#homePage":
                             var currentElement = document.activeElement;
@@ -523,6 +610,32 @@ $(document).ready(function () {
                             break;
                     }
                 }
+                else if (command$ == "toggleProgressBar") {
+
+                    // currentOffset in seconds
+                    var currentOffset = msg.data["currentOffset"];
+                    console.log('### currentOffset : ' + currentOffset);
+
+                    // duration in seconds
+                    var recordingDuration = msg.data["recordingDuration"];
+                    console.log('### recordingDuration : ' + recordingDuration);
+
+                    toggleProgressBar(currentOffset, recordingDuration);
+                }
+                else if (command$ == "UpdateProgressBar" && $("#progressBar").length) {
+
+                    // currentOffset in seconds
+                    var currentOffset = msg.data["currentOffset"];
+                    console.log('### currentOffset : ' + currentOffset);
+
+                    // duration in seconds
+                    var recordingDuration = msg.data["recordingDuration"];
+                    console.log('### recordingDuration : ' + recordingDuration);
+
+                    UpdateProgressBarGraphics(currentOffset, recordingDuration);
+
+                    return;
+                }
             }
         }
     }
@@ -548,25 +661,25 @@ $(document).ready(function () {
         // 	$("#recordedShows").addClass("btn-primary");
         // }
 
-        if (e.which === 80) { //'p'
-            if (!$("#playIcon").length) {
-                var toAppend = '<span id="playIcon" class="glyphicon glyphicon-play controlIcon" aria-hidden="true"></span>';
-                $("#videoControlRegion").append(toAppend);
-            } else {
-                $("#playIcon").remove();
-            }
-        } else if (e.which === 72) { //'h'
-            switchToPage("homePage");
-        } else if (e.which === 32) { //' '
-            if (!$("#progressBar").length) {
-                var percentComplete = 25;
-                var toAppend = '<div id="progressBar" class="meter"><span class="meter-span" style="width: ' + percentComplete + '%;"></span></div>';
-                $("#videoControlRegion").append(toAppend);
-            } else {
-                $("#progressBar").remove();
-            }
+        //        if (e.which === 80) { //'p'
+        //            if (!$("#playIcon").length) {
+        //                var toAppend = '<span id="playIcon" class="glyphicon glyphicon-play controlIcon" aria-hidden="true"></span>';
+        //                $("#videoControlRegion").append(toAppend);
+        //            } else {
+        //                $("#playIcon").remove();
+        //            }
+        //        } else if (e.which === 72) { //'h'
+        //            switchToPage("homePage");
+        //        } else if (e.which === 32) { //' '
+        //            if (!$("#progressBar").length) {
+        //                var percentComplete = 25;
+        //                var toAppend = '<div id="progressBar" class="meter"><span class="meter-span" style="width: ' + percentComplete + '%;"></span></div>';
+        //                $("#videoControlRegion").append(toAppend);
+        //            } else {
+        //                $("#progressBar").remove();
+        //            }
 
-        }
+        //        }
 
     });
 });
