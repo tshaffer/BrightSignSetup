@@ -15,6 +15,11 @@ End Sub
 
 Sub RunJtr()
 
+	' for BigScreen TV
+	videoMode = CreateObject("roVideoMode")
+	videoMode.SetMode("1920x1060x60i")
+	videoMode = invalid
+
 	CreateDirectory("brightsign-dumps")
 	CreateDirectory("content")
 
@@ -35,12 +40,12 @@ Sub RunJtr()
 	if type(JTR.remote) <> "roIRRemote" stop
 	JTR.remote.SetPort(msgPort)
 
-'	aa = {}
-'	aa.source = "Iguana"
-'	aa.encodings = "NEC"
-'	JTR.irReceiver = CreateObject("roIRReceiver", aa)
-'	if type(JTR.irReceiver) <> "roIRReceiver" stop
-'	JTR.irReceiver.SetPort(msgPort)
+	aa = {}
+	aa.source = "Iguana"
+	aa.encodings = ["NEC","RC5"]
+	JTR.irReceiver = CreateObject("roIRReceiver", aa)
+	if type(JTR.irReceiver) <> "roIRReceiver" stop
+	JTR.irReceiver.SetPort(msgPort)
 
 	JTR.recordingEngine.Initialize()
 	JTR.displayEngine.Initialize()
