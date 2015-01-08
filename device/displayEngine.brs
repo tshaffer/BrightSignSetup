@@ -598,21 +598,11 @@ Sub LaunchWebkit()
 
 	print "LaunchWebkit invoked"
 
+	' don't want cursor for now
+    m.t=createobject("roTouchScreen")
+    m.t.enablecursor(false)
+
 	r = CreateObject("roRectangle", 0, 0, 1920, 1080)
-
-	m.imagePlayer = CreateObject("roImageWidget", r)
-	m.imagePlayer.Show()
-
-	videoMode = CreateObject("roVideoMode")
-	resX = videoMode.GetResX()
-	resY = videoMode.GetResY()
-	videoMode = invalid
-	m.touchScreen = CreateObject("roTouchScreen")
-	m.touchScreen.SetPort(m.msgPort)
-	m.touchScreen.EnableCursor(true)
-	m.touchScreen.SetCursorBitmap("cursor.bmp", 16, 16)
-'	m.touchScreen.SetCursorPosition(resX / 2, resY / 2)
-	m.touchScreen.SetCursorPosition(500, 248)
 
 	m.htmlWidget = CreateObject("roHtmlWidget", r)
 	m.htmlWidget.SetPort(m.msgPort)
