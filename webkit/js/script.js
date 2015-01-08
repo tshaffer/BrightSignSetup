@@ -1,6 +1,6 @@
 var currentActiveElementId = "#homePage";
-var baseURL = "http://192.168.2.12:8080/";
-//var baseURL = "http://10.1.0.134:8080/";
+//var baseURL = "http://192.168.2.12:8080/";
+var baseURL = "http://10.1.0.134:8080/";
 
 var bsMessage;
 var ir_receiver;
@@ -102,8 +102,8 @@ function selectHomePage() {
 }
 
 var mainMenuIds = [
-    ['channelGuide', 'setManualRecord'],
-    ['recordedShows', 'userSelection'],
+    ['recordedShows', 'setManualRecord'],
+    ['channelGuide', 'userSelection'],
     ['toDoList', 'myPlayVideo']
 ];
 
@@ -147,8 +147,17 @@ function navigateHomePage(navigationCommand$) {
         colIndex = 0;
     }
 
+    console.log("currentElementId is " + currentElementId);
+
     var newElementId = "#" + mainMenuIds[rowIndex][colIndex];
-     $(newElementId).focus();
+
+    $("#" + currentElementId).removeClass("btn-primary");
+    $("#" + currentElementId).addClass("btn-secondary");
+
+    $(newElementId).removeClass("btn-secondary");
+    $(newElementId).addClass("btn-primary");
+
+    $(newElementId).focus();
 }
 
 
