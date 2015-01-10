@@ -72,11 +72,11 @@ Function newJTR(msgPort As Object) As Object
 	JTR.SetDBVersion				= SetDBVersion
 	JTR.ExecuteDBInsert				= ExecuteDBInsert
 	JTR.ExecuteDBSelect				= ExecuteDBSelect
-	JTR.GetDBVersionCallback		= GetDBVersionCallback
 	JTR.AddDBRecording				= AddDBRecording
 	JTR.DeleteDBRecording			= DeleteDBRecording
 	JTR.GetDBRecording				= GetDBRecording
-	JTR.GetDBRecordings				= GetDBRecordings
+	JTR.GetDBFileToTranscode		= GetDBFileToTranscode
+	JTR.UpdateDBTranscodeComplete	= UpdateDBTranscodeComplete
 	JTR.UpdateDBLastViewedPosition	= UpdateDBLastViewedPosition
 
 	JTR.StartRecord					= StartRecord

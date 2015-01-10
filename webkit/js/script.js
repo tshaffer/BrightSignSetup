@@ -1,6 +1,6 @@
 var currentActiveElementId = "#homePage";
-//var baseURL = "http://192.168.2.12:8080/";
-var baseURL = "http://10.1.0.134:8080/";
+var baseURL = "http://192.168.2.9:8080/";
+//var baseURL = "http://10.1.0.134:8080/";
 
 var bsMessage;
 var ir_receiver;

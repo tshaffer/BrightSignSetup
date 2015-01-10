@@ -11,8 +11,6 @@ Function newDisplayEngine(jtr As Object) As Object
 	DisplayEngine.ResumeVideo					= ResumeVideo
 	DisplayEngine.QuickSkipVideo				= QuickSkipVideo
 	DisplayEngine.InstantReplayVideo			= InstantReplayVideo
-	DisplayEngine.FastForwardVideo				= FastForwardVideo
-	DisplayEngine.RewindVideo					= RewindVideo
 	DisplayEngine.Jump							= Jump
 	DisplayEngine.SeekToCurrentVideoPosition	= SeekToCurrentVideoPosition
 	DisplayEngine.UpdateProgressBar				= UpdateProgressBar
@@ -37,6 +35,10 @@ Function newDisplayEngine(jtr As Object) As Object
     DisplayEngine.stPaused = DisplayEngine.newHState(DisplayEngine, "Paused")
     DisplayEngine.stPaused.HStateEventHandler = STPausedEventHandler
 	DisplayEngine.stPaused.superState = DisplayEngine.stShowingVideo
+
+    DisplayEngine.stFastForwarding = DisplayEngine.newHState(DisplayEngine, "FastForwarding")
+    DisplayEngine.stFastForwarding.HStateEventHandler = STFastForwardingEventHandler
+	DisplayEngine.stFastForwarding.superState = DisplayEngine.stShowingVideo
 
 	DisplayEngine.topState = DisplayEngine.stTop
 
@@ -340,9 +342,9 @@ Function STPlayingEventHandler(event As Object, stateData As Object) As Object
 			m.stateMachine.Jump()
 			return "HANDLED"
 		else if remoteCommand$ = "FF" then
-			m.FastForwardVideo()
+			stateData.nextState = m.stateMachine.stFastForwarding
+			return "TRANSITION"            
 		else if remoteCommand$ = "RW" then
-			m.RewindVideo()
 		endif
 
     endif
@@ -426,6 +428,89 @@ Function STPausedEventHandler(event As Object, stateData As Object) As Object
     return "SUPER"
     
 End Function
+
+
+Function STFastForwardingEventHandler(event As Object, stateData As Object) As Object
+
+    stateData.nextState = invalid
+    
+    if type(event) = "roAssociativeArray" then      ' internal message event
+
+        if IsString(event["EventType"]) then
+        
+            if event["EventType"] = "ENTRY_SIGNAL" then
+            
+                print m.id$ + ": entry signal"
+
+				' update last viewed position in database
+				print "update last viewed position for ";m.stateMachine.selectedRecording.RecordingId;" to "; m.stateMachine.currentVideoPosition%
+				m.stateMachine.jtr.UpdateDBLastViewedPosition(m.stateMachine.selectedRecording.RecordingId, m.stateMachine.currentVideoPosition%)
+				m.stateMachine.selectedRecording.LastViewedPosition = m.stateMachine.currentVideoPosition%
+
+				m.fastForwardPlaybackSpeed = 2.0
+
+				m.stateMachine.videoPlayer.SetPlaybackSpeed(m.fastForwardPlaybackSpeed)
+
+                return "HANDLED"
+
+            else if event["EventType"] = "EXIT_SIGNAL" then
+
+                print m.id$ + ": exit signal"
+            
+			else
+				' TODO - internal message / play from replay guide
+			endif
+            
+        endif
+        
+	else if type(event) = "roIRRemotePress" then
+
+		remoteCommand$ = GetRemoteCommand(event)
+
+		if remoteCommand$ = "MENU" then
+
+			' save current position
+			m.stateMachine.jtr.UpdateDBLastViewedPosition(m.stateMachine.selectedRecording.RecordingId, m.stateMachine.currentVideoPosition%)
+			m.stateMachine.selectedRecording.LastViewedPosition = m.stateMachine.currentVideoPosition%
+
+			' fall through to superState
+
+		else if remoteCommand$ = "PAUSE"
+
+			' TBD - watch out for case where EXIT is hit when the UI is up
+			' TBD - is the following statement still true? temporary and wrong - playing restarts the video; it doesn't resume it.
+
+			' need to workaround system software bug where pausing doesn't work if setPlaybackSpeed was called
+			' unpause video before changing state
+			ok = m.stateMachine.videoPlayer.Resume()
+			if not ok stop
+
+			m.stateMachine.videoProgressTimer.SetPort(m.stateMachine.msgPort)
+			m.stateMachine.videoProgressTimer.SetElapsed(1, 0)
+			m.stateMachine.videoProgressTimer.Start()
+			ok = m.stateMachine.videoProgressTimer.Start()
+			if not ok stop
+
+			stateData.nextState = m.stateMachine.stPlaying
+			return "TRANSITION"
+		else if remoteCommand$ = "REPEAT" then
+			' m.stateMachine.QuickSkipVideo()
+			' should jump to next tick mark in progress bar
+			return "HANDLED"
+		else if remoteCommand$ = "ADD" then
+			' m.stateMachine.InstantReplayVideo()
+			' what should it do?
+			return "HANDLED"
+		' Jump
+		endif
+
+    endif
+            
+    stateData.nextState = m.superState
+    return "SUPER"
+    
+End Function
+
 
 
 Function GetRemoteCommand(event As Object) As String
@@ -565,14 +650,6 @@ stop ' should be impossible??
 	m.UpdateProgressBar()
 	m.SeekToCurrentVideoPosition()
 
-End Sub
-
-
-Sub FastForwardVideo()
-End Sub
-
-
-Sub RewindVideo()
 End Sub
 
 
