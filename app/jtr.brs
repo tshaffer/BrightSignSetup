@@ -1,4 +1,5 @@
 Library "utils.brs"
+Library "logging.brs"
 Library "db.brs"
 Library "server.brs"
 Library "hsm.brs"
@@ -26,6 +27,10 @@ Sub RunJtr()
     msgPort = CreateObject("roMessagePort")
 
     JTR = newJTR(msgPort)
+
+	JTR.logging.InitializeLogging()
+'    JTR.logging.WriteDiagnosticLogEntry(diagnosticCodes.EVENT_STARTUP, Player.sysInfo.deviceFWVersion$ + chr(9) + Player.sysInfo.scriptVersion$)
+    JTR.logging.WriteDiagnosticLogEntry("0", "5.2.5" + chr(9) + "0.0.1")
 
 	EnableZoneSupport(true)
 
@@ -80,6 +85,9 @@ Function newJTR(msgPort As Object) As Object
 	JTR.UpdateDBLastViewedPosition	= UpdateDBLastViewedPosition
 
 	JTR.StartRecord					= StartRecord
+
+    JTR.newLogging					= newLogging
+    JTR.logging = JTR.newLogging()
 		
 	return JTR
 

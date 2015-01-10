@@ -5,3 +5,16 @@ Function IsString(inputVariable As Object) As Boolean
 	
 End Function
 
+
+Function StripLeadingSpaces(inputString$ As String) As String
+
+    while true
+        if left(inputString$, 1)<>" " then return inputString$
+        inputString$ = right(inputString$, len(inputString$)-1)
+    endwhile
+
+    return inputString$
+
+End Function
+
+
