@@ -44,6 +44,7 @@ Function newLogging() As Object
     modelObject = CreateObject("roDeviceInfo")
     logging.deviceUniqueID$ = modelObject.GetDeviceUniqueId()
     logging.firmwareVersion$ = modelObject.GetVersion()
+    logging.scriptVersion$ = GetScriptVersion()
 
     return logging
     

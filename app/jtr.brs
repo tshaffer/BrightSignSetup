@@ -7,10 +7,15 @@ Library "eventHandler.brs"
 Library "recordingEngine.brs"
 Library "displayEngine.brs"
 
+
+REM Update whenever any of the scripts change
+Function GetScriptVersion() As String
+	return "0.0.1"
+End Function   
+
+
 Sub Main()
-
 	RunJtr()
-
 End Sub
 
 
@@ -18,7 +23,7 @@ Sub RunJtr()
 
 	' for BigScreen TV
 	videoMode = CreateObject("roVideoMode")
-	videoMode.SetMode("1920x1060x60i")
+	videoMode.SetMode("1920x1080x60i")
 	videoMode = invalid
 
 	CreateDirectory("brightsign-dumps")
@@ -80,6 +85,7 @@ Function newJTR(msgPort As Object) As Object
 	JTR.AddDBRecording				= AddDBRecording
 	JTR.DeleteDBRecording			= DeleteDBRecording
 	JTR.GetDBRecording				= GetDBRecording
+	JTR.GetDBRecordings				= GetDBRecordings
 	JTR.GetDBFileToTranscode		= GetDBFileToTranscode
 	JTR.UpdateDBTranscodeComplete	= UpdateDBTranscodeComplete
 	JTR.UpdateDBLastViewedPosition	= UpdateDBLastViewedPosition
