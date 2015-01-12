@@ -225,30 +225,10 @@ Function GetDifferentOrMissingFiles() As Object
 End Function
 
 
-' hack forces the code to read each file one byte at a time
 Function GetSHA1(path As String) As String
 
-	file = CreateObject("roReadFile", path)
-
-	' get length
-	file.SeekToEnd()
-	numBytes = file.CurrentPosition()
-	file.SeekAbsolute(0)
-
 	ba = CreateObject("roByteArray")
-
-	for index% = 0 to (numBytes-1)
-
-		byte = file.ReadByte()
-
-		if byte < 0 then
-			byte = byte + 256
-		endif
-		
-		ba[index%] = byte
-
-	next
-
+	ok = ba.ReadFile(path)
 	hashGen = CreateObject("roHashGenerator", "SHA1")
 	return hashGen.hash(ba).ToHexString()
 
