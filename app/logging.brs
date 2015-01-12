@@ -42,6 +42,7 @@ Function newLogging() As Object
     logging.logCounter$ = logging.registrySection.Read("lc")
 
     modelObject = CreateObject("roDeviceInfo")
+    logging.deviceModel$ = modelObject.GetModel()
     logging.deviceUniqueID$ = modelObject.GetDeviceUniqueId()
     logging.firmwareVersion$ = modelObject.GetVersion()
     logging.scriptVersion$ = GetScriptVersion()

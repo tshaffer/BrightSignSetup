@@ -345,6 +345,13 @@ Function STPlayingEventHandler(event As Object, stateData As Object) As Object
 			stateData.nextState = m.stateMachine.stFastForwarding
 			return "TRANSITION"            
 		else if remoteCommand$ = "RW" then
+		else if event = 17237848 then
+			m.stateMachine.QuickSkipVideo()
+		else if event = 17237859 then
+			m.stateMachine.QuickSkipVideo()
+		else
+			print "unknown remote command ";event
+			stop
 		endif
 
     endif
@@ -577,7 +584,7 @@ End Sub
 
 Sub QuickSkipVideo()
 
-	m.currentVideoPosition% = m.currentVideoPosition% + 10	' quick skip currently jumps ahead 10 seconds
+	m.currentVideoPosition% = m.currentVideoPosition% + 15	' quick skip currently jumps ahead 15 seconds
 
 	m.UpdateProgressBar()
 

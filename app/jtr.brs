@@ -50,12 +50,12 @@ Sub RunJtr()
 	if type(JTR.remote) <> "roIRRemote" stop
 	JTR.remote.SetPort(msgPort)
 
-	aa = {}
-	aa.source = "Iguana"
-	aa.encodings = ["NEC","RC5"]
-	JTR.irReceiver = CreateObject("roIRReceiver", aa)
-	if type(JTR.irReceiver) <> "roIRReceiver" stop
-	JTR.irReceiver.SetPort(msgPort)
+'	aa = {}
+'	aa.source = "Iguana"
+'	aa.encodings = ["NEC","RC5"]
+'	JTR.irReceiver = CreateObject("roIRReceiver", aa)
+'	if type(JTR.irReceiver) <> "roIRReceiver" stop
+'	JTR.irReceiver.SetPort(msgPort)
 
 	JTR.recordingEngine.Initialize()
 	JTR.displayEngine.Initialize()
