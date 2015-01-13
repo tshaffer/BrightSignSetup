@@ -45,14 +45,15 @@
         <form class="navbar-form navbar-left" role="search">
           <div class="form-group">
             <p> Title (optional)  <input id="manualRecordTitle" type="text" class="form-control"></p><br>
+            <p>Duration (mins)  <input id="manualRecordDuration" type="number" class="form-control" value="1" step="1"></p><br>
+            <button id="Button1" class="btn btn-primary" onclick="recordNow()">Record Now</button><br><br>
             <p id="manualRecordDateId">Date  </p><br>
             <p id="manualRecordTimeId">Time  </p><br>
-            <p>Duration (mins)  <input id="manualRecordDuration" type="number" class="form-control" value="1" step="1"></p><br>
             <p>Channel  <input id="manualRecordChannel" type="text" value="KPIX-TV" class="form-control"></p><br>
-            <p>Use Aux-in (tuner is default)  <input id="manualRecordAuxInCheckbox" type="checkbox" value="false" class="form-control"></p><br><br>
+            <p>Use Aux-in (tuner is default)  <input id="manualRecordAuxInCheckbox" type="checkbox" value="false" class="form-control"></p><br>
           </div>
           <br>
-          <button type="submit" class="btn btn-primary" onclick="createManualRecording()">Record</button>
+          <button type="submit" class="btn btn-primary" onclick="createManualRecording()">Set Scheduled Record</button>
         </form>
       </div>
 

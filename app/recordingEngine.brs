@@ -100,10 +100,30 @@ Function STRecordingIdleEventHandler(event As Object, stateData As Object) As Ob
 
             else if event["EventType"] = "EXIT_SIGNAL" then
 
-                print m.id$ + ": exit signal"
+                print m.id$ + ": exit signal"            
             
+            else if event["EventType"] = "RECORD_NOW" then
+
+				scheduledRecording = {}
+				scheduledRecording.title$ = event["Title"]
+				scheduledRecording.duration% = event["Duration"]
+				scheduledRecording.channel$ = "HDMI In"
+
+				systemTime = CreateObject("roSystemTime")
+				scheduledRecording.dateTime = systemTime.GetLocalDateTime()
+
+				' phony timer object
+				scheduledRecording.timer = CreateObject("roTimer")
+				scheduledRecording.timerId$ = stri(scheduledRecording.timer.GetIdentity())
+
+				m.stateMachine.scheduledRecordings.AddReplace(scheduledRecording.timerId$, scheduledRecording)
+
+				m.stateMachine.scheduledRecording = scheduledRecording
+				stateData.nextState = m.stateMachine.stRecording
+				return "TRANSITION"
+
 			endif
-            
+
         endif
         
 	else if type(event) = "roTimerEvent" then

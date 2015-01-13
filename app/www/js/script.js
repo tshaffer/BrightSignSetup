@@ -72,23 +72,51 @@ function setDefaultDateTimeFields () {
 }
 
 
+function getRecordingTitle() {
+
+    var title = $("#manualRecordTitle").val();
+    if (!title) {
+        title = 'MR ' + dateObj.getFullYear() + "-" + twoDigitFormat((dateObj.getMonth() + 1)) + "-" + twoDigitFormat(dateObj.getDate()) + " " + twoDigitFormat(dateObj.getHours()) + ":" + twoDigitFormat(dateObj.getMinutes());
+        if (useTuner) {
+            title += " " + channel;
+        } else {
+            title += " Aux-In";
+        }
+    }
+
+    return title;
+}
+
+function recordNow() {
+
+    var title = getRecordingTitle();
+    var duration = $("#manualRecordDuration").val();
+    
+    var aUrl = baseURL + "recordNow";
+    var recordData = { "duration": duration, "title": title }
+
+    $.get(aUrl, recordData)
+        .done(function (result) {
+            console.log("record now successfully sent");
+        })
+        .fail(function (jqXHR, textStatus, errorThrown) {
+            debugger;
+            console.log("record now failure");
+        })
+        .always(function () {
+            alert("finished");
+        });
+}
+
 function createManualRecording() {
 
+    var title = getRecordingTitle();
     var date = $("#manualRecordDate").val();
     var time = $("#manualRecordTime").val();
     var dateObj = new Date(date + " " + time);
     var duration = $("#manualRecordDuration").val();
     var channel = $("#manualRecordChannel").val();
     var useTuner = !$("#manualRecordAuxInCheckbox").is(':checked');
-    var title = $("#manualRecordTitle").val();
-    if(!title) {
-        title = 'MR ' + dateObj.getFullYear() + "-" + twoDigitFormat((dateObj.getMonth() + 1)) + "-" + twoDigitFormat(dateObj.getDate()) + " " + twoDigitFormat(dateObj.getHours()) + ":" + twoDigitFormat(dateObj.getMinutes());
-        if(useTuner) {
-            title += " " + channel;
-        } else {
-            title += " Aux-In";
-        }
-    }
 	
 	var aUrl = baseURL + "manualRecord";
 	var recordData = {"year" : dateObj.getFullYear(), "month" : dateObj.getMonth(), "day" : dateObj.getDate(), "startTimeHours" : dateObj.getHours(), "startTimeMinutes" : dateObj.getMinutes(), "duration" : duration, "channel" :  channel, "title" : title, "useTuner" : useTuner}

@@ -4,30 +4,24 @@ Sub InitializeServer()
     m.localServer.SetPort(m.msgPort)
 
 	m.manualRecordAA =					{ HandleEvent: manualRecord, mVar: m }
+	m.recordNowAA =						{ HandleEvent: recordNow, mVar: m }
 	m.recordingAA =						{ HandleEvent: getRecording, mVar: m }
 	m.deleteRecordingAA =				{ HandleEvent: deleteRecording, mVar: m }
 	m.recordingsAA =					{ HandleEvent: recordings, mVar: m }
 	m.fileToTranscodeAA =				{ HandleEvent: fileToTranscode, mVar: m }
 
-	m.TestRecordAA =					{ HandleEvent: TestRecord, mVar: m }
-	m.RecordAA =						{ HandleEvent: Record, mVar: m }
+	m.filePostedAA =					{ HandleEvent: filePosted, mVar: m }
 
-	m.FilePostedAA =					{ HandleEvent: FilePosted, mVar: m }
-
+	m.localServer.AddGetFromEvent({ url_path: "/recordNow", user_data: m.recordNowAA })
 	m.localServer.AddGetFromEvent({ url_path: "/manualRecord", user_data: m.manualRecordAA })
 	m.localServer.AddGetFromEvent({ url_path: "/recording", user_data: m.recordingAA })
 	m.localServer.AddGetFromEvent({ url_path: "/deleteRecording", user_data: m.deleteRecordingAA })
 	m.localServer.AddGetFromEvent({ url_path: "/recordings", user_data: m.recordingsAA })
 
-'	m.localServer.AddGetFromEvent({ url_path: "/", user_data: m.TestRecordAA })
-	m.localServer.AddGetFromEvent({ url_path: "/TestRecord", user_data: m.TestRecordAA })
-
-	m.localServer.AddGetFromEvent({ url_path: "/Record", user_data: m.RecordAA })
-
-' test for transcoder
 	m.localServer.AddGetFromEvent({ url_path: "/fileToTranscode", user_data: m.fileToTranscodeAA })
-	m.localServer.AddPostToFile({ url_path: "/TranscodedFile", destination_directory: GetDefaultDrive(), user_data: m.FilePostedAA })
+	m.localServer.AddPostToFile({ url_path: "/TranscodedFile", destination_directory: GetDefaultDrive(), user_data: m.filePostedAA })
 
+' Bonjour advertisement
 '    service = { name: "JTR Web Service", type: "_http._tcp", port: 8080, _functionality: BSP.lwsConfig$, _serialNumber: sysInfo.deviceUniqueID$, _unitName: unitName$, _unitNamingMethod: unitNamingMethod$,  }
 '    JTR.advert = CreateObject("roNetworkAdvertisement", service)
 
@@ -197,7 +191,28 @@ Function GetMP4orTS(tsPath$ As String) As String
 End Function
 
 
-Sub Record(userData as Object, e as Object)
+Sub recordNow(userData as Object, e as Object)
+
+	print "record now invoked"
+
+    mVar = userData.mVar
+
+	requestParams = e.GetRequestParams()
+
+	title$ = requestParams["title"]
+	duration% = int(val(requestParams["duration"]))
+
+	recordNowMessage = CreateObject("roAssociativeArray")
+	recordNowMessage["EventType"] = "RECORD_NOW"
+	recordNowMessage["Title"] = title$
+	recordNowMessage["Duration"] = duration%
+
+	mVar.msgPort.PostMessage(recordNowMessage)
+
+    e.AddResponseHeader("Content-type", "text/plain")
+    e.SetResponseBodyString("herro Joel")
+    e.SendResponse(200)
+
 End Sub
 
 
@@ -286,11 +301,11 @@ Sub fileToTranscode(userData as Object, e as Object)
 End Sub
 
 
-Sub FilePosted(userData as Object, e as Object)
+Sub filePosted(userData as Object, e as Object)
 
     mVar = userData.mVar
 
-    print "respond to FilePosted request"
+    print "respond to filePosted request"
 
 	destinationFilename = e.GetRequestHeader("Destination-Filename")
 	MoveFile(e.GetRequestBodyFile(), destinationFilename)
@@ -304,26 +319,6 @@ Sub FilePosted(userData as Object, e as Object)
 
 End Sub
 
-
-
-Sub TestRecord(userData as Object, e as Object)
-
-	' fileName = <file name>
-	' duration = <duration in seconds>
-    mVar = userData.mVar
-
-	requestParams = e.GetRequestParams()
-
-	fileName$ = requestParams["fileName"]
-	duration$ = requestParams["duration"]
-
-	mVar.StartRecord(fileName$, int(val(duration$)))
-
-    e.AddResponseHeader("Content-type", "text/plain")
-    e.SetResponseBodyString("recording to file " + fileName$)
-    e.SendResponse(200)
-
-End Sub
 
 
 Function GetFileExtension(file as String) as Object
