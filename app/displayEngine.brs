@@ -351,7 +351,7 @@ Function STPlayingEventHandler(event As Object, stateData As Object) As Object
 			m.stateMachine.QuickSkipVideo()
 		else
 			print "unknown remote command ";event
-			stop
+			' stop
 		endif
 
     endif
