@@ -5,16 +5,23 @@
      border-color: #555;
 }
 
+.tv-words
+{
+  font-size: 36px;
+}
+
 /* Space out content a bit */
 body {
   padding-top: 20px;
   padding-bottom: 20px;
   background-color: rgba(0,0,0,0);
+  font-size: 36px;
 /*  opacity: 0.0; */
 }
 
 .container {
   background-color: rgba(200,200,200,255);
+  width: 80%;
 }
 
 /* Custom page footer */
@@ -28,7 +35,7 @@ body {
 /* Customize container */
 @media (min-width: 768px) {
   .container {
-    max-width: 730px;
+    /* max-width: 730px; */
   }
 }
 .container-narrow > hr {
