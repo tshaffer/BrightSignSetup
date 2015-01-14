@@ -28,8 +28,8 @@ namespace siteDownloader
             InitializeComponent();
 
             txtBoxSiteFolder.Text = "C:\\Users\\Ted Shaffer\\Documents\\Miscellaneous\\Personal\\jtr\\jtr\\app";
-            txtBoxIPAddress.Text = "192.168.2.9:8080";
-            //txtBoxIPAddress.Text = "10.1.0.134:8080";
+            //txtBoxIPAddress.Text = "192.168.2.9:8080";
+            txtBoxIPAddress.Text = "10.1.0.134:8080";
         }
 
         private void btnBrowse_Click(object sender, RoutedEventArgs e)
@@ -67,9 +67,20 @@ namespace siteDownloader
 
                 if (relativePathsToTransfer != null && relativePathsToTransfer.Count > 0)
                 {
+                    txtBoxFilesTransferred.Text = "Copying files to " + ipAddress;
                     TransferFiles(siteFolder, relativePathsToTransfer, ipAddress);
+                    MessageBox.Show("File transfer complete", "Site Downloader", MessageBoxButton.OK, MessageBoxImage.Information);
                 }
-                MessageBox.Show("File transfer complete", "Site Downloader", MessageBoxButton.OK, MessageBoxImage.Information);
+                else
+                {
+                    MessageBox.Show("No files to transfer. Site up to date.", "Site Downloader", MessageBoxButton.OK, MessageBoxImage.Information);
+                }
+
+                // tell script to exit
+                HTTPGet httpGet = new HTTPGet();
+                httpGet.Timeout = 10000;
+                httpGet.Request("http://" + txtBoxIPAddress.Text + "/ExitScript");
+
             }
             catch (Exception ex)
             {
@@ -82,6 +93,7 @@ namespace siteDownloader
         {
             foreach (string relativePath in relativePathsToTransfer)
             {
+                txtBoxFilesTransferred.Text = txtBoxFilesTransferred.Text + Environment.NewLine + relativePath;
                 string fullPath = siteFolder + "/" + relativePath;
                 fullPath = System.IO.Path.Combine(siteFolder, relativePath);
                 UploadFileToBrightSign(fullPath, relativePath, ipAddress);
