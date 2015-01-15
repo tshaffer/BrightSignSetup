@@ -74,13 +74,6 @@ Sub getRecording(userData as Object, e as Object)
 	print "getRecording::play recording ";recordingId
 
 	recording = mVar.GetDBRecording(recordingId)
-	path$ = GetMP4orTS(recording.Path)
-	if path$ = "" then
-		print "recording at path " + recording.Path + " not found."
-		stop
-	else
-		recording.Path = path$
-	endif
 
 	playRecordingMessage = CreateObject("roAssociativeArray")
 	playRecordingMessage["EventType"] = "RESUME_PLAYBACK"
@@ -147,6 +140,9 @@ Sub PopulateRecordings(mVar As Object, root As Object)
 		
 '		print "recording " + recording.Title
 
+		' get path for video from db's file name
+		' recording.Path = GetFilePath(recording.Path)
+
 		' only include the entry if the file actually exists
 		readFile = CreateObject("roReadFile", recording.Path)
 		if type(readFile) = "roReadFile" then
@@ -175,20 +171,6 @@ Sub PopulateRecordings(mVar As Object, root As Object)
 	next
 
 End Sub
-
-
-Function GetMP4orTS(tsPath$ As String) As String
-
-	mp4Path$ = Left(tsPath$, len(tsPath$) - 2) + "mp4"
-	readFile = CreateObject("roReadFile", mp4Path$)
-	if type(readFile) = "roReadFile" return mp4Path$
-
-	readFile = CreateObject("roReadFile", tsPath$)
-	if type(readFile) = "roReadFile" return tsPath$
-
-	return ""
-
-End Function
 
 
 Sub recordNow(userData as Object, e as Object)
@@ -278,7 +260,6 @@ Sub fileToTranscode(userData as Object, e as Object)
 
 		' information to return: id, path
 		fileToTranscodeElem = root.AddElement("FileToTranscode")
-'		fileToTranscodeElem.SetBody(fileToTranscodeRecord.path)
 
 		idElem = fileToTranscodeElem.AddElement("id")
 		idElem.SetBody(stri(fileToTranscodeRecord.RecordingId))

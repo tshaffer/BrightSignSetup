@@ -35,7 +35,7 @@ End Function
 
 Function InitializeRecordingEngine() As Object
 
-	m.contentFolder = "Content/"
+	m.contentFolder = "content/"
 
 	m.scheduledRecordings = {}
 	m.recordingInProgressTimerId$ = ""
@@ -240,11 +240,10 @@ Sub StartManualRecord(scheduledRecording As Object)
 	m.stateMachine.recordingInProgressTimerId$ = scheduledRecording.timerId$
 
 	' start recording
-	scheduledRecording.path$ = m.stateMachine.contentFolder + Left(scheduledRecording.dateTime.ToIsoString(), 15) + ".ts"
+	scheduledRecording.fileName$ = m.stateMachine.contentFolder + Left(scheduledRecording.dateTime.ToIsoString(), 15)
 
 	if type(m.stateMachine.mediaStreamer) = "roMediaStreamer" then
 
-'		ok = m.mediaStreamer.SetPipeline("hdmi:,encoder:,file:///myfilename.ts")
 		ok = m.stateMachine.mediaStreamer.SetPipeline("hdmi:,encoder:,file:///" + scheduledRecording.path$)
 		if not ok then stop
 
@@ -279,7 +278,7 @@ Sub EndManualRecord(scheduledRecordingTimerIdentity As Object, scheduledRecordin
 	print "EndManualRecord " + scheduledRecording.title$
 	m.StopRecord()
 
-	' Add or uppate record in database
+	' Add or update record in database
 	m.stateMachine.jtr.AddDBRecording(scheduledRecording)
 
 	' Remove from list of pending records

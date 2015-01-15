@@ -17,7 +17,7 @@ Sub OpenDatabase()
 
 		m.SetDBVersion(m.dbSchemaVersion$)
 
-		m.CreateDBTable("CREATE TABLE Recordings (RecordingId INTEGER PRIMARY KEY AUTOINCREMENT, Title TEXT, StartDateTime TEXT, Duration INT, Path TEXT, LastViewedPosition INT, TranscodeComplete INT);")
+		m.CreateDBTable("CREATE TABLE Recordings (RecordingId INTEGER PRIMARY KEY AUTOINCREMENT, Title TEXT, StartDateTime TEXT, Duration INT, FileName TEXT, LastViewedPosition INT, TranscodeComplete INT);")
 
 		m.CreateDBTable("CREATE TABLE ScheduledRecordings (ScheduledRecordingId INTEGER PRIMARY KEY AUTOINCREMENT, StartDateTime INT, Channel TEXT);")
 
@@ -149,13 +149,13 @@ End Function
 
 Sub AddDBRecording(scheduledRecording As Object)
 
-	insertSQL$ = "INSERT INTO Recordings (Title, StartDateTime, Duration, Path, LastViewedPosition, TranscodeComplete) VALUES(?,?,?,?,?, ?);"
+	insertSQL$ = "INSERT INTO Recordings (Title, StartDateTime, Duration, FileName, LastViewedPosition, TranscodeComplete) VALUES(?,?,?,?,?,?);"
 
 	params = CreateObject("roArray", 6, false)
 	params[ 0 ] = scheduledRecording.title$
 	params[ 1 ] = scheduledRecording.dateTime.GetString()
 	params[ 2 ] = scheduledRecording.duration%
-	params[ 3 ] = scheduledRecording.path$
+	params[ 3 ] = scheduledRecording.fileName$
 	params[ 4 ] = 0
 	params[ 5 ] = 0
 
@@ -190,6 +190,7 @@ End Sub
 
 Sub GetDBRecordingsCallback(resultsData As Object, selectData As Object)
 
+	resultsData.Path = GetFilePath(resultsData.FileName)
 	selectData.recordings.push(resultsData)
 
 End Sub
@@ -200,7 +201,7 @@ Function GetDBRecordings() As Object
 	selectData = {}
 	selectData.recordings = []
 
-	select$ = "SELECT RecordingId, Title, StartDateTime, Duration, Path, LastViewedPosition, TranscodeComplete FROM Recordings;"
+	select$ = "SELECT RecordingId, Title, StartDateTime, Duration, FileName, LastViewedPosition, TranscodeComplete FROM Recordings;"
 	m.ExecuteDBSelect(select$, GetDBRecordingsCallback, selectData, invalid)
 
 	return selectData.recordings
@@ -210,6 +211,7 @@ End Function
 
 Sub GetDBRecordingCallback(resultsData As Object, selectData As Object)
 
+	resultsData.Path = GetFilePath(resultsData.FileName)
 	selectData.recording = resultsData
 
 End Sub
@@ -220,7 +222,7 @@ Function GetDBRecording(recordingId As String) As Object
 	selectData = {}
 	selectData.recording = invalid
 
-	select$ = "SELECT RecordingId, Title, StartDateTime, Duration, Path, LastViewedPosition, TranscodeComplete FROM Recordings WHERE RecordingId='" + recordingId + "';"
+	select$ = "SELECT RecordingId, Title, StartDateTime, Duration, FileName, LastViewedPosition, TranscodeComplete FROM Recordings WHERE RecordingId='" + recordingId + "';"
 	m.ExecuteDBSelect(select$, GetDBRecordingCallback, selectData, invalid)
 
 	return selectData.recording
@@ -230,6 +232,7 @@ End Function
 
 Sub GetDBFileToTranscodeCallback(resultsData As Object, selectData As Object)
 
+	resultsData.Path = GetFilePath(resultsData.FileName)
 	selectData.recording = resultsData
 
 End Sub
@@ -240,7 +243,7 @@ Function GetDBFileToTranscode() As Object
 	selectData = {}
 	selectData.recording = invalid
 
-	select$ = "SELECT RecordingId, Title, StartDateTime, Duration, Path, LastViewedPosition, TranscodeComplete FROM Recordings WHERE TranscodeComplete=0;"
+	select$ = "SELECT RecordingId, Title, StartDateTime, Duration, FileName, LastViewedPosition, TranscodeComplete FROM Recordings WHERE TranscodeComplete=0;"
 	m.ExecuteDBSelect(select$, GetDBFileToTranscodeCallback, selectData, invalid)
 
 	return selectData.recording
@@ -266,3 +269,16 @@ Sub UpdateDBLastViewedPosition(recordingId% As Integer, lastViewedPosition% As I
 End Sub
 
 
+Function GetFilePath(fileName$ As String) As String
+
+	mp4Path$ = "content/" + fileName$ + ".mp4"
+	readFile = CreateObject("roReadFile", mp4Path$)
+	if type(readFile) = "roReadFile" return mp4Path$
+
+	tsPath$ = "content/" + fileName$ + ".ts"
+	readFile = CreateObject("roReadFile", tsPath$)
+	if type(readFile) = "roReadFile" return tsPath$
+
+	return ""
+
+End Function
