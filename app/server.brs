@@ -98,7 +98,28 @@ Sub deleteRecording(userData as Object, e as Object)
 	requestParams = e.GetRequestParams()
 
 	recordingId = requestParams["recordingId"]
-	print "deleteRecording::play recording ";recordingId
+	print "deleteRecording::recordingId ";recordingId
+
+	' for now, delete the file off the card. future, don't delete files until necessary to allow undo
+	recording = mVar.GetDBRecording(recordingId)
+	if type(recording) = "roAssociativeArray" then
+		path = GetFilePath(recording.FileName)
+		while path <> ""
+			print "path of file to delete is ";path
+			' TODO - log the deletion
+			ok = DeleteFile(path)
+			if not ok then
+				print "file ";path;" not found in delete operation."
+				' TODO - log the failure to find the file
+			endif
+			path = GetFilePath(recording.FileName)
+		endwhile
+	else
+		e.AddResponseHeader("Content-type", "text/plain; charset=utf-8")
+		e.SetResponseBodyString("Recording not found.")
+	    e.SendResponse(404)
+		return
+	endif
 
 	' add to deleted recordings table
 
