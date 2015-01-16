@@ -1,16 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Data;
 using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
 using System.IO;
 using System.Diagnostics;
 using System.Xml;
@@ -69,11 +60,11 @@ namespace siteDownloader
                 {
                     txtBoxFilesTransferred.Text = "Copying files to " + ipAddress;
                     TransferFiles(siteFolder, relativePathsToTransfer, ipAddress);
-                    MessageBox.Show("File transfer complete", "Site Downloader", MessageBoxButton.OK, MessageBoxImage.Information);
+                    txtBoxFilesTransferred.Text = txtBoxFilesTransferred.Text + Environment.NewLine + "File transfer complete";
                 }
                 else
                 {
-                    MessageBox.Show("No files to transfer. Site up to date.", "Site Downloader", MessageBoxButton.OK, MessageBoxImage.Information);
+                    txtBoxFilesTransferred.Text = "No files to transfer. Site up to date.";
                 }
 
                 // tell script to exit
@@ -168,7 +159,7 @@ namespace siteDownloader
             catch (Exception ex)
             {
                 Trace.WriteLine("Exception in GetFilesToTransfer: " + ex.ToString());
-                MessageBox.Show("Exception in GetFilesToTransfer");
+                MessageBox.Show(ex.ToString());
             }
 
             return null;

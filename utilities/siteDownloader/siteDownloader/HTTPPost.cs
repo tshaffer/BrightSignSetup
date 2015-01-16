@@ -54,7 +54,18 @@ using System;
             {
                 wr.Headers.Add(key, nvc[key]);
             }
-            Stream rs = wr.GetRequestStream();
+
+            Stream rs = null;
+            try
+            {
+                rs = wr.GetRequestStream();
+            }
+            catch (Exception ex)
+            {
+                Trace.WriteLine("Error transferring file using local file networking: " + ex.ToString());
+                throw new Exception("Exception - is sd.brs running?" + Environment.NewLine + ex.ToString());
+            }
+
             rs.ReadTimeout = 3600000;
             rs.WriteTimeout = 3600000;
             rs.WriteTimeout = 3600000;
