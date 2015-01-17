@@ -240,11 +240,12 @@ Sub StartManualRecord(scheduledRecording As Object)
 	m.stateMachine.recordingInProgressTimerId$ = scheduledRecording.timerId$
 
 	' start recording
-	scheduledRecording.fileName$ = m.stateMachine.contentFolder + Left(scheduledRecording.dateTime.ToIsoString(), 15)
+	scheduledRecording.fileName$ = Left(scheduledRecording.dateTime.ToIsoString(), 15)
+	path$ = m.stateMachine.contentFolder + scheduledRecording.fileName$ + ".ts"
 
 	if type(m.stateMachine.mediaStreamer) = "roMediaStreamer" then
 
-		ok = m.stateMachine.mediaStreamer.SetPipeline("hdmi:,encoder:,file:///" + scheduledRecording.path$)
+		ok = m.stateMachine.mediaStreamer.SetPipeline("hdmi:,encoder:,file:///" + path$)
 		if not ok then stop
 
 		ok = m.stateMachine.mediaStreamer.Start()
