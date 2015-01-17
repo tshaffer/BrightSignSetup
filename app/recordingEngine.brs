@@ -251,6 +251,9 @@ Sub StartManualRecord(scheduledRecording As Object)
 		ok = m.stateMachine.mediaStreamer.Start()
 		if not ok then stop
 
+		' turn on record LED
+		m.stateMachine.jtr.SetRecordLED(true)
+
 	endif
 
 End Sub
@@ -285,6 +288,9 @@ Sub EndManualRecord(scheduledRecordingTimerIdentity As Object, scheduledRecordin
 	' Remove from list of pending records
 	ok = m.stateMachine.scheduledRecordings.Delete(scheduledRecordingTimerIdentity)
 	if not ok then stop
+
+	' turn off record LED
+	m.stateMachine.jtr.SetRecordLED(false)
 
 End Sub
 

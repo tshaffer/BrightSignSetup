@@ -47,6 +47,8 @@ Sub RunJtr()
 	JTR.InitializeServer()
 	JTR.OpenDatabase()
 
+	JTR.gpio = CreateObject("roGpioControlPort")
+
 '	JTR.remote = CreateObject("roIRRemote")
 '	if type(JTR.remote) <> "roIRRemote" stop
 '	JTR.remote.SetPort(msgPort)
@@ -57,9 +59,11 @@ Sub RunJtr()
 '	aa.source = "IR-in"
 '	aa.encodings = ["NEC"]
 	JTR.irReceiver = CreateObject("roIRReceiver", aa)
-'	if type(JTR.irReceiver) <> "roIRReceiver" stop
-' TODO - if no IR Receiver, log it
-	JTR.irReceiver.SetPort(msgPort)
+	if type(JTR.irReceiver) = "roIRReceiver" then
+		JTR.irReceiver.SetPort(msgPort)
+	else
+'		TODO - if no IR Receiver, log it
+	endif
 
 	JTR.recordingEngine.Initialize()
 	JTR.displayEngine.Initialize()
@@ -95,6 +99,7 @@ Function newJTR(msgPort As Object) As Object
 	JTR.UpdateDBLastViewedPosition	= UpdateDBLastViewedPosition
 
 	JTR.StartRecord					= StartRecord
+	JTR.SetRecordLED				= SetRecordLED
 
     JTR.newLogging					= newLogging
     JTR.logging = JTR.newLogging()
@@ -102,6 +107,13 @@ Function newJTR(msgPort As Object) As Object
 	return JTR
 
 End Function
+
+
+Sub SetRecordLED(ledOn As Boolean)
+
+	m.gpio.SetOutputState(9, ledOn)
+
+End Sub
 
 
 Sub ListFiles(path$ As String, listOfFiles As Object)
