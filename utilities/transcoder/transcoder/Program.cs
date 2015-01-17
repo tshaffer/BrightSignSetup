@@ -201,7 +201,7 @@ namespace transcoder
 
                 //process.Start();
 
-                Trace.WriteLine("Start ffmpeg");
+                LogMessage(GetTimeStamp() + " : TranscodeFile:  start ffmpeg");
                 if (!process.Start())
                 {
                     LogMessage(GetTimeStamp() + " : TranscodeFile error starting process");
@@ -222,7 +222,8 @@ namespace transcoder
 
                 process.PriorityClass = ProcessPriorityClass.Normal;
 
-                bool processExited = process.WaitForExit(60000);
+                //bool processExited = process.WaitForExit(60000);
+                bool processExited = process.WaitForExit(300000);
                 LogMessage(GetTimeStamp() + " : TranscodeFile processExited=" + processExited.ToString());
                 if (!processExited)
                 {
