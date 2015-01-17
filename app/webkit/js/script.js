@@ -1,5 +1,6 @@
 var currentActiveElementId = "#homePage";
 var baseURL = "http://192.168.2.9:8080/";
+//var baseURL = "http://192.168.2.12:8080/";
 //var baseURL = "http://10.1.0.134:8080/";
 
 var bsMessage;
@@ -240,7 +241,56 @@ function toggleProgressBar(currentOffset, recordingDuration) {
         var timeLabel = SecondsToHourMinuteLabel(recordingDuration)
         toAppend += '<div id="progressBarTotalTime" class="meterTotalTime"><p>' + timeLabel + '</p></div>';
 
-        for (i = 1; i < 8; i++) {
+        // number of ticks to display is basedon the duration of the recording
+        //0 < duration <= 5 minutes
+        //every 1 minute
+        //5 minutes < duration <= 40 minutes
+        //every 5 minutes
+        //40 minutes < duration <= 1 hour
+        //every 10minutes
+        //1 hour < duration <= 3 hours
+        //every 15 minutes
+        //3 hours < duration <= 4 hours
+        //every 30 minutes
+        //4 hours < duration
+        //every hour
+        var numMinutes = Math.floor(recordingDuration / 60);
+
+        console.log("toggleProgressBar: duration = " + recordingDuration);
+        console.log("toggleProgressBar: numMinutes = " + numMinutes);
+
+        var numTicks = 8;
+        var minutesPerTick = 1;
+        if (numMinutes > 240) {
+            minutesPerTick = 60;
+        }
+        else if (numMinutes > 180) {
+            minutesPerTick = 30;
+        }
+        else if (numMinutes > 60) {
+            minutesPerTick = 15;
+        }
+        else if (numMinutes > 40) {
+            minutesPerTick = 10;
+        }
+        else if (numMinutes > 5) {
+            minutesPerTick = 5;
+        }
+        else {
+            minutesPerTick = 1;
+        }
+        numTicks = Math.floor(numMinutes / minutesPerTick);
+
+        console.log("toggleProgressBar: numTicks = " + numTicks);
+        console.log("toggleProgressBar: minutesPerTick = " + minutesPerTick);
+
+        // determine whether or not to draw last tick - don't draw it if it is at the end of the progress bar
+        if (Math.floor(numMinutes) % (Math.floor(minutesPerTick) * numTicks) == 0) {
+            numTicks--;
+        }
+        console.log("toggleProgressBar: numTicks = " + numTicks);
+
+        for (i = 1; i <= numTicks; i++) {
             var theId = "progressBarTick" + i.toString()
             toAppend += '<div id=' + theId + ' class="meterTick"><p></p></div>';
         }
@@ -253,8 +303,12 @@ function toggleProgressBar(currentOffset, recordingDuration) {
         // TODO - should retrieve these attributes dynamically
         var leftOffset = 5;
         var rightOffset = 90;
-        for (i = 1; i < 8; i++) {
-            var tickOffset = leftOffset + (rightOffset - leftOffset) * i / 8.0;
+        for (i = 1; i <= numTicks; i++) {
+
+            var durationAtTick = i * minutesPerTick;
+            var totalDuration = numMinutes;
+
+            var tickOffset = leftOffset + (rightOffset - leftOffset) * (durationAtTick / totalDuration);
             console.log("tickOffset=" + tickOffset.toString());
             $("#progressBarTick" + i.toString()).css({ left: tickOffset.toString() + '%', position: 'absolute' });
         }
