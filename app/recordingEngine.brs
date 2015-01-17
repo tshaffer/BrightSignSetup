@@ -23,7 +23,6 @@ Function newRecordingEngine(jtr As Object) As Object
 	RecordingEngine.stRecording.superState = RecordingEngine.stRecordingController
 	RecordingEngine.stRecording.StartManualRecord = StartManualRecord
 	RecordingEngine.stRecording.EndManualRecord	= EndManualRecord
-	RecordingEngine.stRecording.StopRecord = StopRecord
 	RecordingEngine.stRecording.Tune = Tune
 
 	RecordingEngine.topState = RecordingEngine.stTop
@@ -280,7 +279,8 @@ End Sub
 Sub EndManualRecord(scheduledRecordingTimerIdentity As Object, scheduledRecording As Object)
 
 	print "EndManualRecord " + scheduledRecording.title$
-	m.StopRecord()
+	ok = m.stateMachine.mediaStreamer.Stop()
+	if not ok then stop
 
 	' Add or update record in database
 	m.stateMachine.jtr.AddDBRecording(scheduledRecording)
@@ -293,17 +293,6 @@ Sub EndManualRecord(scheduledRecordingTimerIdentity As Object, scheduledRecordin
 	m.stateMachine.jtr.SetRecordLED(false)
 
 End Sub
-
-
-Sub StopRecord()
-
-print "StopRecord"
-
-	ok = m.stateMachine.mediaStreamer.Stop()
-	if not ok then stop
-
-End Sub
-
 
 
 

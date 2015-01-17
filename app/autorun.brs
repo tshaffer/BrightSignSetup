@@ -98,7 +98,6 @@ Function newJTR(msgPort As Object) As Object
 	JTR.UpdateDBTranscodeComplete	= UpdateDBTranscodeComplete
 	JTR.UpdateDBLastViewedPosition	= UpdateDBLastViewedPosition
 
-	JTR.StartRecord					= StartRecord
 	JTR.SetRecordLED				= SetRecordLED
 
     JTR.newLogging					= newLogging
@@ -131,31 +130,5 @@ Sub ListFiles(path$ As String, listOfFiles As Object)
 			listOfFiles.push(filePath$)
 		endif
 	next
-
-End Sub
-
-
-' old test code - remove when appropriate
-Sub StartRecord(fileName$ As String, duration% As Integer)
-
-print "StartRecord: fileName="; fileName$; ", duration=";duration%
-
-	if type(m.mediaStreamer) = "roMediaStreamer" then
-
-'		ok = m.mediaStreamer.SetPipeline("hdmi:,encoder:,file:///myfilename.ts")
-		ok = m.mediaStreamer.SetPipeline("hdmi:,encoder:,file:///" + fileName$)
-		if not ok then stop
-
-		ok = m.mediaStreamer.Start()
-		if not ok then stop
-
-        m.recordingTimer = CreateObject("roTimer")
-        m.recordingTimer.SetPort(m.msgPort)
-		m.recordingTimer.SetElapsed(duration%, 0)
-        m.recordingTimer.Start()
-
-	else
-		stop
-	endif
 
 End Sub
