@@ -51,7 +51,6 @@ Sub eventHandler_EventLoop()
 		if type(msg) = "roIRRepeatEvent" then
 			print "roIRRepeatEvent data = ";msg
 		endif
-
 		
 		if type(msg) = "roSqliteEvent" then
 			if msg.GetSqlResult() <> SQLITE_COMPLETE then

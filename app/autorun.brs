@@ -1,5 +1,6 @@
 Library "utils.brs"
 Library "logging.brs"
+Library "remote.brs"
 Library "db.brs"
 Library "server.brs"
 Library "hsm.brs"
@@ -56,7 +57,8 @@ Sub RunJtr()
 '	aa.source = "IR-in"
 '	aa.encodings = ["NEC"]
 	JTR.irReceiver = CreateObject("roIRReceiver", aa)
-	if type(JTR.irReceiver) <> "roIRReceiver" stop
+'	if type(JTR.irReceiver) <> "roIRReceiver" stop
+' TODO - if no IR Receiver, log it
 	JTR.irReceiver.SetPort(msgPort)
 
 	JTR.recordingEngine.Initialize()
@@ -145,33 +147,3 @@ print "StartRecord: fileName="; fileName$; ", duration=";duration%
 	endif
 
 End Sub
-
-
-Function ConvertToRemoteCommand(remoteCommand% As Integer) As String
-
-	Dim remoteCommands[19]
-	remoteCommands[0]="WEST"
-	remoteCommands[1]="EAST"
-	remoteCommands[2]="NORTH"
-	remoteCommands[3]="SOUTH"
-	remoteCommands[4]="SEL"
-	remoteCommands[5]="EXIT"
-	remoteCommands[6]="PWR"
-	remoteCommands[7]="MENU"
-	remoteCommands[8]="SEARCH"
-	remoteCommands[9]="PLAY"
-	remoteCommands[10]="FF"
-	remoteCommands[11]="RW"
-	remoteCommands[12]="PAUSE"
-	remoteCommands[13]="ADD"
-	remoteCommands[14]="SHUFFLE"
-	remoteCommands[15]="REPEAT"
-	remoteCommands[16]="VOLUP"
-	remoteCommands[17]="VOLDWN"
-	remoteCommands[18]="BRIGHT"
-
-    if remoteCommand% < 0 or remoteCommand% > 18 return ""
-    
-    return remoteCommands[remoteCommand%]
-    
-End Function

@@ -122,8 +122,8 @@ Function STShowingUIEventHandler(event As Object, stateData As Object) As Object
 			endif
             
         endif
-        
-	else if type(event) = "roIRRemotePress" then
+    
+	else if IsRemoteCommand(event) then    
 
 		remoteCommand$ = GetRemoteCommand(event)
 
@@ -149,15 +149,15 @@ Function STShowingUIEventHandler(event As Object, stateData As Object) As Object
 		else 
 
 			commandToHtml$ = ""
-			if remoteCommand$ = "NORTH" then
+			if remoteCommand$ = "UP" then
 				commandToHtml$ = "Up"
-			else if remoteCommand$ = "SOUTH" then
+			else if remoteCommand$ = "DOWN" then
 				commandToHtml$ = "Down"
-			else if remoteCommand$ = "WEST" then
+			else if remoteCommand$ = "LEFT" then
 				commandToHtml$ = "Left"
-			else if remoteCommand$ = "EAST" then
+			else if remoteCommand$ = "RIGHT" then
 				commandToHtml$ = "Right"
-			else if remoteCommand$ = "SEL" then
+			else if remoteCommand$ = "SELECT" then
 				commandToHtml$ = "Enter"
 			endif
 
@@ -218,7 +218,7 @@ Function STShowingVideoEventHandler(event As Object, stateData As Object) As Obj
 			return "HANDLED"
 		endif
 
-	else if type(event) = "roIRRemotePress" then
+	else if IsRemoteCommand(event) then    
 	
 		remoteCommand$ = GetRemoteCommand(event)
 
@@ -234,14 +234,14 @@ Function STShowingVideoEventHandler(event As Object, stateData As Object) As Obj
 			stateData.nextState = m.stateMachine.stShowingUI
 			return "TRANSITION"            
 
-		else if remoteCommand$ = "VOLUP" then
+		else if remoteCommand$ = "PLAY_ICON" then
 			aa = {}
 			aa.AddReplace("bsMessage", "togglePlayIcon")
 			m.stateMachine.htmlWidget.PostJSMessage(aa)
 
 			return "HANDLED"
 
-		else if remoteCommand$ = "VOLDWN" then
+		else if remoteCommand$ = "PROGRESS_BAR" then
 
 			if type(m.stateMachine.selectedRecording) = "roAssociativeArray" then
 				aa = {}
@@ -314,7 +314,7 @@ Function STPlayingEventHandler(event As Object, stateData As Object) As Object
             
         endif
         
-	else if type(event) = "roIRRemotePress" then
+	else if IsRemoteCommand(event) then    
 	
 		remoteCommand$ = GetRemoteCommand(event)
 
@@ -332,23 +332,19 @@ Function STPlayingEventHandler(event As Object, stateData As Object) As Object
 		else if remoteCommand$ = "PAUSE" then
 			stateData.nextState = m.stateMachine.stPaused
 			return "TRANSITION"
-		else if remoteCommand$ = "REPEAT" then
+		else if remoteCommand$ = "QUICK_SKIP" then
 			m.stateMachine.QuickSkipVideo()
 			return "HANDLED"
-		else if remoteCommand$ = "ADD" then
+		else if remoteCommand$ = "INSTANT_REPLAY" then
 			m.stateMachine.InstantReplayVideo()
 			return "HANDLED"
-		else if remoteCommand$ = "SEARCH" then
+		else if remoteCommand$ = "JUMP" then
 			m.stateMachine.Jump()
 			return "HANDLED"
 		else if remoteCommand$ = "FF" then
 			stateData.nextState = m.stateMachine.stFastForwarding
 			return "TRANSITION"            
 		else if remoteCommand$ = "RW" then
-		else if event = 17237848 then
-			m.stateMachine.QuickSkipVideo()
-		else if event = 17237859 then
-			m.stateMachine.QuickSkipVideo()
 		else
 			print "unknown remote command ";event
 			' stop
@@ -393,7 +389,7 @@ Function STPausedEventHandler(event As Object, stateData As Object) As Object
             
         endif
         
-	else if type(event) = "roIRRemotePress" then
+	else if IsRemoteCommand(event) then    
 
 		remoteCommand$ = GetRemoteCommand(event)
 
@@ -421,10 +417,10 @@ Function STPausedEventHandler(event As Object, stateData As Object) As Object
 
 			stateData.nextState = m.stateMachine.stPlaying
 			return "TRANSITION"
-		else if remoteCommand$ = "REPEAT" then
+		else if remoteCommand$ = "QUICK_SKIP" then
 			m.stateMachine.QuickSkipVideo()
 			return "HANDLED"
-		else if remoteCommand$ = "ADD" then
+		else if remoteCommand$ = "INSTANT_REPLAY" then
 			m.stateMachine.InstantReplayVideo()
 			return "HANDLED"
 		endif
@@ -470,7 +466,7 @@ Function STFastForwardingEventHandler(event As Object, stateData As Object) As O
             
         endif
         
-	else if type(event) = "roIRRemotePress" then
+	else if IsRemoteCommand(event) then    
 
 		remoteCommand$ = GetRemoteCommand(event)
 
@@ -500,11 +496,11 @@ Function STFastForwardingEventHandler(event As Object, stateData As Object) As O
 
 			stateData.nextState = m.stateMachine.stPlaying
 			return "TRANSITION"
-		else if remoteCommand$ = "REPEAT" then
+		else if remoteCommand$ = "QUICK_SKIP" then
 			' m.stateMachine.QuickSkipVideo()
 			' should jump to next tick mark in progress bar
 			return "HANDLED"
-		else if remoteCommand$ = "ADD" then
+		else if remoteCommand$ = "INSTANT_REPLAY" then
 			' m.stateMachine.InstantReplayVideo()
 			' what should it do?
 			return "HANDLED"
@@ -516,17 +512,6 @@ Function STFastForwardingEventHandler(event As Object, stateData As Object) As O
     stateData.nextState = m.superState
     return "SUPER"
     
-End Function
-
-
-
-Function GetRemoteCommand(event As Object) As String
-
-	remoteEvent% = event.GetInt()
-	remoteEvent$ = ConvertToRemoteCommand(remoteEvent%)
-	print "remoteEvent=";remoteEvent$
-	return remoteEvent$
-
 End Function
 
 
