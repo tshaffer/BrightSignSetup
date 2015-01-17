@@ -14,6 +14,7 @@ Function newDisplayEngine(jtr As Object) As Object
 	DisplayEngine.Jump							= Jump
 	DisplayEngine.SeekToCurrentVideoPosition	= SeekToCurrentVideoPosition
 	DisplayEngine.UpdateProgressBar				= UpdateProgressBar
+	DisplayEngine.StartVideoPlaybackTimer		= StartVideoPlaybackTimer
 
 	DisplayEngine.LaunchWebkit					= LaunchWebkit
 
@@ -111,10 +112,7 @@ Function STShowingUIEventHandler(event As Object, stateData As Object) As Object
 				m.stateMachine.UpdateProgressBar()
 				m.stateMachine.SeekToCurrentVideoPosition()
 
-				m.stateMachine.videoProgressTimer = CreateObject("roTimer")
-				m.stateMachine.videoProgressTimer.SetPort(m.stateMachine.msgPort)
-				m.stateMachine.videoProgressTimer.SetElapsed(1, 0)
-				m.stateMachine.videoProgressTimer.Start()
+				m.stateMachine.StartVideoPlaybackTimer()
 
 				stateData.nextState = m.stateMachine.stPlaying
 				return "TRANSITION"            
@@ -206,10 +204,10 @@ Function STShowingVideoEventHandler(event As Object, stateData As Object) As Obj
 		eventIdentity$ = stri(event.GetSourceIdentity())
 
 		' video progress timer
-		if type(m.stateMachine.videoProgressTimer) = "roTimer" and stri(m.stateMachine.videoProgressTimer.GetIdentity()) = eventIdentity$ then
+		if type(m.stateMachine.videoPlaybackTimer) = "roTimer" and stri(m.stateMachine.videoPlaybackTimer.GetIdentity()) = eventIdentity$ then
 			m.stateMachine.currentVideoPosition% = m.stateMachine.currentVideoPosition% + 1
 			print "m.stateMachine.currentVideoPosition%=";m.stateMachine.currentVideoPosition%
-			m.stateMachine.videoProgressTimer.Start()
+			m.stateMachine.videoPlaybackTimer.Start()
 
 			' TODO - update the database once per minute
 
@@ -292,7 +290,7 @@ Function STPlayingEventHandler(event As Object, stateData As Object) As Object
 
 				' Replay Guide from browser on PC - Play show selected while show was playing
 
-				' pause video
+				' pause current video
 				m.stateMachine.PauseVideo()
 
 				' save current position
@@ -409,11 +407,7 @@ Function STPausedEventHandler(event As Object, stateData As Object) As Object
 			ok = m.stateMachine.videoPlayer.Resume()
 			if not ok stop
 
-			m.stateMachine.videoProgressTimer.SetPort(m.stateMachine.msgPort)
-			m.stateMachine.videoProgressTimer.SetElapsed(1, 0)
-			m.stateMachine.videoProgressTimer.Start()
-			ok = m.stateMachine.videoProgressTimer.Start()
-			if not ok stop
+			m.stateMachine.StartVideoPlaybackTimer()
 
 			stateData.nextState = m.stateMachine.stPlaying
 			return "TRANSITION"
@@ -488,11 +482,7 @@ Function STFastForwardingEventHandler(event As Object, stateData As Object) As O
 			ok = m.stateMachine.videoPlayer.Resume()
 			if not ok stop
 
-			m.stateMachine.videoProgressTimer.SetPort(m.stateMachine.msgPort)
-			m.stateMachine.videoProgressTimer.SetElapsed(1, 0)
-			m.stateMachine.videoProgressTimer.Start()
-			ok = m.stateMachine.videoProgressTimer.Start()
-			if not ok stop
+			m.stateMachine.StartVideoPlaybackTimer()
 
 			stateData.nextState = m.stateMachine.stPlaying
 			return "TRANSITION"
@@ -522,10 +512,7 @@ Sub LaunchVideo()
 	ok = m.videoPlayer.PlayFile(m.selectedRecording.Path)
 	if not ok stop
 
-	m.videoProgressTimer = CreateObject("roTimer")
-	m.videoProgressTimer.SetPort(m.msgPort)
-	m.videoProgressTimer.SetElapsed(1, 0)
-	m.videoProgressTimer.Start()
+	m.stateMachine.StartVideoPlaybackTimer()
 
 End Sub
 
@@ -535,7 +522,7 @@ Sub PauseVideo()
 	ok = m.videoPlayer.Pause()
 	' if not ok stop - false is returned if video is already paused
 
-	m.videoProgressTimer.Stop()
+	m.videoPlaybackTimer.Stop()
 
 End Sub
 
@@ -552,17 +539,13 @@ stop
 
 		m.SeekToCurrentVideoPosition()
 
-		if type(m.videoProgressTimer) <> "roTimer" then
-			m.videoProgressTimer = CreateObject("roTimer")
-			m.videoProgressTimer.SetPort(m.msgPort)
-			m.videoProgressTimer.SetElapsed(1, 0)
-		endif
+		m.stateMachine.StartVideoPlaybackTimer()
 
 	else
 		stop
 	endif
 
-	m.videoProgressTimer.Start()
+	m.videoPlaybackTimer.Start()
 
 End Sub
 
@@ -688,3 +671,12 @@ Sub LaunchWebkit()
 
 End Sub
 
+
+Sub StartVideoPlaybackTimer()
+
+	m.videoPlaybackTimer = CreateObject("roTimer")
+	m.videoPlaybackTimer.SetPort(m.msgPort)
+	m.videoPlaybackTimer.SetElapsed(1, 0)
+	m.videoPlaybackTimer.Start()
+
+End Sub
