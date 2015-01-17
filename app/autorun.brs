@@ -46,18 +46,18 @@ Sub RunJtr()
 	JTR.InitializeServer()
 	JTR.OpenDatabase()
 
-	JTR.remote = CreateObject("roIRRemote")
-	if type(JTR.remote) <> "roIRRemote" stop
-	JTR.remote.SetPort(msgPort)
+'	JTR.remote = CreateObject("roIRRemote")
+'	if type(JTR.remote) <> "roIRRemote" stop
+'	JTR.remote.SetPort(msgPort)
 
-'	aa = {}
-''	aa.source = "Iguana"
-''	aa.encodings = ["NEC","RC5"]
+	aa = {}
+	aa.source = "Iguana"
+	aa.encodings = ["NEC","RC5"]
 '	aa.source = "IR-in"
 '	aa.encodings = ["NEC"]
-'	JTR.irReceiver = CreateObject("roIRReceiver", aa)
-'	if type(JTR.irReceiver) <> "roIRReceiver" stop
-'	JTR.irReceiver.SetPort(msgPort)
+	JTR.irReceiver = CreateObject("roIRReceiver", aa)
+	if type(JTR.irReceiver) <> "roIRReceiver" stop
+	JTR.irReceiver.SetPort(msgPort)
 
 	JTR.recordingEngine.Initialize()
 	JTR.displayEngine.Initialize()
