@@ -20,6 +20,7 @@ namespace siteDownloader
 
             txtBoxSiteFolder.Text = "C:\\Users\\Ted Shaffer\\Documents\\Miscellaneous\\Personal\\jtr\\jtr\\app";
             txtBoxIPAddress.Text = "192.168.2.9:8080";
+            //txtBoxIPAddress.Text = "192.168.2.12:8080";
             //txtBoxIPAddress.Text = "10.1.0.134:8080";
         }
 

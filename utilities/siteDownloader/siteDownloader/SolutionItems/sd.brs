@@ -118,7 +118,34 @@ Sub FilePosted(userData as Object, e as Object)
 
 	destinationFilename = e.GetRequestHeader("Destination-Filename")
     print "FilePosted to ";destinationFileName
-	MoveFile(e.GetRequestBodyFile(), destinationFilename)
+	ok = MoveFile(e.GetRequestBodyFile(), destinationFilename)
+	if not ok then
+		regex = CreateObject("roRegEx","\\","i")
+		parts = regex.Split(destinationFilename)
+		if parts.Count() > 1 then
+			dirName$ = ""
+			for i% = 0 to (parts.Count() - 2)
+				dirName$ = dirName$ + parts[i%] + "\"
+
+				' check to see if directory already exits
+				dir = CreateObject("roReadFile", dirName$)
+				if type(dir) <> "roReadFile" then
+					ok = CreateDirectory(dirName$)
+					if not ok then
+						stop
+					endif
+				endif
+			next
+
+			' directories have been created - try again
+			ok = MoveFile(e.GetRequestBodyFile(), destinationFilename)
+
+		endif
+	endif
+
+	if not ok then
+		stop
+	endif
 
 	e.SetResponseBodyString("RECEIVED")
     e.SendResponse(200)
