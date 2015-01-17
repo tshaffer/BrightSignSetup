@@ -40,6 +40,19 @@ Sub eventHandler_EventLoop()
             endif
         endif
 
+		if type(msg) = "roIRRemotePress" then
+			print "remote data = ";msg.getint()
+		endif
+
+		if type(msg) = "roIRDownEvent" then
+			print "roIRDownEvent data = ";msg
+		endif
+
+		if type(msg) = "roIRRepeatEvent" then
+			print "roIRRepeatEvent data = ";msg
+		endif
+
+		
 		if type(msg) = "roSqliteEvent" then
 			if msg.GetSqlResult() <> SQLITE_COMPLETE then
 				m.diagnostics.PrintDebug("roSqliteEvent.GetSqlResult() <> SQLITE_COMPLETE")
