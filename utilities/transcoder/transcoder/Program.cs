@@ -222,7 +222,7 @@ namespace transcoder
 
                 process.PriorityClass = ProcessPriorityClass.Normal;
 
-                bool processExited = process.WaitForExit(90000);
+                bool processExited = process.WaitForExit(60000);
                 LogMessage(GetTimeStamp() + " : TranscodeFile processExited=" + processExited.ToString());
                 if (!processExited)
                 {
