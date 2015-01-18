@@ -127,8 +127,11 @@ Function STShowingUIEventHandler(event As Object, stateData As Object) As Object
 
 		if remoteCommand$ = "MENU" then
 
-			' TBD - UI unclear - may not want to remove UI on this key
-			' TBD - probably just send a message to js that key was hit. let it decide what to do
+			' for now, tell js to show the main menu whenever this is pressed - this is equivalent to Home
+			aa = {}
+			aa.AddReplace("bsMessage", "showMenu")
+			m.stateMachine.htmlWidget.PostJSMessage(aa)
+
 			return "HANDLED"
 
 		else if remoteCommand$ = "EXIT" then
