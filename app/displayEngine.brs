@@ -288,7 +288,25 @@ Function STPlayingEventHandler(event As Object, stateData As Object) As Object
             else if event["EventType"] = "EXIT_SIGNAL" then
 
                 print m.id$ + ": exit signal"
+
+			else if event["EventType"] = "PAUSE" then
+
+				stateData.nextState = m.stateMachine.stPaused
+				
+				return "TRANSITION"
             
+            else if event["EventType"] = "INSTANT_REPLAY" then
+
+				m.stateMachine.InstantReplayVideo()
+			
+				return "HANDLED"
+
+            else if event["EventType"] = "QUICK_SKIP" then
+
+				m.stateMachine.QuickSkipVideo()
+			
+				return "HANDLED"
+
             else if event["EventType"] = "RESUME_PLAYBACK" then
 
 				' Replay Guide from browser on PC - Play show selected while show was playing
@@ -384,6 +402,29 @@ Function STPausedEventHandler(event As Object, stateData As Object) As Object
 
                 print m.id$ + ": exit signal"
             
+			else if event["EventType"] = "PAUSE" or event["EventType"] = "PLAY" then
+
+				' unpause video before changing state
+				ok = m.stateMachine.videoPlayer.Resume()
+				if not ok stop
+
+				m.stateMachine.StartVideoPlaybackTimer()
+
+				stateData.nextState = m.stateMachine.stPlaying
+				return "TRANSITION"
+            
+            else if event["EventType"] = "INSTANT_REPLAY" then
+
+				m.stateMachine.InstantReplayVideo()
+			
+				return "HANDLED"
+
+            else if event["EventType"] = "QUICK_SKIP" then
+
+				m.stateMachine.QuickSkipVideo()
+			
+				return "HANDLED"
+
 			else
 				' TODO - internal message / play from replay guide
 			endif

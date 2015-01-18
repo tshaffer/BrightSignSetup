@@ -68,6 +68,7 @@ body {
 }
 
 .controlIcon {
+    color: white;
   position: fixed;
 /*  top: 50px; */
 /*  left: 2%;  */

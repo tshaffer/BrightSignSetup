@@ -10,6 +10,11 @@ Sub InitializeServer()
 	m.recordingsAA =					{ HandleEvent: recordings, mVar: m }
 	m.fileToTranscodeAA =				{ HandleEvent: fileToTranscode, mVar: m }
 
+	m.pauseAA =							{ HandleEvent: pause, mVar: m}
+	m.playAA =							{ HandleEvent: play, mVar: m}
+	m.instantReplayAA =					{ HandleEvent: instantReplay, mVar: m}
+	m.quickSkipAA =						{ HandleEvent: quickSkip, mVar: m}
+
 	m.filePostedAA =					{ HandleEvent: filePosted, mVar: m }
 
 	m.localServer.AddGetFromEvent({ url_path: "/recordNow", user_data: m.recordNowAA })
@@ -20,6 +25,11 @@ Sub InitializeServer()
 
 	m.localServer.AddGetFromEvent({ url_path: "/fileToTranscode", user_data: m.fileToTranscodeAA })
 	m.localServer.AddPostToFile({ url_path: "/TranscodedFile", destination_directory: GetDefaultDrive(), user_data: m.filePostedAA })
+
+	m.localServer.AddGetFromEvent({ url_path: "/pause", user_data: m.pauseAA })
+	m.localServer.AddGetFromEvent({ url_path: "/play", user_data: m.playAA })
+	m.localServer.AddGetFromEvent({ url_path: "/instantReplay", user_data: m.instantReplayAA })
+	m.localServer.AddGetFromEvent({ url_path: "/quickSkip", user_data: m.quickSkipAA })
 
 ' Bonjour advertisement
 '    service = { name: "JTR Web Service", type: "_http._tcp", port: 8080, _functionality: BSP.lwsConfig$, _serialNumber: sysInfo.deviceUniqueID$, _unitName: unitName$, _unitNamingMethod: unitNamingMethod$,  }
@@ -79,7 +89,6 @@ Sub getRecording(userData as Object, e as Object)
 	playRecordingMessage["EventType"] = "RESUME_PLAYBACK"
 	playRecordingMessage["Recording"] = recording
 	mVar.msgPort.PostMessage(playRecordingMessage)
-
 
     e.AddResponseHeader("Content-type", "text/plain")
     e.SetResponseBodyString("ok")
@@ -321,6 +330,73 @@ Sub filePosted(userData as Object, e as Object)
 
 End Sub
 
+
+Sub pause(userData as Object, e as Object)
+
+	print "pause endpoint invoked"
+
+    mVar = userData.mVar
+
+	pauseMessage = CreateObject("roAssociativeArray")
+	pauseMessage["EventType"] = "PAUSE"
+	mVar.msgPort.PostMessage(pauseMessage)
+
+    e.AddResponseHeader("Content-type", "text/plain")
+    e.SetResponseBodyString("ok")
+    e.SendResponse(200)
+
+End Sub
+
+
+Sub play(userData as Object, e as Object)
+
+	print "play endpoint invoked"
+
+    mVar = userData.mVar
+
+	playMessage = CreateObject("roAssociativeArray")
+	playMessage["EventType"] = "PLAY"
+	mVar.msgPort.PostMessage(playMessage)
+
+    e.AddResponseHeader("Content-type", "text/plain")
+    e.SetResponseBodyString("ok")
+    e.SendResponse(200)
+
+End Sub
+
+
+Sub instantReplay(userData as Object, e as Object)
+
+	print "instantReplay endpoint invoked"
+
+    mVar = userData.mVar
+
+	instantReplayMessage = CreateObject("roAssociativeArray")
+	instantReplayMessage["EventType"] = "INSTANT_REPLAY"
+	mVar.msgPort.PostMessage(instantReplayMessage)
+
+    e.AddResponseHeader("Content-type", "text/plain")
+    e.SetResponseBodyString("ok")
+    e.SendResponse(200)
+
+End Sub
+
+
+Sub quickSkip(userData as Object, e as Object)
+
+	print "quickSkip endpoint invoked"
+
+    mVar = userData.mVar
+
+	quickSkipMessage = CreateObject("roAssociativeArray")
+	quickSkipMessage["EventType"] = "QUICK_SKIP"
+	mVar.msgPort.PostMessage(quickSkipMessage)
+
+    e.AddResponseHeader("Content-type", "text/plain")
+    e.SetResponseBodyString("ok")
+    e.SendResponse(200)
+
+End Sub
 
 
 Function GetFileExtension(file as String) as Object

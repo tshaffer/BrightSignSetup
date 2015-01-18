@@ -45,7 +45,48 @@ function selectHomePage() {
 	switchToPage("homePage");
 }
 
-function here (argument) {
+function executeRemoteCommand(endPoint) {
+
+    var aUrl = baseURL + endPoint;
+
+    $.get(aUrl, {})
+        .done(function (result) {
+            console.log("remote command successfully sent");
+        })
+        .fail(function (jqXHR, textStatus, errorThrown) {
+            debugger;
+            console.log("remote command failure");
+        })
+        .always(function () {
+            //alert("remote command transmission finished");
+        });
+}
+
+function remotePause() {
+
+    console.log("remotePause");
+    executeRemoteCommand("pause");
+}
+
+function remotePlay() {
+
+    console.log("remotePlay");
+    executeRemoteCommand("play");
+}
+
+function remoteInstantReplay() {
+
+    console.log("remoteInstantReplay");
+    executeRemoteCommand("instantReplay");
+}
+
+function remoteQuickSkip() {
+
+    console.log("remoteQuickSkip");
+    executeRemoteCommand("quickSkip");
+}
+
+function here(argument) {
 	console.log(argument);
 }
 
@@ -153,7 +194,7 @@ function playSelectedShow(event) {
             console.log("recording failure");
         })
         .always(function () {
-            alert("recording transmission finished");
+            //alert("recording transmission finished");
         });
 }
 
@@ -175,7 +216,7 @@ function deleteSelectedShow(event) {
             console.log("deleteRecording failure");
         })
         .always(function () {
-            alert("deleteRecording transmission finished");
+            //alert("deleteRecording transmission finished");
         });
 }
 
