@@ -49,20 +49,27 @@ Sub RunJtr()
 
 	JTR.gpio = CreateObject("roGpioControlPort")
 
-'	JTR.remote = CreateObject("roIRRemote")
-'	if type(JTR.remote) <> "roIRRemote" stop
-'	JTR.remote.SetPort(msgPort)
+	useIRRemote = false
 
-	aa = {}
-	aa.source = "Iguana"
-	aa.encodings = ["NEC","RC5"]
-'	aa.source = "IR-in"
-'	aa.encodings = ["NEC"]
-	JTR.irReceiver = CreateObject("roIRReceiver", aa)
-	if type(JTR.irReceiver) = "roIRReceiver" then
-		JTR.irReceiver.SetPort(msgPort)
+	if useIRRemote then
+		JTR.remote = CreateObject("roIRRemote")
+		if type(JTR.remote) = "roIRRemote" then
+			JTR.remote.SetPort(msgPort)
+		else
+'			TODO -if no IR Receiver, log it
+		endif
 	else
-'		TODO - if no IR Receiver, log it
+		aa = {}
+'		aa.source = "Iguana"
+'		aa.encodings = ["NEC","RC5"]
+		aa.source = "IR-in"
+		aa.encodings = ["NEC"]
+		JTR.irReceiver = CreateObject("roIRReceiver", aa)
+		if type(JTR.irReceiver) = "roIRReceiver" then
+			JTR.irReceiver.SetPort(msgPort)
+		else
+'			TODO - if no IR Receiver, log it
+		endif
 	endif
 
 	JTR.recordingEngine.Initialize()
