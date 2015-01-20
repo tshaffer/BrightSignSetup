@@ -7,14 +7,15 @@ Function newDisplayEngine(jtr As Object) As Object
 	DisplayEngine.msgPort = jtr.msgPort
 
 	DisplayEngine.LaunchVideo					= LaunchVideo
-	DisplayEngine.PauseVideo					= PauseVideo
-	DisplayEngine.ResumeVideo					= ResumeVideo
 	DisplayEngine.QuickSkipVideo				= QuickSkipVideo
 	DisplayEngine.InstantReplayVideo			= InstantReplayVideo
 	DisplayEngine.Jump							= Jump
 	DisplayEngine.SeekToCurrentVideoPosition	= SeekToCurrentVideoPosition
 	DisplayEngine.UpdateProgressBar				= UpdateProgressBar
 	DisplayEngine.StartVideoPlaybackTimer		= StartVideoPlaybackTimer
+	DisplayEngine.StopVideoPlaybackTimer		= StopVideoPlaybackTimer
+	DisplayEngine.ResumePlayback				= ResumePlayback
+	DisplayEngine.PausePlayback					= PausePlayback
 
 	DisplayEngine.LaunchWebkit					= LaunchWebkit
 
@@ -41,6 +42,10 @@ Function newDisplayEngine(jtr As Object) As Object
     DisplayEngine.stFastForwarding.HStateEventHandler = STFastForwardingEventHandler
 	DisplayEngine.stFastForwarding.superState = DisplayEngine.stShowingVideo
 
+    DisplayEngine.stRewinding = DisplayEngine.newHState(DisplayEngine, "Rewinding")
+    DisplayEngine.stRewinding.HStateEventHandler = STRewindingEventHandler
+	DisplayEngine.stRewinding.superState = DisplayEngine.stShowingVideo
+
 	DisplayEngine.topState = DisplayEngine.stTop
 
 	return DisplayEngine
@@ -57,6 +62,21 @@ Function InitializeDisplayEngine() As Object
 	m.currentVideoPosition% = 0
 	m.selectedRecording = invalid
 	m.priorSelectedRecording = invalid
+
+	m.playbackSpeeds = CreateObject("roArray", 7, true)
+	m.playbackSpeeds.push(-16.0)
+	m.playbackSpeeds.push(-8.0)
+	m.playbackSpeeds.push(-4.0)
+	m.playbackSpeeds.push(-2.0)
+	m.playbackSpeeds.push(-1.0)
+	m.playbackSpeeds.push(1.0)
+	m.playbackSpeeds.push(2.0)
+	m.playbackSpeeds.push(4.0)
+	m.playbackSpeeds.push(8.0)
+	m.playbackSpeeds.push(16.0)
+
+	m.normalPlaybackSpeedIndex% = 5
+	m.playbackSpeedIndex% = m.normalPlaybackSpeedIndex%
 
 	' create UI
 	m.LaunchWebkit()
@@ -208,7 +228,9 @@ Function STShowingVideoEventHandler(event As Object, stateData As Object) As Obj
 
 		' video progress timer
 		if type(m.stateMachine.videoPlaybackTimer) = "roTimer" and stri(m.stateMachine.videoPlaybackTimer.GetIdentity()) = eventIdentity$ then
-			m.stateMachine.currentVideoPosition% = m.stateMachine.currentVideoPosition% + 1
+
+			m.stateMachine.currentVideoPosition% = m.stateMachine.currentVideoPosition% + m.stateMachine.playbackSpeeds[m.stateMachine.playbackSpeedIndex%]
+
 			print "m.stateMachine.currentVideoPosition%=";m.stateMachine.currentVideoPosition%
 			m.stateMachine.videoPlaybackTimer.Start()
 
@@ -275,14 +297,6 @@ Function STPlayingEventHandler(event As Object, stateData As Object) As Object
             if event["EventType"] = "ENTRY_SIGNAL" then
             
                 print m.id$ + ": entry signal"
-
-				' Is this legit?
-'				if m.stateMachine.currentVideoPosition% = 0 then
-'					m.stateMachine.LaunchVideo()
-'				else
-'					m.stateMachine.ResumeVideo()
-'				endif
-
                 return "HANDLED"
 
             else if event["EventType"] = "EXIT_SIGNAL" then
@@ -312,7 +326,7 @@ Function STPlayingEventHandler(event As Object, stateData As Object) As Object
 				' Replay Guide from browser on PC - Play show selected while show was playing
 
 				' pause current video
-				m.stateMachine.PauseVideo()
+				m.stateMachine.PausePlayback()
 
 				' save current position
 				m.stateMachine.jtr.UpdateDBLastViewedPosition(m.stateMachine.selectedRecording.RecordingId, m.stateMachine.currentVideoPosition%)
@@ -340,7 +354,7 @@ Function STPlayingEventHandler(event As Object, stateData As Object) As Object
 		if remoteCommand$ = "MENU" then
 
 			' pause video
-			m.stateMachine.PauseVideo()
+			m.stateMachine.PausePlayback()
 
 			' save current position
 			m.stateMachine.jtr.UpdateDBLastViewedPosition(m.stateMachine.selectedRecording.RecordingId, m.stateMachine.currentVideoPosition%)
@@ -364,6 +378,8 @@ Function STPlayingEventHandler(event As Object, stateData As Object) As Object
 			stateData.nextState = m.stateMachine.stFastForwarding
 			return "TRANSITION"            
 		else if remoteCommand$ = "RW" then
+			stateData.nextState = m.stateMachine.stRewinding
+			return "TRANSITION"            
 		else
 			print "unknown remote command ";event
 			' stop
@@ -389,7 +405,7 @@ Function STPausedEventHandler(event As Object, stateData As Object) As Object
             
                 print m.id$ + ": entry signal"
 
-				m.stateMachine.PauseVideo()
+				m.stateMachine.PausePlayback()
 
 				' update last viewed position in database
 				print "update last viewed position for ";m.stateMachine.selectedRecording.RecordingId;" to "; m.stateMachine.currentVideoPosition%
@@ -405,24 +421,19 @@ Function STPausedEventHandler(event As Object, stateData As Object) As Object
 			else if event["EventType"] = "PAUSE" or event["EventType"] = "PLAY" then
 
 				' unpause video before changing state
-				ok = m.stateMachine.videoPlayer.Resume()
-				if not ok stop
-
+				m.stateMachine.ResumePlayback()
 				m.stateMachine.StartVideoPlaybackTimer()
-
 				stateData.nextState = m.stateMachine.stPlaying
 				return "TRANSITION"
             
             else if event["EventType"] = "INSTANT_REPLAY" then
 
 				m.stateMachine.InstantReplayVideo()
-			
 				return "HANDLED"
 
             else if event["EventType"] = "QUICK_SKIP" then
 
 				m.stateMachine.QuickSkipVideo()
-			
 				return "HANDLED"
 
 			else
@@ -443,16 +454,9 @@ Function STPausedEventHandler(event As Object, stateData As Object) As Object
 
 			' fall through to superState
 
-		else if remoteCommand$ = "PAUSE" or remoteCommand$ = "PLAY"
-			' TBD - watch out for case where EXIT is hit when the UI is up
-			' TBD - is the following statement still true? temporary and wrong - playing restarts the video; it doesn't resume it.
-
-			' unpause video before changing state
-			ok = m.stateMachine.videoPlayer.Resume()
-			if not ok stop
-
+		else if remoteCommand$ = "PAUSE" or remoteCommand$ = "PLAY"		
+			m.stateMachine.ResumePlayback()
 			m.stateMachine.StartVideoPlaybackTimer()
-
 			stateData.nextState = m.stateMachine.stPlaying
 			return "TRANSITION"
 		else if remoteCommand$ = "QUICK_SKIP" then
@@ -488,9 +492,10 @@ Function STFastForwardingEventHandler(event As Object, stateData As Object) As O
 				m.stateMachine.jtr.UpdateDBLastViewedPosition(m.stateMachine.selectedRecording.RecordingId, m.stateMachine.currentVideoPosition%)
 				m.stateMachine.selectedRecording.LastViewedPosition = m.stateMachine.currentVideoPosition%
 
-				m.fastForwardPlaybackSpeed = 2.0
+				m.stateMachine.playbackSpeedIndex% = m.stateMachine.normalPlaybackSpeedIndex% + 1
+				playbackSpeed = m.stateMachine.playbackSpeeds[m.stateMachine.playbackSpeedIndex%]
 
-				m.stateMachine.videoPlayer.SetPlaybackSpeed(m.fastForwardPlaybackSpeed)
+				m.stateMachine.videoPlayer.SetPlaybackSpeed(playbackSpeed)
 
                 return "HANDLED"
 
@@ -508,7 +513,19 @@ Function STFastForwardingEventHandler(event As Object, stateData As Object) As O
 
 		remoteCommand$ = GetRemoteCommand(event)
 
-		if remoteCommand$ = "MENU" then
+		if remoteCommand$ = "FF" then
+			
+			m.stateMachine.playbackSpeedIndex% = m.stateMachine.playbackSpeedIndex% + 1
+			if m.stateMachine.playbackSpeedIndex% >= m.stateMachine.playbackSpeeds.Count() then
+				m.stateMachine.playbackSpeedIndex% = m.stateMachine.normalPlaybackSpeedIndex% + 1
+			endif
+
+			playbackSpeed = m.stateMachine.playbackSpeeds[m.stateMachine.playbackSpeedIndex%]
+			m.stateMachine.videoPlayer.SetPlaybackSpeed(playbackSpeed)
+
+			return "HANDLED"
+
+		else if remoteCommand$ = "MENU" then
 
 			' save current position
 			m.stateMachine.jtr.UpdateDBLastViewedPosition(m.stateMachine.selectedRecording.RecordingId, m.stateMachine.currentVideoPosition%)
@@ -517,18 +534,7 @@ Function STFastForwardingEventHandler(event As Object, stateData As Object) As O
 			' fall through to superState
 
 		else if remoteCommand$ = "PAUSE"
-
-			' TBD - watch out for case where EXIT is hit when the UI is up
-			' TBD - is the following statement still true? temporary and wrong - playing restarts the video; it doesn't resume it.
-
-			' need to workaround system software bug where pausing doesn't work if setPlaybackSpeed was called
-			' unpause video before changing state
-			ok = m.stateMachine.videoPlayer.Resume()
-			if not ok stop
-
-			m.stateMachine.StartVideoPlaybackTimer()
-
-			stateData.nextState = m.stateMachine.stPlaying
+			stateData.nextState = m.stateMachine.stPaused
 			return "TRANSITION"
 		else if remoteCommand$ = "QUICK_SKIP" then
 			' m.stateMachine.QuickSkipVideo()
@@ -536,7 +542,89 @@ Function STFastForwardingEventHandler(event As Object, stateData As Object) As O
 			return "HANDLED"
 		else if remoteCommand$ = "INSTANT_REPLAY" then
 			' m.stateMachine.InstantReplayVideo()
-			' what should it do?
+			' should jump to prior tick mark in progress bar?
+			return "HANDLED"
+		' Jump
+		' Play
+		' Rewind
+		endif
+
+    endif
+            
+    stateData.nextState = m.superState
+    return "SUPER"
+    
+End Function
+
+
+Function STRewindingEventHandler(event As Object, stateData As Object) As Object
+
+    stateData.nextState = invalid
+    
+    if type(event) = "roAssociativeArray" then      ' internal message event
+
+        if IsString(event["EventType"]) then
+        
+            if event["EventType"] = "ENTRY_SIGNAL" then
+            
+                print m.id$ + ": entry signal"
+
+				' update last viewed position in database
+				print "update last viewed position for ";m.stateMachine.selectedRecording.RecordingId;" to "; m.stateMachine.currentVideoPosition%
+				m.stateMachine.jtr.UpdateDBLastViewedPosition(m.stateMachine.selectedRecording.RecordingId, m.stateMachine.currentVideoPosition%)
+				m.stateMachine.selectedRecording.LastViewedPosition = m.stateMachine.currentVideoPosition%
+
+				m.stateMachine.playbackSpeedIndex% = m.stateMachine.normalPlaybackSpeedIndex% - 1
+				playbackSpeed = m.stateMachine.playbackSpeeds[m.stateMachine.playbackSpeedIndex%]
+
+				m.stateMachine.videoPlayer.SetPlaybackSpeed(playbackSpeed)
+
+                return "HANDLED"
+
+            else if event["EventType"] = "EXIT_SIGNAL" then
+
+                print m.id$ + ": exit signal"
+            
+			else
+				' TODO - internal message / play from replay guide
+			endif
+            
+        endif
+        
+	else if IsRemoteCommand(event) then    
+
+		remoteCommand$ = GetRemoteCommand(event)
+
+		if remoteCommand$ = "RW" then
+			
+			m.stateMachine.playbackSpeedIndex% = m.stateMachine.playbackSpeedIndex% - 1
+			if m.stateMachine.playbackSpeedIndex% < 0 then
+				m.stateMachine.playbackSpeedIndex% = m.stateMachine.normalPlaybackSpeedIndex% - 1
+			endif
+
+			playbackSpeed = m.stateMachine.playbackSpeeds[m.stateMachine.playbackSpeedIndex%]
+			m.stateMachine.videoPlayer.SetPlaybackSpeed(playbackSpeed)
+
+			return "HANDLED"
+
+		else if remoteCommand$ = "MENU" then
+
+			' save current position
+			m.stateMachine.jtr.UpdateDBLastViewedPosition(m.stateMachine.selectedRecording.RecordingId, m.stateMachine.currentVideoPosition%)
+			m.stateMachine.selectedRecording.LastViewedPosition = m.stateMachine.currentVideoPosition%
+
+			' fall through to superState
+
+		else if remoteCommand$ = "PAUSE"
+			stateData.nextState = m.stateMachine.stPaused
+			return "TRANSITION"
+		else if remoteCommand$ = "QUICK_SKIP" then
+			' m.stateMachine.QuickSkipVideo()
+			' should jump to next tick mark in progress bar
+			return "HANDLED"
+		else if remoteCommand$ = "INSTANT_REPLAY" then
+			' m.stateMachine.InstantReplayVideo()
+			' should jump to prior tick mark in progress bar?
 			return "HANDLED"
 		' Jump
 		endif
@@ -557,39 +645,6 @@ Sub LaunchVideo()
 	if not ok stop
 
 	m.stateMachine.StartVideoPlaybackTimer()
-
-End Sub
-
-
-Sub PauseVideo()
-				
-	ok = m.videoPlayer.Pause()
-	' if not ok stop - false is returned if video is already paused
-
-	m.videoPlaybackTimer.Stop()
-
-End Sub
-
-
-' currently called after being paused or when launched from replay guide and not starting from the beginning
-Sub ResumeVideo()
-stop
-' does resume work if it wasn't playing? No.
-	ok = m.videoPlayer.Resume()
-	if not ok then		' implies playback doesn't start from the beginning (error is because playback isn't active in any way)
-		
-		ok = m.videoPlayer.PlayFile(m.selectedRecording.Path)
-		if not ok stop
-
-		m.SeekToCurrentVideoPosition()
-
-		m.stateMachine.StartVideoPlaybackTimer()
-
-	else
-		stop
-	endif
-
-	m.videoPlaybackTimer.Start()
 
 End Sub
 
@@ -718,9 +773,37 @@ End Sub
 
 Sub StartVideoPlaybackTimer()
 
+print "****************************************************************************** START_VIDEO_PLAYBACK_TIMER"
 	m.videoPlaybackTimer = CreateObject("roTimer")
 	m.videoPlaybackTimer.SetPort(m.msgPort)
 	m.videoPlaybackTimer.SetElapsed(1, 0)
 	m.videoPlaybackTimer.Start()
+
+End Sub
+
+
+Sub StopVideoPlaybackTimer()
+
+print "****************************************************************************** STOP_VIDEO_PLAYBACK_TIMER"
+	m.videoPlaybackTimer.Stop()
+
+End Sub
+
+
+Sub PausePlayback()
+
+	m.StopVideoPlaybackTimer()
+
+	ok = m.videoPlayer.SetPlaybackSpeed(0)
+	ok = m.videoPlayer.Pause()
+	' if not ok stop
+
+End Sub
+
+Sub ResumePlayback()
+
+	ok = m.videoPlayer.Resume()
+	' if not ok stop
+	ok = m.videoPlayer.SetPlaybackSpeed(1.0)
 
 End Sub
