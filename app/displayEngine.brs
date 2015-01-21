@@ -800,10 +800,13 @@ Sub PausePlayback()
 
 End Sub
 
+
 Sub ResumePlayback()
 
 	ok = m.videoPlayer.Resume()
 	' if not ok stop
 	ok = m.videoPlayer.SetPlaybackSpeed(1.0)
+
+	m.playbackSpeedIndex% = m.normalPlaybackSpeedIndex%
 
 End Sub
