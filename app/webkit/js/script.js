@@ -1,7 +1,7 @@
 var currentActiveElementId = "#homePage";
-var baseURL = "http://192.168.2.9:8080/";
+//var baseURL = "http://192.168.2.9:8080/";
 //var baseURL = "http://192.168.2.12:8080/";
-//var baseURL = "http://10.1.0.134:8080/";
+var baseURL = "http://10.1.0.90:8080/";
 
 var bsMessage;
 var ir_receiver;
@@ -207,8 +207,8 @@ function UpdateProgressBarGraphics(currentOffset, recordingDuration) {
     $("#progressBarSpan").width(percentComplete);
 
     // TODO - should retrieve these attributes dynamically
-    var leftOffset = 5;
-    var rightOffset = 90;
+    var leftOffset = 5.5;
+    var rightOffset = 89.6;
     var offset = leftOffset + (rightOffset - leftOffset) * (currentOffset / recordingDuration);
     console.log("offset = " + offset);
 
@@ -219,10 +219,14 @@ function UpdateProgressBarGraphics(currentOffset, recordingDuration) {
     // update progress bar position tick (width is 0.25%)
     var tickOffset = offset - 0.25 / 2;
     $("#progressBarTickCurrent").css({ left: tickOffset.toString() + '%' });
-    // to show where the tick is when all the way on the left (time=0)
-    //                    var eOffset = leftOffset.toString() + "%";
-    //                    $("#progressBarTickCurrent").css({ left: eOffset });
 
+    // to show where the tick is when all the way on the left (time=0)
+    // var eOffset = leftOffset.toString() + "%";
+    // $("#progressBarTickCurrent").css({ left: eOffset });
+
+    // to show where the tick is when all the way on the right
+    //var eOffset = rightOffset.toString() + "%";
+    //$("#progressBarTickCurrent").css({ left: eOffset });
 
     var elapsedTimeLabel = SecondsToHourMinuteLabel(currentOffset);
     $("#progressBarElapsedTime").html("<p>" + elapsedTimeLabel + "</p>");
@@ -300,15 +304,17 @@ function toggleProgressBar(currentOffset, recordingDuration) {
 
         $("#videoControlRegion").append(toAppend);
 
-        // TODO - should retrieve these attributes dynamically
-        var leftOffset = 5;
-        var rightOffset = 90;
+        // TODO - should retrieve these attributes dynamically - good luck with that!!
+        var leftOffset = 5.5;
+        var rightOffset = 89.6;
         for (i = 1; i <= numTicks; i++) {
 
             var durationAtTick = i * minutesPerTick;
             var totalDuration = numMinutes;
 
             var tickOffset = leftOffset + (rightOffset - leftOffset) * (durationAtTick / totalDuration);
+            tickOffset = tickOffset - 0.25 / 2; // move to left a little to account for width of tick
+
             console.log("tickOffset=" + tickOffset.toString());
             $("#progressBarTick" + i.toString()).css({ left: tickOffset.toString() + '%', position: 'absolute' });
         }
