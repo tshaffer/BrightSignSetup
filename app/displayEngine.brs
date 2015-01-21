@@ -533,7 +533,12 @@ Function STFastForwardingEventHandler(event As Object, stateData As Object) As O
 
 			' fall through to superState
 
-		else if remoteCommand$ = "PAUSE"
+		else if remoteCommand$ = "PLAY" then
+			m.stateMachine.ResumePlayback()
+			m.stateMachine.StartVideoPlaybackTimer()
+			stateData.nextState = m.stateMachine.stPlaying
+			return "TRANSITION"
+		else if remoteCommand$ = "PAUSE" then
 			stateData.nextState = m.stateMachine.stPaused
 			return "TRANSITION"
 		else if remoteCommand$ = "QUICK_SKIP" then
@@ -615,6 +620,11 @@ Function STRewindingEventHandler(event As Object, stateData As Object) As Object
 
 			' fall through to superState
 
+		else if remoteCommand$ = "PLAY" then
+			m.stateMachine.ResumePlayback()
+			m.stateMachine.StartVideoPlaybackTimer()
+			stateData.nextState = m.stateMachine.stPlaying
+			return "TRANSITION"
 		else if remoteCommand$ = "PAUSE"
 			stateData.nextState = m.stateMachine.stPaused
 			return "TRANSITION"
