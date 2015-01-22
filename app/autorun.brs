@@ -49,7 +49,7 @@ Sub RunJtr()
 
 	JTR.gpio = CreateObject("roGpioControlPort")
 
-	useIRRemote = false
+	useIRRemote = true
 
 	if useIRRemote then
 		JTR.remote = CreateObject("roIRRemote")
@@ -60,10 +60,10 @@ Sub RunJtr()
 		endif
 	else
 		aa = {}
-'		aa.source = "Iguana"
-'		aa.encodings = ["NEC","RC5"]
-		aa.source = "IR-in"
-		aa.encodings = ["NEC"]
+		aa.source = "Iguana"
+		aa.encodings = ["NEC","RC5"]
+'		aa.source = "IR-in"
+'		aa.encodings = ["NEC"]
 		JTR.irReceiver = CreateObject("roIRReceiver", aa)
 		if type(JTR.irReceiver) = "roIRReceiver" then
 			JTR.irReceiver.SetPort(msgPort)
