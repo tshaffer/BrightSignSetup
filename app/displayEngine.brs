@@ -16,6 +16,7 @@ Function newDisplayEngine(jtr As Object) As Object
 	DisplayEngine.StopVideoPlaybackTimer		= StopVideoPlaybackTimer
 	DisplayEngine.ResumePlayback				= ResumePlayback
 	DisplayEngine.PausePlayback					= PausePlayback
+	DisplayEngine.JumpToTick					= JumpToTick
 
 	DisplayEngine.LaunchWebkit					= LaunchWebkit
 
@@ -126,6 +127,10 @@ Function STShowingUIEventHandler(event As Object, stateData As Object) As Object
 				' new approach - launch video playback here
 				print "LaunchVideo from STShowingUIEventHandler"
 
+'				aa = { }
+'				aa.AddReplace("Filename", m.stateMachine.selectedRecording.Path)
+'				ok = m.stateMachine.videoPlayer.PreloadFile(aa)
+'				m.stateMachine.SeekToCurrentVideoPosition()
 				ok = m.stateMachine.videoPlayer.PlayFile(m.stateMachine.selectedRecording.Path)
 				if not ok stop
 		
@@ -267,11 +272,69 @@ Function STShowingVideoEventHandler(event As Object, stateData As Object) As Obj
 		else if remoteCommand$ = "PROGRESS_BAR" then
 
 			if type(m.stateMachine.selectedRecording) = "roAssociativeArray" then
+
+				' specify a variety of parameters for the UI
+        
+				recordingDuration = m.stateMachine.selectedRecording.Duration*60
+
+				' number of ticks to display is based on the duration of the recording
+				'0 < duration <= 5 minutes
+				'every 1 minute
+				'5 minutes < duration <= 40 minutes
+				'every 5 minutes
+				'40 minutes < duration <= 1 hour
+				'every 10minutes
+				'1 hour < duration <= 3 hours
+				'every 15 minutes
+				'3 hours < duration <= 4 hours
+				'every 30 minutes
+				'4 hours < duration
+				'every hour
+				numMinutes% = recordingDuration / 60
+
+				print "toggleProgressBar: duration = ";recordingDuration
+				print "toggleProgressBar: numMinutes = ";numMinutes%
+
+				minutesPerTick% = 1
+				if (numMinutes% > 240) then
+					minutesPerTick% = 60
+				else if (numMinutes% > 180) then
+					minutesPerTick% = 30
+				else if (numMinutes% > 60) then
+					minutesPerTick% = 15
+				else if (numMinutes% > 40) then
+					minutesPerTick% = 10
+				else if (numMinutes% > 5) then
+					minutesPerTick% = 5
+				else 
+					minutesPerTick% = 1
+				endif
+
+				numTicks% = numMinutes% / minutesPerTick%
+
+				print "toggleProgressBar: numTicks = ";numTicks%
+				print "toggleProgressBar: minutesPerTick = ";minutesPerTick%
+
+				' determine whether or not to draw last tick - don't draw it if it is at the end of the progress bar
+				if (minutesPerTick% * numTicks%) = numMinutes% then
+					numTicks% = numTicks% - 1
+				endif
+
+				print "toggleProgressBar: numTicks = ";numTicks%
+
 				aa = {}
 				aa.AddReplace("bsMessage", "toggleProgressBar")
 				aa.AddReplace("currentOffset", stri(m.stateMachine.currentVideoPosition%))
 				aa.AddReplace("recordingDuration", stri(m.stateMachine.selectedRecording.Duration*60))
+				aa.AddReplace("numMinutes", stri(numMinutes%))
+				aa.AddReplace("minutesPerTick", stri(minutesPerTick%))
+				aa.AddReplace("numTicks", stri(numTicks%))
 				m.stateMachine.htmlWidget.PostJSMessage(aa)
+
+				m.stateMachine.numMinutes = numMinutes%
+				m.stateMachine.minutesPerTick = minutesPerTick%
+				m.stateMachine.numTicks = numTicks%
+
 			endif				
 
 			return "HANDLED"
@@ -542,6 +605,28 @@ Function STFastForwardingEventHandler(event As Object, stateData As Object) As O
 			stateData.nextState = m.stateMachine.stPaused
 			return "TRANSITION"
 		else if remoteCommand$ = "QUICK_SKIP" then
+
+			' jump to the next tick mark in the progress bar
+			' TODO - what if the progress bar is not visible?
+			m.stateMachine.JumpToTick(true)
+			return "HANDLED"
+
+			currentPosition% = m.stateMachine.currentVideoPosition%
+			numTicksPassed% = currentPosition% / (m.stateMachine.minutesPerTick * 60)
+			if numTicksPassed% < m.stateMachine.numTicks then
+				jumpToTick% = numTicksPassed% + 1
+				jumpTo% = jumpToTick% * m.stateMachine.minutesPerTick * 60
+			else
+				jumpTo% = m.stateMachine.selectedRecording.Duration*60
+			endif
+
+			print "Jump to ";jumpTo%
+
+			m.stateMachine.currentVideoPosition% = jumpTo%
+
+			m.stateMachine.UpdateProgressBar()
+			m.stateMachine.SeekToCurrentVideoPosition()
+
 			' m.stateMachine.QuickSkipVideo()
 			' should jump to next tick mark in progress bar
 			return "HANDLED"
@@ -633,6 +718,8 @@ Function STRewindingEventHandler(event As Object, stateData As Object) As Object
 			' should jump to next tick mark in progress bar
 			return "HANDLED"
 		else if remoteCommand$ = "INSTANT_REPLAY" then
+			m.stateMachine.JumpToTick(false)
+			return "HANDLED"
 			' m.stateMachine.InstantReplayVideo()
 			' should jump to prior tick mark in progress bar?
 			return "HANDLED"
@@ -820,3 +907,36 @@ Sub ResumePlayback()
 	m.playbackSpeedIndex% = m.normalPlaybackSpeedIndex%
 
 End Sub
+
+
+Sub JumpToTick(movingForward As Boolean)
+
+	currentPosition% = m.currentVideoPosition%
+	numTicksPassed% = currentPosition% / (m.minutesPerTick * 60)
+
+	if movingForward then
+		if numTicksPassed% < m.numTicks then
+			jumpToTick% = numTicksPassed% + 1
+			jumpTo% = jumpToTick% * m.minutesPerTick * 60
+		else
+			jumpTo% = m.selectedRecording.Duration*60
+		endif
+	else
+		if numTicksPassed% > 0 then
+			jumpToTick% = numTicksPassed%
+			jumpTo% = jumpToTick% * m.minutesPerTick * 60
+		else
+			jumpTo% = 0
+		endif
+	endif
+
+	print "Jump to ";jumpTo%
+
+	m.currentVideoPosition% = jumpTo%
+
+	m.UpdateProgressBar()
+	m.SeekToCurrentVideoPosition()
+
+End Sub
+
+

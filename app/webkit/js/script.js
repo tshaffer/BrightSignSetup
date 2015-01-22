@@ -1,7 +1,7 @@
 var currentActiveElementId = "#homePage";
-//var baseURL = "http://192.168.2.9:8080/";
+var baseURL = "http://192.168.2.9:8080/";
 //var baseURL = "http://192.168.2.12:8080/";
-var baseURL = "http://10.1.0.90:8080/";
+//var baseURL = "http://10.1.0.90:8080/";
 
 var bsMessage;
 var ir_receiver;
@@ -237,7 +237,7 @@ function UpdateProgressBarGraphics(currentOffset, recordingDuration) {
 
 }
 
-function toggleProgressBar(currentOffset, recordingDuration) {
+function toggleProgressBar(currentOffset, recordingDuration, numMinutes, minutesPerTick, numTicks) {
     if (!$("#progressBar").length) {
         var percentComplete = 50;
         var toAppend = '<div id="progressBar" class="meter"><span id="progressBarSpan" class="meter-span" style="width: ' + percentComplete + '%;"></span></div>';
@@ -258,41 +258,41 @@ function toggleProgressBar(currentOffset, recordingDuration) {
         //every 30 minutes
         //4 hours < duration
         //every hour
-        var numMinutes = Math.floor(recordingDuration / 60);
+        //var numMinutes = Math.floor(recordingDuration / 60);
 
-        console.log("toggleProgressBar: duration = " + recordingDuration);
-        console.log("toggleProgressBar: numMinutes = " + numMinutes);
+        //console.log("toggleProgressBar: duration = " + recordingDuration);
+        //console.log("toggleProgressBar: numMinutes = " + numMinutes);
 
-        var numTicks = 8;
-        var minutesPerTick = 1;
-        if (numMinutes > 240) {
-            minutesPerTick = 60;
-        }
-        else if (numMinutes > 180) {
-            minutesPerTick = 30;
-        }
-        else if (numMinutes > 60) {
-            minutesPerTick = 15;
-        }
-        else if (numMinutes > 40) {
-            minutesPerTick = 10;
-        }
-        else if (numMinutes > 5) {
-            minutesPerTick = 5;
-        }
-        else {
-            minutesPerTick = 1;
-        }
-        numTicks = Math.floor(numMinutes / minutesPerTick);
+        //var numTicks = 8;
+        //var minutesPerTick = 1;
+        //if (numMinutes > 240) {
+        //    minutesPerTick = 60;
+        //}
+        //else if (numMinutes > 180) {
+        //    minutesPerTick = 30;
+        //}
+        //else if (numMinutes > 60) {
+        //    minutesPerTick = 15;
+        //}
+        //else if (numMinutes > 40) {
+        //    minutesPerTick = 10;
+        //}
+        //else if (numMinutes > 5) {
+        //    minutesPerTick = 5;
+        //}
+        //else {
+        //    minutesPerTick = 1;
+        //}
+        //numTicks = Math.floor(numMinutes / minutesPerTick);
 
-        console.log("toggleProgressBar: numTicks = " + numTicks);
-        console.log("toggleProgressBar: minutesPerTick = " + minutesPerTick);
+        //console.log("toggleProgressBar: numTicks = " + numTicks);
+        //console.log("toggleProgressBar: minutesPerTick = " + minutesPerTick);
 
-        // determine whether or not to draw last tick - don't draw it if it is at the end of the progress bar
-        if (Math.floor(numMinutes) % (Math.floor(minutesPerTick) * numTicks) == 0) {
-            numTicks--;
-        }
-        console.log("toggleProgressBar: numTicks = " + numTicks);
+        //// determine whether or not to draw last tick - don't draw it if it is at the end of the progress bar
+        //if (Math.floor(numMinutes) % (Math.floor(minutesPerTick) * numTicks) == 0) {
+        //    numTicks--;
+        //}
+        //console.log("toggleProgressBar: numTicks = " + numTicks);
 
         for (i = 1; i <= numTicks; i++) {
             var theId = "progressBarTick" + i.toString()
@@ -690,7 +690,16 @@ $(document).ready(function () {
                     var recordingDuration = msg.data["recordingDuration"];
                     console.log('### recordingDuration : ' + recordingDuration);
 
-                    toggleProgressBar(currentOffset, recordingDuration);
+                    var numMinutes = msg.data["numMinutes"];
+                    console.log('### numMinutes : ' + numMinutes);
+
+                    var minutesPerTick = msg.data["minutesPerTick"];
+                    console.log('### minutesPerTick : ' + recordingDuration);
+
+                    var numTicks = msg.data["numTicks"];
+                    console.log('### numTicks : ' + numTicks);
+
+                    toggleProgressBar(currentOffset, recordingDuration, numMinutes, minutesPerTick, numTicks);
                 }
                 else if (command$ == "UpdateProgressBar" && $("#progressBar").length) {
 
