@@ -627,6 +627,9 @@ $(document).ready(function () {
                     $(elementId).focus();
 
                 }
+                else if (command$ == "showRecordedShows") {
+                    selectRecordedShows();
+                }
                 else if (command$ == "exitUI") {
                     eraseUI();
                 }

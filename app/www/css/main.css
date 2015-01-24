@@ -1,3 +1,19 @@
+/* th.play, th.delete, th.info { */
+th.play, th.delete, th.info {
+  width: 40px;
+}
+
+th.recorded {
+  width: 100px;
+}
+
+.recorded-shows-icon {
+  padding-top: 2px;
+  padding-right: 4px;
+  padding-bottom: 2px;
+  padding-left: 4px;
+}
+
 /* Space out content a bit */
 body {
   padding-top: 20px;

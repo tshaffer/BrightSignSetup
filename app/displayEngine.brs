@@ -172,6 +172,14 @@ Function STShowingUIEventHandler(event As Object, stateData As Object) As Object
 			stateData.nextState = m.stateMachine.stPaused
 			return "TRANSITION"            
 
+		else if remoteCommand$ = "RECORDED_SHOWS" then
+
+			' tell js to show Recorded Shows
+			aa = {}
+			aa.AddReplace("bsMessage", "showRecordedShows")
+			m.stateMachine.htmlWidget.PostJSMessage(aa)
+
+			return "HANDLED"
 		else 
 
 			commandToHtml$ = ""
@@ -261,6 +269,16 @@ Function STShowingVideoEventHandler(event As Object, stateData As Object) As Obj
 			
 			stateData.nextState = m.stateMachine.stShowingUI
 			return "TRANSITION"            
+
+		else if remoteCommand$ = "RECORDED_SHOWS" then
+
+			' send message to js to show Recorded Shows
+			aa = {}
+			aa.AddReplace("bsMessage", "showRecordedShows")
+			m.stateMachine.htmlWidget.PostJSMessage(aa)
+
+			stateData.nextState = m.stateMachine.stShowingUI
+			return "TRANSITION"
 
 		else if remoteCommand$ = "PLAY_ICON" then
 			aa = {}
@@ -415,6 +433,17 @@ Function STPlayingEventHandler(event As Object, stateData As Object) As Object
 		remoteCommand$ = GetRemoteCommand(event)
 
 		if remoteCommand$ = "MENU" then
+
+			' pause video
+			m.stateMachine.PausePlayback()
+
+			' save current position
+			m.stateMachine.jtr.UpdateDBLastViewedPosition(m.stateMachine.selectedRecording.RecordingId, m.stateMachine.currentVideoPosition%)
+			m.stateMachine.selectedRecording.LastViewedPosition = m.stateMachine.currentVideoPosition%
+
+			' fall through to superState
+
+		else if remoteCommand$ = "RECORDED_SHOWS" then
 
 			' pause video
 			m.stateMachine.PausePlayback()

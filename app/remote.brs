@@ -78,12 +78,14 @@ Function SeikiCommand(remoteCommand% As Integer) As String
 		remoteCommand$ = "QUICK_SKIP"			' QUICK_SKIP = ASPECT
 	else if remoteCommand% = 163154 then 
 		remoteCommand$ = "INSTANT_REPLAY"		' INSTANT_REPLAY = AUTO
-	else if remoteCommand% = 163089 then 
-		remoteCommand$ = "JUMP"					' JUMP = SLEEP
+	else if remoteCommand% = 163143 then 
+		remoteCommand$ = "JUMP"					' JUMP = P.Mode
 	else if remoteCommand% = 163157 then 
 		remoteCommand$ = "PLAY_ICON"			' PLAY_ICON = C
 	else if remoteCommand% = 163136 then 
 		remoteCommand$ = "PROGRESS_BAR"			' PROGRESS_BAR = B
+	else if remoteCommand% = 163089 then
+		remoteCommand$ = "RECORDED_SHOWS"		' RECORDED_SHOWS = SLEEP
 	else
 		remoteCommand$ = ""
 	endif

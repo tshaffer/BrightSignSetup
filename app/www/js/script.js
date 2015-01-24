@@ -1,7 +1,7 @@
 var currentActiveElementId = "#homePage";
 var baseURL = "http://192.168.2.9:8080/";
 //var baseURL = "http://192.168.2.12:8080/";
-//var baseURL = "http://10.1.0.134:8080/";
+//var baseURL = "http://10.1.0.90:8080/";
 var converter;  //xml to JSON singleton object
 
 function XML2JSON(xml) {
@@ -222,19 +222,42 @@ function deleteSelectedShow(event) {
 
 
 function addRecordedShowsLine(jtrRecording) {
-    var toAppend = "<tr><td><button type='button' class='btn btn-default' id='recording" + jtrRecording.recordingId + "' aria-label='Left Align'><span class='glyphicon glyphicon-play-circle' aria-hidden='true'></span></button></td>" +
 
-	            "<td><button type='button' class='btn btn-default' id='delete" + jtrRecording.recordingId + "' aria-label='Left Align'><span class='glyphicon glyphicon-remove' aria-hidden='true'></span></button></td>" +
-    //                "<td>" + result[i].series + "</td>" +
-    //                "<td>" + result[i].episode + "</td>" +
-                "<td>" + jtrRecording.title + "</td>" +
-                "<td>" + "" + "</td>" +
-                "<td>" + jtrRecording.startDateTime + "</td>" +
-    //                "<td>" + result[i].lastPlayedDate + "</td>" +
-                "<td>" + "" + "</td>" +
-                "<td>" + jtrRecording.duration + "</td>" +
-    //                "<td>" + result[i].channel + "</td></tr>";
-	            "<td>" + "" + "</td></tr>";
+    /*
+        Play icon
+        Delete icon
+        Title
+        Date
+        Day of week
+        Info icon
+        Position
+    */
+
+    // the following code fails to work on iOS devices, so I've moved it to the server
+    //var date = new Date(jtrRecording.startDateTime);
+
+    //var weekday = new Array(7);
+    //weekday[0] = "Sun";
+    //weekday[1] = "Mon";
+    //weekday[2] = "Tue";
+    //weekday[3] = "Wed";
+    //weekday[4] = "Thu";
+    //weekday[5] = "Fri";
+    //weekday[6] = "Sat";
+
+    //var recordedOnLabel = weekday[date.getDay()] + " " + (date.getMonth() + 1).toString() + "/" + date.getDate().toString();
+    var lastViewedPositionInMinutes = Math.floor(jtrRecording.lastViewedPosition / 60);
+    var position = lastViewedPositionInMinutes.toString() + " of " + jtrRecording.duration.toString() + " minutes";
+
+    var toAppend =
+        "<tr>" +
+        //"<td><button style='font-size: 10px' type='button' class='btn btn-default' id='recording" + jtrRecording.recordingId + "' aria-label='Left Align'><span class='glyphicon glyphicon-play-circle' aria-hidden='true'></span></button></td>" +
+        "<td><button type='button' class='btn btn-default recorded-shows-icon' id='recording" + jtrRecording.recordingId + "' aria-label='Left Align'><span class='glyphicon glyphicon-play' aria-hidden='true'></span></button></td>" +
+	    "<td><button type='button' class='btn btn-default recorded-shows-icon' id='delete" + jtrRecording.recordingId + "' aria-label='Left Align'><span class='glyphicon glyphicon-remove' aria-hidden='true'></span></button></td>" +
+        "<td>" + jtrRecording.title + "</td>" +
+        "<td>" + jtrRecording.formattedDayDate + "</td>" +
+	    "<td><button type='button' class='btn btn-default recorded-shows-icon' id='delete" + jtrRecording.recordingId + "' aria-label='Left Align'><span class='glyphicon glyphicon-info-sign' aria-hidden='true'></span></button></td>" +
+        "<td>" + position + "</td>";
 
     return toAppend;
 }
@@ -247,6 +270,7 @@ function getRecordedShows() {
 	    url: aUrl,
 	    dataType: "xml",
 	    success: function (xml) {
+
 	        var recordings = XML2JSON(xml);
 
 	        var jtrRecordings = recordings.BrightSignRecordings.BrightSignRecording;
