@@ -269,16 +269,33 @@ Sub UpdateDBLastViewedPosition(recordingId% As Integer, lastViewedPosition% As I
 End Sub
 
 
-Function GetFilePath(fileName$ As String) As String
+Function GetMP4FilePath(fileName$ As String) As String
 
 	mp4Path$ = "content/" + fileName$ + ".mp4"
 	readFile = CreateObject("roReadFile", mp4Path$)
 	if type(readFile) = "roReadFile" return mp4Path$
 
+	return ""
+
+End Function
+
+
+Function GetTSFilePath(fileName$ As String) As String
+
 	tsPath$ = "content/" + fileName$ + ".ts"
 	readFile = CreateObject("roReadFile", tsPath$)
 	if type(readFile) = "roReadFile" return tsPath$
-
+	
 	return ""
+
+End Function
+
+
+Function GetFilePath(fileName$ As String) As String
+
+	mp4Path$ = GetMP4FilePath(fileName$)
+	if mp4Path$ <> "" return mp4Path$
+
+	return GetTSFilePath(fileName$)
 
 End Function

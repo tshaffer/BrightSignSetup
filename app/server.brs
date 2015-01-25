@@ -380,6 +380,12 @@ Sub filePosted(userData as Object, e as Object)
 	dbId = int(val(e.GetRequestHeader("DB-Id")))
 	mVar.UpdateDBTranscodeComplete(dbId)
 
+	recording = mVar.GetDBRecording(stri(dbId))
+	tsPath$ = GetTSFilePath(recording.FileName)
+	print "Transcode operation complete - delete ";tsPath$
+	ok = DeleteFile(tsPath$)
+	if not ok print "Delete after transcode complete failed"
+
 	e.SetResponseBodyString("RECEIVED")
     e.SendResponse(200)
 
