@@ -155,13 +155,18 @@ function createManualRecording() {
     var title = getRecordingTitle();
     var date = $("#manualRecordDate").val();
     var time = $("#manualRecordTime").val();
-    var dateObj = new Date(date + " " + time);
+    var dateStr = date + " " + time;
+
+    // required for iOS devices - http://stackoverflow.com/questions/13363673/javascript-date-is-invalid-on-ios
+    var compatibleDateStr = dateStr.replace(/-/g, '/');
+
+    var dateObj = new Date(compatibleDateStr);
     var duration = $("#manualRecordDuration").val();
     var channel = $("#manualRecordChannel").val();
     var useTuner = !$("#manualRecordAuxInCheckbox").is(':checked');
 	
-	var aUrl = baseURL + "manualRecord";
-	var recordData = {"year" : dateObj.getFullYear(), "month" : dateObj.getMonth(), "day" : dateObj.getDate(), "startTimeHours" : dateObj.getHours(), "startTimeMinutes" : dateObj.getMinutes(), "duration" : duration, "channel" :  channel, "title" : title, "useTuner" : useTuner}
+    var aUrl = baseURL + "manualRecord";
+    var recordData = {"year" : dateObj.getFullYear(), "month" : dateObj.getMonth(), "day" : dateObj.getDate(), "startTimeHours" : dateObj.getHours(), "startTimeMinutes" : dateObj.getMinutes(), "duration" : duration, "channel" :  channel, "title" : title, "useTuner" : useTuner}
 
 	$.get(aUrl, recordData)
         .done(function (result) {
