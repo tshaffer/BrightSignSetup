@@ -418,6 +418,9 @@ function executePlaySelectedShow(recordingId)
 {
     console.log("executePlaySelectedShow " + recordingId);
 
+    // save selected show in local storage
+    localStorage.setItem("lastSelectedShowId", recordingId.toString());
+
     var aUrl = baseURL + "recording";
 
     var recordingData = { "recordingId": recordingId };
@@ -561,6 +564,11 @@ function getRecordedShows() {
 
             recordedPageIds.length = 0;
 
+            // get last selected show from local storage - navigate to it. null if not defined
+            var lastSelectedShowId = localStorage.getItem("lastSelectedShowId");
+
+            var focusApplied = false;
+
             // add button handlers for each recording - note, the handlers need to be added after the html has been added!!
             $.each(recordingIds, function (index, recordingId) {
 
@@ -572,13 +580,21 @@ function getRecordedShows() {
                 var btnIdDelete = "#delete" + recordingId;
                 $(btnIdDelete).click({ recordingId: recordingId }, deleteSelectedShow);
 
+                // highlight the last selected show
+                if (recordingId == lastSelectedShowId) {
+                    focusApplied = true;
+                    $(btnIdRecording).focus();
+                }
+
                 var recordedPageRow = [];
                 recordedPageRow.push(btnIdRecording);
                 recordedPageRow.push(btnIdDelete);
                 recordedPageIds.push(recordedPageRow);
             });
 
-            $(recordedPageIds[0][0]).focus();
+            if (!focusApplied) {
+                $(recordedPageIds[0][0]).focus();
+            }
         }
     });
 }

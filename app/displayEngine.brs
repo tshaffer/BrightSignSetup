@@ -888,6 +888,8 @@ Sub LaunchWebkit()
 	m.htmlWidget.EnableJavascript(true)
 	m.htmlWidget.AllowJavaScriptUrls({ all: "*" })
 	m.htmlWidget.StartInspectorServer(2999)
+	m.htmlWidget.SetLocalStorageDir("localstorage")
+	m.htmlWidget.SetLocalStorageQuota(1 * 1024 * 1024)
 
 	m.htmlWidget.SetUrl("file:///webkit/index.html")
 
