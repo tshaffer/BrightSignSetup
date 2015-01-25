@@ -1,3 +1,18 @@
+th.play, th.delete, th.info {
+  width: 40px;
+}
+
+th.recorded {
+  width: 100px;
+}
+
+.recorded-shows-icon {
+  padding-top: 2px;
+  padding-right: 4px;
+  padding-bottom: 2px;
+  padding-left: 4px;
+}
+
 .btn-secondary 
 {
      color: white;
