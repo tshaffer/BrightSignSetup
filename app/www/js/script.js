@@ -233,6 +233,7 @@ function deleteSelectedShow(event) {
     $.get(aUrl, deleteRecordingData)
         .done(function (result) {
             console.log("deleteRecording successfully sent");
+            getRecordedShows();
         })
         .fail(function (jqXHR, textStatus, errorThrown) {
             debugger;

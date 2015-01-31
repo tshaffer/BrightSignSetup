@@ -404,6 +404,7 @@ function executeRecordedShowAction(actionButtonId) {
         console.log("selected delete");
         var recordingId = actionButtonId.substring("delete".length);
         executeDeleteSelectedShow(recordingId);
+        getRecordedShows();
     }
     else {
         console.log("executeRecordedShowAction - no matching action found for " + actionButtonId);
@@ -444,6 +445,7 @@ function executePlaySelectedShow(recordingId)
 function deleteSelectedShow(event) {
     var recordingId = event.data.recordingId;
     executeDeleteSelectedShow(recordingId);
+    getRecordedShows();
 }
 
 function executeDeleteSelectedShow(recordingId)
