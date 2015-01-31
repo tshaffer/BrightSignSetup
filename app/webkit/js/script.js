@@ -502,29 +502,15 @@ function addRecordedShowsLine(jtrRecording) {
     else {
         formattedDayDate = "poop";
     }
-    // the following code fails to work on iOS devices, so I've moved it to the server
-    //var date = new Date(jtrRecording.startDateTime);
 
-    //var weekday = new Array(7);
-    //weekday[0] = "Sun";
-    //weekday[1] = "Mon";
-    //weekday[2] = "Tue";
-    //weekday[3] = "Wed";
-    //weekday[4] = "Thu";
-    //weekday[5] = "Fri";
-    //weekday[6] = "Sat";
-
-    //var recordedOnLabel = weekday[date.getDay()] + " " + (date.getMonth() + 1).toString() + "/" + date.getDate().toString();
     var lastViewedPositionInMinutes = Math.floor(jtrRecording.lastViewedPosition / 60);
     var position = lastViewedPositionInMinutes.toString() + " of " + jtrRecording.duration.toString() + " minutes";
 
     var toAppend =
         "<tr>" +
-        //"<td><button style='font-size: 10px' type='button' class='btn btn-default' id='recording" + jtrRecording.recordingId + "' aria-label='Left Align'><span class='glyphicon glyphicon-play-circle' aria-hidden='true'></span></button></td>" +
         "<td><button type='button' class='btn btn-default recorded-shows-icon' id='recording" + jtrRecording.recordingId + "' aria-label='Left Align'><span class='glyphicon glyphicon-play' aria-hidden='true'></span></button></td>" +
 	    "<td><button type='button' class='btn btn-default recorded-shows-icon' id='delete" + jtrRecording.recordingId + "' aria-label='Left Align'><span class='glyphicon glyphicon-remove' aria-hidden='true'></span></button></td>" +
         "<td>" + jtrRecording.title + "</td>" +
-        //"<td>" + jtrRecording.formattedDayDate + "</td>" +
         "<td>" + formattedDayDate + "</td>" +
 	    "<td><button type='button' class='btn btn-default recorded-shows-icon' id='delete" + jtrRecording.recordingId + "' aria-label='Left Align'><span class='glyphicon glyphicon-info-sign' aria-hidden='true'></span></button></td>" +
         "<td>" + position + "</td>";

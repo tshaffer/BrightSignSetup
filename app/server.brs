@@ -218,49 +218,6 @@ Sub PopulateRecordings(mVar As Object, root As Object)
 			fileNameElem = recordingElem.AddElement("fileName")
 			fileNameElem.SetBody(recording.FileName)
 
-			' format date/time - the following code doesn't work in Javascript running Chrome on iOS
-			dim weekday[7]
-			weekday[0] = "Sun"
-			weekday[1] = "Mon"
-			weekday[2] = "Tue"
-			weekday[3] = "Wed"
-			weekday[4] = "Thu"
-			weekday[5] = "Fri"
-			weekday[6] = "Sat"
-
-			regexDateTime=CreateObject("roRegEx"," ","i")
-			dateTimeParts = regexDateTime.Split(recording.StartDateTime)
-			date$ = dateTimeParts[0]
-			time$ = dateTimeParts[1]
-
-			regexDate=CreateObject("roRegEx","/","i")
-			dateParts = regexDate.Split(date$)
-			year$ = dateParts[0]
-			year% = int(val(year$))
-			month$ = dateParts[1]
-			month% = int(val(month$))
-			day$ = dateParts[2]
-			day% = int(val(day$))
-
-			regexTime=CreateObject("roRegEx",":","i")
-			timeParts = regexTime.Split(time$)
-			hour$ = timeParts[0]
-			minute$ = timeParts[1]
-
-			dt = CreateObject("roDateTime")
-			dt.SetYear(year%)
-			dt.SetMonth(month%)
-			dt.SetDay(day%)
-
-			dt.Normalize()
-
-			dayOfWeek% = dt.GetDayOfWeek()
-			dayOfWeek$ = weekday[dayOfWeek%]
-
-			formattedDayDate$ = dayOfWeek$ + " " + month$ + "/" + day$
-			formattedDayDate = recordingElem.AddElement("formattedDayDate")
-			formattedDayDate.SetBody(formattedDayDate$)
-
 		else
 			print "recording " + recording.Title + " not found at " + recording.Path + ". Id = " + stri(recording.RecordingId)
 		endif
