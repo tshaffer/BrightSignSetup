@@ -166,6 +166,11 @@ function createManualRecording() {
 
     // required for iOS devices - http://stackoverflow.com/questions/13363673/javascript-date-is-invalid-on-ios
     var compatibleDateTimeStr = dateTimeStr.replace(/-/g, '/');
+
+    var bsIsoDateTime = compatibleDateTimeStr.replace(/\//g, '');   // remove slashes
+    bsIsoDateTime = bsIsoDateTime.replace(' ', 'T');                // replace space by T
+    bsIsoDateTime = bsIsoDateTime.replace(':', '');                 // remove colon
+
     var dateObj = new Date(compatibleDateTimeStr);
 
     var useTuner = !$("#manualRecordAuxInCheckbox").is(':checked');
@@ -176,7 +181,7 @@ function createManualRecording() {
     var title = getRecordingTitle(dateObj, useTuner, channel);
 
     var aUrl = baseURL + "manualRecord";
-    var recordData = {"year" : dateObj.getFullYear(), "month" : dateObj.getMonth(), "day" : dateObj.getDate(), "startTimeHours" : dateObj.getHours(), "startTimeMinutes" : dateObj.getMinutes(), "duration" : duration, "channel" :  channel, "title" : title, "useTuner" : useTuner}
+    var recordData = { "bsIsoDateTime": bsIsoDateTime, "duration": duration, "channel": channel, "title": title, "useTuner": useTuner }
 
 	$.get(aUrl, recordData)
         .done(function (result) {

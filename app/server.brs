@@ -260,23 +260,12 @@ Sub manualRecord(userData as Object, e as Object)
 	requestParams = e.GetRequestParams()
 
 	title$ = requestParams["title"]
-	year% = int(val(requestParams["year"]))
-	month% = int(val(requestParams["month"]))
-	day% = int(val(requestParams["day"]))
-	hour% = int(val(requestParams["startTimeHours"]))
-	minute% = int(val(requestParams["startTimeMinutes"]))
 	duration% = int(val(requestParams["duration"]))
 	channel$ = requestParams["channel"]
 	useTuner$ = requestParams["useTuner"]	' true or false
 
 	dateTime = CreateObject("roDateTime")
-	dateTime.SetYear(year%)
-	dateTime.SetMonth(month% + 1)
-	dateTime.SetHour(hour%)
-	dateTime.SetDay(day%)
-	dateTime.SetMinute(minute%)
-
-	' title$ = "MR at " + dateTime.GetString() + " on " + channel$
+	dateTime.FromIsoString(requestParams["bsIsoDateTime"])
 
 	addManualRecordMessage = CreateObject("roAssociativeArray")
 	addManualRecordMessage["EventType"] = "ADD_MANUAL_RECORD"
