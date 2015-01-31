@@ -1,6 +1,6 @@
 var currentActiveElementId = "#homePage";
-//var baseURL = "http://192.168.2.6:8080/";
-var baseURL = "http://192.168.2.7:8080/";
+var baseURL = "http://192.168.2.6:8080/";
+//var baseURL = "http://192.168.2.7:8080/";
 //var baseURL = "http://192.168.2.12:8080/";
 //var baseURL = "http://10.1.0.90:8080/";
 var converter;  //xml to JSON singleton object
@@ -115,7 +115,7 @@ function setDefaultDateTimeFields () {
 }
 
 
-function getRecordingTitle() {
+function getRecordingTitle(dateObj, useTuner, channel) {
 
     var title = $("#manualRecordTitle").val();
     if (!title) {
@@ -130,9 +130,14 @@ function getRecordingTitle() {
     return title;
 }
 
+
 function recordNow() {
 
-    var title = getRecordingTitle();
+    // get current date/time - used as title if user doesn't provide one.
+    var currentDate = new Date();
+
+    var title = getRecordingTitle(currentDate, false, "");
+
     var duration = $("#manualRecordDuration").val();
     
     var aUrl = baseURL + "recordNow";
@@ -151,21 +156,25 @@ function recordNow() {
         });
 }
 
+
 function createManualRecording() {
 
-    var title = getRecordingTitle();
-    var date = $("#manualRecordDate").val();
+    // retrieve date/time from html elements and convert to a format that works on all devices
+    var date = $("#manualRecordDate").val();    
     var time = $("#manualRecordTime").val();
-    var dateStr = date + " " + time;
+    var dateTimeStr = date + " " + time;
 
     // required for iOS devices - http://stackoverflow.com/questions/13363673/javascript-date-is-invalid-on-ios
-    var compatibleDateStr = dateStr.replace(/-/g, '/');
+    var compatibleDateTimeStr = dateTimeStr.replace(/-/g, '/');
+    var dateObj = new Date(compatibleDateTimeStr);
 
-    var dateObj = new Date(compatibleDateStr);
+    var useTuner = !$("#manualRecordAuxInCheckbox").is(':checked');
+
     var duration = $("#manualRecordDuration").val();
     var channel = $("#manualRecordChannel").val();
-    var useTuner = !$("#manualRecordAuxInCheckbox").is(':checked');
 	
+    var title = getRecordingTitle(dateObj, useTuner, channel);
+
     var aUrl = baseURL + "manualRecord";
     var recordData = {"year" : dateObj.getFullYear(), "month" : dateObj.getMonth(), "day" : dateObj.getDate(), "startTimeHours" : dateObj.getHours(), "startTimeMinutes" : dateObj.getMinutes(), "duration" : duration, "channel" :  channel, "title" : title, "useTuner" : useTuner}
 
