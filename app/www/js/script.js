@@ -306,6 +306,33 @@ function getRecordedShows() {
 
 	        var jtrRecordings = recordings.BrightSignRecordings.BrightSignRecording;
 
+	        var freeSpace = recordings.BrightSignRecordings._freeSpace;
+	        // 44934K per minute - sample 1 - long recording
+	        // 43408K per minute - sample 2 - 11 minute recording
+	        // use 44Mb per minute
+	        var freeSpaceInMegabytes = Number(freeSpace);
+	        var freeSpaceInMinutes = Math.floor(freeSpaceInMegabytes / 44);
+	        var freeSpaceInHours = Math.floor(freeSpaceInMinutes / 60);
+
+	        var freeSpace = "Free space: ";
+	        if (freeSpaceInHours > 0) {
+	            if (freeSpaceInHours > 1) {
+	                freeSpace += freeSpaceInHours.toString() + " hours";
+	            }
+	            else {
+	                freeSpace += "1 hour";
+	            }
+	            var partialFreeSpaceInMinutes = freeSpaceInMinutes % (freeSpaceInHours * 60);
+	            if (partialFreeSpaceInMinutes > 0) {
+	                freeSpace += ", " + partialFreeSpaceInMinutes.toString() + " minutes";
+	            }
+	        }
+	        else {
+	            freeSpace += freeSpaceInMinutes.toString() + " minutes";
+	        }
+
+	        $("#recordedShowsRemainingSpace").text(freeSpace);
+
 	        var toAppend = "";
 	        var recordingIds = [];
 
@@ -323,7 +350,7 @@ function getRecordedShows() {
 	            recordingIds.push(jtrRecording.recordingId);
 	        }
 
-	        // is there a reason do this all at the end instead of once for each row?
+	        // is there a reason to do this all at the end instead of once for each row?
 	        $("#recordedShowsTableBody").append(toAppend);
 
 	        // get last selected show from local storage - navigate to it. null if not defined
@@ -352,6 +379,7 @@ function getRecordedShows() {
 	        //if (!focusApplied) {
 	        //    $(recordedPageIds[0][0]).focus();
 	        //}
+
 	    }
 	});
 }

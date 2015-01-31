@@ -1,3 +1,11 @@
+.alignleft {
+	float: left;
+}
+
+.alignright {
+	float: right;
+}
+
 th.play, th.delete, th.showInfo {
   width: 40px;
 }

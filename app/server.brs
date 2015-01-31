@@ -162,6 +162,11 @@ Sub recordings(userData as Object, e as Object)
     root = CreateObject("roXMLElement")
     root.SetName("BrightSignRecordings")
 
+	' get remaining space on card
+	storageInfo = CreateObject("roStorageInfo", "SD:")
+	freeSpace = StripLeadingSpaces(stri(storageInfo.GetFreeInMegabytes()))
+	root.AddAttribute("freeSpace", freeSpace)
+
 	PopulateRecordings(mVar, root)
 
     xml = root.GenXML({ indent: " ", newline: chr(10), header: true })
