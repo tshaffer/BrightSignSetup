@@ -431,10 +431,11 @@ function switchToPage(newPage) {
 	$(currentActiveElementId).removeAttr("style");
 	if(currentActiveElementId == "#homePage") {
 		$("#footerArea").empty();
-	} else {
+		$("#trickModeKeys").css("display", "block");
+    } else {
 		$("#footerArea").append("<button class=\"btn btn-primary\" onclick=\"selectHomePage()\">Home</button><br><br>");
-	}
-
+		$("#trickModeKeys").css("display", "none");
+    }
 }
 
 
