@@ -47,6 +47,8 @@ Function SonyCommand(remoteCommand% As Integer) As String
 		remoteCommand$ = "FF"					' FF
 	else if remoteCommand% = 163159 then 
 		remoteCommand$ = "RW"					' RW
+	else if remoteCommand% = 163139 then 
+		remoteCommand$ = "STOP"					' STOP
 	else if remoteCommand% = 163160 then 
 		remoteCommand$ = "QUICK_SKIP"			' QUICK_SKIP = OPTIONS
 	else if remoteCommand% = 163154 then 
