@@ -9,9 +9,12 @@ End Function
 Function GetRemoteCommand(event As Object) As String
 
 	remoteEvent% = event
-	remoteEvent$ = SoundBridgeCommand(remoteEvent%)
+	remoteEvent$ = SonyCommand(remoteEvent%)
 	if remoteEvent$ = "" then
-		remoteEvent$ = SeikiCommand(remoteEvent%)
+		remoteEvent$ = SoundBridgeCommand(remoteEvent%)
+		if remoteEvent$ = "" then
+			remoteEvent$ = SeikiCommand(remoteEvent%)
+		endif
 	endif
 
 	print "remoteEvent=";remoteEvent$
@@ -19,6 +22,52 @@ Function GetRemoteCommand(event As Object) As String
 
 End Function
 
+
+Function SonyCommand(remoteCommand% As Integer) As String
+
+	if remoteCommand% = 163150 then
+		remoteCommand$ = "LEFT"					' LEFT
+	else if remoteCommand% = 163145 then
+		remoteCommand$ = "RIGHT"				' RIGHT
+	else if remoteCommand% = 163144 then
+		remoteCommand$ = "UP"					' UP
+	else if remoteCommand% = 163149 then 
+		remoteCommand$ = "DOWN"					' DOWN
+	else if remoteCommand% = 163146 then 
+		remoteCommand$ = "SELECT"				' SELECT
+	else if remoteCommand% = 163141 then 
+		remoteCommand$ = "MENU"					' MENU
+	else if remoteCommand% = 163085 then 
+		remoteCommand$ = "EXIT"					' EXIT = List
+	else if remoteCommand% = 163098 then 
+		remoteCommand$ = "PLAY"					' PLAY
+	else if remoteCommand% = 163163 then 
+		remoteCommand$ = "PAUSE"				' PAUSE
+	else if remoteCommand% = 163094 then 
+		remoteCommand$ = "FF"					' FF
+	else if remoteCommand% = 163159 then 
+		remoteCommand$ = "RW"					' RW
+	else if remoteCommand% = 163160 then 
+		remoteCommand$ = "QUICK_SKIP"			' QUICK_SKIP = OPTIONS
+	else if remoteCommand% = 163154 then 
+		remoteCommand$ = "INSTANT_REPLAY"		' INSTANT_REPLAY = RETURN
+	else if remoteCommand% = 163143 then 
+		remoteCommand$ = "JUMP"					' JUMP = RECALL
+	else if remoteCommand% = 163136 then 
+		remoteCommand$ = "PROGRESS_BAR"			' PROGRESS_BAR = INFO
+	else if remoteCommand% = 163089 then
+		remoteCommand$ = "RECORDED_SHOWS"		' RECORDED_SHOWS = FAVORITES
+	else if remoteCommand% = 163140 then
+		remoteCommand$ = "HIGHEST_SPEED_FW"		' ->->|
+	else if remoteCommand% = 163096 then
+		remoteCommand$ = "HIGHEST_SPEED_RW"		' |<-<-
+	else
+		remoteCommand$ = ""
+	endif
+
+	return remoteCommand$
+
+End Function
 
 Function SoundBridgeCommand(remoteCommand% As Integer) As String
 
@@ -50,6 +99,7 @@ Function SoundBridgeCommand(remoteCommand% As Integer) As String
 End Function
 
 
+' Also applies to Sony RM-VLZ620 as it was programmed from the Seiki
 Function SeikiCommand(remoteCommand% As Integer) As String
 
 	if remoteCommand% = 163150 then
@@ -86,6 +136,10 @@ Function SeikiCommand(remoteCommand% As Integer) As String
 		remoteCommand$ = "PROGRESS_BAR"			' PROGRESS_BAR = B
 	else if remoteCommand% = 163089 then
 		remoteCommand$ = "RECORDED_SHOWS"		' RECORDED_SHOWS = SLEEP
+	else if remoteCommand% = 163140 then
+		remoteCommand$ = "HIGHEST_SPEED_FW"		
+	else if remoteCommand% = 163096 then
+		remoteCommand$ = "HIGHEST_SPEED_RW"
 	else
 		remoteCommand$ = ""
 	endif
