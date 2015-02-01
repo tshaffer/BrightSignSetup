@@ -10,11 +10,11 @@ namespace transcoder
     class Program
     {
         // constants
-        private static string _bsIPAddress = "192.168.2.9:8080";
+        private static string _bsIPAddress = "192.168.2.6:8080";
         private static StreamWriter _writer = null;
 
-        private static int _timeToDelayAfterConversion = 10000;
-        private static int _timeBetweenChecks = 5000;
+        private static int _timeToDelayAfterConversion = 60000;
+        private static int _timeBetweenChecks = 60000;
 
         private static string _tmpFolder = String.Empty;
 
