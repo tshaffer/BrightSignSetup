@@ -142,6 +142,8 @@ Function SeikiCommand(remoteCommand% As Integer) As String
 		remoteCommand$ = "HIGHEST_SPEED_FW"		
 	else if remoteCommand% = 163096 then
 		remoteCommand$ = "HIGHEST_SPEED_RW"
+	else if remoteCommand% = 163139 then 
+		remoteCommand$ = "STOP"					' STOP = S.Mode
 	else
 		remoteCommand$ = ""
 	endif

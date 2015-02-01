@@ -10,6 +10,8 @@ Sub InitializeServer()
 	m.recordingsAA =					{ HandleEvent: recordings, mVar: m }
 	m.fileToTranscodeAA =				{ HandleEvent: fileToTranscode, mVar: m }
 
+	m.showUIAA =						{ HandleEvent: showUI, mVar: m}
+
 	m.pauseAA =							{ HandleEvent: pause, mVar: m}
 	m.playAA =							{ HandleEvent: play, mVar: m}
 	m.instantReplayAA =					{ HandleEvent: instantReplay, mVar: m}
@@ -25,6 +27,8 @@ Sub InitializeServer()
 
 	m.localServer.AddGetFromEvent({ url_path: "/fileToTranscode", user_data: m.fileToTranscodeAA })
 	m.localServer.AddPostToFile({ url_path: "/TranscodedFile", destination_directory: GetDefaultDrive(), user_data: m.filePostedAA })
+
+	m.localServer.AddGetFromEvent({ url_path: "/showUI", user_data: m.showUIAA })
 
 	m.localServer.AddGetFromEvent({ url_path: "/pause", user_data: m.pauseAA })
 	m.localServer.AddGetFromEvent({ url_path: "/play", user_data: m.playAA })
@@ -665,6 +669,24 @@ Sub siteFilePosted(userData as Object, e as Object)
 	endif
 
 	e.SetResponseBodyString("RECEIVED")
+    e.SendResponse(200)
+
+End Sub
+
+
+' endpoint invoked when the the javascript proactively displays a UI screen
+Sub showUI(userData as Object, e as Object)
+
+    mVar = userData.mVar
+
+	print "showUI endpoint invoked"
+
+	showUIMessage = CreateObject("roAssociativeArray")
+	showUIMessage["EventType"] = "SHOW_UI"
+	mVar.msgPort.PostMessage(showUIMessage)
+
+    e.AddResponseHeader("Content-type", "text/plain")
+    e.SetResponseBodyString("ok")
     e.SendResponse(200)
 
 End Sub

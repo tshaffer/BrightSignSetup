@@ -1,8 +1,9 @@
+
 var currentActiveElementId = "#homePage";
-var baseURL = "http://192.168.2.6:8080/";
+//var baseURL = "http://192.168.2.6:8080/";
 //var baseURL = "http://192.168.2.7:8080/";
 //var baseURL = "http://192.168.2.12:8080/";
-//var baseURL = "http://10.1.0.90:8080/";
+var baseURL = "http://10.1.0.90:8080/";
 var converter;  //xml to JSON singleton object
 
 function XML2JSON(xml) {
@@ -85,6 +86,10 @@ function remoteQuickSkip() {
 
     console.log("remoteQuickSkip");
     executeRemoteCommand("quickSkip");
+}
+
+function remoteStop() {
+    console.log("remoteStop");
 }
 
 function here(argument) {

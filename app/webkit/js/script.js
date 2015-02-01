@@ -2,11 +2,17 @@ var currentActiveElementId = "#homePage";
 var baseURL = "http://192.168.2.6:8080/";
 //var baseURL = "http://192.168.2.7:8080/";
 //var baseURL = "http://192.168.2.12:8080/";
-//var baseURL = "http://10.1.0.90:8080/";
+var baseURL = "http://10.1.0.90:8080/";
 
 var bsMessage;
 var ir_receiver;
 var recordedPageIds = [];
+
+var modalDialogDisplayed = false;
+var selectedDeleteShowDlgElement = "#deleteShowDlgDelete";
+var unselectedDeleteShowDlgElement = "#deleteShowDlgClose";
+
+var _showRecordingId;
 
 var converter;  //xml to JSON singleton object
 
@@ -85,9 +91,71 @@ function navigateRecordedShowsPage(navigationCommand$) {
 }
 
 function selectToDoList() {
-	switchToPage("toDoListPage");
+    switchToPage("toDoListPage");
 	getToDoList();
 }
+
+function displayDeleteShowDlg(showTitle, showRecordingId) {
+
+    _showRecordingId = showRecordingId;
+
+    var options = {
+        "backdrop": "true"
+    }
+    $('#deleteShowDlg').modal(options);
+    $('#deleteShowDlgShowTitle').html("Delete '" + showTitle + "'?");
+
+    modalDialogDisplayed = true;
+    selectedDeleteShowDlgElement = "#deleteShowDlgDelete";
+}
+
+function deleteShowDlgCloseInvoked() {
+    console.log("deleteShowDlgCloseInvoked");
+    $('#deleteShowDlg').modal('hide');
+    modalDialogDisplayed = false;
+    switchToPage("homePage");
+
+    var aUrl = baseURL + "showUI";
+    var placeholderData = {};
+
+    $.get(aUrl, placeholderData)
+        .done(function (result) {
+            console.log("showUI successfully sent");
+        })
+        .fail(function (jqXHR, textStatus, errorThrown) {
+            debugger;
+            console.log("showUI failure");
+        })
+        .always(function () {
+            alert("finished");
+        });
+
+}
+
+
+function deleteShowDlgDeleteInvoked() {
+    console.log("deleteShowDlgDeleteInvoked");
+    $('#deleteShowDlg').modal('hide');
+    modalDialogDisplayed = false;
+    executeDeleteSelectedShow(_showRecordingId);
+    switchToPage("homePage");
+
+    var aUrl = baseURL + "showUI";
+    var placeholderData = {};
+
+    $.get(aUrl, placeholderData)
+        .done(function (result) {
+            console.log("showUI successfully sent");
+        })
+        .fail(function (jqXHR, textStatus, errorThrown) {
+            debugger;
+            console.log("showUI failure");
+        })
+        .always(function () {
+            alert("finished");
+        });
+}
+
 
 function selectSetManualRecord() {
 	switchToPage("manualRecordPage");
@@ -711,54 +779,90 @@ $(document).ready(function () {
                 else if (command$ == "exitUI") {
                     eraseUI();
                 }
+                else if (command$ == "promptDelete") {
+                    displayDeleteShowDlg(msg.data["showTitle"], msg.data["showRecordingId"]);
+                }
                 else if (command$ == "togglePlayIcon") {
                     togglePlayIcon();
                 }
                 else if (command$ == "Up" || command$ == "Down" || command$ == "Left" || command$ == "Right") {
-                    console.log("currentActiveElementId is " + currentActiveElementId);
-                    switch (currentActiveElementId) {
-                        case "#homePage":
-                            console.log("navigation entered while homePage visible");
-                            navigateHomePage(command$)
-                            break;
-                        case "#recordedShowsPage":
-                            console.log("navigation entered while recordedShowsPage visible");
-                            navigateRecordedShowsPage(command$)
-                            break;
+                    if (modalDialogDisplayed) {
+                        console.log("navigation key invoked while modal dialog displayed");
+
+                        // temporary code; make it more general purpose when a second dialog is added
+                        console.log("selected element was: " + selectedDeleteShowDlgElement);
+
+                        $(selectedDeleteShowDlgElement).removeClass("btn-primary");
+                        $(selectedDeleteShowDlgElement).addClass("btn-secondary");
+
+                        $(unselectedDeleteShowDlgElement).removeClass("btn-secondary");
+                        $(unselectedDeleteShowDlgElement).addClass("btn-primary");
+
+                        $(unselectedDeleteShowDlgElement).focus();
+
+                        var tmp = unselectedDeleteShowDlgElement;
+                        unselectedDeleteShowDlgElement = selectedDeleteShowDlgElement;
+                        selectedDeleteShowDlgElement = tmp;
+                    }
+                    else {
+                        console.log("currentActiveElementId is " + currentActiveElementId);
+                        switch (currentActiveElementId) {
+                            case "#homePage":
+                                console.log("navigation entered while homePage visible");
+                                navigateHomePage(command$)
+                                break;
+                            case "#recordedShowsPage":
+                                console.log("navigation entered while recordedShowsPage visible");
+                                navigateRecordedShowsPage(command$)
+                                break;
+                        }
                     }
                 }
                 else if (command$ == "Enter") {
-                    switch (currentActiveElementId) {
-                        case "#homePage":
-                            var currentElement = document.activeElement;
-                            var currentElementId = currentElement.id;
-                            console.log("active home page item is " + currentElementId);
-                            switch (currentElementId) {
-                                case "channelGuide":
-                                    selectChannelGuide();
-                                    break;
-                                case "setManualRecord":
-                                    selectSetManualRecord();
-                                    break;
-                                case "recordedShows":
-                                    selectRecordedShows();
-                                    break;
-                                case "userSelection":
-                                    selectUserSelection();
-                                    break;
-                                case "toDoList":
-                                    selectToDoList();
-                                    break;
-                                case "myPlayVideo":
-                                    break;
-                            }
-                            break;
-                        case "#recordedShowsPage":
-                            var currentElement = document.activeElement;
-                            var currentElementId = currentElement.id;
-                            console.log("active recorded shows page item is " + currentElementId);
-                            executeRecordedShowAction(currentElementId);
-                            break;
+                    if (modalDialogDisplayed) {
+                        console.log("enter key invoked while modal dialog displayed");
+
+                        // temporary code; make it more general purpose when a second dialog is added
+                        if (selectedDeleteShowDlgElement == "#deleteShowDlgDelete") {
+                            deleteShowDlgDeleteInvoked();
+                        }
+                        else {
+                            deleteShowDlgCloseInvoked();
+                        }
+                    }
+                    else {
+                        switch (currentActiveElementId) {
+                            case "#homePage":
+                                var currentElement = document.activeElement;
+                                var currentElementId = currentElement.id;
+                                console.log("active home page item is " + currentElementId);
+                                switch (currentElementId) {
+                                    case "channelGuide":
+                                        selectChannelGuide();
+                                        break;
+                                    case "setManualRecord":
+                                        selectSetManualRecord();
+                                        break;
+                                    case "recordedShows":
+                                        selectRecordedShows();
+                                        break;
+                                    case "userSelection":
+                                        selectUserSelection();
+                                        break;
+                                    case "toDoList":
+                                        selectToDoList();
+                                        break;
+                                    case "myPlayVideo":
+                                        break;
+                                }
+                                break;
+                            case "#recordedShowsPage":
+                                var currentElement = document.activeElement;
+                                var currentElementId = currentElement.id;
+                                console.log("active recorded shows page item is " + currentElementId);
+                                executeRecordedShowAction(currentElementId);
+                                break;
+                        }
                     }
                 }
                 else if (command$ == "toggleProgressBar") {

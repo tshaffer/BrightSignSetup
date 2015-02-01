@@ -27,6 +27,10 @@ Function newDisplayEngine(jtr As Object) As Object
     DisplayEngine.stShowingUI.HStateEventHandler = STShowingUIEventHandler
 	DisplayEngine.stShowingUI.superState = DisplayEngine.stTop
 
+    DisplayEngine.stShowingModalDlg = DisplayEngine.newHState(DisplayEngine, "ShowingModalDlg")
+    DisplayEngine.stShowingModalDlg.HStateEventHandler = STShowingModalDlgEventHandler
+	DisplayEngine.stShowingModalDlg.superState = DisplayEngine.stTop
+
     DisplayEngine.stShowingVideo = DisplayEngine.newHState(DisplayEngine, "ShowingVideo")
     DisplayEngine.stShowingVideo.HStateEventHandler = STShowingVideoEventHandler
 	DisplayEngine.stShowingVideo.superState = DisplayEngine.stTop
@@ -84,6 +88,79 @@ Function InitializeDisplayEngine() As Object
 
 	return m.stShowingUI
 
+End Function
+
+
+Function STShowingModalDlgEventHandler(event As Object, stateData As Object) As Object
+
+    stateData.nextState = invalid
+    
+    if type(event) = "roAssociativeArray" then      ' internal message event
+
+        if IsString(event["EventType"]) then
+        
+            if event["EventType"] = "ENTRY_SIGNAL" then
+            
+                print m.id$ + ": entry signal"
+
+				' TBD - is it necessary to do anything here? hide video? send message to js?
+
+                return "HANDLED"
+
+            else if event["EventType"] = "EXIT_SIGNAL" then
+
+                print m.id$ + ": exit signal"
+            
+            else if event["EventType"] = "SHOW_UI" then
+
+                print "SHOW_UI message received"
+
+				stateData.nextState = m.stateMachine.stShowingUI
+				return "TRANSITION"            
+            
+			endif
+            
+        endif
+    
+	else if IsRemoteCommand(event) then    
+
+		remoteCommand$ = GetRemoteCommand(event)
+
+		 if remoteCommand$ = "EXIT" then
+
+			' TODO - treat this as cancel
+			return "HANDLED"            
+
+		else 
+
+			commandToHtml$ = ""
+			if remoteCommand$ = "UP" then
+				commandToHtml$ = "Up"
+			else if remoteCommand$ = "DOWN" then
+				commandToHtml$ = "Down"
+			else if remoteCommand$ = "LEFT" then
+				commandToHtml$ = "Left"
+			else if remoteCommand$ = "RIGHT" then
+				commandToHtml$ = "Right"
+			else if remoteCommand$ = "SELECT" then
+				commandToHtml$ = "Enter"
+			endif
+
+			if commandToHtml$ <> "" then
+				aa = {}
+				aa.AddReplace("bsMessage", commandToHtml$)
+				m.stateMachine.htmlWidget.PostJSMessage(aa)
+			endif
+
+			return "HANDLED"
+
+		endif
+
+    endif
+            
+    stateData.nextState = m.superState
+    return "SUPER"
+    
 End Function
 
 
@@ -442,6 +519,24 @@ Function STPlayingEventHandler(event As Object, stateData As Object) As Object
 			m.stateMachine.selectedRecording.LastViewedPosition = m.stateMachine.currentVideoPosition%
 
 			' fall through to superState
+
+		else if remoteCommand$ = "STOP" then
+
+			' pause video
+			m.stateMachine.PausePlayback()
+
+			' save current position
+			m.stateMachine.jtr.UpdateDBLastViewedPosition(m.stateMachine.selectedRecording.RecordingId, m.stateMachine.currentVideoPosition%)
+			m.stateMachine.selectedRecording.LastViewedPosition = m.stateMachine.currentVideoPosition%
+
+			aa = {}
+			aa.AddReplace("bsMessage", "promptDelete")
+			aa.AddReplace("showTitle", m.stateMachine.selectedRecording.Title)
+			aa.AddReplace("showRecordingId", stri(m.stateMachine.selectedRecording.RecordingId))
+			m.stateMachine.htmlWidget.PostJSMessage(aa)
+
+			stateData.nextState = m.stateMachine.stShowingModalDlg
+			return "TRANSITION"
 
 		else if remoteCommand$ = "RECORDED_SHOWS" then
 

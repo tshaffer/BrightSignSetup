@@ -49,7 +49,7 @@ Sub RunJtr()
 
 	JTR.gpio = CreateObject("roGpioControlPort")
 
-	useIRRemote = false
+	useIRRemote = true
 
 	if useIRRemote then
 		JTR.remote = CreateObject("roIRRemote")
