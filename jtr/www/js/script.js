@@ -1,9 +1,11 @@
 
 var currentActiveElementId = "#homePage";
-var baseURL = "http://192.168.2.6:8080/";
+//var baseURL = "http://192.168.2.6:8080/";
 //var baseURL = "http://192.168.2.7:8080/";
 //var baseURL = "http://192.168.2.12:8080/";
 //var baseURL = "http://10.1.0.90:8080/";
+var baseURL;
+
 var converter;  //xml to JSON singleton object
 
 function XML2JSON(xml) {
@@ -444,12 +446,45 @@ function switchToPage(newPage) {
 }
 
 
+var numFailures = 0;
+
+function findBrightSign(ipAddress) {
+
+    var aUrl = ipAddress + "/recordings";
+    $.ajax({
+        type: "GET",
+        url: aUrl,
+        dataType: "xml",
+        timeout: 3000,
+        ipAddress: ipAddress,
+        success: function (data, textStatus, jqXHR) {
+            //debugger;
+        },
+        error: function (jqXHR, textStatus, errorThrown) {
+            numFailures++;
+            if (numFailures >= 255) {
+                //debugger;
+            }
+        }
+    });
+}
+
 //keyboard event listener
 $(document).ready(function () {
 
+    // document.URL = "http://192.168.2.6:8080/?"
+    // window.baseURL = "http://192.168.2.6:8080/"
+
+    //for (var i = 1; i <= 255; i++) {
+    //    var ipAddress = "http://192.168.2." + i.toString() + ":8080";
+    //    findBrightSign(ipAddress);
+    //}
+
+    baseURL = document.baseURI.replace("?","");
+
     // user agent
     console.log("User Agent: " + navigator.userAgent);
-    alert(navigator.userAgent);
+    //alert(navigator.userAgent);
 
     $("body").keydown(function (e) {
         console.log(e.which);
