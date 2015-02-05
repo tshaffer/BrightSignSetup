@@ -2,7 +2,7 @@ var currentActiveElementId = "#homePage";
 var baseURL = "http://192.168.2.6:8080/";
 //var baseURL = "http://192.168.2.7:8080/";
 //var baseURL = "http://192.168.2.12:8080/";
-var baseURL = "http://10.1.0.90:8080/";
+//var baseURL = "http://10.1.0.90:8080/";
 
 var bsMessage;
 var ir_receiver;
@@ -749,6 +749,8 @@ function switchToPage(newPage) {
 $(document).ready(function () {
 
     console.log("JTR javascript .ready invoked");
+
+    console.log("User Agent: " + navigator.userAgent);
 
     // message port
     bsMessage = new BSMessagePort();

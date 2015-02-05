@@ -19,9 +19,12 @@ namespace siteDownloader
             InitializeComponent();
 
             txtBoxSiteFolder.Text = "C:\\Users\\Ted Shaffer\\Documents\\Miscellaneous\\Personal\\jtr\\jtr\\app";
+            txtBoxSiteFolder.Text = "C:\\Users\\Ted Shaffer\\Documents\\Visual Studio 2012\\Projects\\jtr\\jtr";
+
+
             txtBoxIPAddress.Text = "192.168.2.6:8080";
             //txtBoxIPAddress.Text = "192.168.2.12:8080";
-            txtBoxIPAddress.Text = "10.1.0.90:8080";
+            //txtBoxIPAddress.Text = "10.1.0.90:8080";
         }
 
         private void btnBrowse_Click(object sender, RoutedEventArgs e)
