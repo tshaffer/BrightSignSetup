@@ -1,6 +1,6 @@
 var currentActiveElementId = "#homePage";
-var baseURL = "http://192.168.2.6:8080/";
-//var baseURL = "http://192.168.2.7:8080/";
+//var baseURL = "http://192.168.2.6:8080/";
+var baseURL = "http://192.168.2.7:8080/";
 //var baseURL = "http://192.168.2.12:8080/";
 //var baseURL = "http://10.1.0.90:8080/";
 
@@ -748,7 +748,10 @@ function switchToPage(newPage) {
 //keyboard event listener
 $(document).ready(function () {
 
+    //baseURL = document.baseURI.replace("?", "");
+
     console.log("JTR javascript .ready invoked");
+    console.log("why isn't baseURL " + document.baseURI.replace("?", ""));
 
     console.log("User Agent: " + navigator.userAgent);
 
