@@ -23,6 +23,10 @@ Function newDisplayEngine(jtr As Object) As Object
     DisplayEngine.stTop = DisplayEngine.newHState(DisplayEngine, "Top")
     DisplayEngine.stTop.HStateEventHandler = STTopEventHandler
 
+    DisplayEngine.stLoadingSite = DisplayEngine.newHState(DisplayEngine, "LoadingSite")
+    DisplayEngine.stLoadingSite.HStateEventHandler = STLoadingSiteEventHandler
+	DisplayEngine.stLoadingSite.superState = DisplayEngine.stTop
+
     DisplayEngine.stShowingUI = DisplayEngine.newHState(DisplayEngine, "ShowingUI")
     DisplayEngine.stShowingUI.HStateEventHandler = STShowingUIEventHandler
 	DisplayEngine.stShowingUI.superState = DisplayEngine.stTop
@@ -83,15 +87,12 @@ Function InitializeDisplayEngine() As Object
 	m.normalPlaybackSpeedIndex% = 5
 	m.playbackSpeedIndex% = m.normalPlaybackSpeedIndex%
 
-	' create UI
-	m.LaunchWebkit()
-
-	return m.stShowingUI
+	return m.stLoadingSite
 
 End Function
 
 
-Function STShowingModalDlgEventHandler(event As Object, stateData As Object) As Object
+Function STLoadingSiteEventHandler(event As Object, stateData As Object) As Object
 
     stateData.nextState = invalid
     
@@ -103,57 +104,40 @@ Function STShowingModalDlgEventHandler(event As Object, stateData As Object) As 
             
                 print m.id$ + ": entry signal"
 
-				' TBD - is it necessary to do anything here? hide video? send message to js?
+				' create and launch html site
+				m.stateMachine.LaunchWebkit()
 
                 return "HANDLED"
 
-            else if event["EventType"] = "EXIT_SIGNAL" then
+			endif
+        endif
+    
+    else if type(event) = "roHtmlWidgetEvent" then
 
-                print m.id$ + ": exit signal"
-            
-            else if event["EventType"] = "SHOW_UI" then
+		print "roHTMLWidgetEvent received in STLoadingSiteEventHandler"
+		eventData = event.GetData()
+		if type(eventData) = "roAssociativeArray" and type(eventData.reason) = "roString" then
+            print "reason = " + eventData.reason
+			if eventData.reason = "load-started" then
+			else if eventData.reason = "load-finished" then
 
-                print "SHOW_UI message received"
+' send device's IP address to site's javascript
+				' get ip address
+				nc = CreateObject("roNetworkConfiguration", 0)
+				networkConfig = nc.GetCurrentConfig()
+				ipAddress$ = networkConfig.ip4_address
+				print "ipAddress = ";ipAddress$
+
+				' send it via message port
+				aa = {}
+				aa.AddReplace("ipAddress", ipAddress$)
+				m.stateMachine.htmlWidget.PostJSMessage(aa)
 
 				stateData.nextState = m.stateMachine.stShowingUI
 				return "TRANSITION"            
-            
+
+			else if eventData.reason = "load-error" then
 			endif
-            
-        endif
-    
-	else if IsRemoteCommand(event) then    
-
-		remoteCommand$ = GetRemoteCommand(event)
-
-		 if remoteCommand$ = "EXIT" then
-
-			' TODO - treat this as cancel
-			return "HANDLED"            
-
-		else 
-
-			commandToHtml$ = ""
-			if remoteCommand$ = "UP" then
-				commandToHtml$ = "Up"
-			else if remoteCommand$ = "DOWN" then
-				commandToHtml$ = "Down"
-			else if remoteCommand$ = "LEFT" then
-				commandToHtml$ = "Left"
-			else if remoteCommand$ = "RIGHT" then
-				commandToHtml$ = "Right"
-			else if remoteCommand$ = "SELECT" then
-				commandToHtml$ = "Enter"
-			endif
-
-			if commandToHtml$ <> "" then
-				aa = {}
-				aa.AddReplace("bsMessage", commandToHtml$)
-				m.stateMachine.htmlWidget.PostJSMessage(aa)
-			endif
-
-			return "HANDLED"
-
 		endif
 
     endif
@@ -223,6 +207,16 @@ Function STShowingUIEventHandler(event As Object, stateData As Object) As Object
             
         endif
     
+    else if type(event) = "roHtmlWidgetEvent" then
+
+		print "roHTMLWidgetEvent received in stShowingUI"
+		eventData = event.GetData()
+		if type(eventData) = "roAssociativeArray" and type(eventData.reason) = "roString" then
+            print "reason = " + eventData.reason
+'			if eventData.reason = "load-error" then
+'			else if eventData.reason = "load-finished" then
+		endif
+
 	else if IsRemoteCommand(event) then    
 
 		remoteCommand$ = GetRemoteCommand(event)
@@ -257,6 +251,79 @@ Function STShowingUIEventHandler(event As Object, stateData As Object) As Object
 			m.stateMachine.htmlWidget.PostJSMessage(aa)
 
 			return "HANDLED"
+		else 
+
+			commandToHtml$ = ""
+			if remoteCommand$ = "UP" then
+				commandToHtml$ = "Up"
+			else if remoteCommand$ = "DOWN" then
+				commandToHtml$ = "Down"
+			else if remoteCommand$ = "LEFT" then
+				commandToHtml$ = "Left"
+			else if remoteCommand$ = "RIGHT" then
+				commandToHtml$ = "Right"
+			else if remoteCommand$ = "SELECT" then
+				commandToHtml$ = "Enter"
+			endif
+
+			if commandToHtml$ <> "" then
+				aa = {}
+				aa.AddReplace("bsMessage", commandToHtml$)
+				m.stateMachine.htmlWidget.PostJSMessage(aa)
+			endif
+
+			return "HANDLED"
+
+		endif
+
+    endif
+            
+    stateData.nextState = m.superState
+    return "SUPER"
+    
+End Function
+
+
+Function STShowingModalDlgEventHandler(event As Object, stateData As Object) As Object
+
+    stateData.nextState = invalid
+    
+    if type(event) = "roAssociativeArray" then      ' internal message event
+
+        if IsString(event["EventType"]) then
+        
+            if event["EventType"] = "ENTRY_SIGNAL" then
+            
+                print m.id$ + ": entry signal"
+
+				' TBD - is it necessary to do anything here? hide video? send message to js?
+
+                return "HANDLED"
+
+            else if event["EventType"] = "EXIT_SIGNAL" then
+
+                print m.id$ + ": exit signal"
+            
+            else if event["EventType"] = "SHOW_UI" then
+
+                print "SHOW_UI message received"
+
+				stateData.nextState = m.stateMachine.stShowingUI
+				return "TRANSITION"            
+            
+			endif
+            
+        endif
+    
+	else if IsRemoteCommand(event) then    
+
+		remoteCommand$ = GetRemoteCommand(event)
+
+		 if remoteCommand$ = "EXIT" then
+
+			' TODO - treat this as cancel
+			return "HANDLED"            
+
 		else 
 
 			commandToHtml$ = ""

@@ -22,6 +22,8 @@ End Sub
 
 Sub RunJtr()
 
+    msgPort = CreateObject("roMessagePort")
+
 	' for BigScreen TV
 	videoMode = CreateObject("roVideoMode")
 	videoMode.SetMode("1920x1080x60i")
@@ -29,8 +31,6 @@ Sub RunJtr()
 
 	CreateDirectory("brightsign-dumps")
 	CreateDirectory("content")
-
-    msgPort = CreateObject("roMessagePort")
 
     JTR = newJTR(msgPort)
 

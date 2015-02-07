@@ -1,6 +1,6 @@
 var currentActiveElementId = "#homePage";
 //var baseURL = "http://192.168.2.6:8080/";
-var baseURL = "http://192.168.2.7:8080/";
+//var baseURL = "http://192.168.2.7:8080/";
 //var baseURL = "http://192.168.2.12:8080/";
 //var baseURL = "http://10.1.0.90:8080/";
 
@@ -765,7 +765,13 @@ $(document).ready(function () {
         for (name in msg.data) {
             console.log('### ' + name + ': ' + msg.data[name]);
 
-            if (name == "bsMessage") {
+            if (name == "ipAddress") {
+                var brightSignIPAddress = msg.data[name];
+                $("#ipAddress").html("ip address: " + brightSignIPAddress);
+                baseURL = "http://" + brightSignIPAddress + ":8080/";
+            }
+
+            else if (name == "bsMessage") {
                 var command$ = msg.data[name];
                 if (command$ == "showMenu") {
                     console.log("selectHomePage");
