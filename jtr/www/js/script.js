@@ -309,8 +309,6 @@ function getRecordedShows() {
 	    dataType: "json",
 	    success: function (recordings) {
 
-	        debugger;
-
 // convert freespace from disk space to time (approximation) and display it
 	        var freeSpace = recordings.freespace;
 	        // 44934K per minute - sample 1 - long recording
