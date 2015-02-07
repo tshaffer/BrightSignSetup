@@ -273,7 +273,7 @@ function addRecordedShowsLine(jtrRecording) {
     weekday[5] = "Fri";
     weekday[6] = "Sat";
 
-    var dt = jtrRecording.startDateTime;
+    var dt = jtrRecording.StartDateTime;
     var n = dt.indexOf(".");
     var formattedDayDate;
     if (n >= 0) {
@@ -285,16 +285,16 @@ function addRecordedShowsLine(jtrRecording) {
         formattedDayDate = "poop";
     }
 
-    var lastViewedPositionInMinutes = Math.floor(jtrRecording.lastViewedPosition / 60);
-    var position = lastViewedPositionInMinutes.toString() + " of " + jtrRecording.duration.toString() + " minutes";
+    var lastViewedPositionInMinutes = Math.floor(jtrRecording.LastViewedPosition / 60);
+    var position = lastViewedPositionInMinutes.toString() + " of " + jtrRecording.Duration.toString() + " minutes";
 
     var toAppend =
         "<tr>" +
-        "<td><button type='button' class='btn btn-default recorded-shows-icon' id='recording" + jtrRecording.recordingId + "' aria-label='Left Align'><span class='glyphicon glyphicon-play' aria-hidden='true'></span></button></td>" +
-	    "<td><button type='button' class='btn btn-default recorded-shows-icon' id='delete" + jtrRecording.recordingId + "' aria-label='Left Align'><span class='glyphicon glyphicon-remove' aria-hidden='true'></span></button></td>" +
-        "<td>" + jtrRecording.title + "</td>" +
+        "<td><button type='button' class='btn btn-default recorded-shows-icon' id='recording" + jtrRecording.RecordingId.toString() + "' aria-label='Left Align'><span class='glyphicon glyphicon-play' aria-hidden='true'></span></button></td>" +
+	    "<td><button type='button' class='btn btn-default recorded-shows-icon' id='delete" + jtrRecording.RecordingId.toString() + "' aria-label='Left Align'><span class='glyphicon glyphicon-remove' aria-hidden='true'></span></button></td>" +
+        "<td>" + jtrRecording.Title + "</td>" +
         "<td>" + formattedDayDate + "</td>" +
-	    "<td><button type='button' class='btn btn-default recorded-shows-icon' id='delete" + jtrRecording.recordingId + "' aria-label='Left Align'><span class='glyphicon glyphicon-info-sign' aria-hidden='true'></span></button></td>" +
+	    "<td><button type='button' class='btn btn-default recorded-shows-icon' id='delete" + jtrRecording.RecordingId.toString() + "' aria-label='Left Align'><span class='glyphicon glyphicon-info-sign' aria-hidden='true'></span></button></td>" +
         "<td>" + position + "</td>";
 
     return toAppend;
@@ -306,14 +306,13 @@ function getRecordedShows() {
 	$.ajax({
 	    type: "GET",
 	    url: aUrl,
-	    dataType: "xml",
-	    success: function (xml) {
+	    dataType: "json",
+	    success: function (recordings) {
 
-	        var recordings = XML2JSON(xml);
+	        debugger;
 
-	        var jtrRecordings = recordings.BrightSignRecordings.BrightSignRecording;
-
-	        var freeSpace = recordings.BrightSignRecordings._freeSpace;
+// convert freespace from disk space to time (approximation) and display it
+	        var freeSpace = recordings.freespace;
 	        // 44934K per minute - sample 1 - long recording
 	        // 43408K per minute - sample 2 - 11 minute recording
 	        // use 44Mb per minute
@@ -337,25 +336,20 @@ function getRecordedShows() {
 	        else {
 	            freeSpace += freeSpaceInMinutes.toString() + " minutes";
 	        }
-
 	        $("#recordedShowsRemainingSpace").text(freeSpace);
+
+// display show recordings
+	        var jtrRecordings = recordings.recordings;
 
 	        var toAppend = "";
 	        var recordingIds = [];
 
 	        $("#recordedShowsTableBody").empty();
 
-	        if (jtrRecordings.constructor == Array) {
-	            $.each(jtrRecordings, function (index, jtrRecording) {
-	                toAppend += addRecordedShowsLine(jtrRecording);
-	                recordingIds.push(jtrRecording.recordingId);
-	            });
-	        }
-	        else {
-	            jtrRecording = jtrRecordings;
+	        $.each(jtrRecordings, function (index, jtrRecording) {
 	            toAppend += addRecordedShowsLine(jtrRecording);
-	            recordingIds.push(jtrRecording.recordingId);
-	        }
+	            recordingIds.push(jtrRecording.RecordingId);
+	        });
 
 	        // is there a reason to do this all at the end instead of once for each row?
 	        $("#recordedShowsTableBody").append(toAppend);

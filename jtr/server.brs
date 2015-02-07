@@ -163,70 +163,36 @@ Sub recordings(userData as Object, e as Object)
 
     mVar = userData.mVar
 
-    root = CreateObject("roXMLElement")
-    root.SetName("BrightSignRecordings")
+	response = {}
 
 	' get remaining space on card
 	storageInfo = CreateObject("roStorageInfo", "SD:")
 	freeSpace = StripLeadingSpaces(stri(storageInfo.GetFreeInMegabytes()))
-	root.AddAttribute("freeSpace", freeSpace)
+	response.freeSpace = freeSpace
 
-	PopulateRecordings(mVar, root)
+	PopulateRecordings(mVar, response)
 
-    xml = root.GenXML({ indent: " ", newline: chr(10), header: true })
+	json = FormatJson(response, 0)
 
-    e.AddResponseHeader("Content-type", "text/xml")
-    e.SetResponseBodyString(xml)
+    e.AddResponseHeader("Content-type", "text/json")
+    e.SetResponseBodyString(json)
     e.SendResponse(200)
 
 End Sub
 
 
-Sub PopulateRecordings(mVar As Object, root As Object)
+Sub PopulateRecordings(mVar As Object, response As Object)
 
 	jtrRecordings = mVar.GetDBRecordings()
 
+	response.recordings = []
+
 	for each recording in jtrRecordings
 		
-'		print "recording " + recording.Title
-
-		' get path for video from db's file name
-		' recording.Path = GetFilePath(recording.Path)
-
 		' only include the entry if the file actually exists
 		readFile = CreateObject("roReadFile", recording.Path)
 		if type(readFile) = "roReadFile" then
-'			print "recording found at " + recording.Path
-
-			recordingElem = root.AddElement("BrightSignRecording")
-
-			recordingIdElem = recordingElem.AddElement("recordingId")
-			recordingIdElem.SetBody(stri(recording.RecordingId))
-
-			titleElem = recordingElem.AddElement("title")
-			titleElem.SetBody(recording.Title)
-
-			startDateTimeElem = recordingElem.AddElement("startDateTime")
-			startDateTimeElem.SetBody(recording.StartDateTime)
-
-			durationElem = recordingElem.AddElement("duration")
-			durationElem.SetBody(stri(recording.Duration))
-
-			pathElem = recordingElem.AddElement("path")
-			pathElem.SetBody(recording.Path)
-
-			lastViewedPositionElem = recordingElem.AddElement("lastViewedPosition")
-' the following does not work - BrightScript bug apparently
-'			lastViewedPositionElem.SetBody(recording.LastViewedPosition)
-			lastViewedPositionElem.SetBody(stri(recording.LastViewedPosition))
-
-' the following does not work - BrightScript bug apparently
-			transcodeCompleteElem = recordingElem.AddElement("transcodeComplete")
-			transcodeCompleteElem.SetBody(recording.TranscodeComplete)
-
-			fileNameElem = recordingElem.AddElement("fileName")
-			fileNameElem.SetBody(recording.FileName)
-
+			response.recordings.push(recording)
 		else
 			print "recording " + recording.Title + " not found at " + recording.Path + ". Id = " + stri(recording.RecordingId)
 		endif
