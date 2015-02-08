@@ -709,6 +709,7 @@ function getShowDescription (showId) {
 
 
 function eraseUI() {
+    $("#ipAddress").css("display", "none");
     $(currentActiveElementId).css("display", "none");
     $("#footerArea").css("display", "none");
 //    $("#footerArea").removeAttr("style");
