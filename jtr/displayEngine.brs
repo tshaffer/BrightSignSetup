@@ -137,6 +137,8 @@ Function STLoadingSiteEventHandler(event As Object, stateData As Object) As Obje
 				return "TRANSITION"            
 
 			else if eventData.reason = "load-error" then
+			else if eventData.reason = "message" then
+				print "message from javascript: " + eventData.message.message
 			endif
 		endif
 
@@ -207,16 +209,6 @@ Function STShowingUIEventHandler(event As Object, stateData As Object) As Object
             
         endif
     
-    else if type(event) = "roHtmlWidgetEvent" then
-
-		print "roHTMLWidgetEvent received in stShowingUI"
-		eventData = event.GetData()
-		if type(eventData) = "roAssociativeArray" and type(eventData.reason) = "roString" then
-            print "reason = " + eventData.reason
-'			if eventData.reason = "load-error" then
-'			else if eventData.reason = "load-finished" then
-		endif
-
 	else if IsRemoteCommand(event) then    
 
 		remoteCommand$ = GetRemoteCommand(event)
@@ -672,6 +664,29 @@ Function STPausedEventHandler(event As Object, stateData As Object) As Object
 
                 print m.id$ + ": exit signal"
             
+            else if event["EventType"] = "RESUME_PLAYBACK" then
+
+				' Replay Guide from browser on PC - Play show selected while show was playing
+
+				' pause current video
+'				m.stateMachine.ResumePlayback()
+
+				' save current position
+'				m.stateMachine.jtr.UpdateDBLastViewedPosition(m.stateMachine.selectedRecording.RecordingId, m.stateMachine.currentVideoPosition%)
+'				m.stateMachine.selectedRecording.LastViewedPosition = m.stateMachine.currentVideoPosition%
+				
+				' save for later jump
+				m.stateMachine.priorSelectedRecording = m.stateMachine.selectedRecording
+
+				' launch new video
+				recording = event["Recording"]
+				m.stateMachine.selectedRecording = recording
+'				m.stateMachine.currentVideoPosition% = 0 - do this when executing 'play from beginning'
+				m.stateMachine.currentVideoPosition% = recording.LastViewedPosition
+				m.stateMachine.UpdateProgressBar()
+				m.stateMachine.LaunchVideo()
+				return "HANDLED"            
+
 			else if event["EventType"] = "PAUSE" or event["EventType"] = "PLAY" then
 
 				' unpause video before changing state
@@ -932,7 +947,7 @@ Sub LaunchVideo()
 	ok = m.videoPlayer.PlayFile(m.selectedRecording.Path)
 	if not ok stop
 
-	m.stateMachine.StartVideoPlaybackTimer()
+	m.StartVideoPlaybackTimer()
 
 End Sub
 
