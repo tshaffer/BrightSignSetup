@@ -14,16 +14,6 @@ var unselectedDeleteShowDlgElement = "#deleteShowDlgClose";
 
 var _showRecordingId;
 
-var converter;  //xml to JSON singleton object
-
-function XML2JSON(xml) {
-    if (!converter) {
-        converter = new X2JS();
-    }
-    return converter.xml2json(xml);
-}
-
-
 function setNav() {
 
 }
@@ -733,8 +723,27 @@ function switchToPage(newPage) {
 	currentActiveElementId = newPageId;
 	$(currentActiveElementId).removeAttr("style");
 	if(currentActiveElementId == "#homePage") {
-		$("#footerArea").empty();
+	    $("#footerArea").empty();
+
+        // ensure that the first element is highlighted and has focus
+        // TODO - make this more general purpose?
+	    for (i = 0; i < mainMenuIds.length; i++) {
+	        for (j = 0; j < mainMenuIds[i].length; j++) {
+	            var elementId = "#" + mainMenuIds[i][j];
+
+	            if (i != 0 || j != 0) {
+	                $(elementId).removeClass("btn-primary");
+	                $(elementId).addClass("btn-secondary");
+	            }
+	            else {
+	                $(elementId).removeClass("btn-secondary");
+	                $(elementId).addClass("btn-primary");
+	                $(elementId).focus();
+                }
+	        }
+	    }
 	} else {
+	    $("#ipAddress").css("display", "none");
 		$("#footerArea").append("<button class=\"btn btn-primary\" onclick=\"selectHomePage()\">Home</button><br><br>");
 	}
 }
