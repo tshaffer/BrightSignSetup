@@ -1,0 +1,262 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="6254" systemVersion="13F34" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" initialViewController="49e-Tb-3d3">
+    <dependencies>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="6247"/>
+    </dependencies>
+    <scenes>
+        <!--JTR-->
+        <scene sceneID="hNz-n2-bh7">
+            <objects>
+                <viewController id="9pv-A4-QxB" customClass="HomeViewController" sceneMemberID="viewController">
+                    <layoutGuides>
+                        <viewControllerLayoutGuide type="top" id="Ia1-K6-d13"/>
+                        <viewControllerLayoutGuide type="bottom" id="4ug-Mw-9AY"/>
+                    </layoutGuides>
+                    <view key="view" contentMode="scaleToFill" id="tsR-hK-woN">
+                        <rect key="frame" x="0.0" y="0.0" width="600" height="600"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="calibratedWhite"/>
+                    </view>
+                    <navigationItem key="navigationItem" title="JTR" id="GJC-LJ-4HT"/>
+                </viewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="W5J-7L-Pyd" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="1562" y="-320"/>
+        </scene>
+        <!--Recorded Shows-->
+        <scene sceneID="wg7-f3-ORb">
+            <objects>
+                <viewController id="8rJ-Kc-sve" customClass="RecordedShowsViewController" customModule="JTR" customModuleProvider="target" sceneMemberID="viewController">
+                    <layoutGuides>
+                        <viewControllerLayoutGuide type="top" id="L7p-HK-0SC"/>
+                        <viewControllerLayoutGuide type="bottom" id="Djb-ko-YwX"/>
+                    </layoutGuides>
+                    <view key="view" contentMode="scaleToFill" id="QS5-Rx-YEW">
+                        <rect key="frame" x="0.0" y="0.0" width="600" height="600"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="calibratedWhite"/>
+                    </view>
+                    <navigationItem key="navigationItem" title="Recorded Shows" id="F6q-Nt-NeG">
+                        <barButtonItem key="backBarButtonItem" title="Home" id="U52-aL-4vy"/>
+                    </navigationItem>
+                </viewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="4Nw-L8-lE0" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="1562" y="360"/>
+        </scene>
+        <!--Tab Bar Controller-->
+        <scene sceneID="yl2-sM-qoP">
+            <objects>
+                <tabBarController id="49e-Tb-3d3" sceneMemberID="viewController">
+                    <nil key="simulatedBottomBarMetrics"/>
+                    <tabBar key="tabBar" contentMode="scaleToFill" id="W28-zg-YXA">
+                        <rect key="frame" x="0.0" y="975" width="768" height="49"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMinY="YES"/>
+                        <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
+                    </tabBar>
+                    <connections>
+                        <segue destination="5XB-PZ-fTa" kind="relationship" relationship="viewControllers" id="u7Y-xg-7CH"/>
+                        <segue destination="G5k-uc-R5l" kind="relationship" relationship="viewControllers" id="lzU-1b-eKA"/>
+                        <segue destination="7cu-YP-2wy" kind="relationship" relationship="viewControllers" id="AgG-Pz-FIo"/>
+                        <segue destination="w1C-TE-CtB" kind="relationship" relationship="viewControllers" id="giA-Md-gyG"/>
+                    </connections>
+                </tabBarController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="HuB-VB-40B" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="-96" y="60"/>
+        </scene>
+        <!--Home-->
+        <scene sceneID="eHf-e8-9i5">
+            <objects>
+                <navigationController automaticallyAdjustsScrollViewInsets="NO" id="5XB-PZ-fTa" sceneMemberID="viewController">
+                    <tabBarItem key="tabBarItem" title="Home" image="glyphicons-21-home" selectedImage="glyphicons-21-home" id="acW-dT-cKf"/>
+                    <toolbarItems/>
+                    <navigationBar key="navigationBar" contentMode="scaleToFill" id="PmU-7E-mfC">
+                        <rect key="frame" x="0.0" y="0.0" width="320" height="44"/>
+                        <autoresizingMask key="autoresizingMask"/>
+                    </navigationBar>
+                    <nil name="viewControllers"/>
+                    <connections>
+                        <segue destination="9pv-A4-QxB" kind="relationship" relationship="rootViewController" id="zFq-el-jnj"/>
+                    </connections>
+                </navigationController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="Pzd-pF-Eed" userLabel="First Responder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="750" y="-320"/>
+        </scene>
+        <!--Shows-->
+        <scene sceneID="Ihy-Io-SCs">
+            <objects>
+                <navigationController automaticallyAdjustsScrollViewInsets="NO" id="G5k-uc-R5l" sceneMemberID="viewController">
+                    <tabBarItem key="tabBarItem" title="Shows" image="glyphicons-120-table" selectedImage="glyphicons-120-table" id="cPa-gy-q4n"/>
+                    <toolbarItems/>
+                    <navigationBar key="navigationBar" contentMode="scaleToFill" id="YkG-ob-Wqi">
+                        <rect key="frame" x="0.0" y="0.0" width="320" height="44"/>
+                        <autoresizingMask key="autoresizingMask"/>
+                    </navigationBar>
+                    <nil name="viewControllers"/>
+                    <connections>
+                        <segue destination="8rJ-Kc-sve" kind="relationship" relationship="rootViewController" id="ceV-Td-uE1"/>
+                    </connections>
+                </navigationController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="bMv-de-Uqv" userLabel="First Responder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="750" y="360"/>
+        </scene>
+        <!--Now Playing-->
+        <scene sceneID="xZf-0X-ih0">
+            <objects>
+                <viewController id="AIo-Ob-4eV" customClass="NowPlayingViewController" sceneMemberID="viewController">
+                    <layoutGuides>
+                        <viewControllerLayoutGuide type="top" id="32Y-8x-BeP"/>
+                        <viewControllerLayoutGuide type="bottom" id="VPI-Wk-skU"/>
+                    </layoutGuides>
+                    <view key="view" contentMode="scaleToFill" id="VQm-h5-JBH">
+                        <rect key="frame" x="0.0" y="0.0" width="600" height="600"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                    </view>
+                    <navigationItem key="navigationItem" title="Now Playing" id="eYc-Kx-cbf">
+                        <barButtonItem key="backBarButtonItem" title="Home" id="uy3-GT-qBu"/>
+                    </navigationItem>
+                </viewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="jnG-oV-Kwh" userLabel="First Responder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="1562" y="1062"/>
+        </scene>
+        <!--Remote-->
+        <scene sceneID="ZWd-eg-dfh">
+            <objects>
+                <viewController id="4E9-jR-hiu" customClass="RemoteViewController" customModule="JTR" customModuleProvider="target" sceneMemberID="viewController">
+                    <layoutGuides>
+                        <viewControllerLayoutGuide type="top" id="jrx-ds-Xdm"/>
+                        <viewControllerLayoutGuide type="bottom" id="tl2-cu-5dG"/>
+                    </layoutGuides>
+                    <view key="view" contentMode="scaleToFill" id="Gxy-K4-cY9">
+                        <rect key="frame" x="0.0" y="0.0" width="600" height="600"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <subviews>
+                            <imageView opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" fixedFrame="YES" image="glyphicons-17-bin" translatesAutoresizingMaskIntoConstraints="NO" id="h5r-9e-Ogz">
+                                <rect key="frame" x="290" y="492" width="20" height="28"/>
+                            </imageView>
+                            <imageView opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" fixedFrame="YES" image="glyphicons-21-home" translatesAutoresizingMaskIntoConstraints="NO" id="cA5-Av-IeB">
+                                <rect key="frame" x="39" y="112" width="27" height="26"/>
+                            </imageView>
+                            <imageView opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" fixedFrame="YES" image="glyphicons-170-record" translatesAutoresizingMaskIntoConstraints="NO" id="LZA-q5-DqS">
+                                <rect key="frame" x="238" y="495" width="20" height="20"/>
+                            </imageView>
+                            <imageView opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" fixedFrame="YES" image="glyphicons-171-step-backward" translatesAutoresizingMaskIntoConstraints="NO" id="09T-xL-XM2">
+                                <rect key="frame" x="140" y="374" width="14" height="18"/>
+                            </imageView>
+                            <imageView opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" fixedFrame="YES" image="glyphicons-172-fast-backward" translatesAutoresizingMaskIntoConstraints="NO" id="3OO-De-yca">
+                                <rect key="frame" x="42" y="374" width="25" height="18"/>
+                            </imageView>
+                            <imageView opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" fixedFrame="YES" image="glyphicons-173-rewind" translatesAutoresizingMaskIntoConstraints="NO" id="LTD-le-IeE">
+                                <rect key="frame" x="88" y="374" width="23" height="18"/>
+                            </imageView>
+                            <imageView opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" fixedFrame="YES" image="glyphicons-174-play" translatesAutoresizingMaskIntoConstraints="NO" id="8zB-sP-1bW">
+                                <rect key="frame" x="93" y="279" width="16" height="18"/>
+                            </imageView>
+                            <imageView opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" fixedFrame="YES" image="glyphicons-175-pause" translatesAutoresizingMaskIntoConstraints="NO" id="yCJ-xT-dAa">
+                                <rect key="frame" x="144" y="280" width="10" height="16"/>
+                            </imageView>
+                            <imageView opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" fixedFrame="YES" image="glyphicons-176-stop" translatesAutoresizingMaskIntoConstraints="NO" id="OIf-zR-e7n">
+                                <rect key="frame" x="175" y="376" width="14" height="14"/>
+                            </imageView>
+                            <imageView opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" fixedFrame="YES" image="glyphicons-179-step-forward" translatesAutoresizingMaskIntoConstraints="NO" id="iVx-2y-u0z">
+                                <rect key="frame" x="207" y="374" width="14" height="18"/>
+                            </imageView>
+                            <imageView opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" fixedFrame="YES" image="glyphicons-183-mute" translatesAutoresizingMaskIntoConstraints="NO" id="ERv-mq-b5T">
+                                <rect key="frame" x="39" y="497" width="22" height="15"/>
+                            </imageView>
+                            <imageView opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" fixedFrame="YES" image="glyphicons-184-volume-down" translatesAutoresizingMaskIntoConstraints="NO" id="8vf-vN-5LU">
+                                <rect key="frame" x="110" y="497" width="16" height="15"/>
+                            </imageView>
+                            <imageView opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" fixedFrame="YES" image="glyphicons-185-volume-up" translatesAutoresizingMaskIntoConstraints="NO" id="YZM-nw-YQK">
+                                <rect key="frame" x="165" y="492" width="24" height="26"/>
+                            </imageView>
+                            <imageView opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" fixedFrame="YES" image="glyphicons-177-forward" translatesAutoresizingMaskIntoConstraints="NO" id="65N-l1-Szr">
+                                <rect key="frame" x="241" y="376" width="23" height="18"/>
+                            </imageView>
+                            <imageView opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" fixedFrame="YES" image="glyphicons-178-fast-forward" translatesAutoresizingMaskIntoConstraints="NO" id="fiC-LO-Mgr">
+                                <rect key="frame" x="288" y="376" width="25" height="18"/>
+                            </imageView>
+                            <imageView opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" fixedFrame="YES" image="glyphicons-405-sort-by-alphabet" translatesAutoresizingMaskIntoConstraints="NO" id="xiD-8p-sDf">
+                                <rect key="frame" x="265" y="113" width="22" height="23"/>
+                            </imageView>
+                            <imageView opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" fixedFrame="YES" image="glyphicons-407-sort-by-order" translatesAutoresizingMaskIntoConstraints="NO" id="Qob-XG-Udg">
+                                <rect key="frame" x="315" y="113" width="21" height="23"/>
+                            </imageView>
+                        </subviews>
+                        <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                    </view>
+                    <navigationItem key="navigationItem" title="Remote" id="yXP-Oa-wiO">
+                        <barButtonItem key="backBarButtonItem" title="Home" id="LGU-oL-UsN"/>
+                    </navigationItem>
+                </viewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="PvM-e0-eWO" userLabel="First Responder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="1544" y="1785"/>
+        </scene>
+        <!--Now Playing-->
+        <scene sceneID="6v1-4n-OjJ">
+            <objects>
+                <navigationController automaticallyAdjustsScrollViewInsets="NO" id="7cu-YP-2wy" sceneMemberID="viewController">
+                    <tabBarItem key="tabBarItem" title="Now Playing" image="glyphicons-578-tv" selectedImage="glyphicons-578-tv" id="AxP-UQ-OuN"/>
+                    <toolbarItems/>
+                    <navigationBar key="navigationBar" contentMode="scaleToFill" id="xgJ-ps-nXB">
+                        <rect key="frame" x="0.0" y="0.0" width="320" height="44"/>
+                        <autoresizingMask key="autoresizingMask"/>
+                    </navigationBar>
+                    <nil name="viewControllers"/>
+                    <connections>
+                        <segue destination="AIo-Ob-4eV" kind="relationship" relationship="rootViewController" id="x1F-Gz-Peb"/>
+                    </connections>
+                </navigationController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="2CZ-mi-vlS" userLabel="First Responder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="740" y="1062"/>
+        </scene>
+        <!--Remote-->
+        <scene sceneID="dtR-gz-6x6">
+            <objects>
+                <navigationController automaticallyAdjustsScrollViewInsets="NO" id="w1C-TE-CtB" sceneMemberID="viewController">
+                    <tabBarItem key="tabBarItem" title="Remote" image="glyphicons-589-remote-control-tv" selectedImage="glyphicons-589-remote-control-tv" id="F1q-Uv-Y0c"/>
+                    <toolbarItems/>
+                    <navigationBar key="navigationBar" contentMode="scaleToFill" id="Wf5-MM-11R">
+                        <rect key="frame" x="0.0" y="0.0" width="320" height="44"/>
+                        <autoresizingMask key="autoresizingMask"/>
+                    </navigationBar>
+                    <nil name="viewControllers"/>
+                    <connections>
+                        <segue destination="4E9-jR-hiu" kind="relationship" relationship="rootViewController" id="5H9-FP-VF7"/>
+                    </connections>
+                </navigationController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="Tlh-pE-tQC" userLabel="First Responder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="740" y="1769"/>
+        </scene>
+    </scenes>
+    <resources>
+        <image name="glyphicons-120-table" width="24" height="24"/>
+        <image name="glyphicons-17-bin" width="20" height="28"/>
+        <image name="glyphicons-170-record" width="20" height="20"/>
+        <image name="glyphicons-171-step-backward" width="14" height="18"/>
+        <image name="glyphicons-172-fast-backward" width="25" height="18"/>
+        <image name="glyphicons-173-rewind" width="23" height="18"/>
+        <image name="glyphicons-174-play" width="16" height="18"/>
+        <image name="glyphicons-175-pause" width="10" height="16"/>
+        <image name="glyphicons-176-stop" width="14" height="14"/>
+        <image name="glyphicons-177-forward" width="23" height="18"/>
+        <image name="glyphicons-178-fast-forward" width="25" height="18"/>
+        <image name="glyphicons-179-step-forward" width="14" height="18"/>
+        <image name="glyphicons-183-mute" width="22" height="15"/>
+        <image name="glyphicons-184-volume-down" width="16" height="15"/>
+        <image name="glyphicons-185-volume-up" width="24" height="26"/>
+        <image name="glyphicons-21-home" width="27" height="26"/>
+        <image name="glyphicons-405-sort-by-alphabet" width="22" height="23"/>
+        <image name="glyphicons-407-sort-by-order" width="21" height="23"/>
+        <image name="glyphicons-578-tv" width="26" height="23"/>
+        <image name="glyphicons-589-remote-control-tv" width="12" height="23"/>
+    </resources>
+</document>
