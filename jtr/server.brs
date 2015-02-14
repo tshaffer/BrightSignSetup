@@ -13,7 +13,9 @@ Sub InitializeServer()
 	m.showUIAA =						{ HandleEvent: showUI, mVar: m}
 
 	m.pauseAA =							{ HandleEvent: pause, mVar: m}
+	m.rewindAA =						{ HandleEvent: rewind, mVar: m}
 	m.playAA =							{ HandleEvent: play, mVar: m}
+	m.fastForwardAA =					{ HandleEvent: fastForward, mVar: m}
 	m.instantReplayAA =					{ HandleEvent: instantReplay, mVar: m}
 	m.quickSkipAA =						{ HandleEvent: quickSkip, mVar: m}
 
@@ -31,7 +33,9 @@ Sub InitializeServer()
 	m.localServer.AddGetFromEvent({ url_path: "/showUI", user_data: m.showUIAA })
 
 	m.localServer.AddGetFromEvent({ url_path: "/pause", user_data: m.pauseAA })
+	m.localServer.AddGetFromEvent({ url_path: "/rewind", user_data: m.rewindAA })
 	m.localServer.AddGetFromEvent({ url_path: "/play", user_data: m.playAA })
+	m.localServer.AddGetFromEvent({ url_path: "/fastForward", user_data: m.fastForwardAA })
 	m.localServer.AddGetFromEvent({ url_path: "/instantReplay", user_data: m.instantReplayAA })
 	m.localServer.AddGetFromEvent({ url_path: "/quickSkip", user_data: m.quickSkipAA })
 
@@ -341,6 +345,23 @@ Sub pause(userData as Object, e as Object)
 End Sub
 
 
+Sub rewind(userData as Object, e as Object)
+
+	print "rewind endpoint invoked"
+
+    mVar = userData.mVar
+
+	rewindMessage = CreateObject("roAssociativeArray")
+	rewindMessage["EventType"] = "REWIND"
+	mVar.msgPort.PostMessage(rewindMessage)
+
+    e.AddResponseHeader("Content-type", "text/plain")
+    e.SetResponseBodyString("ok")
+    e.SendResponse(200)
+
+End Sub
+
+
 Sub play(userData as Object, e as Object)
 
 	print "play endpoint invoked"
@@ -356,6 +377,24 @@ Sub play(userData as Object, e as Object)
     e.SendResponse(200)
 
 End Sub
+
+
+Sub fastForward(userData as Object, e as Object)
+
+	print "fastForward endpoint invoked"
+
+    mVar = userData.mVar
+
+	fastForwardMessage = CreateObject("roAssociativeArray")
+	fastForwardMessage["EventType"] = "FASTFORWARD"
+	mVar.msgPort.PostMessage(fastForwardMessage)
+
+    e.AddResponseHeader("Content-type", "text/plain")
+    e.SetResponseBodyString("ok")
+    e.SendResponse(200)
+
+End Sub
+
 
 
 Sub instantReplay(userData as Object, e as Object)

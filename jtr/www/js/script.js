@@ -78,6 +78,18 @@ function remotePlay() {
     executeRemoteCommand("play");
 }
 
+function remoteRewind() {
+
+    console.log("remoteRewind");
+    executeRemoteCommand("rewind");
+}
+
+function remoteFastForward() {
+
+    console.log("remoteFastForward");
+    executeRemoteCommand("fastForward");
+}
+
 function remoteInstantReplay() {
 
     console.log("remoteInstantReplay");
