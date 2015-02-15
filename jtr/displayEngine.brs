@@ -390,6 +390,10 @@ Function STShowingVideoEventHandler(event As Object, stateData As Object) As Obj
 
 			m.stateMachine.UpdateProgressBar()
 
+			currentState = m.stateMachine.jtr.GetCurrentState()
+			currentState.currentTime = m.stateMachine.currentVideoPosition%
+			m.stateMachine.jtr.SetCurrentState(currentState)
+
 			return "HANDLED"
 		endif
 
@@ -517,6 +521,17 @@ Function STPlayingEventHandler(event As Object, stateData As Object) As Object
             if event["EventType"] = "ENTRY_SIGNAL" then
             
                 print m.id$ + ": entry signal"
+
+				currentState = {}
+				currentState.state = "playing"
+				currentState.title = m.stateMachine.selectedRecording.Title
+				currentState.recordingId = m.stateMachine.selectedRecording.RecordingId
+				currentState.duration = m.stateMachine.selectedRecording.Duration
+				currentState.recordingDate = m.stateMachine.selectedRecording.StartDateTime
+				currentState.currentTime = m.stateMachine.selectedRecording.LastViewedPosition
+
+				m.stateMachine.jtr.SetCurrentState(currentState)
+
                 return "HANDLED"
 
             else if event["EventType"] = "EXIT_SIGNAL" then
@@ -673,6 +688,11 @@ Function STPausedEventHandler(event As Object, stateData As Object) As Object
 				m.stateMachine.jtr.UpdateDBLastViewedPosition(m.stateMachine.selectedRecording.RecordingId, m.stateMachine.currentVideoPosition%)
 				m.stateMachine.selectedRecording.LastViewedPosition = m.stateMachine.currentVideoPosition%
 
+				currentState = m.stateMachine.jtr.GetCurrentState()
+				currentState.state = "paused"
+				currentState.currentTime = m.stateMachine.selectedRecording.LastViewedPosition
+				m.stateMachine.jtr.SetCurrentState(currentState)
+
                 return "HANDLED"
 
             else if event["EventType"] = "EXIT_SIGNAL" then
@@ -780,6 +800,11 @@ Function STFastForwardingEventHandler(event As Object, stateData As Object) As O
 				playbackSpeed = m.stateMachine.playbackSpeeds[m.stateMachine.playbackSpeedIndex%]
 
 				m.stateMachine.videoPlayer.SetPlaybackSpeed(playbackSpeed)
+
+				currentState = m.stateMachine.jtr.GetCurrentState()
+				currentState.state = "fastForward"
+				currentState.currentTime = m.stateMachine.selectedRecording.LastViewedPosition
+				m.stateMachine.jtr.SetCurrentState(currentState)
 
                 return "HANDLED"
 
@@ -931,6 +956,11 @@ Function STRewindingEventHandler(event As Object, stateData As Object) As Object
 				playbackSpeed = m.stateMachine.playbackSpeeds[m.stateMachine.playbackSpeedIndex%]
 
 				m.stateMachine.videoPlayer.SetPlaybackSpeed(playbackSpeed)
+
+				currentState = m.stateMachine.jtr.GetCurrentState()
+				currentState.state = "rewind"
+				currentState.currentTime = m.stateMachine.selectedRecording.LastViewedPosition
+				m.stateMachine.jtr.SetCurrentState(currentState)
 
                 return "HANDLED"
 

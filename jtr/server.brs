@@ -10,6 +10,7 @@ Sub InitializeServer()
 	m.recordingsAA =					{ HandleEvent: recordings, mVar: m }
 	m.fileToTranscodeAA =				{ HandleEvent: fileToTranscode, mVar: m }
 	m.hlsUrlAA =						{ HandleEvent: hlsUrl, mVar: m }
+	m.currentStateAA =					{ HandleEvent: currentJTRState, mVar: m }
 
 	m.showUIAA =						{ HandleEvent: showUI, mVar: m}
 
@@ -32,6 +33,8 @@ Sub InitializeServer()
 	m.localServer.AddPostToFile({ url_path: "/TranscodedFile", destination_directory: GetDefaultDrive(), user_data: m.filePostedAA })
 
 	m.localServer.AddGetFromEvent({ url_path: "/hlsUrl", user_data: m.hlsUrlAA })
+
+	m.localServer.AddGetFromEvent({ url_path: "/currentState", user_data: m.currentStateAA })
 
 	m.localServer.AddGetFromEvent({ url_path: "/showUI", user_data: m.showUIAA })
 
@@ -292,6 +295,22 @@ Sub hlsUrl(userData as Object, e as Object)
 		e.SetResponseBodyString(json)
 		e.SendResponse(200)
 	endif
+
+End Sub
+
+
+Sub currentJTRState(userData as Object, e as Object)
+
+	print "currentState endpoint invoked"
+
+    mVar = userData.mVar
+
+	response = {}
+	response.currentState = mVar.GetCurrentState()
+	json = FormatJson(response, 0)
+	e.AddResponseHeader("Content-type", "text/json")
+	e.SetResponseBodyString(json)
+	e.SendResponse(200)
 
 End Sub
 

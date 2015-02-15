@@ -83,6 +83,8 @@ Sub RunJtr()
 	JTR.mediaServer = CreateObject("roMediaServer")
 	ok = JTR.mediaServer.Start("http:port=8088:trace")
 
+	JTR.currentState = {}
+	JTR.currentState.state = "idle"
 
 	JTR.eventHandler.EventLoop()
 
@@ -115,9 +117,12 @@ Function newJTR(msgPort As Object) As Object
 	
 	JTR.tsDeletable						= tsDeletable
 
+	JTR.GetCurrentState					= GetCurrentState
+	JTR.SetCurrentState					= SetCurrentState
+
 	JTR.SetRecordLED					= SetRecordLED
 
-    JTR.newLogging					= newLogging
+    JTR.newLogging						= newLogging
     JTR.logging = JTR.newLogging()
 		
 	return JTR
@@ -128,6 +133,20 @@ End Function
 Sub SetRecordLED(ledOn As Boolean)
 
 	m.gpio.SetOutputState(9, ledOn)
+
+End Sub
+
+
+Function GetCurrentState()
+
+	return m.currentState
+
+End Function
+
+
+Sub SetCurrentState(newState As Object)
+
+	m.currentState = newState
 
 End Sub
 
@@ -149,3 +168,4 @@ Sub ListFiles(path$ As String, listOfFiles As Object)
 	next
 
 End Sub
+
