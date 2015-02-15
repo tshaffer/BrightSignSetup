@@ -9,6 +9,7 @@ Sub InitializeServer()
 	m.deleteRecordingAA =				{ HandleEvent: deleteRecording, mVar: m }
 	m.recordingsAA =					{ HandleEvent: recordings, mVar: m }
 	m.fileToTranscodeAA =				{ HandleEvent: fileToTranscode, mVar: m }
+	m.hlsUrlAA =						{ HandleEvent: hlsUrl, mVar: m }
 
 	m.showUIAA =						{ HandleEvent: showUI, mVar: m}
 
@@ -29,6 +30,8 @@ Sub InitializeServer()
 
 	m.localServer.AddGetFromEvent({ url_path: "/fileToTranscode", user_data: m.fileToTranscodeAA })
 	m.localServer.AddPostToFile({ url_path: "/TranscodedFile", destination_directory: GetDefaultDrive(), user_data: m.filePostedAA })
+
+	m.localServer.AddGetFromEvent({ url_path: "/hlsUrl", user_data: m.hlsUrlAA })
 
 	m.localServer.AddGetFromEvent({ url_path: "/showUI", user_data: m.showUIAA })
 
@@ -262,6 +265,37 @@ Sub manualRecord(userData as Object, e as Object)
 End Sub
 
 
+Sub hlsUrl(userData as Object, e as Object)
+
+	print "hlsUrl endpoint invoked"
+
+    mVar = userData.mVar
+	requestParams = e.GetRequestParams()
+
+	recordingId = requestParams["recordingId"]
+	print "hlsUrl invoked on recording id = ";recordingId
+
+	recording = mVar.GetDBRecording(recordingId)
+
+	' TODO - return 404 if recording not found? something else if no HLS?
+
+	if recording.HLSSegmentationComplete = 0 then
+		' HLS segments don't exist
+		e.AddResponseHeader("Content-type", "text/plain; charset=utf-8")
+		e.SetResponseBodyString("Recording not found.")
+	    e.SendResponse(404)
+	else
+		response = {}
+		response.hlsUrl = "/content/hls/" + recording.FileName + "/" + recording.FileName + "_index.m3u8"
+		json = FormatJson(response, 0)
+		e.AddResponseHeader("Content-type", "text/json")
+		e.SetResponseBodyString(json)
+		e.SendResponse(200)
+	endif
+
+End Sub
+
+
 Sub fileToTranscode(userData as Object, e as Object)
 
 	print "fileToTranscode endpoint invoked"
@@ -319,8 +353,12 @@ Sub filePosted(userData as Object, e as Object)
 	recording = mVar.GetDBRecording(stri(dbId))
 	tsPath$ = GetTSFilePath(recording.FileName)
 	print "Transcode operation complete - delete ";tsPath$
-	ok = DeleteFile(tsPath$)
-	if not ok print "Delete after transcode complete failed"
+
+	okToDelete = mVar.tsDeletable(dbId)
+	if okToDelete then
+		ok = DeleteFile(tsPath$)
+		if not ok print "Delete after transcode complete failed"
+	endif
 
 	e.SetResponseBodyString("RECEIVED")
     e.SendResponse(200)

@@ -25,6 +25,10 @@ Function newRecordingEngine(jtr As Object) As Object
 	RecordingEngine.stRecording.EndManualRecord	= EndManualRecord
 	RecordingEngine.stRecording.Tune = Tune
 
+    RecordingEngine.stSegmentingHLS = RecordingEngine.newHState(RecordingEngine, "SegmentingHLS")
+    RecordingEngine.stSegmentingHLS.HStateEventHandler = STSegmentingHLSEventHandler
+	RecordingEngine.stSegmentingHLS.superState = RecordingEngine.stRecordingController
+
 	RecordingEngine.topState = RecordingEngine.stTop
 
 	return RecordingEngine
@@ -181,7 +185,8 @@ Function STRecordingEventHandler(event As Object, stateData As Object) As Object
 				if scheduledRecordingTimerIdentity = m.stateMachine.recordingInProgressTimerId$ then
 					scheduledRecording = m.stateMachine.scheduledRecordings[scheduledRecordingTimerIdentity]
 					m.EndManualRecord(scheduledRecordingTimerIdentity, scheduledRecording)
-					stateData.nextState = m.stateMachine.stIdle
+					m.stateMachine.recordingToSegment = m.stateMachine.jtr.GetDBRecordingByFileName(scheduledRecording.fileName$)
+					stateData.nextState = m.stateMachine.stSegmentingHLS
 					return "TRANSITION"
 				endif
 			next
@@ -292,8 +297,84 @@ Sub EndManualRecord(scheduledRecordingTimerIdentity As Object, scheduledRecordin
 	' turn off record LED
 	m.stateMachine.jtr.SetRecordLED(false)
 
+	' TODO - turn on a different LED to indicate that segmentation is in progress
+
 End Sub
 
+
+Function STSegmentingHLSEventHandler(event As Object, stateData As Object) As Object
+
+    stateData.nextState = invalid
+    
+    if type(event) = "roAssociativeArray" then      ' internal message event
+
+        if IsString(event["EventType"]) then
+        
+            if event["EventType"] = "ENTRY_SIGNAL" then
+            
+                print m.id$ + ": entry signal"
+
+				m.recordingId% = m.stateMachine.recordingToSegment.RecordingId
+				recording = m.stateMachine.jtr.GetDBRecording(stri(m.recordingId%))
+
+				' create directory where hls segments will be generated
+				dirName$ = "content/hls/" + m.stateMachine.recordingToSegment.FileName
+				ok = CreateDirectory(dirName$)
+
+				path$ = GetTSFilePath(m.stateMachine.recordingToSegment.FileName)
+
+				' store segments in /content/hls/file name without extension/fileName
+				pipeLineSpec$ = "file:///" + path$ + ", hls:///" + dirName$ + "/" + m.stateMachine.recordingToSegment.FileName + "?duration=10"
+
+				m.mediaStreamer = CreateObject("roMediaStreamer")
+				m.mediaStreamer.SetPort(m.stateMachine.msgPort)
+				ok = m.mediaStreamer.SetPipeline(pipeLineSpec$)
+
+				systemTime = CreateObject("roSystemTime")
+				print "------- start segmentation at ";systemTime.GetLocalDateTime()
+
+				ok = m.mediaStreamer.Start()
+
+                return "HANDLED"
+
+            else if event["EventType"] = "EXIT_SIGNAL" then
+
+                print m.id$ + ": exit signal"
+            
+				return "HANDLED"
+
+			endif
+            
+        endif
+        
+	else if type(event) = "roMediaStreamerEvent" then
+
+		systemTime = CreateObject("roSystemTime")
+		print "------- segmentation complete at ";systemTime.GetLocalDateTime()
+
+		' update db to indicate that hls segments were created
+		m.stateMachine.jtr.UpdateHLSSegmentationComplete(m.recordingId%)
+
+		' determine whether or not the .ts file can be deleted
+		okToDelete = m.stateMachine.jtr.tsDeletable(m.recordingId%)
+		if okToDelete then
+			tsPath$ = GetTSFilePath(m.stateMachine.recordingToSegment.FileName)
+			if tsPath$ <> "" then
+				ok = DeleteFile(tsPath$)
+				if not ok print "Delete after transcode complete failed"
+			endif
+		endif
+
+		print "mediaStreamerEvent = ";event.GetEvent()
+		stateData.nextState = m.stateMachine.stIdle
+		return "TRANSITION"
+
+    endif
+            
+    stateData.nextState = m.superState
+    return "SUPER"
+
+End Function
 
 
 

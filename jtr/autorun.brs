@@ -31,6 +31,7 @@ Sub RunJtr()
 
 	CreateDirectory("brightsign-dumps")
 	CreateDirectory("content")
+	CreateDirectory("/content/hls")
 
     JTR = newJTR(msgPort)
 
@@ -78,6 +79,11 @@ Sub RunJtr()
 	JTR.eventHandler.AddHSM(JTR.recordingEngine)
 	JTR.eventHandler.AddHSM(JTR.displayEngine)
 
+	' create and start a media server
+	JTR.mediaServer = CreateObject("roMediaServer")
+	ok = JTR.mediaServer.Start("http:port=8088:trace")
+
+
 	JTR.eventHandler.EventLoop()
 
 End Sub
@@ -88,24 +94,28 @@ Function newJTR(msgPort As Object) As Object
     JTR = {}
     JTR.msgPort = msgPort
 
-	JTR.InitializeServer			= InitializeServer
-	JTR.AddHandlers					= AddHandlers
+	JTR.InitializeServer				= InitializeServer
+	JTR.AddHandlers						= AddHandlers
 	
-	JTR.OpenDatabase				= OpenDatabase
-	JTR.CreateDBTable				= CreateDBTable
-	JTR.GetDBVersion				= GetDBVersion
-	JTR.SetDBVersion				= SetDBVersion
-	JTR.ExecuteDBInsert				= ExecuteDBInsert
-	JTR.ExecuteDBSelect				= ExecuteDBSelect
-	JTR.AddDBRecording				= AddDBRecording
-	JTR.DeleteDBRecording			= DeleteDBRecording
-	JTR.GetDBRecording				= GetDBRecording
-	JTR.GetDBRecordings				= GetDBRecordings
-	JTR.GetDBFileToTranscode		= GetDBFileToTranscode
-	JTR.UpdateDBTranscodeComplete	= UpdateDBTranscodeComplete
-	JTR.UpdateDBLastViewedPosition	= UpdateDBLastViewedPosition
+	JTR.OpenDatabase					= OpenDatabase
+	JTR.CreateDBTable					= CreateDBTable
+	JTR.GetDBVersion					= GetDBVersion
+	JTR.SetDBVersion					= SetDBVersion
+	JTR.ExecuteDBInsert					= ExecuteDBInsert
+	JTR.ExecuteDBSelect					= ExecuteDBSelect
+	JTR.AddDBRecording					= AddDBRecording
+	JTR.DeleteDBRecording				= DeleteDBRecording
+	JTR.GetDBRecording					= GetDBRecording
+	JTR.GetDBRecordingByFileName		= GetDBRecordingByFileName
+	JTR.GetDBRecordings					= GetDBRecordings
+	JTR.GetDBFileToTranscode			= GetDBFileToTranscode
+	JTR.UpdateDBTranscodeComplete		= UpdateDBTranscodeComplete
+	JTR.UpdateDBLastViewedPosition		= UpdateDBLastViewedPosition
+	JTR.UpdateHLSSegmentationComplete	= UpdateHLSSegmentationComplete
+	
+	JTR.tsDeletable						= tsDeletable
 
-	JTR.SetRecordLED				= SetRecordLED
+	JTR.SetRecordLED					= SetRecordLED
 
     JTR.newLogging					= newLogging
     JTR.logging = JTR.newLogging()
