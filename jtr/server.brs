@@ -14,12 +14,6 @@ Sub InitializeServer()
 
 	m.showUIAA =						{ HandleEvent: showUI, mVar: m}
 
-	m.pauseAA =							{ HandleEvent: pause, mVar: m}
-	m.rewindAA =						{ HandleEvent: rewind, mVar: m}
-	m.playAA =							{ HandleEvent: play, mVar: m}
-	m.fastForwardAA =					{ HandleEvent: fastForward, mVar: m}
-	m.instantReplayAA =					{ HandleEvent: instantReplay, mVar: m}
-	m.quickSkipAA =						{ HandleEvent: quickSkip, mVar: m}
 
 	m.getLastSelectedShowIdAA =			{ HandleEvent: getLastSelectedShowId, mVar: m }
 	m.setLastSelectedShowIdAA =			{ HandleEvent: setLastSelectedShowId, mVar: m }
@@ -41,12 +35,70 @@ Sub InitializeServer()
 
 	m.localServer.AddGetFromEvent({ url_path: "/showUI", user_data: m.showUIAA })
 
+	'up
+	m.upAA =							{ HandleEvent: up, mVar: m}
+	m.localServer.AddGetFromEvent({ url_path: "/up", user_data: m.upAA })
+
+	'down
+	m.downAA =							{ HandleEvent: down, mVar: m}
+	m.localServer.AddGetFromEvent({ url_path: "/down", user_data: m.downAA })
+
+	'left
+	m.leftAA =							{ HandleEvent: left, mVar: m}
+	m.localServer.AddGetFromEvent({ url_path: "/left", user_data: m.leftAA })
+
+	'right
+	m.rightAA =							{ HandleEvent: right, mVar: m}
+	m.localServer.AddGetFromEvent({ url_path: "/right", user_data: m.rightAA })
+
+	'enter
+	m.enterAA =							{ HandleEvent: enter, mVar: m}
+	m.localServer.AddGetFromEvent({ url_path: "/enter", user_data: m.enterAA })
+
+	'menu
+	m.menuAA =							{ HandleEvent: menu, mVar: m}
+	m.localServer.AddGetFromEvent({ url_path: "/menu", user_data: m.menuAA })
+
+	'recorded shows
+	m.recordedShowsAA =					{ HandleEvent: recordedShows, mVar: m}
+	m.localServer.AddGetFromEvent({ url_path: "/recordedShows", user_data: m.recordedShowsAA })
+
+	'toggle progress bar
+	m.toggleProgressBarAA =				{ HandleEvent: toggleProgressBar, mVar: m}
+	m.localServer.AddGetFromEvent({ url_path: "/toggleProgressBar", user_data: m.toggleProgressBarAA })
+
+	'exit
+	m.exitAA =							{ HandleEvent: exitCmd, mVar: m}
+	m.localServer.AddGetFromEvent({ url_path: "/exit", user_data: m.exitAA })
+
+	'jump
+	m.jumpAA =							{ HandleEvent: jumpCmd, mVar: m}
+	m.localServer.AddGetFromEvent({ url_path: "/jump", user_data: m.jumpAA })
+
+	'stop
+	m.stopAA =							{ HandleEvent: stopCmd, mVar: m}
+	m.localServer.AddGetFromEvent({ url_path: "/stop", user_data: m.stopAA })
+
+	m.pauseAA =							{ HandleEvent: pause, mVar: m}
 	m.localServer.AddGetFromEvent({ url_path: "/pause", user_data: m.pauseAA })
+
+	m.rewindAA =						{ HandleEvent: rewind, mVar: m}
 	m.localServer.AddGetFromEvent({ url_path: "/rewind", user_data: m.rewindAA })
+
+	m.playAA =							{ HandleEvent: play, mVar: m}
 	m.localServer.AddGetFromEvent({ url_path: "/play", user_data: m.playAA })
+
+	m.fastForwardAA =					{ HandleEvent: fastForward, mVar: m}
 	m.localServer.AddGetFromEvent({ url_path: "/fastForward", user_data: m.fastForwardAA })
+
+	m.instantReplayAA =					{ HandleEvent: instantReplay, mVar: m}
 	m.localServer.AddGetFromEvent({ url_path: "/instantReplay", user_data: m.instantReplayAA })
+
+	m.quickSkipAA =						{ HandleEvent: quickSkip, mVar: m}
 	m.localServer.AddGetFromEvent({ url_path: "/quickSkip", user_data: m.quickSkipAA })
+
+
+
 
 	m.localServer.AddGetFromEvent({ url_path: "/lastSelectedShow", user_data: m.getLastSelectedShowIdAA })
 	m.localServer.AddPostToFormData({ url_path: "/lastSelectedShow", user_data: m.setLastSelectedShowIdAA })
@@ -391,106 +443,104 @@ Sub filePosted(userData as Object, e as Object)
 End Sub
 
 
-Sub pause(userData as Object, e as Object)
+Sub postRemoteMessage(userData As Object, e as Object, remoteMessage$ As String)
 
-	print "pause endpoint invoked"
+	print remoteMessage$ + " endpoint invoked"
 
     mVar = userData.mVar
 
-	pauseMessage = CreateObject("roAssociativeArray")
-	pauseMessage["EventType"] = "PAUSE"
-	mVar.msgPort.PostMessage(pauseMessage)
+	message = CreateObject("roAssociativeArray")
+	message["EventType"] = remoteMessage$
+	mVar.msgPort.PostMessage(message)
 
     e.AddResponseHeader("Content-type", "text/plain")
     e.SetResponseBodyString("ok")
     e.SendResponse(200)
 
+End Sub
+
+
+Sub up(userData as Object, e as Object)
+	postRemoteMessage(userData, e, "UP")
+End Sub
+
+
+Sub down(userData as Object, e as Object)
+	postRemoteMessage(userData, e, "DOWN")
+End Sub
+
+
+Sub left(userData as Object, e as Object)
+	postRemoteMessage(userData, e, "LEFT")
+End Sub
+
+
+Sub right(userData as Object, e as Object)
+	postRemoteMessage(userData, e, "RIGHT")
+End Sub
+
+
+Sub enter(userData as Object, e as Object)
+	postRemoteMessage(userData, e, "ENTER")
+End Sub
+
+
+Sub menu(userData as Object, e as Object)
+	postRemoteMessage(userData, e, "MENU")
+End Sub
+
+
+Sub recordedShows(userData as Object, e as Object)
+	postRemoteMessage(userData, e, "RECORDED_SHOWS")
+End Sub
+
+
+Sub toggleProgressBar(userData as Object, e as Object)
+	postRemoteMessage(userData, e, "TOGGLE_PROGRESS_BAR")
+End Sub
+
+
+Sub exitCmd(userData as Object, e as Object)
+	postRemoteMessage(userData, e, "EXIT")
+End Sub
+
+
+Sub jumpCmd(userData as Object, e as Object)
+	postRemoteMessage(userData, e, "JUMP")
+End Sub
+
+
+Sub stopCmd(userData as Object, e as Object)
+	postRemoteMessage(userData, e, "STOP")
+End Sub
+
+Sub pause(userData as Object, e as Object)
+	postRemoteMessage(userData, e, "PAUSE")
 End Sub
 
 
 Sub rewind(userData as Object, e as Object)
-
-	print "rewind endpoint invoked"
-
-    mVar = userData.mVar
-
-	rewindMessage = CreateObject("roAssociativeArray")
-	rewindMessage["EventType"] = "REWIND"
-	mVar.msgPort.PostMessage(rewindMessage)
-
-    e.AddResponseHeader("Content-type", "text/plain")
-    e.SetResponseBodyString("ok")
-    e.SendResponse(200)
-
+	postRemoteMessage(userData, e, "REWIND")
 End Sub
 
 
 Sub play(userData as Object, e as Object)
-
-	print "play endpoint invoked"
-
-    mVar = userData.mVar
-
-	playMessage = CreateObject("roAssociativeArray")
-	playMessage["EventType"] = "PLAY"
-	mVar.msgPort.PostMessage(playMessage)
-
-    e.AddResponseHeader("Content-type", "text/plain")
-    e.SetResponseBodyString("ok")
-    e.SendResponse(200)
-
+	postRemoteMessage(userData, e, "PLAY")
 End Sub
 
 
 Sub fastForward(userData as Object, e as Object)
-
-	print "fastForward endpoint invoked"
-
-    mVar = userData.mVar
-
-	fastForwardMessage = CreateObject("roAssociativeArray")
-	fastForwardMessage["EventType"] = "FASTFORWARD"
-	mVar.msgPort.PostMessage(fastForwardMessage)
-
-    e.AddResponseHeader("Content-type", "text/plain")
-    e.SetResponseBodyString("ok")
-    e.SendResponse(200)
-
+	postRemoteMessage(userData, e, "FASTFORWARD")
 End Sub
 
 
-
 Sub instantReplay(userData as Object, e as Object)
-
-	print "instantReplay endpoint invoked"
-
-    mVar = userData.mVar
-
-	instantReplayMessage = CreateObject("roAssociativeArray")
-	instantReplayMessage["EventType"] = "INSTANT_REPLAY"
-	mVar.msgPort.PostMessage(instantReplayMessage)
-
-    e.AddResponseHeader("Content-type", "text/plain")
-    e.SetResponseBodyString("ok")
-    e.SendResponse(200)
-
+	postRemoteMessage(userData, e, "INSTANT_REPLAY")
 End Sub
 
 
 Sub quickSkip(userData as Object, e as Object)
-
-	print "quickSkip endpoint invoked"
-
-    mVar = userData.mVar
-
-	quickSkipMessage = CreateObject("roAssociativeArray")
-	quickSkipMessage["EventType"] = "QUICK_SKIP"
-	mVar.msgPort.PostMessage(quickSkipMessage)
-
-    e.AddResponseHeader("Content-type", "text/plain")
-    e.SetResponseBodyString("ok")
-    e.SendResponse(200)
-
+	postRemoteMessage(userData, e, "QUICK_SKIP")
 End Sub
 
 

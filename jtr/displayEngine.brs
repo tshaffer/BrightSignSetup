@@ -33,30 +33,73 @@ Function newDisplayEngine(jtr As Object) As Object
     DisplayEngine.stShowingUI = DisplayEngine.newHState(DisplayEngine, "ShowingUI")
     DisplayEngine.stShowingUI.HStateEventHandler = STShowingUIEventHandler
 	DisplayEngine.stShowingUI.superState = DisplayEngine.stTop
+	DisplayEngine.stShowingUI.sendMessageToJS = sendMessageToJS
+	DisplayEngine.stShowingUI.invokeMenuWhenShowingUI = invokeMenuWhenShowingUI
+	DisplayEngine.stShowingUI.invokeExitWhenShowingUI = invokeExitWhenShowingUI
+	DisplayEngine.stShowingUI.invokeRecordedShowsWhenShowingUI = invokeRecordedShowsWhenShowingUI
+	DisplayEngine.stShowingUI.invokeNavigationWhenShowingUI = invokeNavigationWhenShowingUI
 
     DisplayEngine.stShowingModalDlg = DisplayEngine.newHState(DisplayEngine, "ShowingModalDlg")
     DisplayEngine.stShowingModalDlg.HStateEventHandler = STShowingModalDlgEventHandler
 	DisplayEngine.stShowingModalDlg.superState = DisplayEngine.stTop
+	DisplayEngine.stShowingModalDlg.sendMessageToJS = sendMessageToJS
+	DisplayEngine.stShowingModalDlg.invokeExitWhenShowingModalDlg = invokeExitWhenShowingModalDlg
+	DisplayEngine.stShowingModalDlg.invokeNavigationWhenShowingModalDlg = invokeNavigationWhenShowingModalDlg
 
     DisplayEngine.stShowingVideo = DisplayEngine.newHState(DisplayEngine, "ShowingVideo")
     DisplayEngine.stShowingVideo.HStateEventHandler = STShowingVideoEventHandler
 	DisplayEngine.stShowingVideo.superState = DisplayEngine.stTop
+	DisplayEngine.stShowingVideo.sendMessageToJS = sendMessageToJS
+	DisplayEngine.stShowingVideo.invokeMenuWhenShowingVideo = invokeMenuWhenShowingVideo
+	DisplayEngine.stShowingVideo.invokeRecordedShowsWhenShowingVideo = invokeRecordedShowsWhenShowingVideo
+	DisplayEngine.stShowingVideo.invokeTogglePlayIconWhenShowingVideo = invokeTogglePlayIconWhenShowingVideo
+	DisplayEngine.stShowingVideo.invokeToggleProgressBarWhenShowingVideo = invokeToggleProgressBarWhenShowingVideo
 
     DisplayEngine.stPlaying = DisplayEngine.newHState(DisplayEngine, "Playing")
     DisplayEngine.stPlaying.HStateEventHandler = STPlayingEventHandler
 	DisplayEngine.stPlaying.superState = DisplayEngine.stShowingVideo
+	DisplayEngine.stPlaying.sendMessageToJS = sendMessageToJS
+	DisplayEngine.stPlaying.invokeFastForwardWhenPlaying = invokeFastForwardWhenPlaying
+	DisplayEngine.stPlaying.invokeRewindWhenPlaying = invokeRewindWhenPlaying
+	DisplayEngine.stPlaying.invokePauseWhenPlaying = invokePauseWhenPlaying
+	DisplayEngine.stPlaying.invokeInstantReplayWhenPlaying = invokeInstantReplayWhenPlaying
+	DisplayEngine.stPlaying.invokeQuickSkipWhenPlaying = invokeQuickSkipWhenPlaying
+	DisplayEngine.stPlaying.invokeMenuWhenPlaying = invokeMenuWhenPlaying
+	DisplayEngine.stPlaying.invokeStopWhenPlaying = invokeStopWhenPlaying
+	DisplayEngine.stPlaying.invokeRecordedShowsWhenPlaying = invokeRecordedShowsWhenPlaying
+	DisplayEngine.stPlaying.invokeJumpWhenPlaying = invokeJumpWhenPlaying
 
     DisplayEngine.stPaused = DisplayEngine.newHState(DisplayEngine, "Paused")
     DisplayEngine.stPaused.HStateEventHandler = STPausedEventHandler
 	DisplayEngine.stPaused.superState = DisplayEngine.stShowingVideo
+	DisplayEngine.stPaused.sendMessageToJS = sendMessageToJS
+	DisplayEngine.stPaused.invokeMenuWhenPaused = invokeMenuWhenPaused
+	DisplayEngine.stPaused.invokePauseWhenPaused = invokePauseWhenPaused
+	DisplayEngine.stPaused.invokePlayWhenPaused = invokePlayWhenPaused
+	DisplayEngine.stPaused.invokeQuickSkipWhenPaused = invokeQuickSkipWhenPaused
+	DisplayEngine.stPaused.invokeInstantReplayWhenPaused = invokeInstantReplayWhenPaused
 
     DisplayEngine.stFastForwarding = DisplayEngine.newHState(DisplayEngine, "FastForwarding")
     DisplayEngine.stFastForwarding.HStateEventHandler = STFastForwardingEventHandler
 	DisplayEngine.stFastForwarding.superState = DisplayEngine.stShowingVideo
+	DisplayEngine.stFastForwarding.sendMessageToJS = sendMessageToJS
+	DisplayEngine.stFastForwarding.invokeFastForwardWhenFastForwarding = invokeFastForwardWhenFastForwarding
+	DisplayEngine.stFastForwarding.invokeMenuWhenFastForwarding = invokeMenuWhenFastForwarding
+	DisplayEngine.stFastForwarding.invokePlayWhenFastForwarding = invokePlayWhenFastForwarding
+	DisplayEngine.stFastForwarding.invokePauseWhenFastForwarding = invokePauseWhenFastForwarding
+	DisplayEngine.stFastForwarding.invokeQuickSkipWhenFastForwarding = invokeQuickSkipWhenFastForwarding
+	DisplayEngine.stFastForwarding.invokeInstantReplayWhenFastForwarding = invokeInstantReplayWhenFastForwarding
 
     DisplayEngine.stRewinding = DisplayEngine.newHState(DisplayEngine, "Rewinding")
     DisplayEngine.stRewinding.HStateEventHandler = STRewindingEventHandler
 	DisplayEngine.stRewinding.superState = DisplayEngine.stShowingVideo
+	DisplayEngine.stRewinding.sendMessageToJS = sendMessageToJS
+	DisplayEngine.stRewinding.invokeRewindWhenRewinding = invokeRewindWhenRewinding
+	DisplayEngine.stRewinding.invokeMenuWhenRewinding = invokeMenuWhenRewinding
+	DisplayEngine.stRewinding.invokePlayWhenRewinding = invokePlayWhenRewinding
+	DisplayEngine.stRewinding.invokePauseWhenRewinding = invokePauseWhenRewinding
+	DisplayEngine.stRewinding.invokeQuickSkipWhenRewinding = invokeQuickSkipWhenRewinding
+	DisplayEngine.stRewinding.invokeInstantReplayWhenRewinding = invokeInstantReplayWhenRewinding
 
 	DisplayEngine.topState = DisplayEngine.stTop
 
@@ -153,6 +196,36 @@ Function STLoadingSiteEventHandler(event As Object, stateData As Object) As Obje
 End Function
 
 
+Sub sendMessageToJS(message$)
+	aa = {}
+	aa.AddReplace("bsMessage", message$)
+	m.stateMachine.htmlWidget.PostJSMessage(aa)
+End Sub
+
+
+Sub invokeMenuWhenShowingUI()
+	m.sendMessageToJS("showMenu")
+End Sub
+
+
+Sub invokeExitWhenShowingUI(stateData As Object)
+	' TBD - what should be done if the user presses this when no show was ever selected??
+	' TBD - should it go to Paused state? even if it was playing before?
+	m.sendMessageToJS("exitUI")
+	stateData.nextState = m.stateMachine.stPaused
+End Sub
+
+
+Sub invokeRecordedShowsWhenShowingUI()
+	m.sendMessageToJS("showRecordedShows")
+End Sub
+
+
+Sub invokeNavigationWhenShowingUI(navigationMessage$)
+	m.sendMessageToJS(navigationMessage$)
+End Sub
+
+
 Function STShowingUIEventHandler(event As Object, stateData As Object) As Object
 
     stateData.nextState = invalid
@@ -160,8 +233,10 @@ Function STShowingUIEventHandler(event As Object, stateData As Object) As Object
     if type(event) = "roAssociativeArray" then      ' internal message event
 
         if IsString(event["EventType"]) then
-        
-            if event["EventType"] = "ENTRY_SIGNAL" then
+			
+			eventMsg$ = event["EventType"]
+
+            if eventMsg$ = "ENTRY_SIGNAL" then
             
                 print m.id$ + ": entry signal"
 
@@ -169,11 +244,11 @@ Function STShowingUIEventHandler(event As Object, stateData As Object) As Object
 
                 return "HANDLED"
 
-            else if event["EventType"] = "EXIT_SIGNAL" then
+            else if eventMsg$ = "EXIT_SIGNAL" then
 
                 print m.id$ + ": exit signal"
             
-            else if event["EventType"] = "RESUME_PLAYBACK" then
+            else if eventMsg$ = "RESUME_PLAYBACK" then
 
 				' Replay Guide - play recorded show (either on screen or from browser)
 
@@ -208,6 +283,19 @@ Function STShowingUIEventHandler(event As Object, stateData As Object) As Object
 				stateData.nextState = m.stateMachine.stPlaying
 				return "TRANSITION"            
             
+			' remote commands from client
+            else if eventMsg$ = "MENU" then
+				m.invokeMenuWhenShowingUI()
+				return "HANDLED"
+            else if eventMsg$ = "EXIT" then
+				m.invokeExitWhenShowingUI(stateData)
+				return "TRANSITION"            
+            else if eventMsg$ = "RECORDED_SHOWS" then
+				m.invokeRecordedShowsWhenShowingUI()
+				return "HANDLED"
+            else if eventMsg$ = "UP" or eventMsg$ = "DOWN" or eventMsg$ = "LEFT" or eventMsg$ = "RIGHT" or eventMsg$ = "ENTER" then
+				m.invokeNavigationWhenShowingUI(eventMsg$)
+				return "HANDLED"
 			endif
             
         endif
@@ -217,37 +305,15 @@ Function STShowingUIEventHandler(event As Object, stateData As Object) As Object
 		remoteCommand$ = GetRemoteCommand(event)
 
 		if remoteCommand$ = "MENU" then
-
-			' for now, tell js to show the main menu whenever this is pressed - this is equivalent to Home
-			aa = {}
-			aa.AddReplace("bsMessage", "showMenu")
-			m.stateMachine.htmlWidget.PostJSMessage(aa)
-
+			m.invokeMenuWhenShowingUI()
 			return "HANDLED"
-
 		else if remoteCommand$ = "EXIT" then
-
-			' TBD - what should be done if the user presses this when no show was ever selected??
-			' TBD - should it go to Paused state? even if it was playing before?
-
-			' send message to js to exit UI
-			aa = {}
-			aa.AddReplace("bsMessage", "exitUI")
-			m.stateMachine.htmlWidget.PostJSMessage(aa)
-			
-			stateData.nextState = m.stateMachine.stPaused
+			m.invokeExitWhenShowingUI(stateData)
 			return "TRANSITION"            
-
 		else if remoteCommand$ = "RECORDED_SHOWS" then
-
-			' tell js to show Recorded Shows
-			aa = {}
-			aa.AddReplace("bsMessage", "showRecordedShows")
-			m.stateMachine.htmlWidget.PostJSMessage(aa)
-
+			m.invokeRecordedShowsWhenShowingUI()
 			return "HANDLED"
 		else 
-
 			commandToHtml$ = ""
 			if remoteCommand$ = "UP" then
 				commandToHtml$ = "Up"
@@ -260,15 +326,11 @@ Function STShowingUIEventHandler(event As Object, stateData As Object) As Object
 			else if remoteCommand$ = "SELECT" then
 				commandToHtml$ = "Enter"
 			endif
-
 			if commandToHtml$ <> "" then
-				aa = {}
-				aa.AddReplace("bsMessage", commandToHtml$)
-				m.stateMachine.htmlWidget.PostJSMessage(aa)
+				m.invokeNavigationWhenShowingUI(commandToHtml$)
 			endif
 
 			return "HANDLED"
-
 		endif
 
     endif
@@ -279,6 +341,16 @@ Function STShowingUIEventHandler(event As Object, stateData As Object) As Object
 End Function
 
 
+Sub invokeExitWhenShowingModalDlg()
+	' TODO - treat this as cancel
+End Sub
+
+
+Sub invokeNavigationWhenShowingModalDlg(navigationMessage$)
+	m.sendMessageToJS(navigationMessage$)
+End Sub
+
+
 Function STShowingModalDlgEventHandler(event As Object, stateData As Object) As Object
 
     stateData.nextState = invalid
@@ -287,7 +359,9 @@ Function STShowingModalDlgEventHandler(event As Object, stateData As Object) As 
 
         if IsString(event["EventType"]) then
         
-            if event["EventType"] = "ENTRY_SIGNAL" then
+			eventMsg$ = event["EventType"]
+
+            if eventMsg$ = "ENTRY_SIGNAL" then
             
                 print m.id$ + ": entry signal"
 
@@ -295,17 +369,24 @@ Function STShowingModalDlgEventHandler(event As Object, stateData As Object) As 
 
                 return "HANDLED"
 
-            else if event["EventType"] = "EXIT_SIGNAL" then
+            else if eventMsg$ = "EXIT_SIGNAL" then
 
                 print m.id$ + ": exit signal"
             
-            else if event["EventType"] = "SHOW_UI" then
+            else if eventMsg$ = "SHOW_UI" then
 
                 print "SHOW_UI message received"
 
 				stateData.nextState = m.stateMachine.stShowingUI
 				return "TRANSITION"            
             
+			' remote commands from client
+            else if eventMsg$ = "EXIT" then
+				m.invokeExitWhenShowingModalDlg()
+				return "HANDLED"            
+            else if eventMsg$ = "UP" or eventMsg$ = "DOWN" or eventMsg$ = "LEFT" or eventMsg$ = "RIGHT" or eventMsg$ = "ENTER" then
+				m.invokeNavigationWhenShowingModalDlg(eventMsg$)
+				return "HANDLED"
 			endif
             
         endif
@@ -316,7 +397,7 @@ Function STShowingModalDlgEventHandler(event As Object, stateData As Object) As 
 
 		 if remoteCommand$ = "EXIT" then
 
-			' TODO - treat this as cancel
+			m.invokeExitWhenShowingModalDlg()
 			return "HANDLED"            
 
 		else 
@@ -335,9 +416,7 @@ Function STShowingModalDlgEventHandler(event As Object, stateData As Object) As 
 			endif
 
 			if commandToHtml$ <> "" then
-				aa = {}
-				aa.AddReplace("bsMessage", commandToHtml$)
-				m.stateMachine.htmlWidget.PostJSMessage(aa)
+				m.invokeNavigationWhenShowingModalDlg(commandToHtml$)
 			endif
 
 			return "HANDLED"
@@ -352,6 +431,112 @@ Function STShowingModalDlgEventHandler(event As Object, stateData As Object) As 
 End Function
 
 
+Sub invokeMenuWhenShowingVideo(stateData As Object)
+
+	' TODO - undisplay overlay graphics
+
+	' send message to js to display the menu
+	aa = {}
+	aa.AddReplace("bsMessage", "showMenu")
+	m.stateMachine.htmlWidget.PostJSMessage(aa)
+			
+	stateData.nextState = m.stateMachine.stShowingUI
+
+End Sub
+
+
+Sub invokeRecordedShowsWhenShowingVideo(stateData As Object)
+
+	' send message to js to show Recorded Shows
+	aa = {}
+	aa.AddReplace("bsMessage", "showRecordedShows")
+	m.stateMachine.htmlWidget.PostJSMessage(aa)
+
+	stateData.nextState = m.stateMachine.stShowingUI
+
+End Sub
+
+
+Sub invokeTogglePlayIconWhenShowingVideo()
+
+	aa = {}
+	aa.AddReplace("bsMessage", "togglePlayIcon")
+	m.stateMachine.htmlWidget.PostJSMessage(aa)
+
+End Sub
+
+
+Sub invokeToggleProgressBarWhenShowingVideo()
+
+	if type(m.stateMachine.selectedRecording) = "roAssociativeArray" then
+
+		' specify a variety of parameters for the UI
+        
+		recordingDuration = m.stateMachine.selectedRecording.Duration*60
+
+		' number of ticks to display is based on the duration of the recording
+		'0 < duration <= 5 minutes
+		'every 1 minute
+		'5 minutes < duration <= 40 minutes
+		'every 5 minutes
+		'40 minutes < duration <= 1 hour
+		'every 10minutes
+		'1 hour < duration <= 3 hours
+		'every 15 minutes
+		'3 hours < duration <= 4 hours
+		'every 30 minutes
+		'4 hours < duration
+		'every hour
+		numMinutes% = recordingDuration / 60
+
+		print "toggleProgressBar: duration = ";recordingDuration
+		print "toggleProgressBar: numMinutes = ";numMinutes%
+
+		minutesPerTick% = 1
+		if (numMinutes% > 240) then
+			minutesPerTick% = 60
+		else if (numMinutes% > 180) then
+			minutesPerTick% = 30
+		else if (numMinutes% > 60) then
+			minutesPerTick% = 15
+		else if (numMinutes% > 40) then
+			minutesPerTick% = 10
+		else if (numMinutes% > 5) then
+			minutesPerTick% = 5
+		else 
+			minutesPerTick% = 1
+		endif
+
+		numTicks% = numMinutes% / minutesPerTick%
+
+		print "toggleProgressBar: numTicks = ";numTicks%
+		print "toggleProgressBar: minutesPerTick = ";minutesPerTick%
+
+		' determine whether or not to draw last tick - don't draw it if it is at the end of the progress bar
+		if (minutesPerTick% * numTicks%) = numMinutes% then
+			numTicks% = numTicks% - 1
+		endif
+
+		print "toggleProgressBar: numTicks = ";numTicks%
+
+		aa = {}
+		aa.AddReplace("bsMessage", "toggleProgressBar")
+		aa.AddReplace("currentOffset", stri(m.stateMachine.currentVideoPosition%))
+		aa.AddReplace("recordingDuration", stri(m.stateMachine.selectedRecording.Duration*60))
+		aa.AddReplace("numMinutes", stri(numMinutes%))
+		aa.AddReplace("minutesPerTick", stri(minutesPerTick%))
+		aa.AddReplace("numTicks", stri(numTicks%))
+		m.stateMachine.htmlWidget.PostJSMessage(aa)
+
+		m.stateMachine.numMinutes = numMinutes%
+		m.stateMachine.minutesPerTick = minutesPerTick%
+		m.stateMachine.numTicks = numTicks%
+
+	endif				
+
+End Sub
+
+
 Function STShowingVideoEventHandler(event As Object, stateData As Object) As Object
 
     stateData.nextState = invalid
@@ -360,16 +545,27 @@ Function STShowingVideoEventHandler(event As Object, stateData As Object) As Obj
 
         if IsString(event["EventType"]) then
         
-            if event["EventType"] = "ENTRY_SIGNAL" then
+			eventMsg$ = event["EventType"]
+
+            if eventMsg$ = "ENTRY_SIGNAL" then
             
                 print m.id$ + ": entry signal"
 
                 return "HANDLED"
 
-            else if event["EventType"] = "EXIT_SIGNAL" then
+            else if eventMsg$ = "EXIT_SIGNAL" then
 
                 print m.id$ + ": exit signal"
             
+			else if eventMsg$ = "MENU"
+				m.invokeMenuWhenShowingVideo(stateData)
+				return "TRANSITION"            
+			else if eventMsg$ = "RECORDED_SHOWS"
+				m.invokeRecordedShowsWhenShowingVideo(stateData)
+				return "TRANSITION"
+			else if eventMsg$ = "TOGGLE_PROGRESS_BAR"
+				m.invokeToggleProgressBarWhenShowingVideo()
+				return "HANDLED"
 			endif
             
         endif
@@ -402,104 +598,17 @@ Function STShowingVideoEventHandler(event As Object, stateData As Object) As Obj
 		remoteCommand$ = GetRemoteCommand(event)
 
 		if remoteCommand$ = "MENU" then
-
-			' TODO - undisplay overlay graphics
-
-			' send message to js to display the menu
-			aa = {}
-			aa.AddReplace("bsMessage", "showMenu")
-			m.stateMachine.htmlWidget.PostJSMessage(aa)
-			
-			stateData.nextState = m.stateMachine.stShowingUI
+			m.invokeMenuWhenShowingVideo(stateData)
 			return "TRANSITION"            
-
 		else if remoteCommand$ = "RECORDED_SHOWS" then
-
-			' send message to js to show Recorded Shows
-			aa = {}
-			aa.AddReplace("bsMessage", "showRecordedShows")
-			m.stateMachine.htmlWidget.PostJSMessage(aa)
-
-			stateData.nextState = m.stateMachine.stShowingUI
+			m.invokeRecordedShowsWhenShowingVideo(stateData)
 			return "TRANSITION"
-
 		else if remoteCommand$ = "PLAY_ICON" then
-			aa = {}
-			aa.AddReplace("bsMessage", "togglePlayIcon")
-			m.stateMachine.htmlWidget.PostJSMessage(aa)
-
+			m.invokeTogglePlayIconWhenShowingVideo()
 			return "HANDLED"
-
 		else if remoteCommand$ = "PROGRESS_BAR" then
-
-			if type(m.stateMachine.selectedRecording) = "roAssociativeArray" then
-
-				' specify a variety of parameters for the UI
-        
-				recordingDuration = m.stateMachine.selectedRecording.Duration*60
-
-				' number of ticks to display is based on the duration of the recording
-				'0 < duration <= 5 minutes
-				'every 1 minute
-				'5 minutes < duration <= 40 minutes
-				'every 5 minutes
-				'40 minutes < duration <= 1 hour
-				'every 10minutes
-				'1 hour < duration <= 3 hours
-				'every 15 minutes
-				'3 hours < duration <= 4 hours
-				'every 30 minutes
-				'4 hours < duration
-				'every hour
-				numMinutes% = recordingDuration / 60
-
-				print "toggleProgressBar: duration = ";recordingDuration
-				print "toggleProgressBar: numMinutes = ";numMinutes%
-
-				minutesPerTick% = 1
-				if (numMinutes% > 240) then
-					minutesPerTick% = 60
-				else if (numMinutes% > 180) then
-					minutesPerTick% = 30
-				else if (numMinutes% > 60) then
-					minutesPerTick% = 15
-				else if (numMinutes% > 40) then
-					minutesPerTick% = 10
-				else if (numMinutes% > 5) then
-					minutesPerTick% = 5
-				else 
-					minutesPerTick% = 1
-				endif
-
-				numTicks% = numMinutes% / minutesPerTick%
-
-				print "toggleProgressBar: numTicks = ";numTicks%
-				print "toggleProgressBar: minutesPerTick = ";minutesPerTick%
-
-				' determine whether or not to draw last tick - don't draw it if it is at the end of the progress bar
-				if (minutesPerTick% * numTicks%) = numMinutes% then
-					numTicks% = numTicks% - 1
-				endif
-
-				print "toggleProgressBar: numTicks = ";numTicks%
-
-				aa = {}
-				aa.AddReplace("bsMessage", "toggleProgressBar")
-				aa.AddReplace("currentOffset", stri(m.stateMachine.currentVideoPosition%))
-				aa.AddReplace("recordingDuration", stri(m.stateMachine.selectedRecording.Duration*60))
-				aa.AddReplace("numMinutes", stri(numMinutes%))
-				aa.AddReplace("minutesPerTick", stri(minutesPerTick%))
-				aa.AddReplace("numTicks", stri(numTicks%))
-				m.stateMachine.htmlWidget.PostJSMessage(aa)
-
-				m.stateMachine.numMinutes = numMinutes%
-				m.stateMachine.minutesPerTick = minutesPerTick%
-				m.stateMachine.numTicks = numTicks%
-
-			endif				
-
+			m.invokeToggleProgressBarWhenShowingVideo()
 			return "HANDLED"
-
 		endif
 
     endif
@@ -510,6 +619,79 @@ Function STShowingVideoEventHandler(event As Object, stateData As Object) As Obj
 End Function
 
 
+Sub invokeMenuWhenPlaying(stateData As Object)
+
+	' pause video
+	m.stateMachine.PausePlayback()
+
+	' save current position
+	m.stateMachine.jtr.UpdateDBLastViewedPosition(m.stateMachine.selectedRecording.RecordingId, m.stateMachine.currentVideoPosition%)
+	m.stateMachine.selectedRecording.LastViewedPosition = m.stateMachine.currentVideoPosition%
+
+End Sub
+
+
+Sub invokeStopWhenPlaying(stateData As Object)
+
+	' pause video
+	m.stateMachine.PausePlayback()
+
+	' save current position
+	m.stateMachine.jtr.UpdateDBLastViewedPosition(m.stateMachine.selectedRecording.RecordingId, m.stateMachine.currentVideoPosition%)
+	m.stateMachine.selectedRecording.LastViewedPosition = m.stateMachine.currentVideoPosition%
+
+	aa = {}
+	aa.AddReplace("bsMessage", "promptDelete")
+	aa.AddReplace("showTitle", m.stateMachine.selectedRecording.Title)
+	aa.AddReplace("showRecordingId", stri(m.stateMachine.selectedRecording.RecordingId))
+	m.stateMachine.htmlWidget.PostJSMessage(aa)
+
+	stateData.nextState = m.stateMachine.stShowingModalDlg
+End Sub
+
+
+Sub invokeRecordedShowsWhenPlaying()
+
+	' pause video
+	m.stateMachine.PausePlayback()
+
+	' save current position
+	m.stateMachine.jtr.UpdateDBLastViewedPosition(m.stateMachine.selectedRecording.RecordingId, m.stateMachine.currentVideoPosition%)
+	m.stateMachine.selectedRecording.LastViewedPosition = m.stateMachine.currentVideoPosition%
+
+End Sub
+
+
+Sub invokePauseWhenPlaying(stateData As Object)
+	stateData.nextState = m.stateMachine.stPaused
+End Sub
+
+
+Sub invokeQuickSkipWhenPlaying()
+	m.stateMachine.QuickSkipVideo()
+End Sub
+
+
+Sub invokeInstantReplayWhenPlaying()
+	m.stateMachine.InstantReplayVideo()
+End Sub
+
+
+Sub invokeJumpWhenPlaying()
+	m.stateMachine.Jump()
+End Sub
+
+
+Sub invokeFastForwardWhenPlaying(stateData As Object)
+	stateData.nextState = m.stateMachine.stFastForwarding
+End Sub
+
+
+Sub invokeRewindWhenPlaying(stateData As Object)
+	stateData.nextState = m.stateMachine.stRewinding
+End Sub
+
+
 Function STPlayingEventHandler(event As Object, stateData As Object) As Object
 
     stateData.nextState = invalid
@@ -518,7 +700,9 @@ Function STPlayingEventHandler(event As Object, stateData As Object) As Object
 
         if IsString(event["EventType"]) then
         
-            if event["EventType"] = "ENTRY_SIGNAL" then
+			eventMsg$ = event["EventType"]
+
+            if eventMsg$ = "ENTRY_SIGNAL" then
             
                 print m.id$ + ": entry signal"
 
@@ -534,38 +718,36 @@ Function STPlayingEventHandler(event As Object, stateData As Object) As Object
 
                 return "HANDLED"
 
-            else if event["EventType"] = "EXIT_SIGNAL" then
+            else if eventMsg$ = "EXIT_SIGNAL" then
 
                 print m.id$ + ": exit signal"
 
-			else if event["EventType"] = "FASTFORWARD" then
-
-				stateData.nextState = m.stateMachine.stFastForwarding
-
-				return "TRANSITION"        
-				    
-			else if event["EventType"] = "REWIND" then
-
-				stateData.nextState = m.stateMachine.stRewinding
-			
+			else if eventMsg$ = "FASTFORWARD" then
+				m.invokeFastForwardWhenPlaying(stateData)
+				return "TRANSITION"        			    
+			else if eventMsg$ = "REWIND" then
+				m.invokeRewindWhenPlaying(stateData)
 				return "TRANSITION"            
-
-			else if event["EventType"] = "PAUSE" then
-
-				stateData.nextState = m.stateMachine.stPaused
-				
+			else if eventMsg$ = "PAUSE" then
+				m.invokePauseWhenPlaying(stateData)
 				return "TRANSITION"
-            
-            else if event["EventType"] = "INSTANT_REPLAY" then
-
-				m.stateMachine.InstantReplayVideo()
-			
+            else if eventMsg$ = "INSTANT_REPLAY" then
+				m.invokeInstantReplayWhenPlaying()
 				return "HANDLED"
-
-            else if event["EventType"] = "QUICK_SKIP" then
-
-				m.stateMachine.QuickSkipVideo()
-			
+            else if eventMsg$ = "QUICK_SKIP" then
+				m.invokeQuickSkipWhenPlaying()
+				return "HANDLED"
+            else if eventMsg$ = "MENU" then
+				m.invokeMenuWhenPlaying(stateData)
+				return "HANDLED"
+            else if eventMsg$ = "STOP" then
+				m.invokeStopWhenPlaying(stateData)
+				return "TRANSITION"
+            else if eventMsg$ = "RECORDED_SHOWS" then
+				m.invokeRecordedShowsWhenPlaying()
+				return "HANDLED"
+            else if eventMsg$ = "JUMP" then
+				m.invokeJumpWhenPlaying()
 				return "HANDLED"
 
             else if event["EventType"] = "RESUME_PLAYBACK" then
@@ -599,62 +781,31 @@ Function STPlayingEventHandler(event As Object, stateData As Object) As Object
 		remoteCommand$ = GetRemoteCommand(event)
 
 		if remoteCommand$ = "MENU" then
-
-			' pause video
-			m.stateMachine.PausePlayback()
-
-			' save current position
-			m.stateMachine.jtr.UpdateDBLastViewedPosition(m.stateMachine.selectedRecording.RecordingId, m.stateMachine.currentVideoPosition%)
-			m.stateMachine.selectedRecording.LastViewedPosition = m.stateMachine.currentVideoPosition%
-
+			m.invokeMenuWhenPlaying(stateData)
 			' fall through to superState
-
 		else if remoteCommand$ = "STOP" then
-
-			' pause video
-			m.stateMachine.PausePlayback()
-
-			' save current position
-			m.stateMachine.jtr.UpdateDBLastViewedPosition(m.stateMachine.selectedRecording.RecordingId, m.stateMachine.currentVideoPosition%)
-			m.stateMachine.selectedRecording.LastViewedPosition = m.stateMachine.currentVideoPosition%
-
-			aa = {}
-			aa.AddReplace("bsMessage", "promptDelete")
-			aa.AddReplace("showTitle", m.stateMachine.selectedRecording.Title)
-			aa.AddReplace("showRecordingId", stri(m.stateMachine.selectedRecording.RecordingId))
-			m.stateMachine.htmlWidget.PostJSMessage(aa)
-
-			stateData.nextState = m.stateMachine.stShowingModalDlg
+			m.invokeStopWhenPlaying(stateData)
 			return "TRANSITION"
-
 		else if remoteCommand$ = "RECORDED_SHOWS" then
-
-			' pause video
-			m.stateMachine.PausePlayback()
-
-			' save current position
-			m.stateMachine.jtr.UpdateDBLastViewedPosition(m.stateMachine.selectedRecording.RecordingId, m.stateMachine.currentVideoPosition%)
-			m.stateMachine.selectedRecording.LastViewedPosition = m.stateMachine.currentVideoPosition%
-
+			m.invokeRecordedShowsWhenPlaying()
 			' fall through to superState
-
 		else if remoteCommand$ = "PAUSE" then
-			stateData.nextState = m.stateMachine.stPaused
+			m.invokePauseWhenPlaying(stateData)
 			return "TRANSITION"
 		else if remoteCommand$ = "QUICK_SKIP" then
-			m.stateMachine.QuickSkipVideo()
+			m.invokeQuickSkipWhenPlaying()
 			return "HANDLED"
 		else if remoteCommand$ = "INSTANT_REPLAY" then
-			m.stateMachine.InstantReplayVideo()
+			m.invokeInstantReplayWhenPlaying()
 			return "HANDLED"
 		else if remoteCommand$ = "JUMP" then
-			m.stateMachine.Jump()
+			m.invokeJumpWhenPlaying()
 			return "HANDLED"
 		else if remoteCommand$ = "FF" then
-			stateData.nextState = m.stateMachine.stFastForwarding
+			m.invokeFastForwardWhenPlaying(stateData)
 			return "TRANSITION"            
 		else if remoteCommand$ = "RW" then
-			stateData.nextState = m.stateMachine.stRewinding
+			m.invokeRewindWhenPlaying(stateData)
 			return "TRANSITION"            
 		else
 			print "unknown remote command ";event
@@ -669,6 +820,37 @@ Function STPlayingEventHandler(event As Object, stateData As Object) As Object
 End Function
 
 
+Sub invokeMenuWhenPaused()
+	' save current position
+	m.stateMachine.jtr.UpdateDBLastViewedPosition(m.stateMachine.selectedRecording.RecordingId, m.stateMachine.currentVideoPosition%)
+	m.stateMachine.selectedRecording.LastViewedPosition = m.stateMachine.currentVideoPosition%
+End Sub
+
+
+Sub invokePauseWhenPaused(stateData As Object)
+	m.stateMachine.ResumePlayback()
+	m.stateMachine.StartVideoPlaybackTimer()
+	stateData.nextState = m.stateMachine.stPlaying
+End Sub
+
+
+Sub invokePlayWhenPaused(stateData As Object)
+	m.stateMachine.ResumePlayback()
+	m.stateMachine.StartVideoPlaybackTimer()
+	stateData.nextState = m.stateMachine.stPlaying
+End Sub
+
+
+Sub invokeQuickSkipWhenPaused()
+	m.stateMachine.QuickSkipVideo()
+End Sub
+
+
+Sub invokeInstantReplayWhenPaused()
+	m.stateMachine.InstantReplayVideo()
+End Sub
+
+
 Function STPausedEventHandler(event As Object, stateData As Object) As Object
 
     stateData.nextState = invalid
@@ -677,7 +859,9 @@ Function STPausedEventHandler(event As Object, stateData As Object) As Object
 
         if IsString(event["EventType"]) then
         
-            if event["EventType"] = "ENTRY_SIGNAL" then
+			eventMsg$ = event["EventType"]
+
+            if eventMsg$ = "ENTRY_SIGNAL" then
             
                 print m.id$ + ": entry signal"
 
@@ -695,11 +879,11 @@ Function STPausedEventHandler(event As Object, stateData As Object) As Object
 
                 return "HANDLED"
 
-            else if event["EventType"] = "EXIT_SIGNAL" then
+            else if eventMsg$ = "EXIT_SIGNAL" then
 
                 print m.id$ + ": exit signal"
             
-            else if event["EventType"] = "RESUME_PLAYBACK" then
+            else if eventMsg$ = "RESUME_PLAYBACK" then
 
 				' Replay Guide from browser on PC - Play show selected while show was playing
 
@@ -722,24 +906,21 @@ Function STPausedEventHandler(event As Object, stateData As Object) As Object
 				m.stateMachine.LaunchVideo()
 				return "HANDLED"            
 
-			else if event["EventType"] = "PAUSE" or event["EventType"] = "PLAY" then
-
-				' unpause video before changing state
-				m.stateMachine.ResumePlayback()
-				m.stateMachine.StartVideoPlaybackTimer()
-				stateData.nextState = m.stateMachine.stPlaying
+			else if eventMsg$ = "PAUSE" then
+				m.invokePauseWhenPaused(stateData)
 				return "TRANSITION"
-            
-            else if event["EventType"] = "INSTANT_REPLAY" then
-
-				m.stateMachine.InstantReplayVideo()
+			else if eventMsg$ = "PLAY" then
+				m.invokePlayWhenPaused(stateData)
+				return "TRANSITION"            
+            else if eventMsg$ = "INSTANT_REPLAY" then
+				m.invokeInstantReplayWhenPaused()
 				return "HANDLED"
-
-            else if event["EventType"] = "QUICK_SKIP" then
-
-				m.stateMachine.QuickSkipVideo()
+            else if eventMsg$ = "QUICK_SKIP" then
+				m.invokeQuickSkipWhenPaused()
 				return "HANDLED"
-
+            else if eventMsg$ = "MENU" then
+				m.invokeMenuWhenPaused()
+				' fall through to superState
 			else
 				' TODO - internal message / play from replay guide
 			endif
@@ -751,23 +932,19 @@ Function STPausedEventHandler(event As Object, stateData As Object) As Object
 		remoteCommand$ = GetRemoteCommand(event)
 
 		if remoteCommand$ = "MENU" then
-
-			' save current position
-			m.stateMachine.jtr.UpdateDBLastViewedPosition(m.stateMachine.selectedRecording.RecordingId, m.stateMachine.currentVideoPosition%)
-			m.stateMachine.selectedRecording.LastViewedPosition = m.stateMachine.currentVideoPosition%
-
+			m.invokeMenuWhenPaused()
 			' fall through to superState
-
-		else if remoteCommand$ = "PAUSE" or remoteCommand$ = "PLAY"		
-			m.stateMachine.ResumePlayback()
-			m.stateMachine.StartVideoPlaybackTimer()
-			stateData.nextState = m.stateMachine.stPlaying
+		else if remoteCommand$ = "PAUSE"
+			m.invokePauseWhenPaused(stateData)
+			return "TRANSITION"
+		else if remoteCommand$ = "PLAY"	
+			m.invokePlayWhenPaused(stateData)	
 			return "TRANSITION"
 		else if remoteCommand$ = "QUICK_SKIP" then
-			m.stateMachine.QuickSkipVideo()
+			m.invokeQuickSkipWhenPaused()
 			return "HANDLED"
 		else if remoteCommand$ = "INSTANT_REPLAY" then
-			m.stateMachine.InstantReplayVideo()
+			m.invokeInstantReplayWhenPaused()
 			return "HANDLED"
 		endif
 
@@ -779,6 +956,42 @@ Function STPausedEventHandler(event As Object, stateData As Object) As Object
 End Function
 
 
+Sub invokeFastForwardWhenFastForwarding()
+	m.stateMachine.NextFastForward()
+End Sub
+
+
+Sub invokeMenuWhenFastForwarding()
+	' save current position
+	m.stateMachine.jtr.UpdateDBLastViewedPosition(m.stateMachine.selectedRecording.RecordingId, m.stateMachine.currentVideoPosition%)
+	m.stateMachine.selectedRecording.LastViewedPosition = m.stateMachine.currentVideoPosition%
+End Sub
+
+
+Sub invokePlayWhenFastForwarding(stateData As Object)
+	m.stateMachine.ResumePlayback()
+	m.stateMachine.StartVideoPlaybackTimer()
+	stateData.nextState = m.stateMachine.stPlaying
+End Sub
+
+
+Sub invokePauseWhenFastForwarding(stateData As Object)
+	stateData.nextState = m.stateMachine.stPaused
+End Sub
+
+
+Sub invokeQuickSkipWhenFastForwarding()
+	' TODO - what if the progress bar is not visible?
+	m.stateMachine.JumpToTick(true)
+End Sub
+
+
+Sub invokeInstantReplayWhenFastForwarding()
+	' m.stateMachine.InstantReplayVideo()
+	' should jump to prior tick mark in progress bar?
+End Sub
+
+
 Function STFastForwardingEventHandler(event As Object, stateData As Object) As Object
 
     stateData.nextState = invalid
@@ -787,7 +1000,9 @@ Function STFastForwardingEventHandler(event As Object, stateData As Object) As O
 
         if IsString(event["EventType"]) then
         
-            if event["EventType"] = "ENTRY_SIGNAL" then
+			eventMsg$ = event["EventType"]
+
+            if eventMsg$ = "ENTRY_SIGNAL" then
             
                 print m.id$ + ": entry signal"
 
@@ -808,31 +1023,26 @@ Function STFastForwardingEventHandler(event As Object, stateData As Object) As O
 
                 return "HANDLED"
 
-            else if event["EventType"] = "EXIT_SIGNAL" then
-
+            else if eventMsg$ = "EXIT_SIGNAL" then
                 print m.id$ + ": exit signal"
-
-			else if event["EventType"] = "PLAY" then
-
-				m.stateMachine.ResumePlayback()
-				m.stateMachine.StartVideoPlaybackTimer()
-				stateData.nextState = m.stateMachine.stPlaying
-
+			else if eventMsg$ = "PLAY" then
+				m.invokePlayWhenFastForwarding(stateData)
 				return "TRANSITION"
-
-			else if event["EventType"] = "PAUSE" then
-
-				stateData.nextState = m.stateMachine.stPaused
+			else if eventMsg$ = "PAUSE" then
+				m.invokePauseWhenFastForwarding(stateData)
 				return "TRANSITION"
-            
-			else if event["EventType"] = "FASTFORWARD" then
-
-				m.stateMachine.NextFastForward()
-
+			else if eventMsg$ = "FASTFORWARD" then
+				m.invokeFastForwardWhenFastForwarding()
 				return "HANDLED"
-				    
-			' TODO - quick skip and/or instant replay
-
+			else if eventMsg$ = "MENU" then
+				m.invokeMenuWhenFastForwarding()
+				return "HANDLED"
+			else if eventMsg$ = "QUICK_SKIP" then
+				m.invokeQuickSkipWhenFastForwarding()
+				return "HANDLED"
+			else if eventMsg$ = "INSTANT_REPLAY" then
+				m.invokeInstantReplayWhenFastForwarding()				    
+				return "HANDLED"
 			else
 				' TODO - internal message / play from replay guide
 			endif
@@ -844,56 +1054,22 @@ Function STFastForwardingEventHandler(event As Object, stateData As Object) As O
 		remoteCommand$ = GetRemoteCommand(event)
 
 		if remoteCommand$ = "FF" then
-			
-			m.stateMachine.NextFastForward()
-
+			m.invokeFastForwardWhenFastForwarding()
 			return "HANDLED"
-
 		else if remoteCommand$ = "MENU" then
-
-			' save current position
-			m.stateMachine.jtr.UpdateDBLastViewedPosition(m.stateMachine.selectedRecording.RecordingId, m.stateMachine.currentVideoPosition%)
-			m.stateMachine.selectedRecording.LastViewedPosition = m.stateMachine.currentVideoPosition%
-
+			m.invokeMenuWhenFastForwarding()
 			' fall through to superState
-
 		else if remoteCommand$ = "PLAY" then
-			m.stateMachine.ResumePlayback()
-			m.stateMachine.StartVideoPlaybackTimer()
-			stateData.nextState = m.stateMachine.stPlaying
+			m.invokePlayWhenFastForwarding(stateData)
 			return "TRANSITION"
 		else if remoteCommand$ = "PAUSE" then
-			stateData.nextState = m.stateMachine.stPaused
+			m.invokePauseWhenFastForwarding(stateData)
 			return "TRANSITION"
 		else if remoteCommand$ = "QUICK_SKIP" then
-
-			' jump to the next tick mark in the progress bar
-			' TODO - what if the progress bar is not visible?
-			m.stateMachine.JumpToTick(true)
-			return "HANDLED"
-
-			currentPosition% = m.stateMachine.currentVideoPosition%
-			numTicksPassed% = currentPosition% / (m.stateMachine.minutesPerTick * 60)
-			if numTicksPassed% < m.stateMachine.numTicks then
-				jumpToTick% = numTicksPassed% + 1
-				jumpTo% = jumpToTick% * m.stateMachine.minutesPerTick * 60
-			else
-				jumpTo% = m.stateMachine.selectedRecording.Duration*60
-			endif
-
-			print "Jump to ";jumpTo%
-
-			m.stateMachine.currentVideoPosition% = jumpTo%
-
-			m.stateMachine.UpdateProgressBar()
-			m.stateMachine.SeekToCurrentVideoPosition()
-
-			' m.stateMachine.QuickSkipVideo()
-			' should jump to next tick mark in progress bar
+			m.invokeQuickSkipWhenFastForwarding()
 			return "HANDLED"
 		else if remoteCommand$ = "INSTANT_REPLAY" then
-			' m.stateMachine.InstantReplayVideo()
-			' should jump to prior tick mark in progress bar?
+			m.invokeInstantReplayWhenFastForwarding()
 			return "HANDLED"
 		' Jump
 		' Play
@@ -935,6 +1111,41 @@ Function NextRewind()
 End Function
 
 
+Sub invokeRewindWhenRewinding()
+	m.stateMachine.NextRewind()
+End Sub
+
+
+Sub invokeMenuWhenRewinding()
+	' save current position
+	m.stateMachine.jtr.UpdateDBLastViewedPosition(m.stateMachine.selectedRecording.RecordingId, m.stateMachine.currentVideoPosition%)
+	m.stateMachine.selectedRecording.LastViewedPosition = m.stateMachine.currentVideoPosition%
+End Sub
+
+
+Sub invokePlayWhenRewinding(stateData As Object)
+	m.stateMachine.ResumePlayback()
+	m.stateMachine.StartVideoPlaybackTimer()
+	stateData.nextState = m.stateMachine.stPlaying
+End Sub
+
+
+Sub invokePauseWhenRewinding(stateData As Object)
+	stateData.nextState = m.stateMachine.stPaused
+End Sub
+
+
+Sub invokeQuickSkipWhenRewinding()
+	' TODO - what if the progress bar is not visible?
+	' should jump to prior tick mark in progress bar
+End Sub
+
+
+Sub invokeInstantReplayWhenRewinding()
+	m.stateMachine.JumpToTick(false)
+End Sub
+
+
 Function STRewindingEventHandler(event As Object, stateData As Object) As Object
 
     stateData.nextState = invalid
@@ -943,7 +1154,9 @@ Function STRewindingEventHandler(event As Object, stateData As Object) As Object
 
         if IsString(event["EventType"]) then
         
-            if event["EventType"] = "ENTRY_SIGNAL" then
+			eventMsg$ = event["EventType"]
+
+            if eventMsg$ = "ENTRY_SIGNAL" then
             
                 print m.id$ + ": entry signal"
 
@@ -964,31 +1177,28 @@ Function STRewindingEventHandler(event As Object, stateData As Object) As Object
 
                 return "HANDLED"
 
-            else if event["EventType"] = "EXIT_SIGNAL" then
+            else if eventMsg$ = "EXIT_SIGNAL" then
 
                 print m.id$ + ": exit signal"
             
-			else if event["EventType"] = "PLAY" then
-
-				m.stateMachine.ResumePlayback()
-				m.stateMachine.StartVideoPlaybackTimer()
-				stateData.nextState = m.stateMachine.stPlaying
-
+			else if eventMsg$ = "PLAY" then
+				m.invokePlayWhenRewinding(stateData)
 				return "TRANSITION"
-
-			else if event["EventType"] = "PAUSE" then
-
-				stateData.nextState = m.stateMachine.stPaused
+			else if eventMsg$ = "PAUSE" then
+				m.invokePauseWhenRewinding(stateData)
 				return "TRANSITION"
-            
-			' TODO - quick skip and/or instant replay
-
-			else if event["EventType"] = "REWIND" then
-
-				m.stateMachine.NextRewind()
-			
+			else if eventMsg$ = "REWIND" then
+				m.invokeRewindWhenRewinding()
 				return "HANDLED"            
-
+			else if eventMsg$ = "MENU" then
+				m.invokeMenuWhenRewinding()
+				' fall through to superState
+			else if eventMsg$ = "QUICK_SKIP" then
+				m.invokeQuickSkipWhenRewinding()
+				return "HANDLED"
+			else if eventMsg$ = "INSTANT_REPLAY" then
+				m.invokeInstantReplayWhenRewinding()
+				return "HANDLED"
 			else
 				' TODO - internal message / play from replay guide
 			endif
@@ -1000,40 +1210,25 @@ Function STRewindingEventHandler(event As Object, stateData As Object) As Object
 		remoteCommand$ = GetRemoteCommand(event)
 
 		if remoteCommand$ = "RW" then
-			
-			m.stateMachine.NextRewind()
-
+			m.invokeRewindWhenRewinding()
 			return "HANDLED"
-
 		else if remoteCommand$ = "MENU" then
-
-			' save current position
-			m.stateMachine.jtr.UpdateDBLastViewedPosition(m.stateMachine.selectedRecording.RecordingId, m.stateMachine.currentVideoPosition%)
-			m.stateMachine.selectedRecording.LastViewedPosition = m.stateMachine.currentVideoPosition%
-
+			m.invokeMenuWhenRewinding()
 			' fall through to superState
-
 		else if remoteCommand$ = "PLAY" then
-			m.stateMachine.ResumePlayback()
-			m.stateMachine.StartVideoPlaybackTimer()
-			stateData.nextState = m.stateMachine.stPlaying
+			m.invokePlayWhenRewinding(stateData)
 			return "TRANSITION"
 		else if remoteCommand$ = "PAUSE"
-			stateData.nextState = m.stateMachine.stPaused
+			m.invokePauseWhenRewinding(stateData)
 			return "TRANSITION"
 		else if remoteCommand$ = "QUICK_SKIP" then
-			' m.stateMachine.QuickSkipVideo()
-			' should jump to next tick mark in progress bar
+			m.invokeQuickSkipWhenRewinding()
 			return "HANDLED"
 		else if remoteCommand$ = "INSTANT_REPLAY" then
-			m.stateMachine.JumpToTick(false)
-			return "HANDLED"
-			' m.stateMachine.InstantReplayVideo()
-			' should jump to prior tick mark in progress bar?
+			m.invokeInstantReplayWhenRewinding()
 			return "HANDLED"
 		' Jump
 		endif
-
     endif
             
     stateData.nextState = m.superState

@@ -62,16 +62,16 @@ function navigateRecordedShowsPage(navigationCommand$) {
         }
 
         switch (navigationCommand$) {
-            case "Up":
+            case "up":
                 if (rowIndex > 0) rowIndex--;
                 break;
-            case "Down":
+            case "down":
                 if (rowIndex < recordedPageIds.length) rowIndex++;
                 break;
-            case "Left":
+            case "left":
                 if (colIndex > 0) colIndex--;
                 break;
-            case "Right":
+            case "right":
                 if (colIndex < 1) colIndex++;
                 break;
         }
@@ -188,16 +188,16 @@ function navigateHomePage(navigationCommand$) {
 
     if (rowIndex >= 0 && colIndex >= 0) {
         switch (navigationCommand$) {
-            case "Up":
+            case "up":
                 if (rowIndex > 0) rowIndex--;
                 break;
-            case "Down":
+            case "down":
                 if (rowIndex < mainMenuIds.length) rowIndex++;
                 break;
-            case "Left":
+            case "left":
                 if (colIndex > 0) colIndex--;
                 break;
-            case "Right":
+            case "right":
                 if (colIndex < mainMenuIds[0].length) colIndex++;
                 break;
         }
@@ -776,8 +776,8 @@ $(document).ready(function () {
             }
 
             else if (name == "bsMessage") {
-                var command$ = msg.data[name];
-                if (command$ == "showMenu") {
+                var command$ = msg.data[name].toLowerCase();
+                if (command$ == "showmenu") {
                     console.log("selectHomePage");
                     selectHomePage();
                     $("#footerArea").removeAttr("style");
@@ -788,19 +788,19 @@ $(document).ready(function () {
                     $(elementId).focus();
 
                 }
-                else if (command$ == "showRecordedShows") {
+                else if (command$ == "showrecordedshows") {
                     selectRecordedShows();
                 }
-                else if (command$ == "exitUI") {
+                else if (command$ == "exituI") {
                     eraseUI();
                 }
-                else if (command$ == "promptDelete") {
+                else if (command$ == "promptdelete") {
                     displayDeleteShowDlg(msg.data["showTitle"], msg.data["showRecordingId"]);
                 }
-                else if (command$ == "togglePlayIcon") {
+                else if (command$ == "toggleplayicon") {
                     togglePlayIcon();
                 }
-                else if (command$ == "Up" || command$ == "Down" || command$ == "Left" || command$ == "Right") {
+                else if (command$ == "up" || command$ == "down" || command$ == "left" || command$ == "right") {
                     if (modalDialogDisplayed) {
                         console.log("navigation key invoked while modal dialog displayed");
 
@@ -833,7 +833,7 @@ $(document).ready(function () {
                         }
                     }
                 }
-                else if (command$ == "Enter") {
+                else if (command$ == "enter") {
                     if (modalDialogDisplayed) {
                         console.log("enter key invoked while modal dialog displayed");
 
@@ -880,7 +880,7 @@ $(document).ready(function () {
                         }
                     }
                 }
-                else if (command$ == "toggleProgressBar") {
+                else if (command$ == "toggleprogressbar") {
 
                     // currentOffset in seconds
                     var currentOffset = msg.data["currentOffset"];
@@ -901,7 +901,7 @@ $(document).ready(function () {
 
                     toggleProgressBar(currentOffset, recordingDuration, numMinutes, minutesPerTick, numTicks);
                 }
-                else if (command$ == "UpdateProgressBar" && $("#progressBar").length) {
+                else if (command$ == "updateprogressbar" && $("#progressBar").length) {
 
                     // currentOffset in seconds
                     var currentOffset = msg.data["currentOffset"];
