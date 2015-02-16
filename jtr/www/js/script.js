@@ -78,6 +78,18 @@ function remotePlay() {
     executeRemoteCommand("play");
 }
 
+function remoteRewind() {
+
+    console.log("remoteRewind");
+    executeRemoteCommand("rewind");
+}
+
+function remoteFastForward() {
+
+    console.log("remoteFastForward");
+    executeRemoteCommand("fastForward");
+}
+
 function remoteInstantReplay() {
 
     console.log("remoteInstantReplay");
@@ -205,14 +217,24 @@ function createManualRecording() {
 
 
 function playSelectedShow(event) {
+
     var recordingId = event.data.recordingId;
     console.log("playSelectedShow " + recordingId);
 
     // save selected show in local storage
-    localStorage.setItem("lastSelectedShowId", recordingId.toString());
+    //localStorage.setItem("lastSelectedShowId", recordingId.toString());
 
+    // save lastSelectedShowId in server's persistent memory
+    var parts = [];
+    parts.push("lastSelectedShowId" + '=' + recordingId.toString());
+    var paramString = parts.join('&');
+
+    var url = baseURL + "lastSelectedShow";
+
+    $.post(url, paramString);
+
+    // launch playback
     var aUrl = baseURL + "recording";
-
     var recordingData = { "recordingId": recordingId };
 
     $.get(aUrl, recordingData)
@@ -226,6 +248,7 @@ function playSelectedShow(event) {
         .always(function () {
             //alert("recording transmission finished");
         });
+
 }
 
 
@@ -300,6 +323,7 @@ function addRecordedShowsLine(jtrRecording) {
     return toAppend;
 }
 
+
 function getRecordedShows() {
 	var aUrl = baseURL + "recordings";
 
@@ -353,31 +377,45 @@ function getRecordedShows() {
 	        $("#recordedShowsTableBody").append(toAppend);
 
 	        // get last selected show from local storage - navigate to it. null if not defined
-	        var lastSelectedShowId = localStorage.getItem("lastSelectedShowId");
+	        //var lastSelectedShowId = localStorage.getItem("lastSelectedShowId");
+	        var url = baseURL + "lastSelectedShow";
 
-	        var focusApplied = false;
+	        $.get(url, {})
+                .done(function (result) {
+                    console.log("lastSelectedShow successfully sent");
+                    var lastSelectedShowId = result;
 
-	        // add button handlers for each recording - note, the handlers need to be added after the html has been added!!
-	        $.each(recordingIds, function (index, recordingId) {
+                    var focusApplied = false;
 
-	            // play a recording
-	            var btnIdRecording = "#recording" + recordingId;
-	            $(btnIdRecording).click({ recordingId: recordingId }, playSelectedShow);
+                    // add button handlers for each recording - note, the handlers need to be added after the html has been added!!
+                    $.each(recordingIds, function (index, recordingId) {
 
-	            // delete a recording
-	            var btnIdDelete = "#delete" + recordingId;
-	            $(btnIdDelete).click({ recordingId: recordingId }, deleteSelectedShow);
+                        // play a recording
+                        var btnIdRecording = "#recording" + recordingId;
+                        $(btnIdRecording).click({ recordingId: recordingId }, playSelectedShow);
 
-                // highlight the last selected show
-	            if (recordingId == lastSelectedShowId) {
-	                focusApplied = true;
-	                $(btnIdRecording).focus();
-	            }
-	        });
+                        // delete a recording
+                        var btnIdDelete = "#delete" + recordingId;
+                        $(btnIdDelete).click({ recordingId: recordingId }, deleteSelectedShow);
 
-	        //if (!focusApplied) {
-	        //    $(recordedPageIds[0][0]).focus();
-	        //}
+                        // highlight the last selected show
+                        if (recordingId == lastSelectedShowId) {
+                            focusApplied = true;
+                            $(btnIdRecording).focus();
+                        }
+                    });
+
+                    //if (!focusApplied) {
+                    //    $(recordedPageIds[0][0]).focus();
+                    //}
+                })
+                .fail(function (jqXHR, textStatus, errorThrown) {
+                    debugger;
+                    console.log("lastSelectedShow failure");
+                })
+                .always(function () {
+                    //alert("remote command transmission finished");
+                });
 
 	    }
 	});

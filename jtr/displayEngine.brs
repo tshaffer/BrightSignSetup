@@ -18,6 +18,9 @@ Function newDisplayEngine(jtr As Object) As Object
 	DisplayEngine.PausePlayback					= PausePlayback
 	DisplayEngine.JumpToTick					= JumpToTick
 
+	DisplayEngine.NextFastForward				= NextFastForward
+	DisplayEngine.NextRewind					= NextRewind
+
 	DisplayEngine.LaunchWebkit					= LaunchWebkit
 
     DisplayEngine.stTop = DisplayEngine.newHState(DisplayEngine, "Top")
@@ -387,6 +390,10 @@ Function STShowingVideoEventHandler(event As Object, stateData As Object) As Obj
 
 			m.stateMachine.UpdateProgressBar()
 
+			currentState = m.stateMachine.jtr.GetCurrentState()
+			currentState.currentTime = m.stateMachine.currentVideoPosition%
+			m.stateMachine.jtr.SetCurrentState(currentState)
+
 			return "HANDLED"
 		endif
 
@@ -514,11 +521,34 @@ Function STPlayingEventHandler(event As Object, stateData As Object) As Object
             if event["EventType"] = "ENTRY_SIGNAL" then
             
                 print m.id$ + ": entry signal"
+
+				currentState = {}
+				currentState.state = "playing"
+				currentState.title = m.stateMachine.selectedRecording.Title
+				currentState.recordingId = m.stateMachine.selectedRecording.RecordingId
+				currentState.duration = m.stateMachine.selectedRecording.Duration
+				currentState.recordingDate = m.stateMachine.selectedRecording.StartDateTime
+				currentState.currentTime = m.stateMachine.selectedRecording.LastViewedPosition
+
+				m.stateMachine.jtr.SetCurrentState(currentState)
+
                 return "HANDLED"
 
             else if event["EventType"] = "EXIT_SIGNAL" then
 
                 print m.id$ + ": exit signal"
+
+			else if event["EventType"] = "FASTFORWARD" then
+
+				stateData.nextState = m.stateMachine.stFastForwarding
+
+				return "TRANSITION"        
+				    
+			else if event["EventType"] = "REWIND" then
+
+				stateData.nextState = m.stateMachine.stRewinding
+			
+				return "TRANSITION"            
 
 			else if event["EventType"] = "PAUSE" then
 
@@ -658,6 +688,11 @@ Function STPausedEventHandler(event As Object, stateData As Object) As Object
 				m.stateMachine.jtr.UpdateDBLastViewedPosition(m.stateMachine.selectedRecording.RecordingId, m.stateMachine.currentVideoPosition%)
 				m.stateMachine.selectedRecording.LastViewedPosition = m.stateMachine.currentVideoPosition%
 
+				currentState = m.stateMachine.jtr.GetCurrentState()
+				currentState.state = "paused"
+				currentState.currentTime = m.stateMachine.selectedRecording.LastViewedPosition
+				m.stateMachine.jtr.SetCurrentState(currentState)
+
                 return "HANDLED"
 
             else if event["EventType"] = "EXIT_SIGNAL" then
@@ -766,12 +801,38 @@ Function STFastForwardingEventHandler(event As Object, stateData As Object) As O
 
 				m.stateMachine.videoPlayer.SetPlaybackSpeed(playbackSpeed)
 
+				currentState = m.stateMachine.jtr.GetCurrentState()
+				currentState.state = "fastForward"
+				currentState.currentTime = m.stateMachine.selectedRecording.LastViewedPosition
+				m.stateMachine.jtr.SetCurrentState(currentState)
+
                 return "HANDLED"
 
             else if event["EventType"] = "EXIT_SIGNAL" then
 
                 print m.id$ + ": exit signal"
+
+			else if event["EventType"] = "PLAY" then
+
+				m.stateMachine.ResumePlayback()
+				m.stateMachine.StartVideoPlaybackTimer()
+				stateData.nextState = m.stateMachine.stPlaying
+
+				return "TRANSITION"
+
+			else if event["EventType"] = "PAUSE" then
+
+				stateData.nextState = m.stateMachine.stPaused
+				return "TRANSITION"
             
+			else if event["EventType"] = "FASTFORWARD" then
+
+				m.stateMachine.NextFastForward()
+
+				return "HANDLED"
+				    
+			' TODO - quick skip and/or instant replay
+
 			else
 				' TODO - internal message / play from replay guide
 			endif
@@ -784,13 +845,7 @@ Function STFastForwardingEventHandler(event As Object, stateData As Object) As O
 
 		if remoteCommand$ = "FF" then
 			
-			m.stateMachine.playbackSpeedIndex% = m.stateMachine.playbackSpeedIndex% + 1
-			if m.stateMachine.playbackSpeedIndex% >= m.stateMachine.playbackSpeeds.Count() then
-				m.stateMachine.playbackSpeedIndex% = m.stateMachine.normalPlaybackSpeedIndex% + 1
-			endif
-
-			playbackSpeed = m.stateMachine.playbackSpeeds[m.stateMachine.playbackSpeedIndex%]
-			m.stateMachine.videoPlayer.SetPlaybackSpeed(playbackSpeed)
+			m.stateMachine.NextFastForward()
 
 			return "HANDLED"
 
@@ -853,6 +908,33 @@ Function STFastForwardingEventHandler(event As Object, stateData As Object) As O
 End Function
 
 
+Function NextFastForward()
+
+	m.playbackSpeedIndex% = m.playbackSpeedIndex% + 1
+	if m.playbackSpeedIndex% >= m.playbackSpeeds.Count() then
+		m.playbackSpeedIndex% = m.normalPlaybackSpeedIndex% + 1
+	endif
+
+	playbackSpeed = m.playbackSpeeds[m.playbackSpeedIndex%]
+	m.videoPlayer.SetPlaybackSpeed(playbackSpeed)
+
+End Function
+
+
+Function NextRewind()
+
+	m.playbackSpeedIndex% = m.playbackSpeedIndex% - 1
+	if m.playbackSpeedIndex% < 0 then
+		m.playbackSpeedIndex% = m.normalPlaybackSpeedIndex% - 1
+	endif
+
+	playbackSpeed = m.playbackSpeeds[m.playbackSpeedIndex%]
+	print "setplaybackspeed to ";playbackSpeed
+	m.videoPlayer.SetPlaybackSpeed(playbackSpeed)
+
+End Function
+
+
 Function STRewindingEventHandler(event As Object, stateData As Object) As Object
 
     stateData.nextState = invalid
@@ -875,12 +957,38 @@ Function STRewindingEventHandler(event As Object, stateData As Object) As Object
 
 				m.stateMachine.videoPlayer.SetPlaybackSpeed(playbackSpeed)
 
+				currentState = m.stateMachine.jtr.GetCurrentState()
+				currentState.state = "rewind"
+				currentState.currentTime = m.stateMachine.selectedRecording.LastViewedPosition
+				m.stateMachine.jtr.SetCurrentState(currentState)
+
                 return "HANDLED"
 
             else if event["EventType"] = "EXIT_SIGNAL" then
 
                 print m.id$ + ": exit signal"
             
+			else if event["EventType"] = "PLAY" then
+
+				m.stateMachine.ResumePlayback()
+				m.stateMachine.StartVideoPlaybackTimer()
+				stateData.nextState = m.stateMachine.stPlaying
+
+				return "TRANSITION"
+
+			else if event["EventType"] = "PAUSE" then
+
+				stateData.nextState = m.stateMachine.stPaused
+				return "TRANSITION"
+            
+			' TODO - quick skip and/or instant replay
+
+			else if event["EventType"] = "REWIND" then
+
+				m.stateMachine.NextRewind()
+			
+				return "HANDLED"            
+
 			else
 				' TODO - internal message / play from replay guide
 			endif
@@ -893,13 +1001,7 @@ Function STRewindingEventHandler(event As Object, stateData As Object) As Object
 
 		if remoteCommand$ = "RW" then
 			
-			m.stateMachine.playbackSpeedIndex% = m.stateMachine.playbackSpeedIndex% - 1
-			if m.stateMachine.playbackSpeedIndex% < 0 then
-				m.stateMachine.playbackSpeedIndex% = m.stateMachine.normalPlaybackSpeedIndex% - 1
-			endif
-
-			playbackSpeed = m.stateMachine.playbackSpeeds[m.stateMachine.playbackSpeedIndex%]
-			m.stateMachine.videoPlayer.SetPlaybackSpeed(playbackSpeed)
+			m.stateMachine.NextRewind()
 
 			return "HANDLED"
 

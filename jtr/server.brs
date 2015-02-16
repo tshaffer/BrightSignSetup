@@ -9,13 +9,20 @@ Sub InitializeServer()
 	m.deleteRecordingAA =				{ HandleEvent: deleteRecording, mVar: m }
 	m.recordingsAA =					{ HandleEvent: recordings, mVar: m }
 	m.fileToTranscodeAA =				{ HandleEvent: fileToTranscode, mVar: m }
+	m.hlsUrlAA =						{ HandleEvent: hlsUrl, mVar: m }
+	m.currentStateAA =					{ HandleEvent: currentJTRState, mVar: m }
 
 	m.showUIAA =						{ HandleEvent: showUI, mVar: m}
 
 	m.pauseAA =							{ HandleEvent: pause, mVar: m}
+	m.rewindAA =						{ HandleEvent: rewind, mVar: m}
 	m.playAA =							{ HandleEvent: play, mVar: m}
+	m.fastForwardAA =					{ HandleEvent: fastForward, mVar: m}
 	m.instantReplayAA =					{ HandleEvent: instantReplay, mVar: m}
 	m.quickSkipAA =						{ HandleEvent: quickSkip, mVar: m}
+
+	m.getLastSelectedShowIdAA =			{ HandleEvent: getLastSelectedShowId, mVar: m }
+	m.setLastSelectedShowIdAA =			{ HandleEvent: setLastSelectedShowId, mVar: m }
 
 	m.filePostedAA =					{ HandleEvent: filePosted, mVar: m }
 
@@ -28,12 +35,21 @@ Sub InitializeServer()
 	m.localServer.AddGetFromEvent({ url_path: "/fileToTranscode", user_data: m.fileToTranscodeAA })
 	m.localServer.AddPostToFile({ url_path: "/TranscodedFile", destination_directory: GetDefaultDrive(), user_data: m.filePostedAA })
 
+	m.localServer.AddGetFromEvent({ url_path: "/hlsUrl", user_data: m.hlsUrlAA })
+
+	m.localServer.AddGetFromEvent({ url_path: "/currentState", user_data: m.currentStateAA })
+
 	m.localServer.AddGetFromEvent({ url_path: "/showUI", user_data: m.showUIAA })
 
 	m.localServer.AddGetFromEvent({ url_path: "/pause", user_data: m.pauseAA })
+	m.localServer.AddGetFromEvent({ url_path: "/rewind", user_data: m.rewindAA })
 	m.localServer.AddGetFromEvent({ url_path: "/play", user_data: m.playAA })
+	m.localServer.AddGetFromEvent({ url_path: "/fastForward", user_data: m.fastForwardAA })
 	m.localServer.AddGetFromEvent({ url_path: "/instantReplay", user_data: m.instantReplayAA })
 	m.localServer.AddGetFromEvent({ url_path: "/quickSkip", user_data: m.quickSkipAA })
+
+	m.localServer.AddGetFromEvent({ url_path: "/lastSelectedShow", user_data: m.getLastSelectedShowIdAA })
+	m.localServer.AddPostToFormData({ url_path: "/lastSelectedShow", user_data: m.setLastSelectedShowIdAA })
 
 ' incorporation of site downloader code
     m.siteFilePostedAA = { HandleEvent: siteFilePosted, mVar: m }
@@ -258,6 +274,53 @@ Sub manualRecord(userData as Object, e as Object)
 End Sub
 
 
+Sub hlsUrl(userData as Object, e as Object)
+
+	print "hlsUrl endpoint invoked"
+
+    mVar = userData.mVar
+	requestParams = e.GetRequestParams()
+
+	recordingId = requestParams["recordingId"]
+	print "hlsUrl invoked on recording id = ";recordingId
+
+	recording = mVar.GetDBRecording(recordingId)
+
+	' TODO - return 404 if recording not found? something else if no HLS?
+
+	if recording.HLSSegmentationComplete = 0 then
+		' HLS segments don't exist
+		e.AddResponseHeader("Content-type", "text/plain; charset=utf-8")
+		e.SetResponseBodyString("Recording not found.")
+	    e.SendResponse(404)
+	else
+		response = {}
+		response.hlsUrl = "/content/hls/" + recording.FileName + "/" + recording.FileName + "_index.m3u8"
+		json = FormatJson(response, 0)
+		e.AddResponseHeader("Content-type", "text/json")
+		e.SetResponseBodyString(json)
+		e.SendResponse(200)
+	endif
+
+End Sub
+
+
+Sub currentJTRState(userData as Object, e as Object)
+
+	print "currentState endpoint invoked"
+
+    mVar = userData.mVar
+
+	response = {}
+	response.currentState = mVar.GetCurrentState()
+	json = FormatJson(response, 0)
+	e.AddResponseHeader("Content-type", "text/json")
+	e.SetResponseBodyString(json)
+	e.SendResponse(200)
+
+End Sub
+
+
 Sub fileToTranscode(userData as Object, e as Object)
 
 	print "fileToTranscode endpoint invoked"
@@ -315,8 +378,12 @@ Sub filePosted(userData as Object, e as Object)
 	recording = mVar.GetDBRecording(stri(dbId))
 	tsPath$ = GetTSFilePath(recording.FileName)
 	print "Transcode operation complete - delete ";tsPath$
-	ok = DeleteFile(tsPath$)
-	if not ok print "Delete after transcode complete failed"
+
+	okToDelete = mVar.tsDeletable(dbId)
+	if okToDelete then
+		ok = DeleteFile(tsPath$)
+		if not ok print "Delete after transcode complete failed"
+	endif
 
 	e.SetResponseBodyString("RECEIVED")
     e.SendResponse(200)
@@ -341,6 +408,23 @@ Sub pause(userData as Object, e as Object)
 End Sub
 
 
+Sub rewind(userData as Object, e as Object)
+
+	print "rewind endpoint invoked"
+
+    mVar = userData.mVar
+
+	rewindMessage = CreateObject("roAssociativeArray")
+	rewindMessage["EventType"] = "REWIND"
+	mVar.msgPort.PostMessage(rewindMessage)
+
+    e.AddResponseHeader("Content-type", "text/plain")
+    e.SetResponseBodyString("ok")
+    e.SendResponse(200)
+
+End Sub
+
+
 Sub play(userData as Object, e as Object)
 
 	print "play endpoint invoked"
@@ -356,6 +440,24 @@ Sub play(userData as Object, e as Object)
     e.SendResponse(200)
 
 End Sub
+
+
+Sub fastForward(userData as Object, e as Object)
+
+	print "fastForward endpoint invoked"
+
+    mVar = userData.mVar
+
+	fastForwardMessage = CreateObject("roAssociativeArray")
+	fastForwardMessage["EventType"] = "FASTFORWARD"
+	mVar.msgPort.PostMessage(fastForwardMessage)
+
+    e.AddResponseHeader("Content-type", "text/plain")
+    e.SetResponseBodyString("ok")
+    e.SendResponse(200)
+
+End Sub
+
 
 
 Sub instantReplay(userData as Object, e as Object)
@@ -388,6 +490,39 @@ Sub quickSkip(userData as Object, e as Object)
     e.AddResponseHeader("Content-type", "text/plain")
     e.SetResponseBodyString("ok")
     e.SendResponse(200)
+
+End Sub
+
+
+Sub getLastSelectedShowId(userData as Object, e as Object)
+
+	print "getLastSelectedShowId endpoint invoked"
+
+    mVar = userData.mVar
+
+	response = {}
+	response.lastSelectedShowId = mVar.GetDBLastSelectedShowId()
+	json = FormatJson(response, 0)
+	e.AddResponseHeader("Content-type", "text/json")
+	e.SetResponseBodyString(json)
+	e.SendResponse(200)
+
+End Sub
+
+
+Sub setLastSelectedShowId(userData as Object, e as Object)
+
+	print "setLastSelectedShowId endpoint invoked"
+
+    mVar = userData.mVar
+
+	args = e.GetFormData()
+
+	mVar.SetDBLastSelectedShowId(args.lastSelectedShowId)
+
+	e.SetResponseBodyString("OK")
+	e.SendResponse(200)
+
 
 End Sub
 
