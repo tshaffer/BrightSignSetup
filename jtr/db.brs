@@ -191,6 +191,41 @@ Sub DeleteDBRecording(recordingId$ As String)
 End Sub
 
 
+Sub GetDBLastSelectedShowIdCallback(resultsData As Object, selectData As Object)
+
+	selectData.lastSelectedShowId$ = resultsData["Id"]
+
+End Sub
+
+
+Function GetDBLastSelectedShowId() As Object
+
+	selectData = {}
+	selectData.lastSelectedShowId$ = ""
+
+	select$ = "SELECT LastSelectedShow.Id FROM LastSelectedShow;"
+	m.ExecuteDBSelect(select$, GetDBLastSelectedShowIdCallback, selectData, invalid)
+
+	return selectData.lastSelectedShowId$
+
+End Function
+
+
+Sub SetDBLastSelectedShowId(lastSelectedShowId$ As String)
+
+	existingShowId$ = m.GetDBLastSelectedShowId()
+	if existingShowId$ = "" then
+		insertSQL$ = "INSERT INTO LastSelectedShow (Id) VALUES(:id_param);"
+		params = { id_param: lastSelectedShowId$ }
+		m.ExecuteDBInsert(insertSQL$, params)
+	else
+	    m.db.RunBackground("UPDATE LastSelectedShow SET Id='" + lastSelectedShowId$ + "';", {})
+	endif
+
+End Sub
+
+
+
 Sub GetDBRecordingsCallback(resultsData As Object, selectData As Object)
 
 	resultsData.Path = GetFilePath(resultsData.FileName)

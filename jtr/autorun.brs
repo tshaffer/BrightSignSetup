@@ -107,6 +107,8 @@ Function newJTR(msgPort As Object) As Object
 	JTR.ExecuteDBSelect					= ExecuteDBSelect
 	JTR.AddDBRecording					= AddDBRecording
 	JTR.DeleteDBRecording				= DeleteDBRecording
+	JTR.GetDBLastSelectedShowId			= GetDBLastSelectedShowId
+	JTR.SetDBLastSelectedShowId			= SetDBLastSelectedShowId
 	JTR.GetDBRecording					= GetDBRecording
 	JTR.GetDBRecordingByFileName		= GetDBRecordingByFileName
 	JTR.GetDBRecordings					= GetDBRecordings
