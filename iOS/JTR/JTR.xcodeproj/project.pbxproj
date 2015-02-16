@@ -16,6 +16,15 @@
 		95855DBA1A8A98D800649041 /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 95855DB91A8A98D800649041 /* Images.xcassets */; };
 		95855DBD1A8A98D800649041 /* LaunchScreen.xib in Resources */ = {isa = PBXBuildFile; fileRef = 95855DBB1A8A98D800649041 /* LaunchScreen.xib */; };
 		95855DC91A8A98D800649041 /* JTRTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 95855DC81A8A98D800649041 /* JTRTests.swift */; };
+		9590F8021A9135EB0052DDA4 /* DeviceConnectionViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9590F8011A9135EB0052DDA4 /* DeviceConnectionViewController.swift */; };
+		9590F8061A913AC30052DDA4 /* TabContainerViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9590F8051A913AC30052DDA4 /* TabContainerViewController.swift */; };
+		9590F8081A9140EA0052DDA4 /* SwiftyJSON.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9590F8071A9140EA0052DDA4 /* SwiftyJSON.swift */; };
+		9590F80C1A914CF00052DDA4 /* RecordedShows.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9590F80B1A914CF00052DDA4 /* RecordedShows.swift */; };
+		95CCE2261A91A74100348745 /* RecordNowViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 95CCE2251A91A74100348745 /* RecordNowViewController.swift */; };
+		95CCE2281A91A74F00348745 /* ManualRecordViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 95CCE2271A91A74F00348745 /* ManualRecordViewController.swift */; };
+		95CCE22A1A91A75C00348745 /* ToDoListViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 95CCE2291A91A75C00348745 /* ToDoListViewController.swift */; };
+		95CCE22C1A91B34400348745 /* RecordedShowsTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 95CCE22B1A91B34400348745 /* RecordedShowsTableViewCell.swift */; };
+		95CCE22E1A91BE7800348745 /* RecordedShowViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 95CCE22D1A91BE7800348745 /* RecordedShowViewController.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -43,6 +52,15 @@
 		95855DC21A8A98D800649041 /* JTRTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = JTRTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		95855DC71A8A98D800649041 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		95855DC81A8A98D800649041 /* JTRTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = JTRTests.swift; sourceTree = "<group>"; };
+		9590F8011A9135EB0052DDA4 /* DeviceConnectionViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DeviceConnectionViewController.swift; sourceTree = "<group>"; };
+		9590F8051A913AC30052DDA4 /* TabContainerViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TabContainerViewController.swift; sourceTree = "<group>"; };
+		9590F8071A9140EA0052DDA4 /* SwiftyJSON.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SwiftyJSON.swift; sourceTree = "<group>"; };
+		9590F80B1A914CF00052DDA4 /* RecordedShows.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = RecordedShows.swift; path = ../RecordedShows.swift; sourceTree = "<group>"; };
+		95CCE2251A91A74100348745 /* RecordNowViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RecordNowViewController.swift; sourceTree = "<group>"; };
+		95CCE2271A91A74F00348745 /* ManualRecordViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ManualRecordViewController.swift; sourceTree = "<group>"; };
+		95CCE2291A91A75C00348745 /* ToDoListViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ToDoListViewController.swift; sourceTree = "<group>"; };
+		95CCE22B1A91B34400348745 /* RecordedShowsTableViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RecordedShowsTableViewCell.swift; sourceTree = "<group>"; };
+		95CCE22D1A91BE7800348745 /* RecordedShowViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RecordedShowViewController.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -86,14 +104,23 @@
 			children = (
 				95855DB01A8A98D800649041 /* AppDelegate.swift */,
 				9569FFFD1A8EFED3009CD75E /* RecordedShowsViewController.swift */,
+				9590F8051A913AC30052DDA4 /* TabContainerViewController.swift */,
 				9569FFFB1A8EFDFF009CD75E /* RemoteViewController.swift */,
 				95855DB21A8A98D800649041 /* HomeViewController.swift */,
 				9569FFFF1A8F0068009CD75E /* NowPlayingViewController.swift */,
+				9590F8011A9135EB0052DDA4 /* DeviceConnectionViewController.swift */,
+				95CCE2251A91A74100348745 /* RecordNowViewController.swift */,
+				95CCE2271A91A74F00348745 /* ManualRecordViewController.swift */,
+				95CCE2291A91A75C00348745 /* ToDoListViewController.swift */,
+				9590F80B1A914CF00052DDA4 /* RecordedShows.swift */,
+				95CCE22B1A91B34400348745 /* RecordedShowsTableViewCell.swift */,
+				95843A421A8E6A850084C8E4 /* Networking.swift */,
 				95855DB61A8A98D800649041 /* Main.storyboard */,
+				95CCE22D1A91BE7800348745 /* RecordedShowViewController.swift */,
 				95855DB91A8A98D800649041 /* Images.xcassets */,
 				95855DBB1A8A98D800649041 /* LaunchScreen.xib */,
+				9590F8071A9140EA0052DDA4 /* SwiftyJSON.swift */,
 				95855DAE1A8A98D800649041 /* Supporting Files */,
-				95843A421A8E6A850084C8E4 /* Networking.swift */,
 			);
 			path = JTR;
 			sourceTree = "<group>";
@@ -224,9 +251,18 @@
 			buildActionMask = 2147483647;
 			files = (
 				9569FFFC1A8EFDFF009CD75E /* RemoteViewController.swift in Sources */,
+				9590F8061A913AC30052DDA4 /* TabContainerViewController.swift in Sources */,
 				95843A431A8E6A850084C8E4 /* Networking.swift in Sources */,
+				9590F8081A9140EA0052DDA4 /* SwiftyJSON.swift in Sources */,
+				95CCE22A1A91A75C00348745 /* ToDoListViewController.swift in Sources */,
+				9590F80C1A914CF00052DDA4 /* RecordedShows.swift in Sources */,
+				9590F8021A9135EB0052DDA4 /* DeviceConnectionViewController.swift in Sources */,
+				95CCE22C1A91B34400348745 /* RecordedShowsTableViewCell.swift in Sources */,
 				9569FFFE1A8EFED3009CD75E /* RecordedShowsViewController.swift in Sources */,
 				95855DB11A8A98D800649041 /* AppDelegate.swift in Sources */,
+				95CCE22E1A91BE7800348745 /* RecordedShowViewController.swift in Sources */,
+				95CCE2281A91A74F00348745 /* ManualRecordViewController.swift in Sources */,
+				95CCE2261A91A74100348745 /* RecordNowViewController.swift in Sources */,
 				95855DB31A8A98D800649041 /* HomeViewController.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
