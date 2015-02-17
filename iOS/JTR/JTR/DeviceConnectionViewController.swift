@@ -19,10 +19,10 @@ class DeviceConnectionViewController: UIViewController {
         network.baseUrl = "http://" + ipAddress.text + ":8080/"
         
         
-        if network.checkConnection() {
+        //if network.checkConnection() {
             self.performSegueWithIdentifier("deviceConnected", sender: self)
-        }
-        network.getRecordedShows()
+        //}
+        //network.getRecordedShows()
     }
     
     override func viewDidLoad() {
