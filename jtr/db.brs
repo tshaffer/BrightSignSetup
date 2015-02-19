@@ -213,14 +213,14 @@ End Function
 
 Sub SetDBLastSelectedShowId(lastSelectedShowId$ As String)
 
-	existingShowId$ = m.GetDBLastSelectedShowId()
-	if existingShowId$ = "" then
-		insertSQL$ = "INSERT INTO LastSelectedShow (Id) VALUES(:id_param);"
-		params = { id_param: lastSelectedShowId$ }
-		m.ExecuteDBInsert(insertSQL$, params)
-	else
+	existingShowId = m.GetDBLastSelectedShowId()
+'	if existingShowId = null then
+'		insertSQL$ = "INSERT INTO LastSelectedShow (Id) VALUES(:id_param);"
+'		params = { id_param: lastSelectedShowId$ }
+'		m.ExecuteDBInsert(insertSQL$, params)
+'	else
 	    m.db.RunBackground("UPDATE LastSelectedShow SET Id='" + lastSelectedShowId$ + "';", {})
-	endif
+'	endif
 
 End Sub
 

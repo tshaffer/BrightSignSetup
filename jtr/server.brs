@@ -118,7 +118,7 @@ Sub InitializeServer()
 '    service = { name: "JTR Web Service", type: "_http._tcp", port: 8080, _functionality: BSP.lwsConfig$, _serialNumber: sysInfo.deviceUniqueID$, _unitName: unitName$, _unitNamingMethod: unitNamingMethod$,  }
 '    JTR.advert = CreateObject("roNetworkAdvertisement", service)
 
-	serverDirectory$ = "www"
+	serverDirectory$ = "webSite"
 	listOfServerFiles = []
 	ListFiles(serverDirectory$, listOfServerFiles)
 	m.AddHandlers(serverDirectory$, listOfServerFiles)
@@ -128,9 +128,9 @@ End Sub
 
 Sub AddHandlers(serverDirectory$ As String, listOfHandlers As Object)
 
-	' first filePath = www/remote-snapshot/angular.min.js
-	' parts = www/remote-snapshot/angular.min.js
-	' serverDirectory$ = www
+	' first filePath = webSite/remote-snapshot/angular.min.js
+	' parts = webSite/remote-snapshot/angular.min.js
+	' serverDirectory$ = webSite
 
 	for each filePath in listOfHandlers
 

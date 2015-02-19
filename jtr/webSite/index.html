@@ -16,10 +16,28 @@
     <script src="./bootstrap/js/bootstrap.js"></script>
     <script src="./js/script.js"></script>
     <script src="./js/xml2json.js"></script>
+
+    <link rel="stylesheet/less" type="text/css" href="./css/styles.less" />
+
+    <script src="./js/less.min.js" type="text/javascript"></script>
+    <script>
+        var userAgent = navigator.userAgent;
+        var n = userAgent.lastIndexOf("BrightSign");
+        if (n >= 0) {
+            less.modifyVars({
+                '@deviceType': 'BrightSign'              // BrightSign
+            });
+        }
+        else {
+            less.modifyVars({
+                '@deviceType': 'Browser'              // Browser
+            });
+        }
+    </script>
   </head>
 
   <body>
-    
+  
     <div class="modal fade" id="deleteShowDlg" tabindex="-1" role="dialog" aria-labelledby="deleteShowDlg" aria-hidden="true">
       <div class="modal-dialog">
         <div class="modal-content">
@@ -44,22 +62,33 @@
 
     <div id="cont" class="container">
 
-        <div>
-            <p id="ipAddress">ipAddress: 69.69.69.69</p>
-        </div>
+      <div id="IPAddressLabel">
+        <p id="ipAddress">ipAddress: 69.69.69.69</p>
+      </div>
 
       <div id="homePage" class="row">
         <div class="col-lg-6">
           <button id="recordedShows" class="btn btn-primary tv-words" onclick="selectRecordedShows()" autofocus>Recorded Shows</button><br><br>
           <button id="channelGuide" class="btn btn-secondary tv-words" onclick="selectChannelGuide()">Channel Guide</button><br><br>
-          <button id="toDoList" class="btn btn-secondary tv-words" onclick="selectToDoList()">To Do List</button><br>
+          <button id="toDoList" class="btn btn-secondary tv-words" onclick="selectToDoList()">To Do List</button><br><br>
         </div>
 
         <div class="col-lg-6">
           <button id="setManualRecord" class="btn btn-secondary tv-words" onclick="selectSetManualRecord()">Set Manual Record</button><br><br>
           <button id="userSelection" class="btn btn-secondary tv-words" onclick="selectUserSelection()">User Selection</button><br><br>
-          <button id="myPlayVideo" class="btn btn-secondary tv-words">Play Video</button><br>
+          <button id="" class="btn btn-secondary tv-words" onclick="selectPlayVideo()">Play Video</button><br>
         </div>
+      </div>
+
+      <!--trick mode keys is www only--> 
+      <div id="trickModeKeys">
+          <button type='button' class='btn btn-default' onclick="remoteInstantReplay()" aria-label='Left Align'><span class='glyphicon glyphicon-step-backward' aria-hidden='true'></span></button>
+          <button type='button' class='btn btn-default' onclick="remotePause()" aria-label='Left Align'><span class='glyphicon glyphicon-pause' aria-hidden='true'></span></button>
+          <button type='button' class='btn btn-default' onclick="remoteRewind()" aria-label='Left Align'><span class='glyphicon glyphicon-backward' aria-hidden='true'></span></button>
+          <button type='button' class='btn btn-default' onclick="remotePlay()" aria-label='Left Align'><span class='glyphicon glyphicon-play' aria-hidden='true'></span></button>
+          <button type='button' class='btn btn-default' onclick="remoteFastForward()" aria-label='Left Align'><span class='glyphicon glyphicon-forward' aria-hidden='true'></span></button>
+          <button type='button' class='btn btn-default' onclick="remoteStop()" aria-label='Left Align'><span class='glyphicon glyphicon-stop' aria-hidden='true'></span></button>
+          <button type='button' class='btn btn-default' onclick="remoteQuickSkip()" aria-label='Left Align'><span class='glyphicon glyphicon-step-forward' aria-hidden='true'></span></button>
       </div>
 
       <div id="manualRecordPage" style="display: none;">
@@ -67,21 +96,21 @@
         <form class="navbar-form navbar-left" role="search">
           <div class="form-group">
             <p> Title (optional)  <input id="manualRecordTitle" type="text" class="form-control"></p><br>
+            <p>Duration (mins)  <input id="manualRecordDuration" type="number" class="form-control" value="1" step="1"></p><br>
+            <button id="Button1" class="btn btn-primary" onclick="recordNow()">Record Now</button><br><br>
             <p id="manualRecordDateId">Date  </p><br>
             <p id="manualRecordTimeId">Time  </p><br>
-            <p>Duration (mins)  <input id="manualRecordDuration" type="number" class="form-control" value="1" step="1"></p><br>
             <p>Channel  <input id="manualRecordChannel" type="text" value="KPIX-TV" class="form-control"></p><br>
-            <p>Use Aux-in (tuner is default)  <input id="manualRecordAuxInCheckbox" type="checkbox" value="false" class="form-control"></p><br><br>
+            <p>Use Aux-in (tuner is default)  <input id="manualRecordAuxInCheckbox" type="checkbox" value="false" class="form-control"></p><br>
           </div>
           <br>
-          <button type="submit" class="btn btn-primary" onclick="createManualRecording()">Record</button>
+          <button type="submit" class="btn btn-primary" onclick="createManualRecording()">Set Scheduled Record</button>
         </form>
       </div>
 
       <div id="recordedShowsPage" class="table-responsive" style="display: none;">
 
-		<!--<p class="alignleft" style="font-size:30px">Recorded Shows</p>-->
-		<p class="alignleft">Recorded Shows</p>
+		<p class="alignleft" id="recordedShowsTitle">Recorded Shows</p>
 		<p id="recordedShowsRemainingSpace" class="alignright">Free space: </p>
 		<div style="clear: both;"></div>
 
