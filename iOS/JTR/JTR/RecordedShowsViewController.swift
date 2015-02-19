@@ -13,11 +13,13 @@ class RecordedShowsViewController: UIViewController, UITableViewDataSource, UITa
     let cellIdentifier = "RecordedShowsCell"
     
     required init(coder aDecoder: NSCoder) {
-        super.init(nibName: nil, bundle: nil)
+        super.init(coder: aDecoder)
+//        super.init(nibName: nil, bundle: nil)
     }
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        
     }
 
     override func didReceiveMemoryWarning() {
@@ -31,7 +33,7 @@ class RecordedShowsViewController: UIViewController, UITableViewDataSource, UITa
     }
     
     func tableView(tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return network.getRecordedShows().recordedShows.count //recordedShows.recordedShows.count
+        return 3 //network.getRecordedShows().recordedShows.count //recordedShows.recordedShows.count
     }
     
     func tableView(tableView: UITableView, cellForRowAtIndexPath indexPath: NSIndexPath) -> UITableViewCell {
@@ -39,9 +41,14 @@ class RecordedShowsViewController: UIViewController, UITableViewDataSource, UITa
         
         let row = indexPath.row
         
-        let recordedShows = network.getRecordedShows()
-        cell.titleLabel.text = recordedShows.recordedShows[row].title
-        cell.dateLabel.text = recordedShows.recordedShows[row].dateRecorded
+//        let recordedShows = network.getRecordedShows()
+//        cell.titleLabel.text = recordedShows.recordedShows[row].title
+//        cell.dateLabel.text = recordedShows.recordedShows[row].dateRecorded
+
+//        let recordedShows = network.getRecordedShows()
+        cell.titleLabel.text = "hello" //recordedShows.recordedShows[row].title
+        cell.dateLabel.text = "world" //recordedShows.recordedShows[row].dateRecorded
+       // cell.show = shows[row]
         
         return cell
     }
