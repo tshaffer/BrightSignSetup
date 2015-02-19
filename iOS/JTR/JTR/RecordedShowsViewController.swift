@@ -11,10 +11,10 @@ import UIKit
 class RecordedShowsViewController: UIViewController, UITableViewDataSource, UITableViewDelegate {
     let network = Networking("192.168.1.24")
     let cellIdentifier = "RecordedShowsCell"
+    var shows : RecordedShows?
     
     required init(coder aDecoder: NSCoder) {
         super.init(coder: aDecoder)
-//        super.init(nibName: nil, bundle: nil)
     }
     
     override func viewDidLoad() {
@@ -49,6 +49,7 @@ class RecordedShowsViewController: UIViewController, UITableViewDataSource, UITa
         cell.titleLabel.text = "hello" //recordedShows.recordedShows[row].title
         cell.dateLabel.text = "world" //recordedShows.recordedShows[row].dateRecorded
        // cell.show = shows[row]
+        cell.show = shows?.recordedShows[row]
         
         return cell
     }
@@ -68,16 +69,15 @@ class RecordedShowsViewController: UIViewController, UITableViewDataSource, UITa
         // Get the new view controller using segue.destinationViewController.
         // Pass the selected object to the new view controller.
         
-        if segue.identifier == "RecordedShow" {
+        if segue.identifier == "toRecordedShow" {
             if let recordedShowVC = segue.destinationViewController as? RecordedShowViewController {
-                if let aShow = sender as? RecordedShow {
-                    recordedShowVC.aDate = aShow.dateRecorded
-                    recordedShowVC.aTitle = aShow.title
-                }
                 
+                if let aShowCell = sender as? RecordedShowsTableViewCell {
+                    if let show = aShowCell.show? {
+                        recordedShowVC.recordedShow = show
+                    }
+                }
             }
-
-            
         }
     }
 

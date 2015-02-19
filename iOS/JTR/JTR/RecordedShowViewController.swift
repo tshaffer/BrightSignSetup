@@ -9,17 +9,19 @@
 import UIKit
 
 class RecordedShowViewController: UIViewController {
-    var aTitle = String()
-    var aDate = String()
+    var recordedShow : RecordedShow = RecordedShow()
     
+    @IBOutlet weak var thumbNail: UIImageView!
+    @IBOutlet weak var titleLable: UITextField!
+    @IBOutlet weak var dateRecordedLabel: UITextField!
     
-    override init() {
-        super.init()
-    }
-
-    required init(coder aDecoder: NSCoder) {
-        super.init()
-    }
+//    override init() {
+//        super.init()
+//    }
+//
+//    required init(coder aDecoder: NSCoder) {
+//        super.init(coder: aDecoder)
+//    }
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -42,5 +44,12 @@ class RecordedShowViewController: UIViewController {
         // Pass the selected object to the new view controller.
     }
     */
+    @IBAction func playButton(sender: AnyObject) {
+        
+    }
+    
+    @IBAction func deleteButton(sender: AnyObject) {
+        
+    }
 
 }

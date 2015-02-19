@@ -11,6 +11,8 @@ import UIKit
 class RemoteViewController: UIViewController {
     var network = Networking()
     
+//    TODO: need to add up/down/left/right, exit, select, jump, highest speed FF, highest speed RR
+    
     @IBAction func homeBtn(sender: AnyObject) {
 //        network.executeCommand("home")
         //should show main menu (and clear the background?)
@@ -41,7 +43,7 @@ class RemoteViewController: UIViewController {
     }
     
     @IBAction func stopBtn(sender: AnyObject) {
-//        network.executeCommand("home")
+        network.executeCommand("stop")
     }
     
     @IBAction func quickSkipBtn(sender: AnyObject) {
