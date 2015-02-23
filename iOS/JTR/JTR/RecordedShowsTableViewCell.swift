@@ -9,7 +9,6 @@
 import UIKit
 
 class RecordedShowsTableViewCell: UITableViewCell {
-    
     @IBOutlet weak var dateLabel: UILabel!
     @IBOutlet weak var titleLabel: UILabel!
     

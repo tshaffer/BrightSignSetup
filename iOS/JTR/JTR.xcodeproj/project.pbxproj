@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		894CC0331A96592C0030C7FE /* RecordedShows.swift in Sources */ = {isa = PBXBuildFile; fileRef = 894CC0321A96592C0030C7FE /* RecordedShows.swift */; };
 		89EAEA9A1A93C74E00083A29 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 89EAEA991A93C74E00083A29 /* Main.storyboard */; };
 		9569FFFC1A8EFDFF009CD75E /* RemoteViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9569FFFB1A8EFDFF009CD75E /* RemoteViewController.swift */; };
 		9569FFFE1A8EFED3009CD75E /* RecordedShowsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9569FFFD1A8EFED3009CD75E /* RecordedShowsViewController.swift */; };
@@ -19,7 +20,6 @@
 		9590F8021A9135EB0052DDA4 /* DeviceConnectionViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9590F8011A9135EB0052DDA4 /* DeviceConnectionViewController.swift */; };
 		9590F8061A913AC30052DDA4 /* TabContainerViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9590F8051A913AC30052DDA4 /* TabContainerViewController.swift */; };
 		9590F8081A9140EA0052DDA4 /* SwiftyJSON.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9590F8071A9140EA0052DDA4 /* SwiftyJSON.swift */; };
-		9590F80C1A914CF00052DDA4 /* RecordedShows.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9590F80B1A914CF00052DDA4 /* RecordedShows.swift */; };
 		95CCE2261A91A74100348745 /* RecordNowViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 95CCE2251A91A74100348745 /* RecordNowViewController.swift */; };
 		95CCE2281A91A74F00348745 /* ManualRecordViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 95CCE2271A91A74F00348745 /* ManualRecordViewController.swift */; };
 		95CCE22A1A91A75C00348745 /* ToDoListViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 95CCE2291A91A75C00348745 /* ToDoListViewController.swift */; };
@@ -38,6 +38,7 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		894CC0321A96592C0030C7FE /* RecordedShows.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RecordedShows.swift; sourceTree = "<group>"; };
 		89EAEA991A93C74E00083A29 /* Main.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; path = Main.storyboard; sourceTree = "<group>"; };
 		956900001A8F0068009CD75E /* Base */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = Base; path = Base.lproj/NowPlayingViewController.swift; sourceTree = "<group>"; };
 		9569FFFB1A8EFDFF009CD75E /* RemoteViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RemoteViewController.swift; sourceTree = "<group>"; };
@@ -55,7 +56,6 @@
 		9590F8011A9135EB0052DDA4 /* DeviceConnectionViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DeviceConnectionViewController.swift; sourceTree = "<group>"; };
 		9590F8051A913AC30052DDA4 /* TabContainerViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TabContainerViewController.swift; sourceTree = "<group>"; };
 		9590F8071A9140EA0052DDA4 /* SwiftyJSON.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SwiftyJSON.swift; sourceTree = "<group>"; };
-		9590F80B1A914CF00052DDA4 /* RecordedShows.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = RecordedShows.swift; path = ../RecordedShows.swift; sourceTree = "<group>"; };
 		95CCE2251A91A74100348745 /* RecordNowViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RecordNowViewController.swift; sourceTree = "<group>"; };
 		95CCE2271A91A74F00348745 /* ManualRecordViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ManualRecordViewController.swift; sourceTree = "<group>"; };
 		95CCE2291A91A75C00348745 /* ToDoListViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ToDoListViewController.swift; sourceTree = "<group>"; };
@@ -112,7 +112,7 @@
 				95CCE2251A91A74100348745 /* RecordNowViewController.swift */,
 				95CCE2271A91A74F00348745 /* ManualRecordViewController.swift */,
 				95CCE2291A91A75C00348745 /* ToDoListViewController.swift */,
-				9590F80B1A914CF00052DDA4 /* RecordedShows.swift */,
+				894CC0321A96592C0030C7FE /* RecordedShows.swift */,
 				95CCE22B1A91B34400348745 /* RecordedShowsTableViewCell.swift */,
 				95843A421A8E6A850084C8E4 /* Networking.swift */,
 				95CCE22D1A91BE7800348745 /* RecordedShowViewController.swift */,
@@ -256,7 +256,6 @@
 				95843A431A8E6A850084C8E4 /* Networking.swift in Sources */,
 				9590F8081A9140EA0052DDA4 /* SwiftyJSON.swift in Sources */,
 				95CCE22A1A91A75C00348745 /* ToDoListViewController.swift in Sources */,
-				9590F80C1A914CF00052DDA4 /* RecordedShows.swift in Sources */,
 				9590F8021A9135EB0052DDA4 /* DeviceConnectionViewController.swift in Sources */,
 				95CCE22C1A91B34400348745 /* RecordedShowsTableViewCell.swift in Sources */,
 				9569FFFE1A8EFED3009CD75E /* RecordedShowsViewController.swift in Sources */,
@@ -264,6 +263,7 @@
 				95CCE22E1A91BE7800348745 /* RecordedShowViewController.swift in Sources */,
 				95CCE2281A91A74F00348745 /* ManualRecordViewController.swift in Sources */,
 				95CCE2261A91A74100348745 /* RecordNowViewController.swift in Sources */,
+				894CC0331A96592C0030C7FE /* RecordedShows.swift in Sources */,
 				95855DB31A8A98D800649041 /* HomeViewController.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

@@ -12,8 +12,8 @@ class HomeViewController: UIViewController, UITableViewDataSource, UITableViewDe
 
     @IBOutlet var homeTblView: UITableView!
     
-    let menuItems = ["Recorded Shows", "Record Now", "Manual Record", "To Do List"]
-    let textCellIdentifier = "homeScreenCell"
+    let menuItems = ["Recorded Shows2", "Record Now", "Manual Record", "To Do List"]
+    let textCellIdentifier = ["toRecordedShows", "toRecordNow",  "toManualRecord", "toToDoList"]
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -38,9 +38,8 @@ class HomeViewController: UIViewController, UITableViewDataSource, UITableViewDe
     }
     
     func tableView(tableView: UITableView, cellForRowAtIndexPath indexPath: NSIndexPath) -> UITableViewCell {
-        let cell = tableView.dequeueReusableCellWithIdentifier(textCellIdentifier, forIndexPath: indexPath) as UITableViewCell
-        
         let row = indexPath.row
+        let cell = tableView.dequeueReusableCellWithIdentifier(textCellIdentifier[row], forIndexPath: indexPath) as UITableViewCell
         cell.textLabel?.text = menuItems[row]
         
         return cell

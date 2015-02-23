@@ -20,6 +20,7 @@ class Networking {
     }
     
     func executeCommand(cmd: String) {
+        println("trying to execute command: \(cmd)")
         if let baseUrl = baseUrl {
             if let url = NSURL(string: (baseUrl + cmd)) {
                 let urlRequest = NSURLRequest(URL: url);
@@ -27,6 +28,7 @@ class Networking {
                     {(resp: NSURLResponse!, data: NSData!, error: NSError!) -> Void
                         in
                         //this is the "done" callback
+                        
                 })
             }
         }
