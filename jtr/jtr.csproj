@@ -66,9 +66,14 @@
     <Content Include="webSite\bootstrap\js\bootstrap.min.js" />
     <Content Include="webSite\css\main.css" />
     <Content Include="webSite\index.html" />
+    <Content Include="webSite\js\brightSign.js" />
+    <Content Include="webSite\js\browser.js" />
+    <Content Include="webSite\js\common.js" />
+    <Content Include="webSite\js\displayEngine.js" />
     <Content Include="webSite\js\jquery-2.1.1.min.js" />
     <Content Include="webSite\js\less.min.js" />
-    <Content Include="webSite\js\script.js" />
+    <Content Include="webSite\js\recordingEngine.js" />
+    <Content Include="webSite\js\remote.js" />
     <Content Include="webSite\js\xml2json.js" />
   </ItemGroup>
   <ItemGroup>
@@ -79,10 +84,8 @@
     <Content Include="db.brs" />
     <Content Include="displayEngine.brs" />
     <Content Include="eventHandler.brs" />
-    <Content Include="hsm.brs" />
     <Content Include="logging.brs" />
     <Content Include="recordingEngine.brs" />
-    <Content Include="remote.brs" />
     <Content Include="server.brs" />
     <Content Include="utils.brs" />
   </ItemGroup>

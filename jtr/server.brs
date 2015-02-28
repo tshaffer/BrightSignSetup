@@ -3,104 +3,42 @@ Sub InitializeServer()
     m.localServer = CreateObject("roHttpServer", { port: 8080 })
     m.localServer.SetPort(m.msgPort)
 
+	' commands sent from the browser or another app; commands get routed to device js for injection into the HSM framework
+	m.browserCommandAA =				{ HandleEvent: browserCommand, mVar: m}
+	m.localServer.AddGetFromEvent({ url_path: "/browserCommand", user_data: m.browserCommandAA })
+
+	' PENDING - manual record as invoked on the device - not real now - manual record is only done from the browser
 	m.manualRecordAA =					{ HandleEvent: manualRecord, mVar: m }
-	m.recordNowAA =						{ HandleEvent: recordNow, mVar: m }
-	m.recordingAA =						{ HandleEvent: getRecording, mVar: m }
-	m.deleteRecordingAA =				{ HandleEvent: deleteRecording, mVar: m }
-	m.recordingsAA =					{ HandleEvent: recordings, mVar: m }
-	m.fileToTranscodeAA =				{ HandleEvent: fileToTranscode, mVar: m }
-	m.hlsUrlAA =						{ HandleEvent: hlsUrl, mVar: m }
-	m.currentStateAA =					{ HandleEvent: currentJTRState, mVar: m }
-
-	m.showUIAA =						{ HandleEvent: showUI, mVar: m}
-
-
-	m.getLastSelectedShowIdAA =			{ HandleEvent: getLastSelectedShowId, mVar: m }
-	m.setLastSelectedShowIdAA =			{ HandleEvent: setLastSelectedShowId, mVar: m }
-
-	m.filePostedAA =					{ HandleEvent: filePosted, mVar: m }
-
-	m.localServer.AddGetFromEvent({ url_path: "/recordNow", user_data: m.recordNowAA })
 	m.localServer.AddGetFromEvent({ url_path: "/manualRecord", user_data: m.manualRecordAA })
-	m.localServer.AddGetFromEvent({ url_path: "/recording", user_data: m.recordingAA })
-	m.localServer.AddGetFromEvent({ url_path: "/deleteRecording", user_data: m.deleteRecordingAA })
-	m.localServer.AddGetFromEvent({ url_path: "/recordings", user_data: m.recordingsAA })
 
+	' RECORD NOW - removed
+
+	' retrieve and return information about all recordings
+	m.getRecordingsAA =					{ HandleEvent: getRecordings, mVar: m }
+	m.localServer.AddGetFromEvent({ url_path: "/getRecordings", user_data: m.getRecordingsAA })
+
+	' play a specific recording
+	m.playRecordingAA =					{ HandleEvent: playRecording, mVar: m }
+	m.localServer.AddGetFromEvent({ url_path: "/recording", user_data: m.playRecordingAA })
+
+	' part of file transcoding process
+	m.fileToTranscodeAA =				{ HandleEvent: fileToTranscode, mVar: m }
 	m.localServer.AddGetFromEvent({ url_path: "/fileToTranscode", user_data: m.fileToTranscodeAA })
+	m.filePostedAA =					{ HandleEvent: filePosted, mVar: m }
 	m.localServer.AddPostToFile({ url_path: "/TranscodedFile", destination_directory: GetDefaultDrive(), user_data: m.filePostedAA })
 
+	' returns URL for HLS segment if it exists; 404 otherwise
+	m.hlsUrlAA =						{ HandleEvent: hlsUrl, mVar: m }
 	m.localServer.AddGetFromEvent({ url_path: "/hlsUrl", user_data: m.hlsUrlAA })
 
+	' current state of the jtr app
+	m.currentStateAA =					{ HandleEvent: currentJTRState, mVar: m }
 	m.localServer.AddGetFromEvent({ url_path: "/currentState", user_data: m.currentStateAA })
 
-	m.localServer.AddGetFromEvent({ url_path: "/showUI", user_data: m.showUIAA })
-
-	'up
-	m.upAA =							{ HandleEvent: up, mVar: m}
-	m.localServer.AddGetFromEvent({ url_path: "/up", user_data: m.upAA })
-
-	'down
-	m.downAA =							{ HandleEvent: down, mVar: m}
-	m.localServer.AddGetFromEvent({ url_path: "/down", user_data: m.downAA })
-
-	'left
-	m.leftAA =							{ HandleEvent: left, mVar: m}
-	m.localServer.AddGetFromEvent({ url_path: "/left", user_data: m.leftAA })
-
-	'right
-	m.rightAA =							{ HandleEvent: right, mVar: m}
-	m.localServer.AddGetFromEvent({ url_path: "/right", user_data: m.rightAA })
-
-	'enter
-	m.enterAA =							{ HandleEvent: enter, mVar: m}
-	m.localServer.AddGetFromEvent({ url_path: "/enter", user_data: m.enterAA })
-
-	'menu
-	m.menuAA =							{ HandleEvent: menu, mVar: m}
-	m.localServer.AddGetFromEvent({ url_path: "/menu", user_data: m.menuAA })
-
-	'recorded shows
-	m.recordedShowsAA =					{ HandleEvent: recordedShows, mVar: m}
-	m.localServer.AddGetFromEvent({ url_path: "/recordedShows", user_data: m.recordedShowsAA })
-
-	'toggle progress bar
-	m.toggleProgressBarAA =				{ HandleEvent: toggleProgressBar, mVar: m}
-	m.localServer.AddGetFromEvent({ url_path: "/toggleProgressBar", user_data: m.toggleProgressBarAA })
-
-	'exit
-	m.exitAA =							{ HandleEvent: exitCmd, mVar: m}
-	m.localServer.AddGetFromEvent({ url_path: "/exit", user_data: m.exitAA })
-
-	'jump
-	m.jumpAA =							{ HandleEvent: jumpCmd, mVar: m}
-	m.localServer.AddGetFromEvent({ url_path: "/jump", user_data: m.jumpAA })
-
-	'stop
-	m.stopAA =							{ HandleEvent: stopCmd, mVar: m}
-	m.localServer.AddGetFromEvent({ url_path: "/stop", user_data: m.stopAA })
-
-	m.pauseAA =							{ HandleEvent: pause, mVar: m}
-	m.localServer.AddGetFromEvent({ url_path: "/pause", user_data: m.pauseAA })
-
-	m.rewindAA =						{ HandleEvent: rewind, mVar: m}
-	m.localServer.AddGetFromEvent({ url_path: "/rewind", user_data: m.rewindAA })
-
-	m.playAA =							{ HandleEvent: play, mVar: m}
-	m.localServer.AddGetFromEvent({ url_path: "/play", user_data: m.playAA })
-
-	m.fastForwardAA =					{ HandleEvent: fastForward, mVar: m}
-	m.localServer.AddGetFromEvent({ url_path: "/fastForward", user_data: m.fastForwardAA })
-
-	m.instantReplayAA =					{ HandleEvent: instantReplay, mVar: m}
-	m.localServer.AddGetFromEvent({ url_path: "/instantReplay", user_data: m.instantReplayAA })
-
-	m.quickSkipAA =						{ HandleEvent: quickSkip, mVar: m}
-	m.localServer.AddGetFromEvent({ url_path: "/quickSkip", user_data: m.quickSkipAA })
-
-
-
-
+	' get and set the last selected show; uses BS as this information is stored in the database (by storing it in the db rather than localStorage, the iOS app can use this functionality)
+	m.getLastSelectedShowIdAA =			{ HandleEvent: getLastSelectedShowId, mVar: m }
 	m.localServer.AddGetFromEvent({ url_path: "/lastSelectedShow", user_data: m.getLastSelectedShowIdAA })
+	m.setLastSelectedShowIdAA =			{ HandleEvent: setLastSelectedShowId, mVar: m }
 	m.localServer.AddPostToFormData({ url_path: "/lastSelectedShow", user_data: m.setLastSelectedShowIdAA })
 
 ' incorporation of site downloader code
@@ -112,7 +50,6 @@ Sub InitializeServer()
 
     m.restartScriptAA = { HandleEvent: restartScript, mVar: m }
     m.localServer.AddGetFromEvent({ url_path: "/ExitScript", user_data: m.restartScriptAA })
-
 
 ' Bonjour advertisement
 '    service = { name: "JTR Web Service", type: "_http._tcp", port: 8080, _functionality: BSP.lwsConfig$, _serialNumber: sysInfo.deviceUniqueID$, _unitName: unitName$, _unitNamingMethod: unitNamingMethod$,  }
@@ -154,8 +91,27 @@ Sub AddHandlers(serverDirectory$ As String, listOfHandlers As Object)
 End Sub
 
 
+' endpoint invoked when browserCommand is invoked from a browser or external app
+Sub browserCommand(userData as Object, e as Object)
+
+	print "browserCommand endpoint invoked - post message to javascript"
+
+    mVar = userData.mVar
+
+	message = e.GetRequestParams()
+
+'	relay the message to js
+	ok = mVar.htmlWidget.PostJSMessage(message)
+
+    e.AddResponseHeader("Content-type", "text/plain")
+    e.SetResponseBodyString("ok")
+    e.SendResponse(200)
+
+End Sub
+
+
 ' endpoint invoked when the user wants to playback a specific recording - playback resumes from where it left off
-Sub getRecording(userData as Object, e as Object)
+Sub playRecording(userData as Object, e as Object)
 
 	print "recording endpoint invoked"
 
@@ -164,14 +120,11 @@ Sub getRecording(userData as Object, e as Object)
 	requestParams = e.GetRequestParams()
 
 	recordingId = requestParams["recordingId"]
-	print "getRecording::play recording ";recordingId
+	print "playRecording::play recording ";recordingId
 
 	recording = mVar.GetDBRecording(recordingId)
 
-	playRecordingMessage = CreateObject("roAssociativeArray")
-	playRecordingMessage["EventType"] = "RESUME_PLAYBACK"
-	playRecordingMessage["Recording"] = recording
-	mVar.msgPort.PostMessage(playRecordingMessage)
+	StartPlayback(recording)
 
     e.AddResponseHeader("Content-type", "text/plain")
     e.SetResponseBodyString("ok")
@@ -180,69 +133,9 @@ Sub getRecording(userData as Object, e as Object)
 End Sub
 
 
-' endpoint invoked when the user selects Delete Recording from Replay Guide
-Sub deleteRecording(userData as Object, e as Object)
+Sub getRecordings(userData as Object, e as Object)
 
-	print "delete recording endpoint invoked"
-
-    mVar = userData.mVar
-
-	requestParams = e.GetRequestParams()
-
-	recordingId = requestParams["recordingId"]
-	print "deleteRecording::recordingId ";recordingId
-
-	' for now, delete the file off the card. future, don't delete files until necessary to allow undo
-	recording = mVar.GetDBRecording(recordingId)
-	if type(recording) = "roAssociativeArray" then
-
-		' delete hls segments
-		if recording.HLSSegmentationComplete then
-			hlsSegmentsPath$ = "/content/hls/" + recording.FileName
-			listOfHLSSegmentPaths = []
-			ListFiles(hlsSegmentsPath$, listOfHLSSegmentPaths)
-			for each hlsSegmentFilePath in listOfHLSSegmentPaths
-				ok = DeleteFile(hlsSegmentFilePath)
-			next
-
-			' delete folder
-			ok = DeleteDirectory(hlsSegmentsPath$)
-		endif
-
-		' delete ts and/or mp4 files
-		path = GetFilePath(recording.FileName)
-		while path <> ""
-			print "path of file to delete is ";path
-			' TODO - log the deletion
-			ok = DeleteFile(path)
-			if not ok then
-				print "file ";path;" not found in delete operation."
-				' TODO - log the failure to find the file
-			endif
-			path = GetFilePath(recording.FileName)
-		endwhile
-	else
-		e.AddResponseHeader("Content-type", "text/plain; charset=utf-8")
-		e.SetResponseBodyString("Recording not found.")
-	    e.SendResponse(404)
-		return
-	endif
-
-	' add to deleted recordings table
-
-	' remove from database
-	mVar.DeleteDBRecording(recordingId)
-
-    e.AddResponseHeader("Content-type", "text/plain")
-    e.SetResponseBodyString("ok")
-    e.SendResponse(200)
-
-End Sub
-
-
-Sub recordings(userData as Object, e as Object)
-
-	print "recordings endpoint invoked"
+	print "getRecordings endpoint invoked"
 
     mVar = userData.mVar
 
@@ -260,6 +153,13 @@ Sub recordings(userData as Object, e as Object)
     e.AddResponseHeader("Content-type", "text/json")
     e.SetResponseBodyString(json)
     e.SendResponse(200)
+
+	' send data directly to js (for the case where the request came from the browser or an external app)
+	
+	aa = {}
+	aa.AddReplace("recordings", json)
+	ok = mVar.htmlWidget.PostJSMessage(aa)
+	if not ok stop
 
 End Sub
 
@@ -280,31 +180,6 @@ Sub PopulateRecordings(mVar As Object, response As Object)
 			print "recording " + recording.Title + " not found at " + recording.Path + ". Id = " + stri(recording.RecordingId)
 		endif
 	next
-
-End Sub
-
-
-Sub recordNow(userData as Object, e as Object)
-
-	print "record now invoked"
-
-    mVar = userData.mVar
-
-	requestParams = e.GetRequestParams()
-
-	title$ = requestParams["title"]
-	duration% = int(val(requestParams["duration"]))
-
-	recordNowMessage = CreateObject("roAssociativeArray")
-	recordNowMessage["EventType"] = "RECORD_NOW"
-	recordNowMessage["Title"] = title$
-	recordNowMessage["Duration"] = duration%
-
-	mVar.msgPort.PostMessage(recordNowMessage)
-
-    e.AddResponseHeader("Content-type", "text/plain")
-    e.SetResponseBodyString("herro Joel")
-    e.SendResponse(200)
 
 End Sub
 
@@ -455,107 +330,6 @@ Sub filePosted(userData as Object, e as Object)
 	e.SetResponseBodyString("RECEIVED")
     e.SendResponse(200)
 
-End Sub
-
-
-Sub postRemoteMessage(userData As Object, e as Object, remoteMessage$ As String)
-
-	print remoteMessage$ + " endpoint invoked"
-
-    mVar = userData.mVar
-
-	message = CreateObject("roAssociativeArray")
-	message["EventType"] = remoteMessage$
-	mVar.msgPort.PostMessage(message)
-
-    e.AddResponseHeader("Content-type", "text/plain")
-    e.SetResponseBodyString("ok")
-    e.SendResponse(200)
-
-End Sub
-
-
-Sub up(userData as Object, e as Object)
-	postRemoteMessage(userData, e, "UP")
-End Sub
-
-
-Sub down(userData as Object, e as Object)
-	postRemoteMessage(userData, e, "DOWN")
-End Sub
-
-
-Sub left(userData as Object, e as Object)
-	postRemoteMessage(userData, e, "LEFT")
-End Sub
-
-
-Sub right(userData as Object, e as Object)
-	postRemoteMessage(userData, e, "RIGHT")
-End Sub
-
-
-Sub enter(userData as Object, e as Object)
-	postRemoteMessage(userData, e, "ENTER")
-End Sub
-
-
-Sub menu(userData as Object, e as Object)
-	postRemoteMessage(userData, e, "MENU")
-End Sub
-
-
-Sub recordedShows(userData as Object, e as Object)
-	postRemoteMessage(userData, e, "RECORDED_SHOWS")
-End Sub
-
-
-Sub toggleProgressBar(userData as Object, e as Object)
-	postRemoteMessage(userData, e, "TOGGLE_PROGRESS_BAR")
-End Sub
-
-
-Sub exitCmd(userData as Object, e as Object)
-	postRemoteMessage(userData, e, "EXIT")
-End Sub
-
-
-Sub jumpCmd(userData as Object, e as Object)
-	postRemoteMessage(userData, e, "JUMP")
-End Sub
-
-
-Sub stopCmd(userData as Object, e as Object)
-	postRemoteMessage(userData, e, "STOP")
-End Sub
-
-Sub pause(userData as Object, e as Object)
-	postRemoteMessage(userData, e, "PAUSE")
-End Sub
-
-
-Sub rewind(userData as Object, e as Object)
-	postRemoteMessage(userData, e, "REWIND")
-End Sub
-
-
-Sub play(userData as Object, e as Object)
-	postRemoteMessage(userData, e, "PLAY")
-End Sub
-
-
-Sub fastForward(userData as Object, e as Object)
-	postRemoteMessage(userData, e, "FASTFORWARD")
-End Sub
-
-
-Sub instantReplay(userData as Object, e as Object)
-	postRemoteMessage(userData, e, "INSTANT_REPLAY")
-End Sub
-
-
-Sub quickSkip(userData as Object, e as Object)
-	postRemoteMessage(userData, e, "QUICK_SKIP")
 End Sub
 
 
@@ -838,25 +612,3 @@ Sub siteFilePosted(userData as Object, e as Object)
     e.SendResponse(200)
 
 End Sub
-
-
-' endpoint invoked when the the javascript proactively displays a UI screen
-Sub showUI(userData as Object, e as Object)
-
-    mVar = userData.mVar
-
-	print "showUI endpoint invoked"
-
-	showUIMessage = CreateObject("roAssociativeArray")
-	showUIMessage["EventType"] = "SHOW_UI"
-	mVar.msgPort.PostMessage(showUIMessage)
-
-    e.AddResponseHeader("Content-type", "text/plain")
-    e.SetResponseBodyString("ok")
-    e.SendResponse(200)
-
-End Sub
-
-
-
-

@@ -3,7 +3,6 @@ Library "logging.brs"
 Library "remote.brs"
 Library "db.brs"
 Library "server.brs"
-Library "hsm.brs"
 Library "eventHandler.brs"
 Library "recordingEngine.brs"
 Library "displayEngine.brs"
@@ -50,38 +49,15 @@ Sub RunJtr()
 
 	JTR.gpio = CreateObject("roGpioControlPort")
 
-	useIRRemote = true
-
-	if useIRRemote then
-		JTR.remote = CreateObject("roIRRemote")
-		if type(JTR.remote) = "roIRRemote" then
-			JTR.remote.SetPort(msgPort)
-		else
-'			TODO -if no IR Receiver, log it
-		endif
-	else
-		aa = {}
-'		aa.source = "Iguana"
-'		aa.encodings = ["NEC","RC5"]
-		aa.source = "IR-in"
-		aa.encodings = ["NEC"]
-		JTR.irReceiver = CreateObject("roIRReceiver", aa)
-		if type(JTR.irReceiver) = "roIRReceiver" then
-			JTR.irReceiver.SetPort(msgPort)
-		else
-'			TODO - if no IR Receiver, log it
-		endif
-	endif
-
-	JTR.recordingEngine.Initialize()
-	JTR.displayEngine.Initialize()
-
-	JTR.eventHandler.AddHSM(JTR.recordingEngine)
-	JTR.eventHandler.AddHSM(JTR.displayEngine)
-
 	' create and start a media server
 	JTR.mediaServer = CreateObject("roMediaServer")
 	ok = JTR.mediaServer.Start("http:port=8088:trace")
+
+	JTR.eventHandler.AddEngine(JTR.recordingEngine)
+	JTR.eventHandler.AddEngine(JTR.displayEngine)
+
+	JTR.recordingEngine.Initialize()
+	JTR.displayEngine.Initialize()
 
 	JTR.currentState = {}
 	JTR.currentState.state = "idle"
@@ -170,4 +146,5 @@ Sub ListFiles(path$ As String, listOfFiles As Object)
 	next
 
 End Sub
+
 

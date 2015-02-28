@@ -5,9 +5,9 @@ Function newEventHandler(jtr As Object) As Object
 	EventHandler.jtr = jtr
 	EventHandler.msgPort = jtr.msgPort
 
-	EventHandler.hsms = []
+	EventHandler.engines = []
 
-	EventHandler.AddHSM				= eventHandler_AddHSM
+	EventHandler.AddEngine			= eventHandler_AddEngine
 	EventHandler.EventLoop			= eventHandler_EventLoop
 
 	return EventHandler
@@ -15,9 +15,9 @@ Function newEventHandler(jtr As Object) As Object
 End Function
 
 
-Sub eventHandler_AddHSM( hsm As Object )
+Sub eventHandler_AddEngine( engine As Object )
 
-	m.hsms.push( hsm )
+	m.engines.push(engine)
 
 End Sub
 
@@ -71,10 +71,9 @@ Sub eventHandler_EventLoop()
 
 		else
 
-			numHSMs% = m.hsms.Count()
-			for i% = 0 to numHSMs% - 1
-				m.hsm = m.hsms[i%]
-				m.hsm.Dispatch(msg)
+			numEngines% = m.engines.Count()
+			for i% = 0 to numEngines% - 1
+				m.engines[i%].EventHandler(msg)
 			next
 
 		endif
