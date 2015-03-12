@@ -771,6 +771,18 @@ Function STPlayingEventHandler(event As Object, stateData As Object) As Object
 				m.stateMachine.currentVideoPosition% = recording.LastViewedPosition
 				m.stateMachine.UpdateProgressBar()
 				m.stateMachine.LaunchVideo()
+
+				' update currentState
+				currentState = {}
+				currentState.state = "playing"
+				currentState.title = m.stateMachine.selectedRecording.Title
+				currentState.recordingId = m.stateMachine.selectedRecording.RecordingId
+				currentState.duration = m.stateMachine.selectedRecording.Duration
+				currentState.recordingDate = m.stateMachine.selectedRecording.StartDateTime
+				currentState.currentTime = m.stateMachine.selectedRecording.LastViewedPosition
+
+				m.stateMachine.jtr.SetCurrentState(currentState)
+
 				return "HANDLED"            
 			endif
             
@@ -904,7 +916,20 @@ Function STPausedEventHandler(event As Object, stateData As Object) As Object
 				m.stateMachine.currentVideoPosition% = recording.LastViewedPosition
 				m.stateMachine.UpdateProgressBar()
 				m.stateMachine.LaunchVideo()
-				return "HANDLED"            
+
+				' update currentState
+				currentState = {}
+				currentState.state = "playing"
+				currentState.title = m.stateMachine.selectedRecording.Title
+				currentState.recordingId = m.stateMachine.selectedRecording.RecordingId
+				currentState.duration = m.stateMachine.selectedRecording.Duration
+				currentState.recordingDate = m.stateMachine.selectedRecording.StartDateTime
+				currentState.currentTime = m.stateMachine.selectedRecording.LastViewedPosition
+
+				m.stateMachine.jtr.SetCurrentState(currentState)
+
+				stateData.nextState = m.stateMachine.stPlaying
+				return "TRANSITION"            
 
 			else if eventMsg$ = "PAUSE" then
 				m.invokePauseWhenPaused(stateData)
