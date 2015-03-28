@@ -285,53 +285,13 @@ function getRecordingTitle(dateObj, useTuner, channel) {
     if (!title) {
         title = 'MR ' + dateObj.getFullYear() + "-" + twoDigitFormat((dateObj.getMonth() + 1)) + "-" + twoDigitFormat(dateObj.getDate()) + " " + twoDigitFormat(dateObj.getHours()) + ":" + twoDigitFormat(dateObj.getMinutes());
         if (useTuner) {
-            title += " " + channel;
+            title += " Channel " + channel;
         } else {
-            title += " Aux-In";
+            title += " HDMI-In";
         }
     }
 
     return title;
-}
-
-
-function createManualRecording() {
-
-    // retrieve date/time from html elements and convert to a format that works on all devices
-    var date = $("#manualRecordDate").val();
-    var time = $("#manualRecordTime").val();
-    var dateTimeStr = date + " " + time;
-
-    // required for iOS devices - http://stackoverflow.com/questions/13363673/javascript-date-is-invalid-on-ios
-    var compatibleDateTimeStr = dateTimeStr.replace(/-/g, '/');
-
-    var bsIsoDateTime = compatibleDateTimeStr.replace(/\//g, '');   // remove slashes
-    bsIsoDateTime = bsIsoDateTime.replace(' ', 'T');                // replace space by T
-    bsIsoDateTime = bsIsoDateTime.replace(':', '');                 // remove colon
-
-    var dateObj = new Date(compatibleDateTimeStr);
-
-    var useTuner = !$("#manualRecordAuxInCheckbox").is(':checked');
-
-    var duration = $("#manualRecordDuration").val();
-    var channel = $("#manualRecordChannel").val();
-
-    var title = getRecordingTitle(dateObj, useTuner, channel);
-
-    var aUrl = baseURL + "manualRecord";
-    var recordData = { "bsIsoDateTime": bsIsoDateTime, "duration": duration, "channel": channel, "title": title, "useTuner": useTuner }
-
-    $.get(aUrl, recordData)
-        .done(function (result) {
-            console.log("manual record successfully sent");
-        })
-        .fail(function (jqXHR, textStatus, errorThrown) {
-            debugger;
-            console.log("manual record failure");
-        })
-        .always(function () {
-            alert("finished");
-        });
 }
 
 
@@ -349,7 +309,6 @@ function recordedShowDetails(showId) {
     $("#recordedShowDetailsPage").append(toAppend);
 }
 
-
 function getShowTitle(showId) {
     // body...
 }
@@ -358,14 +317,12 @@ function getShowDescription(showId) {
     // body...
 }
 
-
 function eraseUI() {
     $("#ipAddress").css("display", "none");
     $(currentActiveElementId).css("display", "none");
     $("#footerArea").css("display", "none");
     //    $("#footerArea").removeAttr("style");
 }
-
 
 $(document).ready(function () {
 

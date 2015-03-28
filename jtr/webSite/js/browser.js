@@ -78,6 +78,46 @@ function recordNow() {
 }
 
 
+function createManualRecording() {
+
+    // retrieve date/time from html elements and convert to a format that works on all devices
+    var date = $("#manualRecordDate").val();
+    var time = $("#manualRecordTime").val();
+    var dateTimeStr = date + " " + time;
+
+    // required for iOS devices - http://stackoverflow.com/questions/13363673/javascript-date-is-invalid-on-ios
+    var compatibleDateTimeStr = dateTimeStr.replace(/-/g, '/');
+
+    var dateObj = new Date(compatibleDateTimeStr);
+
+    var useTuner = $("#manualRecordTuneCheckbox").is(':checked');
+
+    var duration = $("#manualRecordDuration").val();
+    var channel = $("#manualRecordChannel").val();
+
+    var title = getRecordingTitle(dateObj, useTuner, channel);
+
+    var recordData = { "dateTime": compatibleDateTimeStr, "duration": duration, "channel": channel, "title": title, "useTuner": useTuner }
+
+    var aUrl = baseURL + "browserCommand";
+    var commandData = { "commandSetManualRecord": recordData };
+    console.log(commandData);
+
+    $.get(aUrl, commandData)
+        .done(function (result) {
+            console.log("browserCommand successfully sent");
+        })
+        .fail(function (jqXHR, textStatus, errorThrown) {
+            debugger;
+            console.log("browserCommand failure");
+        })
+        .always(function () {
+            //alert("recording transmission finished");
+        });
+}
+
+
+
 function playSelectedShow(event) {
 
     var recordingId = event.data.recordingId;

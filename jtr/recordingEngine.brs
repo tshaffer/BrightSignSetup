@@ -77,6 +77,7 @@ Sub re_HandleHttpEvent(event As Object)
 		if eventData.reason = "message" then
 			aa = eventData.message
 			if aa.command = "recordNow" then
+
 				title$ = aa.title
 				duration$ = aa.duration
 
@@ -84,12 +85,13 @@ Sub re_HandleHttpEvent(event As Object)
 				scheduledRecording = {}
 				scheduledRecording.title$ = title$
 				scheduledRecording.duration% = int(val(duration$))
-				scheduledRecording.channel$ = "HDMI In"
+				scheduledRecording.channel$ = aa.channel
+
 				systemTime = CreateObject("roSystemTime")
 				scheduledRecording.dateTime = systemTime.GetLocalDateTime()
+
 				m.scheduledRecording = scheduledRecording
 
-				' m.stateMachine.scheduledRecordings.AddReplace(scheduledRecording.timerId$, scheduledRecording)
 				m.StartManualRecord()
 				
 			endif

@@ -209,6 +209,11 @@ function executeDeleteSelectedShow(recordingId) {
 
 
 function initializeBrightSign() {
+    var mrDateTime = "";
+    var mrChannel = "";
+    var mrRecordingDuration = "";
+    var mrTitle = "";
+
     // Create displayEngine state machine
     displayEngineHSM = new displayEngineStateMachine();
     registerStateMachine(displayEngineHSM);
@@ -288,6 +293,42 @@ function initializeBrightSign() {
                 event["EventType"] = "DELETE_RECORDED_SHOW";
                 event["EventData"] = recordingId;
                 postMessage(event);
+            }
+            else if (name.lastIndexOf("commandSetManualRecord") == 0) {
+                console.log("INVOKE SET MANUAL RECORD");
+
+                var parameterValue = msg.data[name];
+                if (name == "commandSetManualRecord[dateTime]") {
+                    mrDateTime = parameterValue;
+                    console.log("dateTime=" + mrDateTime);
+                }
+                else if (name == "commandSetManualRecord[channel]") {
+                    mrChannel = parameterValue;
+                    console.log("channel=" + mrChannel);
+                }
+                else if (name == "commandSetManualRecord[duration]") {
+                    mrRecordingDuration = parameterValue;
+                    console.log("duration=" + mrRecordingDuration);
+                }
+                else if (name == "commandSetManualRecord[title]") {
+                    mrTitle = parameterValue;
+                    console.log("title=" + mrTitle);
+                }
+                else if (name == "commandSetManualRecord[useTuner]") {
+                    var useTuner = parameterValue;
+                    console.log("useTuner=" + useTuner);
+
+                    // hack? useTuner is the last parameter so post message now
+                    var event = {}
+                    event["EventType"] = "SET_MANUAL_RECORD";
+                    event["DateTime"] = mrDateTime;
+                    event["Title"] = mrTitle;
+                    event["Duration"] = mrRecordingDuration;
+                    event["UseTuner"] = useTuner;
+                    event["Channel"] = mrChannel;
+                    postMessage(event);
+                }
+
             }
             else if (name.lastIndexOf("commandRecordNow") == 0) {
                 console.log("commandRecordNow invoked");
