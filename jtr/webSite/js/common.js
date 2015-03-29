@@ -1,4 +1,8 @@
 ﻿var clientType;
+var browserTypeIsSafari;
+
+var baseURL;
+var baseIP;
 
 var _currentRecordings = {};
 
@@ -125,7 +129,9 @@ function getRecordedShows() {
                     var focusApplied = false;
 
                     // add button handlers for each recording - note, the handlers need to be added after the html has been added!!
-                    $.each(recordingIds, function (index, recordingId) {
+                    $.each(jtrRecordings, function (index, recording) {
+                        
+                        var recordingId = recording.RecordingId;
 
                         // play a recording
                         var btnIdRecording = "#recording" + recordingId;
@@ -134,6 +140,14 @@ function getRecordedShows() {
                         // delete a recording
                         var btnIdDelete = "#delete" + recordingId;
                         $(btnIdDelete).click({ recordingId: recordingId }, deleteSelectedShow);
+
+                        // play from beginning
+                        var btnIdPlayFromBeginning = "#repeat" + recordingId;
+                        $(btnIdPlayFromBeginning).click({ recordingId: recordingId }, playSelectedShowFromBeginning);
+
+                        // stream a recording
+                        var btnIdStream = "#stream" + recordingId;
+                        $(btnIdStream).click({ recordingId: recordingId, hlsUrl: recording.HLSUrl }, streamSelectedShow);
 
                         // highlight the last selected show
                         if (recordingId == lastSelectedShowId) {
@@ -204,9 +218,11 @@ function addRecordedShowsLine(jtrRecording) {
         "<tr>" +
         "<td><button type='button' class='btn btn-default recorded-shows-icon' id='recording" + jtrRecording.RecordingId.toString() + "' aria-label='Left Align'><span class='glyphicon glyphicon-play' aria-hidden='true'></span></button></td>" +
 	    "<td><button type='button' class='btn btn-default recorded-shows-icon' id='delete" + jtrRecording.RecordingId.toString() + "' aria-label='Left Align'><span class='glyphicon glyphicon-remove' aria-hidden='true'></span></button></td>" +
+	    "<td><button type='button' class='btn btn-default recorded-shows-icon' id='repeat" + jtrRecording.RecordingId.toString() + "' aria-label='Left Align'><span class='glyphicon glyphicon-repeat' aria-hidden='true'></span></button></td>" +
+	    "<td><button type='button' class='btn btn-default recorded-shows-icon streamIcon' id='stream" + jtrRecording.RecordingId.toString() + "' aria-label='Left Align'><span class='glyphicon glyphicon-cloud-download' aria-hidden='true'></span></button></td>" +
         "<td>" + jtrRecording.Title + "</td>" +
         "<td>" + formattedDayDate + "</td>" +
-	    "<td><button type='button' class='btn btn-default recorded-shows-icon' id='delete" + jtrRecording.RecordingId.toString() + "' aria-label='Left Align'><span class='glyphicon glyphicon-info-sign' aria-hidden='true'></span></button></td>" +
+	    "<td><button type='button' class='btn btn-default recorded-shows-icon' id='info" + jtrRecording.RecordingId.toString() + "' aria-label='Left Align'><span class='glyphicon glyphicon-info-sign' aria-hidden='true'></span></button></td>" +
         "<td>" + position + "</td>";
 
     return toAppend;
@@ -278,7 +294,6 @@ function setDefaultDateTimeFields() {
     $("#manualRecordTimeId").append(toAppendTime);
 }
 
-
 function getRecordingTitle(dateObj, useTuner, channel) {
 
     var title = $("#manualRecordTitle").val();
@@ -293,7 +308,6 @@ function getRecordingTitle(dateObj, useTuner, channel) {
 
     return title;
 }
-
 
 function recordedShowDetails(showId) {
     // body...
@@ -341,9 +355,18 @@ $(document).ready(function () {
         clientType = "iPad"
     }
 
+    if (userAgent.indexOf("Mac") >= 0 && userAgent.indexOf("Chrome") < 0) {
+        browserTypeIsSafari = true;
+    }
+    else {
+        browserTypeIsSafari = false;
+    }
+
     if (clientType != "BrightSign") {
         baseURL = document.baseURI.replace("?", "");
-        console.log("baseURL from document.baseURI is: " + baseURL);
+        baseIP = document.baseURI.substr(0, document.baseURI.lastIndexOf(":"));
+
+        console.log("baseURL from document.baseURI is: " + baseURL + ", baseIP is: " + baseIP);
     }
     else {
         initializeBrightSign();

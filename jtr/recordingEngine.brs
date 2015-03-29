@@ -204,8 +204,10 @@ Sub re_HLSSegmentationComplete()
 	systemTime = CreateObject("roSystemTime")
 	print "------- segmentation complete at ";systemTime.GetLocalDateTime()
 
-	' update db to indicate that hls segments were created
-	m.jtr.UpdateHLSSegmentationComplete(m.recordingId%)
+	hlsUrl$ = "/content/hls/" + m.recordingToSegment.FileName + "/" + m.recordingToSegment.FileName + "_index.m3u8"
+
+	' update db to indicate that hls segments were created`
+	m.jtr.UpdateHLSSegmentationComplete(m.recordingId%, hlsUrl$)
 
 	' determine whether or not the .ts file can be deleted
 	okToDelete = m.jtr.tsDeletable(m.recordingId%)

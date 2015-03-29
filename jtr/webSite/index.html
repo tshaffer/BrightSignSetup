@@ -29,14 +29,20 @@
     <script>
         var userAgent = navigator.userAgent;
         var n = userAgent.lastIndexOf("BrightSign");
+        var browserTypeIsSafari = false;
+        if (userAgent.indexOf("Mac") >= 0 && userAgent.indexOf("Chrome") < 0) {
+            browserTypeIsSafari = true;
+        }
         if (n >= 0) {
             less.modifyVars({
-                '@deviceType': 'BrightSign'              // BrightSign
-            });
+                '@deviceType': 'BrightSign',              // BrightSign
+                '@browserType': 'notSafari'
+        });
         }
         else {
             less.modifyVars({
-                '@deviceType': 'Browser'              // Browser
+                '@deviceType': 'Browser',              // Browser
+                '@browserType': browserTypeIsSafari ? 'Safari' : 'notSafari'
             });
         }
     </script>
@@ -125,6 +131,8 @@
             <tr>
               <th class="play"></th>
               <th class="delete"></th>
+              <th class="repeat"></th>
+              <th class="stream"></th>
               <th class="title">Title</th>
               <th class="recorded">Recorded</th>              
               <th class="showInfo">Info</th>

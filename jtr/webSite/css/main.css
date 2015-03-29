@@ -6,8 +6,12 @@
 	float: right;
 }
 
-th.play, th.delete, th.showInfo {
+th.play, th.delete, th.repeat, th.showInfo {
   width: 40px;
+}
+
+th.stream {
+    width: 20px;
 }
 
 th.recorded {

@@ -48,7 +48,6 @@ function remoteStop() {
     sendRemoteCommandToDevice("stop");
 }
 
-
 function recordNow() {
 
     // get current date/time - used as title if user doesn't provide one.
@@ -167,3 +166,18 @@ function deleteSelectedShow(event) {
         });
 }
 
+function playSelectedShowFromBeginning(event) {
+}
+
+function streamSelectedShow(event) {
+
+    var hlsUrl = event.data.hlsUrl;
+    if (typeof hlsUrl != "undefined" && hlsUrl != "") {
+        var streamingUrl = baseIP + ":8088/file://" + hlsUrl;
+        var win = window.open(streamingUrl, '_blank');
+        win.focus();
+    }
+    else {
+        alert("Unable to stream this recording.");
+    }
+}

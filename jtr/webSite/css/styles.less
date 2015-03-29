@@ -1,4 +1,5 @@
 ﻿@deviceType: BrightSign;
+@browserType: notSafari;
 
 .mixinTransportControls(BrightSign) {
     display: none;
@@ -133,3 +134,15 @@ body {
   .mixinContainerWidth(@deviceType);
 }
 
+
+.mixinStreamIconVisibility (Safari) {
+}
+
+.mixinStreamIconVisibility (notSafari) {
+    display: none;
+    visibility: collapse;
+}
+
+.streamIcon {
+    .mixinStreamIconVisibility(@browserType);
+}

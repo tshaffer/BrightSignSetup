@@ -1,5 +1,3 @@
-var baseURL;
-
 // BrightSign only
 var bsMessage;
 var ir_receiver;
@@ -225,21 +223,30 @@ function initializeBrightSign() {
     recordingEngineHSM.Initialize();
 
     // ir receiver
-    ir_receiver = new BSIRReceiver("Iguana", "NEC");
-    console.log("typeof ir_receiver is " + typeof ir_receiver);
-
-    ir_receiver.onremotedown = function (e) {
-        console.log('############ onremotedown: ' + e.irType + " - " + e.code);
-        console.log('############ onremotedown: remoteCommand=' + GetRemoteCommand(e.code));
-
-        var event = {};
-        event["EventType"] = "REMOTE";
-        event["EventData"] = GetRemoteCommand(e.code);
-        postMessage(event);
+    try
+    {
+        ir_receiver = new BSIRReceiver("Iguana", "NEC");
+    }
+    catch (err) {
+        console.log("unable to create ir_receiver");
     }
 
-    ir_receiver.onremoteup = function (e) {
-        console.log('############ onremoteup: ' + e.irType + " - " + e.code);
+    console.log("typeof ir_receiver is " + typeof ir_receiver);
+
+    if (typeof ir_receiver != 'undefined') {
+        ir_receiver.onremotedown = function (e) {
+            console.log('############ onremotedown: ' + e.irType + " - " + e.code);
+            console.log('############ onremotedown: remoteCommand=' + GetRemoteCommand(e.code));
+
+            var event = {};
+            event["EventType"] = "REMOTE";
+            event["EventData"] = GetRemoteCommand(e.code);
+            postMessage(event);
+        }
+
+        ir_receiver.onremoteup = function (e) {
+            console.log('############ onremoteup: ' + e.irType + " - " + e.code);
+        }
     }
 
     // message port for getting messages from the BrightSign via roMessagePort
