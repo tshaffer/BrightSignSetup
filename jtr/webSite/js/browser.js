@@ -94,6 +94,16 @@ function createManualRecording() {
     var duration = $("#manualRecordDuration").val();
     var channel = $("#manualRecordChannel").val();
 
+    // check to see if recording is in the past
+    var dtEndOfRecording = addMinutes(dateObj, duration);
+    var now = new Date();
+
+    var millisecondsUntilEndOfRecording = dtEndOfRecording - now;
+    if (millisecondsUntilEndOfRecording < 0) {
+        alert("Recording time is in the past - change the date/time and try again.");
+        return;
+    }
+
     var title = getRecordingTitle(dateObj, useTuner, channel);
 
     var recordData = { "dateTime": compatibleDateTimeStr, "duration": duration, "channel": channel, "title": title, "useTuner": useTuner }

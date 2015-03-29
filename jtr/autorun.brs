@@ -43,10 +43,11 @@ Sub RunJtr()
 	JTR.recordingEngine = newRecordingEngine(JTR)
 	JTR.displayEngine = newDisplayEngine(JTR)
 
+	JTR.gpio = CreateObject("roGpioControlPort")
+
+	JTR.SetRecordLED(false)
 	JTR.InitializeServer()
 	JTR.OpenDatabase()
-
-	JTR.gpio = CreateObject("roGpioControlPort")
 
 	' create and start a media server
 	JTR.mediaServer = CreateObject("roMediaServer")
@@ -80,6 +81,10 @@ Function newJTR(msgPort As Object) As Object
 	JTR.SetDBVersion					= SetDBVersion
 	JTR.ExecuteDBInsert					= ExecuteDBInsert
 	JTR.ExecuteDBSelect					= ExecuteDBSelect
+	JTR.AddDBScheduledRecording			= AddDBScheduledRecording
+	JTR.GetLastScheduledRecordingId		= GetLastScheduledRecordingId
+	JTR.DeleteDBScheduledRecording		= DeleteDBScheduledRecording
+	JTR.GetDBScheduledRecordings		= GetDBScheduledRecordings
 	JTR.AddDBRecording					= AddDBRecording
 	JTR.DeleteDBRecording				= DeleteDBRecording
 	JTR.GetDBLastSelectedShowId			= GetDBLastSelectedShowId

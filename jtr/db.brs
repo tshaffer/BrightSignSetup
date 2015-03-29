@@ -19,7 +19,9 @@ Sub OpenDatabase()
 
 		m.CreateDBTable("CREATE TABLE Recordings (RecordingId INTEGER PRIMARY KEY AUTOINCREMENT, Title TEXT, StartDateTime TEXT, Duration INT, FileName TEXT, LastViewedPosition INT, TranscodeComplete INT, HLSSegmentationComplete INT, HLSUrl TEXT);")
 
-		m.CreateDBTable("CREATE TABLE ScheduledRecordings (ScheduledRecordingId INTEGER PRIMARY KEY AUTOINCREMENT, StartDateTime INT, Channel TEXT);")
+		m.CreateDBTable("CREATE TABLE ScheduledRecordings (Id INTEGER PRIMARY KEY AUTOINCREMENT, DateTime INT, Title TEXT, Duration INT, UseTuner INT, Channel TEXT);")
+
+		m.CreateDBTable("CREATE TABLE LastSelectedShow (Id TEXT);")
 
 	endif
 
@@ -147,8 +149,89 @@ Function GetDBVersion() As String
 End Function
 
 
+Sub GetLastScheduledRecordingIdCallback(resultsData As Object, selectData As Object)
+
+	selectData.id = resultsData["MaxId"]
+
+End Sub
+
+
+Function GetLastScheduledRecordingId() As Integer
+
+	selectData = {}
+
+	select$ = "SELECT MAX (Id) as MaxId FROM ScheduledRecordings;"
+	m.ExecuteDBSelect(select$, GetLastScheduledRecordingIdCallback, selectData, invalid)
+
+	return selectData.id
+
+End Function
+
+
+Sub AddDBScheduledRecording(scheduledRecording As Object)
+
+	insertSQL$ = "INSERT INTO ScheduledRecordings (DateTime, Duration, Title, UseTuner, Channel) VALUES(?,?,?,?,?);"
+
+	params = CreateObject("roArray", 5, false)
+	params[ 0 ] = scheduledRecording.dateTime
+	params[ 1 ] = scheduledRecording.duration%
+	params[ 2 ] = scheduledRecording.title$
+	params[ 3 ] = scheduledRecording.useTuner%
+	params[ 4 ] = scheduledRecording.channel$
+
+	m.ExecuteDBInsert(insertSQL$, params)
+
+End Sub
+
+
+Sub DeleteDBScheduledRecording(scheduledRecordingId$ As String)
+
+	SQLITE_COMPLETE = 100
+
+	delete$ = "DELETE FROM ScheduledRecordings WHERE Id = " + scheduledRecordingId$ + ";"
+
+	deleteStatement = m.db.CreateStatement(delete$)
+
+	if type(deleteStatement) <> "roSqliteStatement" then
+        print "DeleteStatement failure - " + delete$
+		stop
+	endif
+
+	sqlResult = deleteStatement.Run()
+
+	if sqlResult <> SQLITE_COMPLETE
+        print "sqlResult <> SQLITE_COMPLETE"
+	endif
+
+	deleteStatement.Finalise()
+
+End Sub
+
+
+Sub GetDBScheduledRecordingsCallback(resultsData As Object, selectData As Object)
+
+	selectData.scheduledRecordings.push(resultsData)
+
+End Sub
+
+
+Function GetDBScheduledRecordings() As Object
+
+	selectData = {}
+	selectData.scheduledRecordings = []
+
+	select$ = "SELECT Id, DateTime, Duration, Title, UseTuner, Channel FROM ScheduledRecordings;"
+	m.ExecuteDBSelect(select$, GetDBScheduledRecordingsCallback, selectData, invalid)
+
+	return selectData.scheduledRecordings
+
+End Function
+
+
+
 Sub AddDBRecording(scheduledRecording As Object)
 
+	
 	insertSQL$ = "INSERT INTO Recordings (Title, StartDateTime, Duration, FileName, LastViewedPosition, TranscodeComplete, HLSSegmentationComplete, HLSUrl) VALUES(?,?,?,?,?,?,?,?);"
 
 	params = CreateObject("roArray", 7, false)

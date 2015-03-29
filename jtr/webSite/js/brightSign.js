@@ -264,6 +264,12 @@ function initializeBrightSign() {
                 $("#ipAddress").html("ip address: " + brightSignIPAddress);
                 baseURL = "http://" + brightSignIPAddress + ":8080/";
                 console.log("baseURL from BrightSign message is: " + baseURL);
+
+                // post message indicating that initialization is complete ??
+                var event = {};
+                event["EventType"] = "READY";
+                postMessage(event);
+
             }
             else if (name == "recordings") {
                 console.log("recordings received from device bs");

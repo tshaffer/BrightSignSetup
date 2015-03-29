@@ -13,6 +13,18 @@ Sub InitializeServer()
 
 	' RECORD NOW - removed
 
+	' add a scheduled recording
+	m.addScheduledRecordingAA =			{ HandleEvent: addScheduledRecording, mVar: m }
+	m.localServer.AddGetFromEvent({ url_path: "/addScheduledRecording", user_data: m.addScheduledRecordingAA })
+
+	' delete a scheduled recording
+	m.deleteScheduledRecordingAA =			{ HandleEvent: deleteScheduledRecording, mVar: m }
+	m.localServer.addGetFromEvent({ url_path: "/deleteScheduledRecording", user_data: m.deleteScheduledRecordingAA })
+
+	' get scheduled recordings
+	m.getScheduledRecordingsAA =		{ HandleEvent: getScheduledRecordings, mVar: m }
+	m.localServer.AddGetFromEvent({ url_path: "/getScheduledRecordings", user_data: m.getScheduledRecordingsAA })
+
 	' retrieve and return information about all recordings
 	m.getRecordingsAA =					{ HandleEvent: getRecordings, mVar: m }
 	m.localServer.AddGetFromEvent({ url_path: "/getRecordings", user_data: m.getRecordingsAA })
@@ -131,6 +143,86 @@ Sub playRecording(userData as Object, e as Object)
     e.SendResponse(200)
 
 End Sub
+
+
+Sub addScheduledRecording(userData As Object, e as Object)
+
+	print "addScheduledRecording endpoint invoked"
+
+    mVar = userData.mVar
+
+	requestParams = e.GetRequestParams()
+
+	scheduledRecording = {}
+	scheduledRecording.dateTime = requestParams.dateTime
+	scheduledRecording.duration% = int(val(requestParams.duration))	' in minutes
+	scheduledRecording.title$ = requestParams.title
+	scheduledRecording.channel$ = requestParams.channel
+	if requestParams.useTuner = "false" then
+		scheduledRecording.useTuner% = 0
+	else
+		scheduledRecording.useTuner% = 1
+	endif
+
+	mVar.AddDBScheduledRecording(scheduledRecording)
+
+	id = mVar.GetLastScheduledRecordingId()
+
+    e.AddResponseHeader("Content-type", "text/plain")
+	e.SetResponseBodyString(stri(id))
+	e.SendResponse(200)
+
+End Sub
+
+
+Sub deleteScheduledRecording(userData As Object, e as Object)
+
+	print "deleteScheduledRecording endpoint invoked"
+
+    mVar = userData.mVar
+
+	requestParams = e.GetRequestParams()
+
+	mVar.DeleteDBScheduledRecording(requestParams.id)
+
+    e.AddResponseHeader("Content-type", "text/plain")
+	e.SetResponseBodyString("OK")
+	e.SendResponse(200)
+
+End Sub
+
+
+Sub getScheduledRecordings(userData As Object, e as Object)
+
+	print "getScheduledRecordings endpoint invoked"
+
+    mVar = userData.mVar
+
+	response = {}
+
+	PopulateScheduledRecordings(mVar, response)
+
+	json = FormatJson(response, 0)
+
+    e.AddResponseHeader("Content-type", "text/json")
+    e.SetResponseBodyString(json)
+    e.SendResponse(200)
+
+End Sub
+
+
+Sub PopulateScheduledRecordings(mVar As Object, response As Object)
+
+	scheduledRecordings = mVar.GetDBScheduledRecordings()
+
+	response.scheduledRecordings = []
+
+	for each scheduledRecording in scheduledRecordings
+		response.scheduledRecordings.push(scheduledRecording)
+	next
+
+End Sub
+
 
 
 Sub getRecordings(userData as Object, e as Object)
@@ -361,7 +453,6 @@ Sub setLastSelectedShowId(userData as Object, e as Object)
 
 	e.SetResponseBodyString("OK")
 	e.SendResponse(200)
-
 
 End Sub
 
