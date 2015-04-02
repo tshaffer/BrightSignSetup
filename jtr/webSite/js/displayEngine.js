@@ -102,8 +102,7 @@ displayEngineStateMachine.prototype.STShowingUIEventHandler = function (event, s
             case "menu":
                 console.log("selectHomePage");
                 selectHomePage();
-                $("#footerArea").removeAttr("style");
-                // $("#footerArea").css("display", "block");
+                $("#footerArea").css("display", "none");
 
                 // give focus to first element
                 var elementId = "#" + mainMenuIds[0][0];
@@ -486,8 +485,7 @@ displayEngineStateMachine.prototype.STShowingVideoEventHandler = function (event
                 // TODO - undisplay overlay graphics (progress bar. anything else?)
 
                 selectHomePage();
-                $("#footerArea").removeAttr("style");
-                // $("#footerArea").css("display", "block");
+                $("#footerArea").css("display", "none");
 
                 // give focus to first element
                 var elementId = "#" + mainMenuIds[0][0];

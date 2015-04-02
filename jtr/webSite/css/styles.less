@@ -1,16 +1,16 @@
 ﻿@deviceType: BrightSign;
 @browserType: notSafari;
 
-.mixinTransportControls(BrightSign) {
+.mixinFooterContainer(BrightSign) {
     display: none;
 }
 
-.mixinTransportControls(Browser) {
+.mixinFooterContainer(Browser) {
     display: block;
 }
 
-#trickModeKeys {
-    .mixinTransportControls(@deviceType);
+#footerContainer {
+    .mixinFooterContainer(@deviceType);
 }
 
 .mixinIPAddress(BrightSign) {

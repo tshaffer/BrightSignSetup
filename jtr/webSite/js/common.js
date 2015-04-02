@@ -18,7 +18,7 @@ function switchToPage(newPage) {
     currentActiveElementId = newPageId;
     $(currentActiveElementId).removeAttr("style");
     if (currentActiveElementId == "#homePage") {
-        $("#footerArea").empty();
+        setFooterVisibility(true, false)
         $("#trickModeKeys").css("display", "block");
 
         // ensure that the first element is highlighted and has focus
@@ -40,9 +40,8 @@ function switchToPage(newPage) {
         }
 
     } else {
-        $("#footerArea").append("<button class=\"btn btn-primary\" onclick=\"selectHomePage()\">Home</button><br><br>");
+        setFooterVisibility(true, true)
         $("#ipAddress").css("display", "none");
-        $("#trickModeKeys").css("display", "none");
     }
 }
 
@@ -335,7 +334,15 @@ function eraseUI() {
     $("#ipAddress").css("display", "none");
     $(currentActiveElementId).css("display", "none");
     $("#footerArea").css("display", "none");
-    //    $("#footerArea").removeAttr("style");
+}
+
+function setFooterVisibility(trickModeKeyVisibility, homeKeyVisibility) {
+
+    var trickModeKeyDisplay = trickModeKeyVisibility ? "block" : "none";
+    $("#trickModeKeys").css("display", trickModeKeyDisplay);
+
+    var homeKeyDisplay = homeKeyVisibility ? "block" : "none";
+    $("#home").css("display", homeKeyDisplay);
 }
 
 $(document).ready(function () {
