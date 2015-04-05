@@ -26,9 +26,6 @@ Sub re_Initialize()
 
 	m.contentFolder = "content/"
 
-'	m.scheduledRecordings = {}
-'	m.recordingInProgressTimerId$ = ""
-
 	m.mediaStreamer = CreateObject("roMediaStreamer")
 
 End Sub
@@ -40,21 +37,21 @@ Sub re_EventHandler(event As Object)
 
 		m.HandleHttpEvent(event)
 	
-	else if type(event) = "roTimerEvent" then
+'	else if type(event) = "roTimerEvent" then
 
-		eventIdentity$ = stri(event.GetSourceIdentity())
+'		eventIdentity$ = stri(event.GetSourceIdentity())
 
-		' recording timer
-		if type(m.endRecordingTimer) = "roTimer" and stri(m.endRecordingTimer.GetIdentity()) = eventIdentity$ then
+'		' recording timer
+'		if type(m.endRecordingTimer) = "roTimer" and stri(m.endRecordingTimer.GetIdentity()) = eventIdentity$ then
 
-			m.EndManualRecord()
+'			m.EndManualRecord()
 
-			m.recordingToSegment = m.jtr.GetDBRecordingByFileName(m.scheduledRecording.fileName$)
+'			m.recordingToSegment = m.jtr.GetDBRecordingByFileName(m.scheduledRecording.fileName$)
 
 			' start HLS segmentation
-			m.StartHLSSegmentation()
+'			m.StartHLSSegmentation()
 
-		endif
+'		endif
 
 	else if type(event) = "roMediaStreamerEvent" then
 
@@ -94,6 +91,12 @@ Sub re_HandleHttpEvent(event As Object)
 
 				m.StartManualRecord()
 				
+			else if aa.command = "endRecording" then
+				startSegmentation = true
+				if aa.startSegmentation = "false" then
+					startSegmentation = false
+				endif
+				m.EndManualRecord(startSegmentation)
 			endif
 		endif
 	' don't understand the following
@@ -117,22 +120,6 @@ Sub re_StartManualRecord()
 
 	print "StartManualRecord " + m.scheduledRecording.title$ + " scheduled for " + m.scheduledRecording.dateTime.GetString()
 
-	' tune channel
-'	m.Tune(scheduledRecording.channel$)
-
-	endDateTime = m.scheduledRecording.dateTime
-	endDateTime.AddSeconds(m.scheduledRecording.duration% * 60)
-
-	print "Manual record will end at " + endDateTime.GetString()
-
-	m.endRecordingTimer = CreateObject("roTimer")
-	m.endRecordingTimer.SetPort(m.msgPort)
-	m.endRecordingTimer.SetDateTime(endDateTime)
-	m.endRecordingTimer.Start()
-
-'	m.stateMachine.recordingInProgressTimerId$ = scheduledRecording.timerId$
-
-	' start recording
 	m.scheduledRecording.fileName$ = Left(m.scheduledRecording.dateTime.ToIsoString(), 15)
 	path$ = m.contentFolder + m.scheduledRecording.fileName$ + ".ts"
 
@@ -152,7 +139,7 @@ Sub re_StartManualRecord()
 End Sub
 
 
-Sub re_EndManualRecord()
+Sub re_EndManualRecord(startSegmentation)
 
 	print "EndManualRecord " + m.scheduledRecording.title$
 	ok = m.mediaStreamer.Stop()
@@ -161,12 +148,13 @@ Sub re_EndManualRecord()
 	' Add or update record in database
 	m.jtr.AddDBRecording(m.scheduledRecording)
 
-	' Remove from list of pending records
-'	ok = m.stateMachine.scheduledRecordings.Delete(scheduledRecordingTimerIdentity)
-'	if not ok then stop
-
 	' turn off record LED
 	m.jtr.SetRecordLED(false)
+
+	if startSegmentation then
+		m.recordingToSegment = m.jtr.GetDBRecordingByFileName(m.scheduledRecording.fileName$)
+		m.StartHLSSegmentation()
+	endif
 
 	' TODO - turn on a different LED to indicate that segmentation is in progress
 

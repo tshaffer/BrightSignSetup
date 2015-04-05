@@ -16,7 +16,9 @@
     this.stRecordingController.setRecording = this.setRecording;
     this.stRecordingController.startRecording = this.startRecording;
     this.stRecordingController.startRecordingTimer = this.startRecordingTimer;
-
+    this.stRecordingController.addRecordingEndTimer = this.addRecordingEndTimer;
+    this.stRecordingController.endRecording = this.endRecording;
+    
     this.stIdle = new HState(this, "Idle");
     this.stIdle.HStateEventHandler = this.STIdleEventHandler;
     this.stIdle.superState = this.stRecordingController;
@@ -25,6 +27,8 @@
     this.stIdle.recordingObsolete = this.recordingObsolete;
     this.stIdle.addRecording = this.addRecording;
     this.stIdle.setRecording = this.setRecording;
+    this.stIdle.addRecordingEndTimer = this.addRecordingEndTimer;
+    this.stIdle.endRecording = this.endRecording;
 
     this.stRecording = new HState(this, "Recording");
     this.stRecording.HStateEventHandler = this.STRecordingEventHandler;
@@ -141,7 +145,9 @@ recordingEngineStateMachine.prototype.STIdleEventHandler = function (event, stat
         var title = event["Title"];
         var duration = event["Duration"];
         console.log("STIdleEventHandler: RECORD_NOW received. Title = " + title + ", duration = " + duration);
-        bsMessage.PostBSMessage({ command: "recordNow", "title": title, "duration": duration, "useTuner": "false", "channel": "HDMI-In" });
+        //bsMessage.PostBSMessage({ command: "recordNow", "title": title, "duration": duration, "useTuner": "false", "channel": "HDMI-In" });
+
+        this.addRecording(false, new Date(), title, duration, false, channel);
 
         return "HANDLED"
     }
@@ -150,7 +156,10 @@ recordingEngineStateMachine.prototype.STIdleEventHandler = function (event, stat
         var dateTime = event["DateTime"];
         var title = event["Title"];
         var duration = event["Duration"];
-        var useTuner = event["UseTuner"];
+        var useTuner = false;
+        if (event["UseTuner"] == true) {
+            useTuner = true;
+        }
         var channel = event["Channel"];
 
         console.log("STIdleEventHandler: SET_MANUAL_RECORD received. DateTime = " + dateTime + ", title = " + title + ", duration = " + duration, ", useTuner = " + useTuner + ", channel = " + channel);
@@ -226,7 +235,7 @@ recordingEngineStateMachine.prototype.recordingObsolete = function (startDateTim
     return millisecondsUntilEndOfRecording < 0;
 }
 
-// TODO - save this in case user wants to cancel recording?
+// TODO - save this in case user wants to cancel a recording?
 var timerVar;
 
 recordingEngineStateMachine.prototype.startRecordingTimer = function (millisecondsUntilRecording, title, duration, useTuner, channel) {
@@ -240,6 +249,7 @@ recordingEngineStateMachine.prototype.startRecording = function (title, duration
     if (!useTuner) {
         console.log("No tuner: Title = " + title + ", duration = " + duration, ", useTuner = " + useTuner + ", channel = " + channel);
         bsMessage.PostBSMessage({ command: "recordNow", "title": title, "duration": duration });
+        this.addRecordingEndTimer(Number(duration) * 60 * 1000, title, new Date(), duration);
     }
     else {
         var ir_transmitter = new BSIRTransmitter("IR-out");
@@ -289,3 +299,31 @@ recordingEngineStateMachine.prototype.startRecording = function (title, duration
         return;
     }
 }
+
+// TODO - save this in case user wants to stop a recording?
+var endOfRecordingTimer;
+recordingEngineStateMachine.prototype.addRecordingEndTimer = function (durationInMilliseconds, title, dateTime, duration) {
+    console.log("addRecordingEndTimer - start timer");
+    var thisObj = this;
+    endOfRecordingTimer = setTimeout(function () { thisObj.endRecording(title, dateTime, duration); }, durationInMilliseconds);
+}
+
+recordingEngineStateMachine.prototype.endRecording = function (title, dateTime, duration) {
+    console.log("endRecording: title = " + title + ", dateTime = " + dateTime + ", duration = " + duration);
+
+    // Set fileName from date/time
+    //var fileName = (new Date()).toISOString();
+    //console.log("isoDateString = " + fileName);
+    //fileName = fileName.replace(/-/gi, "");
+    //console.log("fileName = " + fileName);
+    //fileName = fileName.replace(/:/gi, "");
+    //console.log("fileName = " + fileName);
+    //fileName = fileName.replace(/Z/gi, "");
+    //console.log("fileName = " + fileName);
+    //fileName = fileName.slice(0, 15);
+    //console.log("fileName = " + fileName);
+
+    bsMessage.PostBSMessage({ command: "endRecording", startSegmentation: true });
+
+}
+
