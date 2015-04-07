@@ -34,47 +34,66 @@ Sub eventHandler_EventLoop()
 '		m.diagnostics.PrintDebug("msg received - type=" + type(msg))
 		print "msg received - type=" + type(msg)
 
-	    if type(msg) = "roControlDown" and stri(msg.GetSourceIdentity()) = stri(m.controlPort.GetIdentity()) then
-            if msg.GetInt()=12 then
-                stop
-            endif
-        endif
+		commandProcessed = false
 
-		if type(msg) = "roIRRemotePress" then
-			print "remote data = ";msg.getint()
-		endif
-
-		if type(msg) = "roIRDownEvent" then
-			print "roIRDownEvent data = ";msg
-		endif
-
-		if type(msg) = "roIRRepeatEvent" then
-			print "roIRRepeatEvent data = ";msg
-		endif
-		
-		if type(msg) = "roSqliteEvent" then
-			if msg.GetSqlResult() <> SQLITE_COMPLETE then
-				m.diagnostics.PrintDebug("roSqliteEvent.GetSqlResult() <> SQLITE_COMPLETE")
-				if type(msg.GetSqlResult()) = "roInt" then
-'					m.diagnostics.PrintDebug("roSqliteEvent.GetSqlResult() = " + stri(roSqliteEvent.GetSqlResult()))
-					 print "roSqliteEvent.GetSqlResult() = " + stri(roSqliteEvent.GetSqlResult())
+		if type(msg) = "roHtmlWidgetEvent" then
+			eventData = msg.GetData()
+			if type(eventData) = "roAssociativeArray" and type(eventData.reason) = "roString" then
+				if eventData.reason = "message" then
+					aa = eventData.message
+					if aa.command = "debugPrint" then
+						print aa.debugMessage
+						commandProcessed = true
+					endif
 				endif
 			endif
 		endif
 
-		if type(msg) = "roHttpEvent" then
-        
-			userdata = msg.GetUserData()
-			if type(userdata) = "roAssociativeArray" and type(userdata.HandleEvent) = "roFunction" then
-				userData.HandleEvent(userData, msg)
+		if not commandProcessed then
+
+			if type(msg) = "roControlDown" and stri(msg.GetSourceIdentity()) = stri(m.controlPort.GetIdentity()) then
+				if msg.GetInt()=12 then
+					stop
+				endif
 			endif
 
-		else
+			if type(msg) = "roIRRemotePress" then
+				print "remote data = ";msg.getint()
+			endif
 
-			numEngines% = m.engines.Count()
-			for i% = 0 to numEngines% - 1
-				m.engines[i%].EventHandler(msg)
-			next
+			if type(msg) = "roIRDownEvent" then
+				print "roIRDownEvent data = ";msg
+			endif
+
+			if type(msg) = "roIRRepeatEvent" then
+				print "roIRRepeatEvent data = ";msg
+			endif
+		
+			if type(msg) = "roSqliteEvent" then
+				if msg.GetSqlResult() <> SQLITE_COMPLETE then
+					m.diagnostics.PrintDebug("roSqliteEvent.GetSqlResult() <> SQLITE_COMPLETE")
+					if type(msg.GetSqlResult()) = "roInt" then
+	'					m.diagnostics.PrintDebug("roSqliteEvent.GetSqlResult() = " + stri(roSqliteEvent.GetSqlResult()))
+						 print "roSqliteEvent.GetSqlResult() = " + stri(roSqliteEvent.GetSqlResult())
+					endif
+				endif
+			endif
+
+			if type(msg) = "roHttpEvent" then
+        
+				userdata = msg.GetUserData()
+				if type(userdata) = "roAssociativeArray" and type(userdata.HandleEvent) = "roFunction" then
+					userData.HandleEvent(userData, msg)
+				endif
+
+			else
+
+				numEngines% = m.engines.Count()
+				for i% = 0 to numEngines% - 1
+					m.engines[i%].EventHandler(msg)
+				next
+
+			endif
 
 		endif
 

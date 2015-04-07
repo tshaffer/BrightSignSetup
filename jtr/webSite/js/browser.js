@@ -76,7 +76,6 @@ function recordNow() {
         });
 }
 
-
 function createManualRecording() {
 
     // retrieve date/time from html elements and convert to a format that works on all devices
@@ -125,8 +124,6 @@ function createManualRecording() {
         });
 }
 
-
-
 function playSelectedShow(event) {
 
     var recordingId = event.data.recordingId;
@@ -153,7 +150,6 @@ function playSelectedShow(event) {
             //alert("recording transmission finished");
         });
 }
-
 
 function deleteSelectedShow(event) {
     var recordingId = event.data.recordingId;

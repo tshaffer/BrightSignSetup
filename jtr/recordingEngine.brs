@@ -26,7 +26,7 @@ Sub re_Initialize()
 
 	m.contentFolder = "content/"
 
-	m.mediaStreamer = CreateObject("roMediaStreamer")
+	m.encodingMediaStreamer = CreateObject("roMediaStreamer")
 
 End Sub
 
@@ -37,22 +37,6 @@ Sub re_EventHandler(event As Object)
 
 		m.HandleHttpEvent(event)
 	
-'	else if type(event) = "roTimerEvent" then
-
-'		eventIdentity$ = stri(event.GetSourceIdentity())
-
-'		' recording timer
-'		if type(m.endRecordingTimer) = "roTimer" and stri(m.endRecordingTimer.GetIdentity()) = eventIdentity$ then
-
-'			m.EndManualRecord()
-
-'			m.recordingToSegment = m.jtr.GetDBRecordingByFileName(m.scheduledRecording.fileName$)
-
-			' start HLS segmentation
-'			m.StartHLSSegmentation()
-
-'		endif
-
 	else if type(event) = "roMediaStreamerEvent" then
 
 		print "mediaStreamerEvent = ";event.GetEvent()
@@ -123,12 +107,14 @@ Sub re_StartManualRecord()
 	m.scheduledRecording.fileName$ = Left(m.scheduledRecording.dateTime.ToIsoString(), 15)
 	path$ = m.contentFolder + m.scheduledRecording.fileName$ + ".ts"
 
-	if type(m.mediaStreamer) = "roMediaStreamer" then
+	if type(m.encodingMediaStreamer) = "roMediaStreamer" then
 
-		ok = m.mediaStreamer.SetPipeline("hdmi:,encoder:,file:///" + path$)
+'		ok = m.encodingMediaStreamer.SetPipeline("hdmi:,encoder:,file:///" + path$)
+'		ok = m.encodingMediaStreamer.SetPipeline("hdmi:,encoder:vbitrate=12000,file:///" + path$)
+		ok = m.encodingMediaStreamer.SetPipeline("hdmi:,encoder:vformat=1080i60&vbitrate=18000,file:///" + path$)
 		if not ok then stop
 
-		ok = m.mediaStreamer.Start()
+		ok = m.encodingMediaStreamer.Start()
 		if not ok then stop
 
 		' turn on record LED
@@ -142,7 +128,7 @@ End Sub
 Sub re_EndManualRecord(startSegmentation)
 
 	print "EndManualRecord " + m.scheduledRecording.title$
-	ok = m.mediaStreamer.Stop()
+	ok = m.encodingMediaStreamer.Stop()
 	if not ok then stop
 
 	' Add or update record in database
@@ -175,14 +161,14 @@ Sub re_StartHLSSegmentation()
 	' store segments in /content/hls/file name without extension/fileName
 	pipeLineSpec$ = "file:///" + path$ + ", hls:///" + dirName$ + "/" + m.recordingToSegment.FileName + "?duration=10"
 
-	m.mediaStreamer = CreateObject("roMediaStreamer")
-	m.mediaStreamer.SetPort(m.msgPort)
-	ok = m.mediaStreamer.SetPipeline(pipeLineSpec$)
+	m.segmentingMediaStreamer = CreateObject("roMediaStreamer")
+	m.segmentingMediaStreamer.SetPort(m.msgPort)
+	ok = m.segmentingMediaStreamer.SetPipeline(pipeLineSpec$)
 
 	systemTime = CreateObject("roSystemTime")
 	print "------- start segmentation at ";systemTime.GetLocalDateTime()
 
-	ok = m.mediaStreamer.Start()
+	ok = m.segmentingMediaStreamer.Start()
 
 End Sub
 

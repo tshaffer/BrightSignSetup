@@ -157,12 +157,12 @@ recordingEngineStateMachine.prototype.STIdleEventHandler = function (event, stat
         var title = event["Title"];
         var duration = event["Duration"];
         var useTuner = false;
-        if (event["UseTuner"] == true) {
+        if (event["UseTuner"] == "true") {
             useTuner = true;
         }
         var channel = event["Channel"];
 
-        console.log("STIdleEventHandler: SET_MANUAL_RECORD received. DateTime = " + dateTime + ", title = " + title + ", duration = " + duration, ", useTuner = " + useTuner + ", channel = " + channel);
+        console.log("STIdleEventHandler: SET_MANUAL_RECORD received. DateTime = " + dateTime + ", title = " + title + ", duration = " + duration + ", useTuner = " + useTuner + ", channel = " + channel);
 
         // ignore manual recordings that are in the past
         var recordingObsolete = this.recordingObsolete(dateTime, Number(duration));
@@ -247,7 +247,9 @@ recordingEngineStateMachine.prototype.startRecordingTimer = function (millisecon
 recordingEngineStateMachine.prototype.startRecording = function (title, duration, useTuner, channel) {
 
     if (!useTuner) {
-        console.log("No tuner: Title = " + title + ", duration = " + duration, ", useTuner = " + useTuner + ", channel = " + channel);
+        console.log("No tuner: Title = " + title + ", duration = " + duration + ", useTuner = " + useTuner + ", channel = " + channel);
+        bsMessage.PostBSMessage({ command: "debugPrint", "debugMessage": "No tuner: Title = " + title + ", duration = " + duration + ", useTuner = " + useTuner + ", channel = " + channel });
+
         bsMessage.PostBSMessage({ command: "recordNow", "title": title, "duration": duration });
         this.addRecordingEndTimer(Number(duration) * 60 * 1000, title, new Date(), duration);
     }
@@ -290,7 +292,9 @@ recordingEngineStateMachine.prototype.startRecording = function (title, duration
         if (irCode > 0) {
             ir_transmitter.Send("NEC", irCode);
 
-            console.log("Tuner (single digit): Title = " + title + ", duration = " + duration, ", useTuner = " + useTuner + ", channel = " + channel);
+            console.log("Tuner (single digit): Title = " + title + ", duration = " + duration + ", useTuner = " + useTuner + ", channel = " + channel);
+            bsMessage.PostBSMessage({ command: "debugPrint", "debugMessage": "Tuner (single digit): Title = " + title + ", duration = " + duration + ", useTuner = " + useTuner + ", channel = " + channel });
+
             bsMessage.PostBSMessage({ command: "recordNow", "title": title, "duration": duration });
         }
         else {
