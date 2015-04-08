@@ -111,7 +111,8 @@ Sub re_StartManualRecord()
 
 '		ok = m.encodingMediaStreamer.SetPipeline("hdmi:,encoder:,file:///" + path$)
 '		ok = m.encodingMediaStreamer.SetPipeline("hdmi:,encoder:vbitrate=12000,file:///" + path$)
-		ok = m.encodingMediaStreamer.SetPipeline("hdmi:,encoder:vformat=1080i60&vbitrate=18000,file:///" + path$)
+'		ok = m.encodingMediaStreamer.SetPipeline("hdmi:,encoder:vformat=1080i60&vbitrate=18000,file:///" + path$)
+		ok = m.encodingMediaStreamer.SetPipeline("hdmi:,encoder:vformat=1080i60&vbitrate=10000,file:///" + path$)
 		if not ok then stop
 
 		ok = m.encodingMediaStreamer.Start()
