@@ -48,6 +48,10 @@ function remoteStop() {
     sendRemoteCommandToDevice("stop");
 }
 
+function remoteRecord() {
+    console.log("remoteRecord invoked");
+}
+
 function recordNow() {
 
     // get current date/time - used as title if user doesn't provide one.
