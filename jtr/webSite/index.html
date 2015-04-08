@@ -1,4 +1,4 @@
-
+﻿
 <!DOCTYPE html>
 <html lang="en">
   <head>
@@ -164,27 +164,31 @@
       
 
     </div> <!-- /container -->
-<!--    <br><br> -->
+
     <footer id="footerContainer" class="footer container">
-        <div id="footerArea">
-            <div id="trickModeKeys">
+
+
+    <div id="footerArea">
+        <p id="homeButton" class="footerAlignLeft">
+                <button class="btn btn-primary" onclick="selectHomePage()">Home</button><br><br>
+        </p>
+
+        <p id="trickModeKeys" class="footerAlignCenter">
+                <button type='button' class='btn btn-default' onclick="remoteRecord()" aria-label='Left Align'><span class='glyphicon glyphicon-record' aria-hidden='true'></span></button>
+                <button type='button' class='btn btn-default' onclick="remoteStop()" aria-label='Left Align'><span class='glyphicon glyphicon-stop' aria-hidden='true'></span></button>
+                <button type='button' class='btn btn-default' onclick="remoteRewind()" aria-label='Left Align'><span class='glyphicon glyphicon-backward' aria-hidden='true'></span></button>
                 <button type='button' class='btn btn-default' onclick="remoteInstantReplay()" aria-label='Left Align'><span class='glyphicon glyphicon-step-backward' aria-hidden='true'></span></button>
                 <button type='button' class='btn btn-default' onclick="remotePause()" aria-label='Left Align'><span class='glyphicon glyphicon-pause' aria-hidden='true'></span></button>
-                <button type='button' class='btn btn-default' onclick="remoteQuickSkip()" aria-label='Left Align'><span class='glyphicon glyphicon-step-forward' aria-hidden='true'></span></button>
-                <br />
-                <button type='button' class='btn btn-default' onclick="remoteRewind()" aria-label='Left Align'><span class='glyphicon glyphicon-backward' aria-hidden='true'></span></button>
                 <button type='button' class='btn btn-default' onclick="remotePlay()" aria-label='Left Align'><span class='glyphicon glyphicon-play' aria-hidden='true'></span></button>
+                <button type='button' class='btn btn-default' onclick="remoteQuickSkip()" aria-label='Left Align'><span class='glyphicon glyphicon-step-forward' aria-hidden='true'></span></button>
                 <button type='button' class='btn btn-default' onclick="remoteFastForward()" aria-label='Left Align'><span class='glyphicon glyphicon-forward' aria-hidden='true'></span></button>
-                <br />
-                <button type='button' class='btn btn-default' onclick="remoteRecord()" aria-label='Left Align'><span class='glyphicon glyphicon-record' aria-hidden='true'></span></button>
-                <button type='button' class='btn btn-default' onclick="remotePause()" aria-label='Left Align'><span class='glyphicon glyphicon-pause' aria-hidden='true'></span></button>
-                <button type='button' class='btn btn-default' onclick="remoteStop()" aria-label='Left Align'><span class='glyphicon glyphicon-stop' aria-hidden='true'></span></button>
-            </div>
-      
-            <div id="home" style="display: none;">
-                <button class="btn btn-primary" onclick="selectHomePage()">Home</button><br><br>
-            </div>
+        </p>
+
+        <p class="footerAlignRight" />
+
         </div>
+
+        <div style="clear: both;"></div>​
     </footer>
   </body>
 </html>

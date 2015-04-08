@@ -339,13 +339,23 @@ function eraseUI() {
     $("#footerArea").css("display", "none");
 }
 
-function setFooterVisibility(trickModeKeyVisibility, homeKeyVisibility) {
+function setFooterVisibility(trickModeKeysVisibility, homeButtonVisibility) {
 
-    var trickModeKeyDisplay = trickModeKeyVisibility ? "block" : "none";
-    $("#trickModeKeys").css("display", trickModeKeyDisplay);
+    if (homeButtonVisibility) {
+        $("#homeButton").html("<button class='btn btn-primary' onclick='selectHomePage()'>Home</button><br><br>");
+    }
+    else {
+        $("#homeButton").text("");
+    }
 
-    var homeKeyDisplay = homeKeyVisibility ? "block" : "none";
-    $("#home").css("display", homeKeyDisplay);
+    if (trickModeKeysVisibility) {
+        $("#trickModeKeys").removeClass("clearDisplay");
+        $("#trickModeKeys").addClass("inlineDisplay");
+    }
+    else {
+        $("#trickModeKeys").removeClass("inlineDisplay");
+        $("#trickModeKeys").addClass("clearDisplay");
+    }
 }
 
 $(document).ready(function () {
