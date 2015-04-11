@@ -23,6 +23,10 @@
     this.stLiveVideo.HStateEventHandler = this.STLiveVideoEventHandler;
     this.stLiveVideo.superState = this.stShowingVideo;
     this.stLiveVideo.playSelectedShow = this.playSelectedShow;
+    this.stLiveVideo.startChannelEntryTimer = this.startChannelEntryTimer;
+    this.stLiveVideo.tuneLiveVideoChannel = this.tuneLiveVideoChannel;
+    this.stLiveVideo.tuneDigit = this.tuneDigit;
+    this.stLiveVideo.sendIROut = this.sendIROut;
 
     this.stPlaying = new HState(this, "Playing");
     this.stPlaying.HStateEventHandler = this.STPlayingEventHandler;
@@ -322,6 +326,13 @@ displayEngineStateMachine.prototype.STLiveVideoEventHandler = function (event, s
     if (event["EventType"] == "ENTRY_SIGNAL") {
         consoleLog(this.id + ": entry signal");
 
+        this.ir_transmitter = new BSIRTransmitter("IR-out");
+        console.log("typeof ir_transmitter is " + typeof this.ir_transmitter);
+
+
+        this.enteredChannel = "";
+        this.channelEntryTimer = null;
+
         bsMessage.PostBSMessage({ command: "tuneLiveVideo" });
 
         return "HANDLED";
@@ -336,11 +347,131 @@ displayEngineStateMachine.prototype.STLiveVideoEventHandler = function (event, s
         stateData.nextState = this.stateMachine.stPlaying
         return "TRANSITION"
     }
+    else if (event["EventType"] == "REMOTE") {
+        var eventData = event["EventData"];
+        consoleLog("STLiveVideoEventHandler: event=" + eventData);
+        consoleLog("typeof event=" + typeof eventData);
+        switch (eventData.toLowerCase()) {
+            case "enter":
+                if (this.channelEntryTimer != null) {
+                    clearTimeout(this.channelEntryTimer);
+                    this.channelEntryTimer = null;
+                }
+                if (this.enteredChannel != "") {
+                    this.tuneLiveVideoChannel();
+                }
+                return "HANDLED";
+            case "0":
+            case "1":
+            case "2":
+            case "3":
+            case "4":
+            case "5":
+            case "6":
+            case "7":
+            case "8":
+            case "9":
+            case "-":
+                if (this.channelEntryTimer != null) {
+                    clearTimeout(this.channelEntryTimer);
+                    this.channelEntryTimer = null;
+                }
+                this.enteredChannel += eventData;
+                console.log("enteredChannel = " + this.enteredChannel);
+                this.startChannelEntryTimer();
+                return "HANDLED";
+            case "CHANNEL_UP":
+                bsMessage.PostBSMessage({ command: "debugPrint", "debugMessage": "STLiveVideoEventHandler: key pressed="+CHANNEL_UP });
+                break;
+            case "CHANNEL_DOWN":
+                bsMessage.PostBSMessage({ command: "debugPrint", "debugMessage": "STLiveVideoEventHandler: key pressed="+CHANNEL_DOWN });
+                break;
+        }
+    }
 
     stateData.nextState = this.superState;
     return "SUPER";
 }
 
+
+displayEngineStateMachine.prototype.startChannelEntryTimer = function () {
+    var thisObj = this;
+    this.channelEntryTimer = setTimeout(function () {
+        consoleLog("channelEntryTimer triggered");
+        thisObj.tuneLiveVideoChannel();
+    }, 2000);
+}
+
+
+displayEngineStateMachine.prototype.tuneLiveVideoChannel = function () {
+    consoleLog("TTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTune to " + this.enteredChannel);
+
+    this.channel = this.enteredChannel;
+    this.tuneDigit();
+
+    this.enteredChannel = "";
+}
+
+
+displayEngineStateMachine.prototype.tuneDigit = function () {
+
+    if (this.channel.length > 0) {
+        var char = this.channel.charAt(0);
+        this.sendIROut(char);
+        this.channel = this.channel.substr(1);
+        if (this.channel.length == 0) return;
+        var thisObj = this;
+        setTimeout(function () {
+            thisObj.tuneDigit();
+        }, 400);
+    }
+}
+
+displayEngineStateMachine.prototype.sendIROut = function (char) {
+
+    var irCode = -1;
+
+    switch (char) {
+        case "0":
+            irCode = 65295;
+            break;
+        case "1":
+            irCode = 65363;
+            break;
+        case "2":
+            irCode = 65360;
+            break;
+        case "3":
+            irCode = 65296;
+            break;
+        case "4":
+            irCode = 65367;
+            break;
+        case "5":
+            irCode = 65364;
+            break;
+        case "6":
+            irCode = 65300;
+            break;
+        case "7":
+            irCode = 65359;
+            break;
+        case "8":
+            irCode = 65356;
+            break;
+        case "9":
+            irCode = 65292;
+            break;
+        case "-":
+            irCode = 65303;
+            break;
+    }
+
+    if (irCode > 0) {
+        consoleLog("Send NEC " + irCode);
+        this.ir_transmitter.Send("NEC", irCode);
+    }
+}
 
 displayEngineStateMachine.prototype.STPlayingEventHandler = function (event, stateData) {
 

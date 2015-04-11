@@ -1,4 +1,4 @@
-var sendConsoleOutputToBS = false;
+var sendConsoleOutputToBS = true;
 
 // BrightSign only
 var bsMessage;
@@ -147,7 +147,7 @@ function initializeBrightSign() {
             var now = new Date();
             var msSinceLastCommand = now - lastRemoteEventTime;
             consoleLog("msSinceLastCommand=" + msSinceLastCommand);
-            if (msSinceLastCommand > 200) {
+            if (msSinceLastCommand > 400) {
                 lastRemoteEventTime = now;
 
                 var event = {};
