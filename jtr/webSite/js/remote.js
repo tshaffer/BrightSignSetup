@@ -52,6 +52,30 @@ function SonyCommand(remoteCode) {
         remoteCommand = "HIGHEST_SPEED_FW"		// ->->|
     else if (remoteCode == 163096)
         remoteCommand = "HIGHEST_SPEED_RW"		// |<-<-
+    else if (remoteCode == 17237777)
+        remoteCommand = "0"
+    else if (remoteCode == 17237764)
+        remoteCommand = "1"
+    else if (remoteCode == 17237765)
+        remoteCommand = "2"
+    else if (remoteCode == 17237766)
+        remoteCommand = "3"
+    else if (remoteCode == 17237768)
+        remoteCommand = "4"
+    else if (remoteCode == 17237769)
+        remoteCommand = "5"
+    else if (remoteCode == 17237770)
+        remoteCommand = "6"
+    else if (remoteCode == 17237772)
+        remoteCommand = "7"
+    else if (remoteCode == 17237773)
+        remoteCommand = "8"
+    else if (remoteCode == 17237774)
+        remoteCommand = "9"
+    else if (remoteCode == 17237778)
+        remoteCommand = "CHANNEL_UP"
+    else if (remoteCode == 17237776)
+        remoteCommand = "CHANNEL_DOWN"
     else
         remoteCommand = ""
 
