@@ -11,58 +11,6 @@ var selectedDeleteShowDlgElement = "#deleteShowDlgDelete";
 var unselectedDeleteShowDlgElement = "#deleteShowDlgClose";
 
 // BrightSign specific functionality
-function navigateRecordedShowsPage(navigationCommand$) {
-
-    console.log("navigateRecordedShowsPage entry");
-
-    var rowIndex = -1;
-    var colIndex = -1;
-
-    var currentElement = document.activeElement;
-    var currentElementId = currentElement.id;
-
-    if (currentElementId == "" || currentElementId == "recordedShows") {
-        rowIndex = 0;
-        colIndex = 0;
-    }
-    else {
-        currentElementId = "#" + currentElementId;
-        for (i = 0; i < recordedPageIds.length; i++) {
-
-            var recordingId = recordedPageIds[i][0];
-            var deleteId = recordedPageIds[i][1];
-
-            if (recordingId == currentElementId) {
-                rowIndex = i;
-                colIndex = 0;
-                break;
-            }
-            else if (deleteId == currentElementId) {
-                rowIndex = i;
-                colIndex = 1;
-                break;
-            }
-        }
-
-        switch (navigationCommand$) {
-            case "up":
-                if (rowIndex > 0) rowIndex--;
-                break;
-            case "down":
-                if (rowIndex < recordedPageIds.length) rowIndex++;
-                break;
-            case "left":
-                if (colIndex > 0) colIndex--;
-                break;
-            case "right":
-                if (colIndex < 1) colIndex++;
-                break;
-        }
-    }
-
-    $(recordedPageIds[rowIndex][colIndex]).focus();
-}
-
 // delete dialog - BrightSign only for now
 function displayDeleteShowDlg(showTitle, showRecordingId) {
 
@@ -92,7 +40,7 @@ function deleteShowDlgCloseInvoked() {
     console.log("deleteShowDlgCloseInvoked");
     $('#deleteShowDlg').modal('hide');
     modalDialogDisplayed = false;
-    switchToPage("homePage");
+    //switchToPage("homePage");
 }
 
 function deleteShowDlgDeleteInvoked() {
@@ -100,67 +48,7 @@ function deleteShowDlgDeleteInvoked() {
     $('#deleteShowDlg').modal('hide');
     modalDialogDisplayed = false;
     executeDeleteSelectedShow(_showRecordingId);
-    switchToPage("homePage");
-}
-
-// home page
-var mainMenuIds = [
-    ['recordedShows', 'setManualRecord'],
-    ['channelGuide', 'userSelection'],
-    ['toDoList', 'myPlayVideo']
-];
-
-function navigateHomePage(navigationCommand$) {
-
-    var rowIndex = -1;
-    var colIndex = -1;
-
-    var currentElement = document.activeElement;
-    var currentElementId = currentElement.id;
-
-    for (i = 0; i < mainMenuIds.length; i++) {
-        for (j = 0; j < mainMenuIds[i].length; j++) {
-            if (mainMenuIds[i][j] == currentElementId) {
-                rowIndex = i;
-                colIndex = j;
-                break;
-            }
-            // break again if necessary?
-        }
-    }
-
-    if (rowIndex >= 0 && colIndex >= 0) {
-        switch (navigationCommand$) {
-            case "up":
-                if (rowIndex > 0) rowIndex--;
-                break;
-            case "down":
-                if (rowIndex < mainMenuIds.length) rowIndex++;
-                break;
-            case "left":
-                if (colIndex > 0) colIndex--;
-                break;
-            case "right":
-                if (colIndex < mainMenuIds[0].length) colIndex++;
-                break;
-        }
-    }
-    else {
-        rowIndex = 0;
-        colIndex = 0;
-    }
-
-    console.log("currentElementId is " + currentElementId);
-
-    var newElementId = "#" + mainMenuIds[rowIndex][colIndex];
-
-    $("#" + currentElementId).removeClass("btn-primary");
-    $("#" + currentElementId).addClass("btn-secondary");
-
-    $(newElementId).removeClass("btn-secondary");
-    $(newElementId).addClass("btn-primary");
-
-    $(newElementId).focus();
+    //switchToPage("homePage");
 }
 
 // progress bar
@@ -214,11 +102,20 @@ function initializeBrightSign() {
 
     // Create displayEngine state machine
     displayEngineHSM = new displayEngineStateMachine();
-    registerStateMachine(displayEngineHSM);
-    displayEngineHSM.Initialize();
 
     // Create recordingEngine state machine
     recordingEngineHSM = new recordingEngineStateMachine();
+
+    // Create uiEngine state machine
+    uiEngineHSM = new uiEngineStateMachine();
+
+    // register state machines; UI first so that it gets events first.
+    registerStateMachine(uiEngineHSM);
+    uiEngineHSM.Initialize();
+
+    registerStateMachine(displayEngineHSM);
+    displayEngineHSM.Initialize();
+
     registerStateMachine(recordingEngineHSM);
     recordingEngineHSM.Initialize();
 

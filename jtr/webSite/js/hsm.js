@@ -11,9 +11,23 @@ function registerStateMachine(hsm) {
 
 
 function postMessage(event) {
-    $.each(registeredStateMachines, function (index, hsm) {
-        hsm.Dispatch(event);
-    });
+
+    for (i = 0; i < registeredStateMachines.length; i++) {
+        if (registeredStateMachines[i].Dispatch(event)) return;
+    }
+    // TODO - figure out how to do this with js
+    //var eventHandled = false;
+    //$.each(registeredStateMachines, function (index, hsm) {
+    //    console.log("Dispatch event");
+    //    eventHandled = hsm.Dispatch(event);
+    //    if (eventHandled) {
+    //        console.log("event handled, return now");
+    //        return;
+    //    }
+    //    else {
+    //        console.log("event unhandled, continue processing");
+    //    }
+    //});
 }
 
 
@@ -108,8 +122,10 @@ HSM.prototype.Initialize = function () {
 
 HSM.prototype.Dispatch = function (event) {
 
+    var eventHandled = false;
+
     // if there is no activeState, the playlist is empty
-    if (this.activeState == null) return;
+    if (this.activeState == null) return eventHandled;
 
     var stateData = {};
 
@@ -281,6 +297,13 @@ HSM.prototype.Dispatch = function (event) {
     }
 
     this.activeState = t;                                                       // set the new state or restore the current state
+
+    console.log("status = " + status);
+    if (status == "HANDLED") {                                                  // is it this simple?
+        eventHandled = true;
+    }
+
+    return eventHandled;
 }
 
 

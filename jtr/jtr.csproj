@@ -70,10 +70,12 @@
     <Content Include="webSite\js\browser.js" />
     <Content Include="webSite\js\common.js" />
     <Content Include="webSite\js\displayEngine.js" />
+    <Content Include="webSite\js\hsm.js" />
     <Content Include="webSite\js\jquery-2.1.1.min.js" />
     <Content Include="webSite\js\less.min.js" />
     <Content Include="webSite\js\recordingEngine.js" />
     <Content Include="webSite\js\remote.js" />
+    <Content Include="webSite\js\uiEngine.js" />
     <Content Include="webSite\js\xml2json.js" />
   </ItemGroup>
   <ItemGroup>
