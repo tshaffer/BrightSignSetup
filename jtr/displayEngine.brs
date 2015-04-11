@@ -12,6 +12,7 @@ Function newDisplayEngine(jtr As Object) As Object
 ' setup methods
     DisplayEngine.EventHandler					= de_EventHandler
 	DisplayEngine.HandleHttpEvent				= de_HandleHttpEvent
+	DisplayEngine.TuneLiveVideo					= de_TuneLiveVideo
 	DisplayEngine.StartPlayback					= de_StartPlayback
 	DisplayEngine.PausePlayback					= de_PausePlayback
 	DisplayEngine.ResumePlayFromPaused			= de_ResumePlayFromPaused
@@ -41,6 +42,14 @@ Sub de_Initialize()
 	m.videoPlayer = CreateObject("roVideoPlayer")
 	m.videoPlayer.SetPort(m.msgPort)
     m.videoPlayer.SetLoopMode(0)
+
+	m.videoInput = CreateObject("roVideoInput")
+	m.videoInput.SetInput( "S-Video" )
+	m.videoInput.SetStandard( "NTSC-M" )
+	m.videoInput.SetControlValue("brightness", 128)
+	m.videoInput.SetControlValue("contrast", 128)
+	m.videoInput.SetControlValue("saturation", 64)
+	m.videoInput.SetControlValue("hue", 0)
 
 	m.currentVideoPosition% = 0
 	m.selectedRecording = invalid
@@ -182,7 +191,9 @@ Sub de_HandleHttpEvent(event)
 			else if type(aa.command) = "roString" then
 				command$ = aa.command
 				print "de_HandleHttpEvent: command=" + command$
-				if command$ = "playRecordedShow" then
+				if command$ = "tuneLiveVideo" then
+					m.TuneLiveVideo()
+				else if command$ = "playRecordedShow" then
 					print "playRecordedShow: recordingId=";aa.recordingId
 					recording = m.jtr.GetDBRecording(aa.recordingId)
 					m.StartPlayback(recording)
@@ -234,6 +245,18 @@ Sub de_UpdateLastViewedPosition(recording As Object, position% As Integer)
 	endif
 
 	m.jtr.UpdateDBLastViewedPosition(recording.RecordingId, position%)
+
+End Sub
+
+
+Sub de_TuneLiveVideo()
+
+	m.videoPlayer.Stop()
+
+	aa = { }
+	aa.AddReplace("Capture", m.videoInput)
+	ok = m.videoPlayer.PlayFile(aa)
+	if not ok stop
 
 End Sub
 

@@ -277,10 +277,16 @@ uiEngineStateMachine.prototype.STMainMenuEventHandler = function (event, stateDa
                     case "recordedShows":
                         stateData.nextState = this.stateMachine.stRecordedShows;
                         return "TRANSITION";
-                    //case "userSelection":
-                //        selectUserSelection();
-                //        break;
-                //    case "toDoList":
+                    case "liveVideo":
+                        console.log("Post TUNE_LIVE_VIDEO message");
+                        bsMessage.PostBSMessage({ command: "debugPrint", "debugMessage": "STMainMenuEventHandler: Post TUNE_LIVE_VIDEO message" });
+                        var event = {};
+                        event["EventType"] = "TUNE_LIVE_VIDEO";
+                        postMessage(event);
+
+                        stateData.nextState = this.stateMachine.stNone;
+                        return "TRANSITION";
+                    //case "toDoList":
                 //        selectToDoList();
                 //        break;
                 //    case "myPlayVideo":
@@ -353,6 +359,7 @@ uiEngineStateMachine.prototype.STRecordedShowsEventHandler = function (event, st
                     var recordingId = currentElementId.substring(action.length);
                     switch (action) {
                         case "recording":
+                            bsMessage.PostBSMessage({ command: "debugPrint", "debugMessage": "STRecordedShowsEventHandler: PLAY_RECORDED_SHOW, recordingId=" + recordingId });
                             if (recordingId in _currentRecordings) {
 
                                 var event = {};
@@ -381,7 +388,7 @@ uiEngineStateMachine.prototype.STRecordedShowsEventHandler = function (event, st
 // home page
 var mainMenuIds = [
     ['recordedShows', 'setManualRecord'],
-    ['channelGuide', 'userSelection'],
+    ['channelGuide', 'liveVideo'],
     ['toDoList', 'myPlayVideo']
 ];
 

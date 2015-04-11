@@ -133,6 +133,8 @@ function initializeBrightSign() {
     if (typeof ir_receiver != 'undefined') {
         ir_receiver.onremotedown = function (e) {
             console.log('############ onremotedown: ' + e.irType + " - " + e.code);
+            bsMessage.PostBSMessage({ command: "debugPrint", "debugMessage": '############ onremotedown: ' + e.irType + " - " + e.code });
+
             console.log('############ onremotedown: remoteCommand=' + GetRemoteCommand(e.code));
 
             var event = {};

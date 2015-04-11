@@ -260,7 +260,7 @@ function getToDoList() {
 }
 
 
-function selectUserSelection() {
+function selectLiveVideo() {
 
 }
 

@@ -18,7 +18,12 @@
     this.stShowingVideo.calculateProgressBarParameters = this.calculateProgressBarParameters;
     this.stShowingVideo.toggleProgressBar = this.toggleProgressBar;
     this.stShowingVideo.updateProgressBarGraphics = this.updateProgressBarGraphics;
-    
+ 
+    this.stLiveVideo = new HState(this, "LiveVideo");
+    this.stLiveVideo.HStateEventHandler = this.STLiveVideoEventHandler;
+    this.stLiveVideo.superState = this.stShowingVideo;
+    this.stLiveVideo.playSelectedShow = this.playSelectedShow;
+
     this.stPlaying = new HState(this, "Playing");
     this.stPlaying.HStateEventHandler = this.STPlayingEventHandler;
     this.stPlaying.superState = this.stShowingVideo;
@@ -77,6 +82,10 @@ displayEngineStateMachine.prototype.STIdleEventHandler = function (event, stateD
         stateData.nextState = this.stateMachine.stPlaying
         return "TRANSITION"
     }
+    else if (event["EventType"] == "TUNE_LIVE_VIDEO") {
+        stateData.nextState = this.stateMachine.stLiveVideo;
+        return "TRANSITION";
+    }
 
     stateData.nextState = this.superState;
     return "SUPER";
@@ -107,7 +116,6 @@ displayEngineStateMachine.prototype.playSelectedShow = function (recordingId) {
 
     bsMessage.PostBSMessage({ command: "playRecordedShow", "recordingId": recordingId });
 }
-
 
 
 displayEngineStateMachine.prototype.calculateProgressBarParameters = function () {
@@ -275,6 +283,10 @@ displayEngineStateMachine.prototype.STShowingVideoEventHandler = function (event
         this.updateProgressBarGraphics();
         return "HANDLED"
     }
+    else if (event["EventType"] == "TUNE_LIVE_VIDEO") {
+        stateData.nextState = this.stateMachine.stLiveVideo;
+        return "TRANSITION";
+    }
     else if (event["EventType"] == "REMOTE") {
         var eventData = event["EventData"]
         console.log(this.id + ": remote command input: " + eventData);
@@ -294,6 +306,34 @@ displayEngineStateMachine.prototype.STShowingVideoEventHandler = function (event
     // events to expect include
     else {
         console.log(this.id + ": signal type = " + event["EventType"]);
+    }
+
+    stateData.nextState = this.superState;
+    return "SUPER";
+}
+
+
+displayEngineStateMachine.prototype.STLiveVideoEventHandler = function (event, stateData) {
+
+    stateData.nextState = null;
+
+    if (event["EventType"] == "ENTRY_SIGNAL") {
+        console.log(this.id + ": entry signal");
+        bsMessage.PostBSMessage({ command: "debugPrint", "debugMessage": "STLiveVideoEventHandler: entry" });
+
+        bsMessage.PostBSMessage({ command: "tuneLiveVideo" });
+
+        return "HANDLED";
+    }
+    else if (event["EventType"] == "EXIT_SIGNAL") {
+        console.log(this.id + ": exit signal");
+    }
+    else if (event["EventType"] == "PLAY_RECORDED_SHOW") {
+        bsMessage.PostBSMessage({ command: "debugPrint", "debugMessage": "STLiveVideoEventHandler: play recorded show" });
+        var recordingId = event["EventData"];
+        this.playSelectedShow(recordingId);
+        stateData.nextState = this.stateMachine.stPlaying
+        return "TRANSITION"
     }
 
     stateData.nextState = this.superState;
@@ -396,6 +436,7 @@ displayEngineStateMachine.prototype.jump = function () {
     this.playSelectedShow(this.stateMachine.priorSelectedRecording.RecordingId);
 
 }
+
 
 displayEngineStateMachine.prototype.STPausedEventHandler = function (event, stateData) {
 
