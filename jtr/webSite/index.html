@@ -87,10 +87,24 @@
         </div>
 
         <div class="col-lg-6">
+          <button id="recordNow" class="btn btn-secondary tv-words" onclick="selectRecordNow()">Record Now</button><br><br>
           <button id="setManualRecord" class="btn btn-secondary tv-words" onclick="selectSetManualRecord()">Set Manual Record</button><br><br>
           <button id="liveVideo" class="btn btn-secondary tv-words" onclick="selectLiveVideo()">Live Video</button><br><br>
-          <button id="" class="btn btn-secondary tv-words" onclick="selectPlayVideo()">Play Video</button><br>
         </div>
+      </div>
+
+      <div id="recordNowPage" style="display: none;">
+        <h3>Record Now</h3>
+        <form class="navbar-form navbar-left" role="search">
+          <div class="form-group">
+            <p>Title (optional)  <input id="recordNowTitle" type="text" class="form-control"></p><br>
+            <p>Duration (mins)  <input id="recordNowDuration" type="number" class="form-control" value="1" step="1"></p><br>
+            <p>Tune (use antenna input)  <input id="recordNowTuneCheckbox" type="checkbox" value="false" class="form-control"></p><br>
+            <p>Channel  <input id="recordNowChannel" type="text" value="5" class="form-control"></p><br>
+          </div>
+          <br>
+          <button class="btn btn-primary" onclick="recordNow()">Record Now</button><br><br>
+        </form>
       </div>
 
       <div id="manualRecordPage" style="display: none;">
@@ -99,14 +113,14 @@
           <div class="form-group">
             <p> Title (optional)  <input id="manualRecordTitle" type="text" class="form-control"></p><br>
             <p>Duration (mins)  <input id="manualRecordDuration" type="number" class="form-control" value="1" step="1"></p><br>
-            <button id="Button1" class="btn btn-primary" onclick="recordNow()">Record Now</button><br><br>
             <p id="manualRecordDateId">Date  </p><br>
             <p id="manualRecordTimeId">Time  </p><br>
-            <p>Tune (use antenna input)<input id="manualRecordTuneCheckbox" type="checkbox" value="false" class="form-control"></p><br>
+            <p>Tune (use antenna input)  <input id="manualRecordTuneCheckbox" type="checkbox" value="false" class="form-control"></p><br>
             <p>Channel  <input id="manualRecordChannel" type="text" value="5" class="form-control"></p><br>
           </div>
           <br>
-          <button type="submit" class="btn btn-primary" onclick="createManualRecording()">Set Scheduled Record</button>
+          <!--<button type="submit" class="btn btn-primary" onclick="createManualRecording()">Set Scheduled Record</button>-->
+          <button class="btn btn-primary" onclick="createManualRecording()">Set Manual Record</button>
         </form>
       </div>
 

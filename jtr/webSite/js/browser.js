@@ -57,11 +57,13 @@ function recordNow() {
     // get current date/time - used as title if user doesn't provide one.
     var currentDate = new Date();
 
-    var title = getRecordingTitle(currentDate, false, "");
+    var duration = $("#recordNowDuration").val();
+    var useTuner = $("#recordNowTuneCheckbox").is(':checked');
+    var channel = $("#recordNowChannel").val();
 
-    var duration = $("#manualRecordDuration").val();
+    var title = getRecordingTitle("#recordNowTitle", currentDate, false, "");
 
-    var recordData = { "duration": duration, "title": title }
+    var recordData = { "duration": duration, "title": title, "channel": channel, "useTuner": useTuner }
 
     var aUrl = baseURL + "browserCommand";
     var commandData = { "commandRecordNow": recordData };
@@ -92,9 +94,8 @@ function createManualRecording() {
 
     var dateObj = new Date(compatibleDateTimeStr);
 
-    var useTuner = $("#manualRecordTuneCheckbox").is(':checked');
-
     var duration = $("#manualRecordDuration").val();
+    var useTuner = $("#manualRecordTuneCheckbox").is(':checked');
     var channel = $("#manualRecordChannel").val();
 
     // check to see if recording is in the past
@@ -107,7 +108,7 @@ function createManualRecording() {
         return;
     }
 
-    var title = getRecordingTitle(dateObj, useTuner, channel);
+    var title = getRecordingTitle("#manualRecordTitle", dateObj, useTuner, channel);
 
     var recordData = { "dateTime": compatibleDateTimeStr, "duration": duration, "channel": channel, "title": title, "useTuner": useTuner }
 

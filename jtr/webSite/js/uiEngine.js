@@ -387,9 +387,9 @@ uiEngineStateMachine.prototype.STRecordedShowsEventHandler = function (event, st
 
 // home page
 var mainMenuIds = [
-    ['recordedShows', 'setManualRecord'],
-    ['channelGuide', 'liveVideo'],
-    ['toDoList', 'myPlayVideo']
+    ['recordedShows', 'recordNow'],
+    ['channelGuide', 'setManualRecord'],
+    ['toDoList', 'liveVideo']
 ];
 
 function navigateHomePage(navigationCommand$) {

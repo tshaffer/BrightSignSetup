@@ -265,6 +265,13 @@ function selectLiveVideo() {
 }
 
 
+function selectRecordNow() {
+    switchToPage("recordNowPage");
+    setDefaultDateTimeFields();
+    $("#recordNowTitle").focus();
+}
+
+
 function selectSetManualRecord() {
     switchToPage("manualRecordPage");
     setDefaultDateTimeFields();
@@ -296,9 +303,9 @@ function setDefaultDateTimeFields() {
     $("#manualRecordTimeId").append(toAppendTime);
 }
 
-function getRecordingTitle(dateObj, useTuner, channel) {
+function getRecordingTitle(titleId, dateObj, useTuner, channel) {
 
-    var title = $("#manualRecordTitle").val();
+    var title = $(titleId).val();
     if (!title) {
         title = 'MR ' + dateObj.getFullYear() + "-" + twoDigitFormat((dateObj.getMonth() + 1)) + "-" + twoDigitFormat(dateObj.getDate()) + " " + twoDigitFormat(dateObj.getHours()) + ":" + twoDigitFormat(dateObj.getMinutes());
         if (useTuner) {

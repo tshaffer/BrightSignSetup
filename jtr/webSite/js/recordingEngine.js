@@ -144,10 +144,14 @@ recordingEngineStateMachine.prototype.STIdleEventHandler = function (event, stat
     else if (event["EventType"] == "RECORD_NOW") {
         var title = event["Title"];
         var duration = event["Duration"];
-        console.log("STIdleEventHandler: RECORD_NOW received. Title = " + title + ", duration = " + duration);
-        //bsMessage.PostBSMessage({ command: "recordNow", "title": title, "duration": duration, "useTuner": "false", "channel": "HDMI-In" });
+        var useTuner = false;
+        if (event["UseTuner"] == "true") {
+            useTuner = true;
+        }
+        var channel = event["Channel"];
+        console.log("STIdleEventHandler: RECORD_NOW received. Title = " + title + ", duration = " + duration + ", useTuner = " + useTuner + ", channel = " + channel);
 
-        this.addRecording(false, new Date(), title, duration, false, channel);
+        this.addRecording(false, new Date(), title, duration, useTuner, channel);
 
         return "HANDLED"
     }
@@ -297,19 +301,21 @@ recordingEngineStateMachine.prototype.startRecording = function (title, duration
 
             bsMessage.PostBSMessage({ command: "recordNow", "title": title, "duration": duration });
         }
-        else {
-            return;
-        }
-        return;
+        this.addRecordingEndTimer(Number(duration) * 60 * 1000, title, new Date(), duration);
     }
 }
 
 // TODO - save this in case user wants to stop a recording?
 var endOfRecordingTimer;
 recordingEngineStateMachine.prototype.addRecordingEndTimer = function (durationInMilliseconds, title, dateTime, duration) {
-    console.log("addRecordingEndTimer - start timer");
+    console.log("addRecordingEndTimer - start timer: duration=" + durationInMilliseconds);
+    bsMessage.PostBSMessage({ command: "debugPrint", "debugMessage": "addRecordingEndTimer - start timer: duration=" + durationInMilliseconds});
     var thisObj = this;
-    endOfRecordingTimer = setTimeout(function () { thisObj.endRecording(title, dateTime, duration); }, durationInMilliseconds);
+    endOfRecordingTimer = setTimeout(function () {
+        console.log("addRecordingEndTimer - endOfRecordingTimer triggered");
+        bsMessage.PostBSMessage({ command: "debugPrint", "debugMessage": "addRecordingEndTimer - endOfRecordingTimer triggered" });
+        thisObj.endRecording(title, dateTime, duration);
+    }, durationInMilliseconds);
 }
 
 recordingEngineStateMachine.prototype.endRecording = function (title, dateTime, duration) {

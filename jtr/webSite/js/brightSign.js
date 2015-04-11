@@ -243,7 +243,12 @@ function initializeBrightSign() {
 
             }
             else if (name.lastIndexOf("commandRecordNow") == 0) {
-                console.log("commandRecordNow invoked");
+                console.log("INVOKE RECORD NOW");
+
+                //for (name in msg.data) {
+                //    console.log('### ' + name + ': ' + msg.data[name]);
+                //}
+
                 var parameterValue = msg.data[name];
                 if (name == "commandRecordNow[duration]") {
                     recordingDuration = parameterValue;
@@ -252,12 +257,22 @@ function initializeBrightSign() {
                 else if (name == "commandRecordNow[title]") {
                     recordingTitle = parameterValue;
                     console.log("title=" + recordingTitle);
+                }
+                else if (name == "commandRecordNow[channel]") {
+                    recordingChannel = parameterValue;
+                    console.log("channel=" + recordingChannel);
+                }
+                else if (name == "commandRecordNow[useTuner]") {
+                    var useTuner = parameterValue;
+                    console.log("useTuner=" + useTuner);
 
-                    // hack? title is the last parameter so post message now
+                    // hack? useTuner is the last parameter so post message now
                     var event = {}
                     event["EventType"] = "RECORD_NOW";
                     event["Title"] = recordingTitle;
                     event["Duration"] = recordingDuration;
+                    event["UseTuner"] = useTuner;
+                    event["Channel"] = recordingChannel;
                     postMessage(event);
                 }
             }
