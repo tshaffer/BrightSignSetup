@@ -1,7 +1,8 @@
+var sendConsoleOutputToBS = true;
+
 // BrightSign only
 var bsMessage;
 var ir_receiver;
-
 
 // miscellaneous variables
 var _showRecordingId;
@@ -10,11 +11,20 @@ var modalDialogDisplayed = false;
 var selectedDeleteShowDlgElement = "#deleteShowDlgDelete";
 var unselectedDeleteShowDlgElement = "#deleteShowDlgClose";
 
+function consoleLog(msg) {
+    console.log(msg);
+    if (sendConsoleOutputToBS) {
+        if (typeof bsMessage == 'object') {
+            bsMessage.PostBSMessage({ command: "debugPrint", "debugMessage": msg });
+        }
+    }
+}
+
 // BrightSign specific functionality
 // delete dialog - BrightSign only for now
 function displayDeleteShowDlg(showTitle, showRecordingId) {
 
-    console.log("displayDeleteShowDlg() invoked, showTitle=" + showTitle + ", showRecordingId=" + showRecordingId);
+    consoleLog("displayDeleteShowDlg() invoked, showTitle=" + showTitle + ", showRecordingId=" + showRecordingId);
 
     _showRecordingId = showRecordingId;
 
@@ -37,14 +47,14 @@ function displayDeleteShowDlg(showTitle, showRecordingId) {
 }
 
 function deleteShowDlgCloseInvoked() {
-    console.log("deleteShowDlgCloseInvoked");
+    consoleLog("deleteShowDlgCloseInvoked");
     $('#deleteShowDlg').modal('hide');
     modalDialogDisplayed = false;
     //switchToPage("homePage");
 }
 
 function deleteShowDlgDeleteInvoked() {
-    console.log("deleteShowDlgDeleteInvoked");
+    consoleLog("deleteShowDlgDeleteInvoked");
     $('#deleteShowDlg').modal('hide');
     modalDialogDisplayed = false;
     executeDeleteSelectedShow(_showRecordingId);
@@ -57,11 +67,11 @@ function SecondsToHourMinuteLabel(numSeconds) {
     // convert seconds to hh:mm
     var hours = Math.floor(Number(numSeconds) / 3600).toString();
     hours = twoDigitFormat(hours);
-    console.log("hours = " + hours);
+    consoleLog("hours = " + hours);
 
     var minutes = Math.floor((Number(numSeconds) / 60) % 60).toString();
     minutes = twoDigitFormat(minutes);
-    console.log("minutes = " + minutes);
+    consoleLog("minutes = " + minutes);
 
     return hours + ":" + minutes;
 }
@@ -69,26 +79,26 @@ function SecondsToHourMinuteLabel(numSeconds) {
 
 // currently unused
 //function togglePlayIcon() {
-//    console.log("script.js:: togglePlayIcon invoked");
+//    consoleLog("script.js:: togglePlayIcon invoked");
 //    if (!$("#playIcon").length) {
-//        console.log("script.js:: display play icon");
+//        consoleLog("script.js:: display play icon");
 //        var toAppend = '<span id="playIcon" class="glyphicon glyphicon-play controlIcon" aria-hidden="true"></span>';
 //        $("#videoControlRegion").append(toAppend);
 //    } else {
-//        console.log("script.js:: remove play icon");
+//        consoleLog("script.js:: remove play icon");
 //        $("#playIcon").remove();
 //    }
 //}
 
 function executeRemoteCommand(remoteCommand) {
-    console.log("executeRemoteCommand:" + remoteCommand);
+    consoleLog("executeRemoteCommand:" + remoteCommand);
     bsMessage.PostBSMessage({ command: "remoteCommand", "remoteCommand": remoteCommand });
 }
 
 
 function executeDeleteSelectedShow(recordingId) {
 
-    console.log("executeDeleteSelectedShow " + recordingId);
+    consoleLog("executeDeleteSelectedShow " + recordingId);
 
     bsMessage.PostBSMessage({ command: "deleteRecordedShow", "recordingId": recordingId });
 }
@@ -125,17 +135,15 @@ function initializeBrightSign() {
         ir_receiver = new BSIRReceiver("Iguana", "NEC");
     }
     catch (err) {
-        console.log("unable to create ir_receiver");
+        consoleLog("unable to create ir_receiver");
     }
 
-    console.log("typeof ir_receiver is " + typeof ir_receiver);
+    consoleLog("typeof ir_receiver is " + typeof ir_receiver);
 
     if (typeof ir_receiver != 'undefined') {
         ir_receiver.onremotedown = function (e) {
-            console.log('############ onremotedown: ' + e.irType + " - " + e.code);
-            bsMessage.PostBSMessage({ command: "debugPrint", "debugMessage": '############ onremotedown: ' + e.irType + " - " + e.code });
-
-            console.log('############ onremotedown: remoteCommand=' + GetRemoteCommand(e.code));
+            consoleLog('############ onremotedown: ' + e.irType + " - " + e.code);
+            consoleLog('############ onremotedown: remoteCommand=' + GetRemoteCommand(e.code));
 
             var event = {};
             event["EventType"] = "REMOTE";
@@ -144,166 +152,89 @@ function initializeBrightSign() {
         }
 
         ir_receiver.onremoteup = function (e) {
-            console.log('############ onremoteup: ' + e.irType + " - " + e.code);
+            consoleLog('############ onremoteup: ' + e.irType + " - " + e.code);
         }
     }
 
     // message port for getting messages from the BrightSign via roMessagePort
     bsMessage = new BSMessagePort();
-    console.log("typeof bsMessage is " + typeof bsMessage);
+    consoleLog("typeof bsMessage is " + typeof bsMessage);
     bsMessage.PostBSMessage({ message: "javascript ready" });
 
     bsMessage.onbsmessage = function (msg) {
-        console.log("onbsmessage invoked");
-        for (name in msg.data) {
-            console.log('### ' + name + ': ' + msg.data[name]);
+        consoleLog("onbsmessage invoked");
 
-            if (name == "ipAddress") {
-                var brightSignIPAddress = msg.data[name];
+        var message = {};
+
+        for (name in msg.data) {
+            consoleLog('### ' + name + ': ' + msg.data[name]);
+            message[name] = msg.data[name];
+        }
+
+        var event = {};
+
+        switch (message.command) {
+            case "setIPAddress":
+                var brightSignIPAddress = message.value;
                 $("#ipAddress").html("ip address: " + brightSignIPAddress);
                 baseURL = "http://" + brightSignIPAddress + ":8080/";
-                console.log("baseURL from BrightSign message is: " + baseURL);
+                consoleLog("baseURL from BrightSign message is: " + baseURL);
 
                 // post message indicating that initialization is complete ??
-                var event = {};
                 event["EventType"] = "READY";
                 postMessage(event);
-
-            }
-            else if (name == "recordings") {
-                console.log("recordings received from device bs");
-                var recordings = JSON.parse(msg.data[name]);
+                break;
+            case "remoteCommand":
+                var event = {};
+                event["EventType"] = "REMOTE";
+                event["EventData"] = message.value;
+                postMessage(event);
+                break;
+            case "recordings":
+                var recordings = JSON.parse(message.value);
                 var jtrRecordings = recordings.recordings;
                 _currentRecordings = {};
                 $.each(jtrRecordings, function (index, jtrRecording) {
                     _currentRecordings[jtrRecording.RecordingId] = jtrRecording;
                 });
-            }
-            else if (name == "remoteCommand") {
-                var remoteCommand = msg.data[name];
-                console.log("remoteCommand: " + remoteCommand);
-
-                var event = {};
-                event["EventType"] = "REMOTE";
-                event["EventData"] = remoteCommand;
-                postMessage(event);
-            }
-            else if (name == "commandPlayRecordedShow") {
-                var recordingId = msg.data[name];
-                console.log("playRecordedShow " + recordingId);
-
-                var event = {};
+                break;
+            case "playRecordedShow":
                 event["EventType"] = "PLAY_RECORDED_SHOW";
-                event["EventData"] = recordingId;
+                event["EventData"] = message.recordingId;
                 postMessage(event);
-            }
-            else if (name == "commandDeleteRecordedShow") {
-                var recordingId = msg.data[name];
-                console.log("deleteRecordedShow " + recordingId);
-
-                var event = {};
+                break;
+            case "deleteRecordedShow":
                 event["EventType"] = "DELETE_RECORDED_SHOW";
-                event["EventData"] = recordingId;
+                event["EventData"] = msg.data[name];
                 postMessage(event);
-            }
-            else if (name.lastIndexOf("commandSetManualRecord") == 0) {
-                console.log("INVOKE SET MANUAL RECORD");
-
-                var parameterValue = msg.data[name];
-                if (name == "commandSetManualRecord[dateTime]") {
-                    mrDateTime = parameterValue;
-                    console.log("dateTime=" + mrDateTime);
-                }
-                else if (name == "commandSetManualRecord[channel]") {
-                    mrChannel = parameterValue;
-                    console.log("channel=" + mrChannel);
-                }
-                else if (name == "commandSetManualRecord[duration]") {
-                    mrRecordingDuration = parameterValue;
-                    console.log("duration=" + mrRecordingDuration);
-                }
-                else if (name == "commandSetManualRecord[title]") {
-                    mrTitle = parameterValue;
-                    console.log("title=" + mrTitle);
-                }
-                else if (name == "commandSetManualRecord[useTuner]") {
-                    var useTuner = parameterValue;
-                    console.log("useTuner=" + useTuner);
-
-                    // hack? useTuner is the last parameter so post message now
-                    var event = {}
-                    event["EventType"] = "SET_MANUAL_RECORD";
-                    event["DateTime"] = mrDateTime;
-                    event["Title"] = mrTitle;
-                    event["Duration"] = mrRecordingDuration;
-                    event["UseTuner"] = useTuner;
-                    event["Channel"] = mrChannel;
-                    postMessage(event);
-                }
-
-            }
-            else if (name.lastIndexOf("commandRecordNow") == 0) {
-                console.log("INVOKE RECORD NOW");
-
-                //for (name in msg.data) {
-                //    console.log('### ' + name + ': ' + msg.data[name]);
-                //}
-
-                var parameterValue = msg.data[name];
-                if (name == "commandRecordNow[duration]") {
-                    recordingDuration = parameterValue;
-                    console.log("duration=" + recordingDuration);
-                }
-                else if (name == "commandRecordNow[title]") {
-                    recordingTitle = parameterValue;
-                    console.log("title=" + recordingTitle);
-                }
-                else if (name == "commandRecordNow[channel]") {
-                    recordingChannel = parameterValue;
-                    console.log("channel=" + recordingChannel);
-                }
-                else if (name == "commandRecordNow[useTuner]") {
-                    var useTuner = parameterValue;
-                    console.log("useTuner=" + useTuner);
-
-                    // hack? useTuner is the last parameter so post message now
-                    var event = {}
-                    event["EventType"] = "RECORD_NOW";
-                    event["Title"] = recordingTitle;
-                    event["Duration"] = recordingDuration;
-                    event["UseTuner"] = useTuner;
-                    event["Channel"] = recordingChannel;
-                    postMessage(event);
-                }
-            }
-            else if (name == "bsMessage") {
-                var command$ = msg.data[name].toLowerCase();
-                if (command$ == "updateprogressbar" && $("#progressBar").length) {
-
-                    console.log("UPDATEPROGRESSBAR ********************************************************");
-                    // currentOffset in seconds
-                    var currentOffset = msg.data["currentOffset"];
-                    console.log('### currentOffset : ' + currentOffset);
-
-                    // duration in seconds
-                    var recordingDuration = msg.data["recordingDuration"];
-                    console.log('### recordingDuration : ' + recordingDuration);
-
-                    var event = {}
-                    event["EventType"] = "UPDATE_PROGRESS_BAR";
-                    event["Offset"] = currentOffset;
-                    event["Duration"] = recordingDuration;
-                    postMessage(event);
-
-                    return;
-                }
-                else if (command$ == "mediaend") {
-                    console.log("MEDIA_END ********************************************************");
-                    var event = {}
-                    event["EventType"] = "MEDIA_END";
-                    postMessage(event);
-                }
-            }
+                break;
+            case "recordNow":
+                event["EventType"] = "RECORD_NOW";
+                event["Title"] = message.title;
+                event["Duration"] = message.duration;
+                event["UseTuner"] = message.useTuner;
+                event["Channel"] = message.channel;
+                postMessage(event);
+                break;
+            case "setManualRecord":
+                event["EventType"] = "SET_MANUAL_RECORD";
+                event["DateTime"] = message.dateTime;
+                event["Title"] = message.title;
+                event["Duration"] = message.duration;
+                event["UseTuner"] = message.useTuner;
+                event["Channel"] = message.channel;
+                postMessage(event);
+                break;
+            case "updateProgressBar":
+                event["EventType"] = "UPDATE_PROGRESS_BAR";
+                event["Offset"] = message.currentOffset;
+                event["Duration"] = message.recordingDuration;  // in seconds
+                postMessage(event);
+                break;
+            case "mediaEnd":
+                event["EventType"] = "MEDIA_END";
+                postMessage(event);
+                break;
         }
     }
 }

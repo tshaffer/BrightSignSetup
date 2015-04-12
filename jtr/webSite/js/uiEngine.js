@@ -38,7 +38,7 @@ uiEngineStateMachine.prototype.constructor = uiEngineStateMachine;
 
 uiEngineStateMachine.prototype.InitializeUIEngineHSM = function () {
 
-    console.log("InitializeUIEngineHSM invoked");
+    consoleLog("InitializeUIEngineHSM invoked");
 
     this.currentRecording = null;
     this.priorSelectedRecording = null;
@@ -52,14 +52,14 @@ uiEngineStateMachine.prototype.STNoneEventHandler = function (event, stateData) 
     stateData.nextState = null;
 
     if (event["EventType"] == "ENTRY_SIGNAL") {
-        console.log(this.id + ": entry signal");
+        consoleLog(this.id + ": entry signal");
 
         eraseUI();
 
         return "HANDLED";
     }
     else if (event["EventType"] == "EXIT_SIGNAL") {
-        console.log(this.id + ": exit signal");
+        consoleLog(this.id + ": exit signal");
         return "HANDLED";
     }
     else if (event["EventType"] == "DISPLAY_DELETE_SHOW_DLG") {
@@ -71,7 +71,7 @@ uiEngineStateMachine.prototype.STNoneEventHandler = function (event, stateData) 
     }
     else if (event["EventType"] == "REMOTE") {
         var eventData = event["EventData"]
-        console.log(this.id + ": remote command input: " + eventData);
+        consoleLog(this.id + ": remote command input: " + eventData);
 
         switch (eventData.toLowerCase()) {
             case "menu":
@@ -93,19 +93,19 @@ uiEngineStateMachine.prototype.STUIScreenEventHandler = function (event, stateDa
     stateData.nextState = null;
 
     if (event["EventType"] == "ENTRY_SIGNAL") {
-        console.log(this.id + ": entry signal");
+        consoleLog(this.id + ": entry signal");
 
-        eraseUI();
+        //eraseUI();
 
         return "HANDLED";
     }
     else if (event["EventType"] == "EXIT_SIGNAL") {
-        console.log(this.id + ": exit signal");
+        consoleLog(this.id + ": exit signal");
         return "HANDLED";
     }
     else if (event["EventType"] == "REMOTE") {
         var eventData = event["EventData"]
-        console.log(this.id + ": remote command input: " + eventData);
+        consoleLog(this.id + ": remote command input: " + eventData);
 
         switch (eventData.toLowerCase()) {
             // swallow the following keys so that they're not used by displayEngine
@@ -132,7 +132,7 @@ uiEngineStateMachine.prototype.STShowingModalDlgEventHandler = function (event, 
     stateData.nextState = null;
 
     if (event["EventType"] == "ENTRY_SIGNAL") {
-        console.log(this.id + ": entry signal");
+        consoleLog(this.id + ": entry signal");
 
         eraseUI();
 
@@ -143,17 +143,17 @@ uiEngineStateMachine.prototype.STShowingModalDlgEventHandler = function (event, 
     }
     else if (event["EventType"] == "REMOTE") {
         var eventData = event["EventData"]
-        console.log(this.id + ": remote command input: " + eventData);
+        consoleLog(this.id + ": remote command input: " + eventData);
 
         switch (eventData.toLowerCase()) {
             case "up":
             case "down":
             case "left":
             case "right":
-                console.log("navigation key invoked while modal dialog displayed");
+                consoleLog("navigation key invoked while modal dialog displayed");
 
                 // temporary code; make it more general purpose when a second dialog is added
-                console.log("selected element was: " + selectedDeleteShowDlgElement);
+                consoleLog("selected element was: " + selectedDeleteShowDlgElement);
 
                 $(selectedDeleteShowDlgElement).removeClass("btn-primary");
                 $(selectedDeleteShowDlgElement).addClass("btn-secondary");
@@ -170,7 +170,7 @@ uiEngineStateMachine.prototype.STShowingModalDlgEventHandler = function (event, 
                 return "HANDLED";
                 break;
             case "select":
-                console.log("enter key invoked while modal dialog displayed");
+                consoleLog("enter key invoked while modal dialog displayed");
 
                 // temporary code; make it more general purpose when a second dialog is added
                 if (selectedDeleteShowDlgElement == "#deleteShowDlgDelete") {
@@ -226,7 +226,7 @@ uiEngineStateMachine.prototype.STMainMenuEventHandler = function (event, stateDa
     stateData.nextState = null;
 
     if (event["EventType"] == "ENTRY_SIGNAL") {
-        console.log(this.id + ": entry signal");
+        consoleLog(this.id + ": entry signal");
 
         selectHomePage();
         $("#footerArea").css("display", "none");
@@ -238,11 +238,11 @@ uiEngineStateMachine.prototype.STMainMenuEventHandler = function (event, stateDa
         return "HANDLED";
     }
     else if (event["EventType"] == "EXIT_SIGNAL") {
-        console.log(this.id + ": exit signal");
+        consoleLog(this.id + ": exit signal");
     }
     else if (event["EventType"] == "REMOTE") {
         var eventData = event["EventData"]
-        console.log(this.id + ": remote command input: " + eventData);
+        consoleLog(this.id + ": remote command input: " + eventData);
 
         switch (eventData.toLowerCase()) {
             case "menu":
@@ -255,8 +255,8 @@ uiEngineStateMachine.prototype.STMainMenuEventHandler = function (event, stateDa
             case "left":
             case "right":
                 var command = eventData.toLowerCase();
-                console.log("currentActiveElementId is " + currentActiveElementId);
-                console.log("navigation remote key pressed while homePage visible");
+                consoleLog("currentActiveElementId is " + currentActiveElementId);
+                consoleLog("navigation remote key pressed while homePage visible");
                 navigateHomePage(command)
                 return "HANDLED";
                 break;
@@ -266,7 +266,7 @@ uiEngineStateMachine.prototype.STMainMenuEventHandler = function (event, stateDa
             case "select":
                 var currentElement = document.activeElement;
                 var currentElementId = currentElement.id;
-                console.log("active home page item is " + currentElementId);
+                consoleLog("active home page item is " + currentElementId);
                 switch (currentElementId) {
                     //case "channelGuide":
                 //        selectChannelGuide();
@@ -278,8 +278,7 @@ uiEngineStateMachine.prototype.STMainMenuEventHandler = function (event, stateDa
                         stateData.nextState = this.stateMachine.stRecordedShows;
                         return "TRANSITION";
                     case "liveVideo":
-                        console.log("Post TUNE_LIVE_VIDEO message");
-                        bsMessage.PostBSMessage({ command: "debugPrint", "debugMessage": "STMainMenuEventHandler: Post TUNE_LIVE_VIDEO message" });
+                        consoleLog("Post TUNE_LIVE_VIDEO message");
                         var event = {};
                         event["EventType"] = "TUNE_LIVE_VIDEO";
                         postMessage(event);
@@ -308,7 +307,7 @@ uiEngineStateMachine.prototype.getAction = function (actionButtonId) {
     else if (actionButtonId.lastIndexOf("delete") === 0) {
         return "delete";
     }
-    console.log("getAction - no matching action found for " + actionButtonId);
+    consoleLog("getAction - no matching action found for " + actionButtonId);
     return "";
 }
 
@@ -318,18 +317,18 @@ uiEngineStateMachine.prototype.STRecordedShowsEventHandler = function (event, st
     stateData.nextState = null;
 
     if (event["EventType"] == "ENTRY_SIGNAL") {
-        console.log(this.id + ": entry signal");
+        consoleLog(this.id + ": entry signal");
 
         selectRecordedShows();
 
         return "HANDLED";
     }
     else if (event["EventType"] == "EXIT_SIGNAL") {
-        console.log(this.id + ": exit signal");
+        consoleLog(this.id + ": exit signal");
     }
     else if (event["EventType"] == "REMOTE") {
         var eventData = event["EventData"]
-        console.log(this.id + ": remote command input: " + eventData);
+        consoleLog(this.id + ": remote command input: " + eventData);
 
         switch (eventData.toLowerCase()) {
             case "menu":
@@ -342,8 +341,8 @@ uiEngineStateMachine.prototype.STRecordedShowsEventHandler = function (event, st
             case "left":
             case "right":
                 var command = eventData.toLowerCase();
-                console.log("currentActiveElementId is " + currentActiveElementId);
-                console.log("navigation remote key pressed while recordedShowsPage visible");
+                consoleLog("currentActiveElementId is " + currentActiveElementId);
+                consoleLog("navigation remote key pressed while recordedShowsPage visible");
                 navigateRecordedShowsPage(command)
                 return "HANDLED";
             case "exit":
@@ -352,14 +351,14 @@ uiEngineStateMachine.prototype.STRecordedShowsEventHandler = function (event, st
             case "select":
                 var currentElement = document.activeElement;
                 var currentElementId = currentElement.id;
-                console.log("active recorded shows page item is " + currentElementId);
+                consoleLog("active recorded shows page item is " + currentElementId);
 
                 var action = this.getAction(currentElementId);
                 if (action != "") {
                     var recordingId = currentElementId.substring(action.length);
                     switch (action) {
                         case "recording":
-                            bsMessage.PostBSMessage({ command: "debugPrint", "debugMessage": "STRecordedShowsEventHandler: PLAY_RECORDED_SHOW, recordingId=" + recordingId });
+                            consoleLog({ command: "debugPrint", "debugMessage": "STRecordedShowsEventHandler: PLAY_RECORDED_SHOW, recordingId=" + recordingId });
                             if (recordingId in _currentRecordings) {
 
                                 var event = {};
@@ -432,7 +431,7 @@ function navigateHomePage(navigationCommand$) {
         colIndex = 0;
     }
 
-    console.log("currentElementId is " + currentElementId);
+    consoleLog("currentElementId is " + currentElementId);
 
     var newElementId = "#" + mainMenuIds[rowIndex][colIndex];
 
@@ -448,7 +447,7 @@ function navigateHomePage(navigationCommand$) {
 
 function navigateRecordedShowsPage(navigationCommand$) {
 
-    console.log("navigateRecordedShowsPage entry");
+    consoleLog("navigateRecordedShowsPage entry");
 
     var rowIndex = -1;
     var colIndex = -1;

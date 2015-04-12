@@ -53,11 +53,11 @@ recordingEngineStateMachine.prototype.deleteScheduledRecording = function (sched
 
     $.get(aUrl, recordingId)
         .done(function (result) {
-            console.log("deleteScheduledRecording successfully sent");
+            consoleLog("deleteScheduledRecording successfully sent");
         })
         .fail(function (jqXHR, textStatus, errorThrown) {
             debugger;
-            console.log("deleteScheduledRecording failure");
+            consoleLog("deleteScheduledRecording failure");
         })
         .always(function () {
             //alert("recording transmission finished");
@@ -67,7 +67,7 @@ recordingEngineStateMachine.prototype.deleteScheduledRecording = function (sched
 
 recordingEngineStateMachine.prototype.InitializeRecordingEngineHSM = function () {
 
-    console.log("InitializeRecordingEngineHSM invoked");
+    consoleLog("InitializeRecordingEngineHSM invoked");
     return this.stIdle;
 }
 
@@ -77,14 +77,14 @@ recordingEngineStateMachine.prototype.STRecordingControllerEventHandler = functi
     stateData.nextState = null;
 
     if (event["EventType"] == "ENTRY_SIGNAL") {
-        console.log(this.id + ": entry signal");
+        consoleLog(this.id + ": entry signal");
         return "HANDLED";
     }
     else if (event["EventType"] == "EXIT_SIGNAL") {
-        console.log(this.id + ": exit signal");
+        consoleLog(this.id + ": exit signal");
     }
     else if (event["EventType"] == "READY") {
-        console.log(this.id + ": READY message received");
+        consoleLog(this.id + ": READY message received");
 
         // get scheduled recordings from db
         var aUrl = baseURL + "getScheduledRecordings";
@@ -93,16 +93,16 @@ recordingEngineStateMachine.prototype.STRecordingControllerEventHandler = functi
 
         $.get(aUrl, {})
             .done(function (result) {
-                console.log("getScheduledRecordings successfully sent");
+                consoleLog("getScheduledRecordings successfully sent");
 
                 var thisThisObj = thisObj;
 
                 $.each(result.scheduledrecordings, function (index, scheduledRecording) {
-                    console.log(scheduledRecording.DateTime + " " + scheduledRecording.Channel + " " + scheduledRecording.Duration + " " + scheduledRecording.Id + " " + scheduledRecording.Title + " " + scheduledRecording.UseTuner);
+                    consoleLog(scheduledRecording.DateTime + " " + scheduledRecording.Channel + " " + scheduledRecording.Duration + " " + scheduledRecording.Id + " " + scheduledRecording.Title + " " + scheduledRecording.UseTuner);
 
                     // if the recording is in the past, remove if from the db
                     var recordingObsolete = thisThisObj.recordingObsolete(scheduledRecording.DateTime, Number(scheduledRecording.Duration));
-                    console.log("recordingObsolete = " + recordingObsolete);
+                    consoleLog("recordingObsolete = " + recordingObsolete);
                     if (recordingObsolete) {
                         thisThisObj.deleteScheduledRecording(scheduledRecording.Id);
                     }
@@ -113,7 +113,7 @@ recordingEngineStateMachine.prototype.STRecordingControllerEventHandler = functi
             })
             .fail(function (jqXHR, textStatus, errorThrown) {
                 debugger;
-                console.log("getScheduledRecordings failure");
+                consoleLog("getScheduledRecordings failure");
             })
             .always(function () {
                 //alert("recording transmission finished");
@@ -135,11 +135,11 @@ recordingEngineStateMachine.prototype.STIdleEventHandler = function (event, stat
     stateData.nextState = null;
 
     if (event["EventType"] == "ENTRY_SIGNAL") {
-        console.log(this.id + ": entry signal");
+        consoleLog(this.id + ": entry signal");
         return "HANDLED";
     }
     else if (event["EventType"] == "EXIT_SIGNAL") {
-        console.log(this.id + ": exit signal");
+        consoleLog(this.id + ": exit signal");
     }
     else if (event["EventType"] == "RECORD_NOW") {
         var title = event["Title"];
@@ -149,7 +149,7 @@ recordingEngineStateMachine.prototype.STIdleEventHandler = function (event, stat
             useTuner = true;
         }
         var channel = event["Channel"];
-        console.log("STIdleEventHandler: RECORD_NOW received. Title = " + title + ", duration = " + duration + ", useTuner = " + useTuner + ", channel = " + channel);
+        consoleLog("STIdleEventHandler: RECORD_NOW received. Title = " + title + ", duration = " + duration + ", useTuner = " + useTuner + ", channel = " + channel);
 
         this.addRecording(false, new Date(), title, duration, useTuner, channel);
 
@@ -166,12 +166,12 @@ recordingEngineStateMachine.prototype.STIdleEventHandler = function (event, stat
         }
         var channel = event["Channel"];
 
-        console.log("STIdleEventHandler: SET_MANUAL_RECORD received. DateTime = " + dateTime + ", title = " + title + ", duration = " + duration + ", useTuner = " + useTuner + ", channel = " + channel);
+        consoleLog("STIdleEventHandler: SET_MANUAL_RECORD received. DateTime = " + dateTime + ", title = " + title + ", duration = " + duration + ", useTuner = " + useTuner + ", channel = " + channel);
 
         // ignore manual recordings that are in the past
         var recordingObsolete = this.recordingObsolete(dateTime, Number(duration));
         if (recordingObsolete) {
-            console.log("Manual recording in the past, ignore request.");
+            consoleLog("Manual recording in the past, ignore request.");
             return;
         }
 
@@ -199,14 +199,14 @@ recordingEngineStateMachine.prototype.addRecording = function (addToDB, dateTime
 
         $.get(aUrl, recordingData)
             .done(function (result) {
-                console.log("addScheduledRecording successfully sent");
+                consoleLog("addScheduledRecording successfully sent");
                 var scheduledRecordingId = Number(result);
-                console.log("scheduledRecordingId=" + scheduledRecordingId);
+                consoleLog("scheduledRecordingId=" + scheduledRecordingId);
                 thisObj.setRecording(millisecondsUntilRecording, title, duration, useTuner, channel);
             })
             .fail(function (jqXHR, textStatus, errorThrown) {
                 debugger;
-                console.log("addScheduledRecording failure");
+                consoleLog("addScheduledRecording failure");
             })
             .always(function () {
                 //alert("recording transmission finished");
@@ -222,7 +222,7 @@ recordingEngineStateMachine.prototype.setRecording = function (millisecondsUntil
 
     // check to see if recording should begin immediately
     if (millisecondsUntilRecording < 0) {
-        console.log("start recording now");
+        consoleLog("start recording now");
         this.startRecording(title, duration, useTuner, channel);
     }
     else {
@@ -243,7 +243,7 @@ recordingEngineStateMachine.prototype.recordingObsolete = function (startDateTim
 var timerVar;
 
 recordingEngineStateMachine.prototype.startRecordingTimer = function (millisecondsUntilRecording, title, duration, useTuner, channel) {
-    console.log("startRecordingTimer - start timer");
+    consoleLog("startRecordingTimer - start timer");
     var thisObj = this;
     timerVar = setTimeout(function () { thisObj.startRecording(title, duration, useTuner, channel); }, millisecondsUntilRecording);
 }
@@ -251,15 +251,14 @@ recordingEngineStateMachine.prototype.startRecordingTimer = function (millisecon
 recordingEngineStateMachine.prototype.startRecording = function (title, duration, useTuner, channel) {
 
     if (!useTuner) {
-        console.log("No tuner: Title = " + title + ", duration = " + duration + ", useTuner = " + useTuner + ", channel = " + channel);
-        bsMessage.PostBSMessage({ command: "debugPrint", "debugMessage": "No tuner: Title = " + title + ", duration = " + duration + ", useTuner = " + useTuner + ", channel = " + channel });
+        consoleLog("No tuner: Title = " + title + ", duration = " + duration + ", useTuner = " + useTuner + ", channel = " + channel);
 
         bsMessage.PostBSMessage({ command: "recordNow", "title": title, "duration": duration });
         this.addRecordingEndTimer(Number(duration) * 60 * 1000, title, new Date(), duration);
     }
     else {
         var ir_transmitter = new BSIRTransmitter("IR-out");
-        console.log("typeof ir_transmitter is " + typeof ir_transmitter);
+        consoleLog("typeof ir_transmitter is " + typeof ir_transmitter);
 
         var irCode = -1;
 
@@ -283,10 +282,10 @@ recordingEngineStateMachine.prototype.startRecording = function (title, duration
                 irCode = 65363;
                 ir_transmitter.Send("NEC", irCode);
                 setTimeout(function () {
-                    console.log("send second digit");
+                    consoleLog("send second digit");
                     ir_transmitter.Send("NEC", irCode);
 
-                    console.log("Tuner (double digit): Title = " + title + ", duration = " + duration, ", useTuner = " + useTuner + ", channel = " + channel);
+                    consoleLog("Tuner (double digit): Title = " + title + ", duration = " + duration, ", useTuner = " + useTuner + ", channel = " + channel);
                     bsMessage.PostBSMessage({ command: "recordNow", "title": title, "duration": duration });
                 },
                 400);
@@ -296,8 +295,7 @@ recordingEngineStateMachine.prototype.startRecording = function (title, duration
         if (irCode > 0) {
             ir_transmitter.Send("NEC", irCode);
 
-            console.log("Tuner (single digit): Title = " + title + ", duration = " + duration + ", useTuner = " + useTuner + ", channel = " + channel);
-            bsMessage.PostBSMessage({ command: "debugPrint", "debugMessage": "Tuner (single digit): Title = " + title + ", duration = " + duration + ", useTuner = " + useTuner + ", channel = " + channel });
+            consoleLog("Tuner (single digit): Title = " + title + ", duration = " + duration + ", useTuner = " + useTuner + ", channel = " + channel);
 
             bsMessage.PostBSMessage({ command: "recordNow", "title": title, "duration": duration });
         }
@@ -308,30 +306,28 @@ recordingEngineStateMachine.prototype.startRecording = function (title, duration
 // TODO - save this in case user wants to stop a recording?
 var endOfRecordingTimer;
 recordingEngineStateMachine.prototype.addRecordingEndTimer = function (durationInMilliseconds, title, dateTime, duration) {
-    console.log("addRecordingEndTimer - start timer: duration=" + durationInMilliseconds);
-    bsMessage.PostBSMessage({ command: "debugPrint", "debugMessage": "addRecordingEndTimer - start timer: duration=" + durationInMilliseconds});
+    consoleLog("addRecordingEndTimer - start timer: duration=" + durationInMilliseconds);
     var thisObj = this;
     endOfRecordingTimer = setTimeout(function () {
-        console.log("addRecordingEndTimer - endOfRecordingTimer triggered");
-        bsMessage.PostBSMessage({ command: "debugPrint", "debugMessage": "addRecordingEndTimer - endOfRecordingTimer triggered" });
+        consoleLog("addRecordingEndTimer - endOfRecordingTimer triggered");
         thisObj.endRecording(title, dateTime, duration);
     }, durationInMilliseconds);
 }
 
 recordingEngineStateMachine.prototype.endRecording = function (title, dateTime, duration) {
-    console.log("endRecording: title = " + title + ", dateTime = " + dateTime + ", duration = " + duration);
+    consoleLog("endRecording: title = " + title + ", dateTime = " + dateTime + ", duration = " + duration);
 
     // Set fileName from date/time
     //var fileName = (new Date()).toISOString();
-    //console.log("isoDateString = " + fileName);
+    //consoleLog("isoDateString = " + fileName);
     //fileName = fileName.replace(/-/gi, "");
-    //console.log("fileName = " + fileName);
+    //consoleLog("fileName = " + fileName);
     //fileName = fileName.replace(/:/gi, "");
-    //console.log("fileName = " + fileName);
+    //consoleLog("fileName = " + fileName);
     //fileName = fileName.replace(/Z/gi, "");
-    //console.log("fileName = " + fileName);
+    //consoleLog("fileName = " + fileName);
     //fileName = fileName.slice(0, 15);
-    //console.log("fileName = " + fileName);
+    //consoleLog("fileName = " + fileName);
 
     bsMessage.PostBSMessage({ command: "endRecording", startSegmentation: true });
 

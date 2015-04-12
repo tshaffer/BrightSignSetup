@@ -140,7 +140,7 @@ Sub de_EventHandler(event As Object)
 
 		' send mediaEnd event to js
 		aa = {}
-		aa.AddReplace("bsMessage", "mediaEnd")
+		aa.AddReplace("command", "mediaEnd")
 		m.htmlWidget.PostJSMessage(aa)
 
 		if type(m.selectedRecording) = "roAssociativeArray" then
@@ -176,7 +176,8 @@ Sub de_HandleHttpEvent(event)
 
 			' send it via message port
 			aa = {}
-			aa.AddReplace("ipAddress", ipAddress$)
+			aa.AddReplace("command", "setIPAddress")
+			aa.AddReplace("value", ipAddress$)
 
 			m.htmlWidget.PostJSMessage(aa)
 
@@ -550,7 +551,7 @@ Sub de_UpdateProgressBar()
 
 		' send message to js to update progress bar
 		aa = {}
-		aa.AddReplace("bsMessage", "UpdateProgressBar")
+		aa.AddReplace("command", "updateProgressBar")
 		aa.AddReplace("currentOffset", stri(m.currentVideoPosition%))
 		aa.AddReplace("recordingDuration", stri(m.selectedRecording.Duration*60))
 		m.htmlWidget.PostJSMessage(aa)

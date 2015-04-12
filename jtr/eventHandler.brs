@@ -30,8 +30,6 @@ Sub eventHandler_EventLoop()
         
         msg = wait(0, m.msgPort)
 
-'		m.diagnostics.PrintTimestamp()
-'		m.diagnostics.PrintDebug("msg received - type=" + type(msg))
 		print "msg received - type=" + type(msg)
 
 		commandProcessed = false
@@ -71,10 +69,8 @@ Sub eventHandler_EventLoop()
 		
 			if type(msg) = "roSqliteEvent" then
 				if msg.GetSqlResult() <> SQLITE_COMPLETE then
-'					m.diagnostics.PrintDebug("roSqliteEvent.GetSqlResult() <> SQLITE_COMPLETE")
 					print "roSqliteEvent.GetSqlResult() <> SQLITE_COMPLETE"
 					if type(msg.GetSqlResult()) = "roInt" then
-	'					m.diagnostics.PrintDebug("roSqliteEvent.GetSqlResult() = " + stri(roSqliteEvent.GetSqlResult()))
 						 print "roSqliteEvent.GetSqlResult() = " + stri(roSqliteEvent.GetSqlResult())
 					endif
 				endif

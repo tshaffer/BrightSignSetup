@@ -298,7 +298,6 @@ HSM.prototype.Dispatch = function (event) {
 
     this.activeState = t;                                                       // set the new state or restore the current state
 
-    console.log("status = " + status);
     if (status == "HANDLED") {                                                  // is it this simple?
         eventHandled = true;
     }

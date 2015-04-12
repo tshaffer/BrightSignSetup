@@ -43,6 +43,7 @@ function switchToPage(newPage) {
         }
 
     } else {
+        consoleLog("IIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIPAddress: display none: 1");
         setFooterVisibility(true, true)
         $("#ipAddress").css("display", "none");
     }
@@ -341,6 +342,7 @@ function getShowDescription(showId) {
 }
 
 function eraseUI() {
+    consoleLog("IIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIPAddress: display none: 2");
     $("#ipAddress").css("display", "none");
     $(currentActiveElementId).css("display", "none");
     $("#footerArea").css("display", "none");

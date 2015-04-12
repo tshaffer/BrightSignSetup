@@ -97,7 +97,6 @@ Function CreateLogFile() As Object
 
     fileName$ = "currentLog/" + localFileName$
     logFile = CreateObject("roCreateFile", fileName$)
-'    m.diagnostics.PrintDebug("Create new log file " + localFileName$)
     print "Create new log file " + localFileName$
     
     t$ = chr(9)
@@ -253,7 +252,6 @@ Sub DeleteOlderFiles(folderName$ As String, dtExpired As Object)
                
         if dtFile < dtExpired then
             fullFilePath$ = "/" + folderName$ + "/" + file
-'            m.diagnostics.PrintDebug("Delete expired log file " + fullFilePath$)
             print"Delete expired log file " + fullFilePath$
             DeleteFile(fullFilePath$)
         endif
@@ -339,7 +337,6 @@ Sub OpenOrCreateCurrentLog()
         fileName$ = "currentLog/" + file
         m.logFile = CreateObject("roAppendFile", fileName$)
         if type(m.logFile) = "roAppendFile" then
-'            m.diagnostics.PrintDebug("Use existing log file " + file)
             print "Use existing log file " + file
             return
         endif

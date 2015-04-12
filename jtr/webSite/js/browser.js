@@ -4,7 +4,7 @@ function sendRemoteCommandToDevice(remoteCommand) {
     console.log("sendRemoteCommandToDevice: " + remoteCommand);
 
     var aUrl = baseURL + "browserCommand";
-    var commandData = { "remoteCommand": remoteCommand };
+    var commandData = { "command": "remoteCommand", "value": remoteCommand };
     console.log(commandData);
 
     $.get(aUrl, commandData)
@@ -63,10 +63,8 @@ function recordNow() {
 
     var title = getRecordingTitle("#recordNowTitle", currentDate, false, "");
 
-    var recordData = { "duration": duration, "title": title, "channel": channel, "useTuner": useTuner }
-
     var aUrl = baseURL + "browserCommand";
-    var commandData = { "commandRecordNow": recordData };
+    var commandData = { "command": "recordNow", "duration": duration, "title": title, "channel": channel, "useTuner": useTuner };
     console.log(commandData);
 
     $.get(aUrl, commandData)
@@ -110,10 +108,8 @@ function createManualRecording() {
 
     var title = getRecordingTitle("#manualRecordTitle", dateObj, useTuner, channel);
 
-    var recordData = { "dateTime": compatibleDateTimeStr, "duration": duration, "channel": channel, "title": title, "useTuner": useTuner }
-
     var aUrl = baseURL + "browserCommand";
-    var commandData = { "commandSetManualRecord": recordData };
+    var commandData = { "command": "setManualRecord", "dateTime": compatibleDateTimeStr, "duration": duration, "title": title, "channel": channel, "useTuner": useTuner };
     console.log(commandData);
 
     $.get(aUrl, commandData)
@@ -139,8 +135,7 @@ function playSelectedShow(event) {
     //}
 
     var aUrl = baseURL + "browserCommand";
-    //var recordingData = { "command": "playRecordedShow", "commandData": recordingId };
-    var commandData = { "commandPlayRecordedShow": recordingId };
+    var commandData = { "command": "playRecordedShow", "recordingId": recordingId };
     console.log(commandData);
 
     $.get(aUrl, commandData)
@@ -160,7 +155,8 @@ function deleteSelectedShow(event) {
     var recordingId = event.data.recordingId;
 
     var aUrl = baseURL + "browserCommand";
-    var commandData = { "commandDeleteRecordedShow": recordingId };
+    //var commandData = { "commandDeleteRecordedShow": recordingId };
+    var commandData = { "command": "deleteRecordedShow", "recordingId": recordingId };
     console.log(commandData);
 
     $.get(aUrl, commandData)

@@ -249,7 +249,9 @@ Sub getRecordings(userData as Object, e as Object)
 	' send data directly to js (for the case where the request came from the browser or an external app)
 	
 	aa = {}
-	aa.AddReplace("recordings", json)
+	aa.AddReplace("command", "recordings")
+	aa.AddReplace("value", json)
+
 	ok = mVar.htmlWidget.PostJSMessage(aa)
 	if not ok stop
 
