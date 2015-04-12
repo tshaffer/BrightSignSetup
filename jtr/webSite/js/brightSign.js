@@ -1,4 +1,4 @@
-var sendConsoleOutputToBS = true;
+var sendConsoleOutputToBS = false;
 
 // BrightSign only
 var bsMessage;
@@ -105,10 +105,8 @@ function executeDeleteSelectedShow(recordingId) {
 
 
 function initializeBrightSign() {
-    var mrDateTime = "";
-    var mrChannel = "";
-    var mrRecordingDuration = "";
-    var mrTitle = "";
+
+    var lastRemoteEventTime = 0;
 
     // Create displayEngine state machine
     displayEngineHSM = new displayEngineStateMachine();
@@ -145,10 +143,21 @@ function initializeBrightSign() {
             consoleLog('############ onremotedown: ' + e.irType + " - " + e.code);
             consoleLog('############ onremotedown: remoteCommand=' + GetRemoteCommand(e.code));
 
-            var event = {};
-            event["EventType"] = "REMOTE";
-            event["EventData"] = GetRemoteCommand(e.code);
-            postMessage(event);
+            // debounce remote
+            var now = new Date();
+            var msSinceLastCommand = now - lastRemoteEventTime;
+            consoleLog("msSinceLastCommand=" + msSinceLastCommand);
+            if (msSinceLastCommand > 200) {
+                lastRemoteEventTime = now;
+
+                var event = {};
+                event["EventType"] = "REMOTE";
+                event["EventData"] = GetRemoteCommand(e.code);
+                postMessage(event);
+            }
+            else {
+                consoleLog("ignore extraneous remote input");
+            }
         }
 
         ir_receiver.onremoteup = function (e) {
