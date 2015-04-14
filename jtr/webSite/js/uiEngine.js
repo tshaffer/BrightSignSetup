@@ -271,8 +271,8 @@ uiEngineStateMachine.prototype.STMainMenuEventHandler = function (event, stateDa
                     //case "channelGuide":
                 //        selectChannelGuide();
                 //        break;
-                //    case "setManualRecord":
-                //        selectSetManualRecord();
+                //    case "manualRecord":
+                //        selectManualRecord();
                 //        break;
                     case "recordedShows":
                         stateData.nextState = this.stateMachine.stRecordedShows;
@@ -386,9 +386,9 @@ uiEngineStateMachine.prototype.STRecordedShowsEventHandler = function (event, st
 
 // home page
 var mainMenuIds = [
-    ['recordedShows', 'recordNow'],
-    ['channelGuide', 'setManualRecord'],
-    ['toDoList', 'liveVideo']
+    ['recordedShows', 'liveVideo'],
+    ['recordNow', 'channelGuide'],
+    ['manualRecord', 'toDoList']
 ];
 
 function navigateHomePage(navigationCommand$) {

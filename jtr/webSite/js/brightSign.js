@@ -225,7 +225,7 @@ function initializeBrightSign() {
                 event["Channel"] = message.channel;
                 postMessage(event);
                 break;
-            case "setManualRecord":
+            case "manualRecord":
                 event["EventType"] = "SET_MANUAL_RECORD";
                 event["DateTime"] = message.dateTime;
                 event["Title"] = message.title;

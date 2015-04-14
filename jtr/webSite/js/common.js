@@ -272,7 +272,7 @@ function selectRecordNow() {
 }
 
 
-function selectSetManualRecord() {
+function selectManualRecord() {
     switchToPage("manualRecordPage");
     setDefaultDateTimeFields();
     $("#manualRecordTitle").focus();

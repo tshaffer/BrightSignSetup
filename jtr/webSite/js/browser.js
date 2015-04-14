@@ -109,7 +109,7 @@ function createManualRecording() {
     var title = getRecordingTitle("#manualRecordTitle", dateObj, useTuner, channel);
 
     var aUrl = baseURL + "browserCommand";
-    var commandData = { "command": "setManualRecord", "dateTime": compatibleDateTimeStr, "duration": duration, "title": title, "channel": channel, "useTuner": useTuner };
+    var commandData = { "command": "manualRecord", "dateTime": compatibleDateTimeStr, "duration": duration, "title": title, "channel": channel, "useTuner": useTuner };
     console.log(commandData);
 
     $.get(aUrl, commandData)
