@@ -155,7 +155,6 @@ function deleteSelectedShow(event) {
     var recordingId = event.data.recordingId;
 
     var aUrl = baseURL + "browserCommand";
-    //var commandData = { "commandDeleteRecordedShow": recordingId };
     var commandData = { "command": "deleteRecordedShow", "recordingId": recordingId };
     console.log(commandData);
 

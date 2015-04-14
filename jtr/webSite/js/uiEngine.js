@@ -82,6 +82,12 @@ uiEngineStateMachine.prototype.STNoneEventHandler = function (event, stateData) 
                 return "TRANSITION";
         }
     }
+    // TODO - other states as well?
+    else if (event["EventType"] == "DELETE_RECORDED_SHOW") {
+        var recordingId = event["EventData"];
+        executeDeleteSelectedShow(recordingId);
+        //getRecordedShows();       // TODO - is this required to get the data structure updated?
+    }
 
     stateData.nextState = this.superState;
     return "SUPER";
@@ -119,6 +125,11 @@ uiEngineStateMachine.prototype.STUIScreenEventHandler = function (event, stateDa
             case "progress_bar":
                 return "HANDLED";
         }
+    }
+    else if (event["EventType"] == "DELETE_RECORDED_SHOW") {
+        var recordingId = event["EventData"];
+        executeDeleteSelectedShow(recordingId);
+        //getRecordedShows();       // TODO - is this required to get the data structure updated?
     }
 
     stateData.nextState = this.superState;
