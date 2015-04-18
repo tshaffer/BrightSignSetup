@@ -431,7 +431,7 @@ displayEngineStateMachine.prototype.STLiveVideoEventHandler = function (event, s
 
 displayEngineStateMachine.prototype.displayChannel = function (channel) {
 
-    var channelLabel = "Channel " + this.lastTunedChannel.toString();
+    var channelLabel = "Channel " + channel.toString();
     var htmlContents = '<p id="channel">' + channelLabel + '</p>';
 
     consoleLog("DISPLAY CHANNEL NUMBER: " + htmlContents);
