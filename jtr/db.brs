@@ -23,7 +23,7 @@ Sub OpenDatabase()
 
 		m.CreateDBTable("CREATE TABLE LastSelectedShow (Id TEXT);")
 
-		m.CreateDBTable("CREATE TABLE LastTunedChannel (ChannelId TEXT);")
+		m.CreateDBTable("CREATE TABLE LastTunedChannel (Channel TEXT);")
 	endif
 
 End Sub
