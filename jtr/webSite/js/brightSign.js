@@ -141,7 +141,8 @@ function initializeBrightSign() {
     if (typeof ir_receiver != 'undefined') {
         ir_receiver.onremotedown = function (e) {
             consoleLog('############ onremotedown: ' + e.irType + " - " + e.code);
-            consoleLog('############ onremotedown: remoteCommand=' + GetRemoteCommand(e.code));
+            var remoteCommand = GetRemoteCommand(e.code);
+            consoleLog('############ onremotedown: remoteCommand=' + remoteCommand);
 
             // debounce remote
             var now = new Date();
@@ -152,7 +153,7 @@ function initializeBrightSign() {
 
                 var event = {};
                 event["EventType"] = "REMOTE";
-                event["EventData"] = GetRemoteCommand(e.code);
+                event["EventData"] = remoteCommand;
                 postMessage(event);
             }
             else {

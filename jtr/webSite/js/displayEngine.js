@@ -411,7 +411,7 @@ displayEngineStateMachine.prototype.STLiveVideoEventHandler = function (event, s
                 consoleLog("channel_up - tune to " + this.enteredChannel);
                 this.tuneLiveVideoChannel(true);
                 this.displayChannel(this.lastTunedChannel.toString());
-                break;
+                return "HANDLED";
             case "channel_down":
                 var channelIndex = this.getChannelIdFromChannel(this.lastTunedChannel);
                 channelIndex--;
@@ -420,7 +420,7 @@ displayEngineStateMachine.prototype.STLiveVideoEventHandler = function (event, s
                 consoleLog("channel_down - tune to " + this.enteredChannel);
                 this.tuneLiveVideoChannel(true);
                 this.displayChannel(this.lastTunedChannel.toString());
-                break;
+                return "HANDLED";
         }
     }
 

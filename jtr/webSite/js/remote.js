@@ -81,8 +81,6 @@ function SonyCommand(remoteCode) {
     else if (remoteCode == 163137)
         remoteCommand = "ENTER"
 
-    remoteCommand = ""
-
     return remoteCommand
 }
 
