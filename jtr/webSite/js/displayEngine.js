@@ -28,6 +28,7 @@
     this.stLiveVideo.tuneDigit = this.tuneDigit;
     this.stLiveVideo.sendIROut = this.sendIROut;
     this.stLiveVideo.getChannelIdFromChannel = this.getChannelIdFromChannel;
+    this.stLiveVideo.displayChannel = this.displayChannel;
     //TODO
     this.stLiveVideo.tunerChannels = ["2", "4", "5", "7", "9", "11", "36", "44"];
 
@@ -346,6 +347,7 @@ displayEngineStateMachine.prototype.STLiveVideoEventHandler = function (event, s
                 consoleLog("lastTunedChannel successfully retrieved");
                 thisObj.enteredChannel = result;
                 thisObj.tuneLiveVideoChannel(false);
+                thisObj.displayChannel(thisObj.lastTunedChannel.toString());
             })
             .fail(function (jqXHR, textStatus, errorThrown) {
                 debugger;
@@ -397,6 +399,7 @@ displayEngineStateMachine.prototype.STLiveVideoEventHandler = function (event, s
                     this.channelEntryTimer = null;
                 }
                 this.enteredChannel += eventData;
+                this.displayChannel(this.enteredChannel.toString());
                 console.log("enteredChannel = " + this.enteredChannel);
                 this.startChannelEntryTimer();
                 return "HANDLED";
@@ -407,6 +410,7 @@ displayEngineStateMachine.prototype.STLiveVideoEventHandler = function (event, s
                 this.enteredChannel = this.tunerChannels[channelIndex];
                 consoleLog("channel_up - tune to " + this.enteredChannel);
                 this.tuneLiveVideoChannel(true);
+                this.displayChannel(this.lastTunedChannel.toString());
                 break;
             case "channel_down":
                 var channelIndex = this.getChannelIdFromChannel(this.lastTunedChannel);
@@ -415,6 +419,7 @@ displayEngineStateMachine.prototype.STLiveVideoEventHandler = function (event, s
                 this.enteredChannel = this.tunerChannels[channelIndex];
                 consoleLog("channel_down - tune to " + this.enteredChannel);
                 this.tuneLiveVideoChannel(true);
+                this.displayChannel(this.lastTunedChannel.toString());
                 break;
         }
     }
@@ -423,6 +428,21 @@ displayEngineStateMachine.prototype.STLiveVideoEventHandler = function (event, s
     return "SUPER";
 }
 
+
+displayEngineStateMachine.prototype.displayChannel = function (channel) {
+
+    var channelLabel = "Channel " + this.lastTunedChannel.toString();
+    var htmlContents = '<p id="channel">' + channelLabel + '</p>';
+
+    consoleLog("DISPLAY CHANNEL NUMBER: " + htmlContents);
+
+    if (!$("#channel").length) {
+        $("#videoControlRegion").append(htmlContents);
+    }
+    else {
+        $("#channel").html(htmlContents);
+    }
+}
 
 displayEngineStateMachine.prototype.getChannelIdFromChannel = function (channel) {
 
