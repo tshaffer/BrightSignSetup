@@ -27,6 +27,9 @@
     this.stLiveVideo.tuneLiveVideoChannel = this.tuneLiveVideoChannel;
     this.stLiveVideo.tuneDigit = this.tuneDigit;
     this.stLiveVideo.sendIROut = this.sendIROut;
+    this.stLiveVideo.getChannelIdFromChannel = this.getChannelIdFromChannel;
+    //TODO
+    this.stLiveVideo.tunerChannels = ["2", "4", "5", "7", "9", "11", "36", "44"];
 
     this.stPlaying = new HState(this, "Playing");
     this.stPlaying.HStateEventHandler = this.STPlayingEventHandler;
@@ -397,11 +400,21 @@ displayEngineStateMachine.prototype.STLiveVideoEventHandler = function (event, s
                 console.log("enteredChannel = " + this.enteredChannel);
                 this.startChannelEntryTimer();
                 return "HANDLED";
-            case "CHANNEL_UP":
-                bsMessage.PostBSMessage({ command: "debugPrint", "debugMessage": "STLiveVideoEventHandler: key pressed="+CHANNEL_UP });
+            case "channel_up":
+                var channelIndex = this.getChannelIdFromChannel(this.lastTunedChannel);
+                channelIndex++;
+                if (channelIndex >= this.tunerChannels.length) channelIndex = 0;
+                this.enteredChannel = this.tunerChannels[channelIndex];
+                consoleLog("channel_up - tune to " + this.enteredChannel);
+                this.tuneLiveVideoChannel(true);
                 break;
-            case "CHANNEL_DOWN":
-                bsMessage.PostBSMessage({ command: "debugPrint", "debugMessage": "STLiveVideoEventHandler: key pressed="+CHANNEL_DOWN });
+            case "channel_down":
+                var channelIndex = this.getChannelIdFromChannel(this.lastTunedChannel);
+                channelIndex--;
+                if (channelIndex < 0) channelIndex = this.tunerChannels.length - 1;
+                this.enteredChannel = this.tunerChannels[channelIndex];
+                consoleLog("channel_down - tune to " + this.enteredChannel);
+                this.tuneLiveVideoChannel(true);
                 break;
         }
     }
@@ -410,6 +423,14 @@ displayEngineStateMachine.prototype.STLiveVideoEventHandler = function (event, s
     return "SUPER";
 }
 
+
+displayEngineStateMachine.prototype.getChannelIdFromChannel = function (channel) {
+
+    for (i = 0; i < this.tunerChannels.length; i++) {
+        if (this.tunerChannels[i] == channel) return i;
+    }
+    return 0;
+}
 
 displayEngineStateMachine.prototype.startChannelEntryTimer = function () {
     var thisObj = this;
@@ -422,6 +443,8 @@ displayEngineStateMachine.prototype.startChannelEntryTimer = function () {
 
 displayEngineStateMachine.prototype.tuneLiveVideoChannel = function (saveChannelToDB) {
     consoleLog("TTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTune to " + this.enteredChannel);
+
+    this.lastTunedChannel = this.enteredChannel;
 
     this.channel = this.enteredChannel;
     this.tuneDigit();
