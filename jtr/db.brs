@@ -23,6 +23,7 @@ Sub OpenDatabase()
 
 		m.CreateDBTable("CREATE TABLE LastSelectedShow (Id TEXT);")
 
+		m.CreateDBTable("CREATE TABLE LastTunedChannel (ChannelId TEXT);")
 	endif
 
 End Sub
@@ -275,6 +276,34 @@ Sub DeleteDBRecording(recordingId$ As String)
 End Sub
 
 
+Sub GetDBLastTunedChannelCallback(resultsData As Object, selectData As Object)
+
+	selectData.lastTunedChannel$ = resultsData["Channel"]
+
+End Sub
+
+
+Function GetDBLastTunedChannel() As Object
+
+	selectData = {}
+	selectData.lastTunedChannel$ = ""
+
+	select$ = "SELECT LastTunedChannel.Channel FROM LastTunedChannel;"
+	m.ExecuteDBSelect(select$, GetDBLastTunedChannelCallback, selectData, invalid)
+
+	return selectData.lastTunedChannel$
+
+End Function
+
+
+Sub SetDBLastTunedChannel(channel$ As String)
+
+    m.db.RunBackground("UPDATE LastTunedChannel SET Channel='" + channel$ + "';", {})
+
+End Sub
+
+
+
 Sub GetDBLastSelectedShowIdCallback(resultsData As Object, selectData As Object)
 
 	selectData.lastSelectedShowId$ = resultsData["Id"]
@@ -307,7 +336,6 @@ Sub SetDBLastSelectedShowId(lastSelectedShowId$ As String)
 '	endif
 
 End Sub
-
 
 
 Sub GetDBRecordingsCallback(resultsData As Object, selectData As Object)

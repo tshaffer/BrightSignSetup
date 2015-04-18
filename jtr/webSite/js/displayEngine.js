@@ -106,7 +106,7 @@ displayEngineStateMachine.prototype.playSelectedShow = function (recordingId) {
     // set new recording
     this.stateMachine.currentRecording = _currentRecordings[recordingId];
 
-    // save lastSelectedShowId in server's persistent memory
+    // save lastSelectedShowId in db
     var parts = [];
     parts.push("lastSelectedShowId" + '=' + recordingId.toString());
     var paramString = parts.join('&');
@@ -329,11 +329,28 @@ displayEngineStateMachine.prototype.STLiveVideoEventHandler = function (event, s
         this.ir_transmitter = new BSIRTransmitter("IR-out");
         console.log("typeof ir_transmitter is " + typeof this.ir_transmitter);
 
-
         this.enteredChannel = "";
         this.channelEntryTimer = null;
 
         bsMessage.PostBSMessage({ command: "tuneLiveVideo" });
+
+        // get last tuned channel and tune to it
+        var url = baseURL + "lastTunedChannel";
+
+        var thisObj = this;
+        $.get(url)
+            .done(function (result) {
+                consoleLog("lastTunedChannel successfully retrieved");
+                thisObj.enteredChannel = result;
+                thisObj.tuneLiveVideoChannel(false);
+            })
+            .fail(function (jqXHR, textStatus, errorThrown) {
+                debugger;
+                consoleLog("lastTunedChannel failure");
+            })
+            .always(function () {
+                //alert("recording transmission finished");
+            });
 
         return "HANDLED";
     }
@@ -358,7 +375,7 @@ displayEngineStateMachine.prototype.STLiveVideoEventHandler = function (event, s
                     this.channelEntryTimer = null;
                 }
                 if (this.enteredChannel != "") {
-                    this.tuneLiveVideoChannel();
+                    this.tuneLiveVideoChannel(true);
                 }
                 return "HANDLED";
             case "0":
@@ -398,16 +415,25 @@ displayEngineStateMachine.prototype.startChannelEntryTimer = function () {
     var thisObj = this;
     this.channelEntryTimer = setTimeout(function () {
         consoleLog("channelEntryTimer triggered");
-        thisObj.tuneLiveVideoChannel();
+        thisObj.tuneLiveVideoChannel(true);
     }, 2000);
 }
 
 
-displayEngineStateMachine.prototype.tuneLiveVideoChannel = function () {
+displayEngineStateMachine.prototype.tuneLiveVideoChannel = function (saveChannelToDB) {
     consoleLog("TTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTune to " + this.enteredChannel);
 
     this.channel = this.enteredChannel;
     this.tuneDigit();
+
+    if (saveChannelToDB) {
+        // save lastTunedChannel in db
+        var parts = [];
+        parts.push("lastTunedChannel" + '=' + this.enteredChannel);
+        var paramString = parts.join('&');
+        var url = baseURL + "lastTunedChannel";
+        $.post(url, paramString);
+    }
 
     this.enteredChannel = "";
 }

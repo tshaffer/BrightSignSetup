@@ -1,4 +1,4 @@
-var sendConsoleOutputToBS = true;
+var sendConsoleOutputToBS = false;
 
 // BrightSign only
 var bsMessage;
@@ -160,9 +160,9 @@ function initializeBrightSign() {
             }
         }
 
-        ir_receiver.onremoteup = function (e) {
-            consoleLog('############ onremoteup: ' + e.irType + " - " + e.code);
-        }
+        //ir_receiver.onremoteup = function (e) {
+        //    consoleLog('############ onremoteup: ' + e.irType + " - " + e.code);
+        //}
     }
 
     // message port for getting messages from the BrightSign via roMessagePort

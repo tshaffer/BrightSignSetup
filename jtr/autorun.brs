@@ -96,6 +96,8 @@ Function newJTR(msgPort As Object) As Object
 	JTR.UpdateDBTranscodeComplete		= UpdateDBTranscodeComplete
 	JTR.UpdateDBLastViewedPosition		= UpdateDBLastViewedPosition
 	JTR.UpdateHLSSegmentationComplete	= UpdateHLSSegmentationComplete
+	JTR.GetDBLastTunedChannel			= GetDBLastTunedChannel
+	JTR.SetDBLastTunedChannel			= SetDBLastTunedChannel
 	
 	JTR.tsDeletable						= tsDeletable
 

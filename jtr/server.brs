@@ -46,12 +46,18 @@ Sub InitializeServer()
 	' current state of the jtr app
 	m.currentStateAA =					{ HandleEvent: currentJTRState, mVar: m }
 	m.localServer.AddGetFromEvent({ url_path: "/currentState", user_data: m.currentStateAA })
-
+	
 	' get and set the last selected show; uses BS as this information is stored in the database (by storing it in the db rather than localStorage, the iOS app can use this functionality)
 	m.getLastSelectedShowIdAA =			{ HandleEvent: getLastSelectedShowId, mVar: m }
 	m.localServer.AddGetFromEvent({ url_path: "/lastSelectedShow", user_data: m.getLastSelectedShowIdAA })
 	m.setLastSelectedShowIdAA =			{ HandleEvent: setLastSelectedShowId, mVar: m }
 	m.localServer.AddPostToFormData({ url_path: "/lastSelectedShow", user_data: m.setLastSelectedShowIdAA })
+
+	' last tuned channel
+	m.getLastTunedChannelAA =			{ HandleEvent: getLastTunedChannel, mVar: m }
+	m.localServer.AddGetFromEvent({ url_path: "/lastTunedChannel", user_data: m.getLastTunedChannelAA })
+	m.setLastTunedChannelAA =			{ HandleEvent: setLastTunedChannel, mVar: m }
+	m.localServer.AddPostToFormData({ url_path: "/lastTunedChannel", user_data: m.setLastTunedChannelAA })
 
 ' incorporation of site downloader code
     m.siteFilePostedAA = { HandleEvent: siteFilePosted, mVar: m }
@@ -452,6 +458,38 @@ Sub setLastSelectedShowId(userData as Object, e as Object)
 	args = e.GetFormData()
 
 	mVar.SetDBLastSelectedShowId(args.lastSelectedShowId)
+
+	e.SetResponseBodyString("OK")
+	e.SendResponse(200)
+
+End Sub
+
+
+Sub getLastTunedChannel(userData as Object, e as Object)
+
+	print "getLastTunedChannel endpoint invoked"
+
+    mVar = userData.mVar
+
+	response = {}
+	response.lastTunedChannel = mVar.GetDBLastTunedChannel()
+	print "getLastTunedChannel: response.lastTunedChannel=";response.lastTunedChannel
+	e.AddResponseHeader("Content-type", "text/plain")
+	e.SetResponseBodyString(response.lastTunedChannel)
+	e.SendResponse(200)
+
+End Sub
+
+
+Sub setLastTunedChannel(userData as Object, e as Object)
+
+	print "setLastTunedChannel endpoint invoked"
+
+    mVar = userData.mVar
+
+	args = e.GetFormData()
+
+	mVar.SetDBLastTunedChannel(args.lastTunedChannel)
 
 	e.SetResponseBodyString("OK")
 	e.SendResponse(200)
