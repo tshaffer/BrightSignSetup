@@ -30,6 +30,7 @@
     this.stLiveVideo.getChannelIdFromChannel = this.getChannelIdFromChannel;
     this.stLiveVideo.displayChannel = this.displayChannel;
     this.stLiveVideo.hideChannel = this.hideChannel;
+    this.stLiveVideo.fadedOut = this.fadedOut;
     this.stLiveVideo.startChannelDisplayTimer = this.startChannelDisplayTimer;
     //TODO
     this.stLiveVideo.tunerChannels = ["2", "4", "5", "7", "9-1", "9-2", "9-3", "11", "36", "44"];
@@ -457,12 +458,12 @@ displayEngineStateMachine.prototype.displayChannel = function (channel) {
 displayEngineStateMachine.prototype.hideChannel = function (channel) {
 
     if ($("#channel").length) {
-        $("#channel").fadeOut(2000, fadedOut);
+        $("#channel").fadeOut(2000, this.fadedOut);
     }
 }
 
 
-function fadedOut() {
+displayEngineStateMachine.prototype.fadedOut = function() {
     console.log("fadedOut invoked");
     this.channelDisplayed = false;
 }
