@@ -29,6 +29,8 @@
     this.stLiveVideo.sendIROut = this.sendIROut;
     this.stLiveVideo.getChannelIdFromChannel = this.getChannelIdFromChannel;
     this.stLiveVideo.displayChannel = this.displayChannel;
+    this.stLiveVideo.hideChannel = this.hideChannel;
+    this.stLiveVideo.startChannelDisplayTimer = this.startChannelDisplayTimer;
     //TODO
     this.stLiveVideo.tunerChannels = ["2", "4", "5", "7", "9-1", "9-2", "9-3", "11", "36", "44"];
 
@@ -335,6 +337,7 @@ displayEngineStateMachine.prototype.STLiveVideoEventHandler = function (event, s
 
         this.enteredChannel = "";
         this.channelEntryTimer = null;
+        this.channelDisplayTimer = null;
 
         bsMessage.PostBSMessage({ command: "tuneLiveVideo" });
 
@@ -361,6 +364,8 @@ displayEngineStateMachine.prototype.STLiveVideoEventHandler = function (event, s
     }
     else if (event["EventType"] == "EXIT_SIGNAL") {
         consoleLog(this.id + ": exit signal");
+        this.hideChannel();
+        return "HANDLED";
     }
     else if (event["EventType"] == "PLAY_RECORDED_SHOW") {
         consoleLog({ command: "debugPrint", "debugMessage": "STLiveVideoEventHandler: play recorded show" });
@@ -434,15 +439,38 @@ displayEngineStateMachine.prototype.displayChannel = function (channel) {
     var channelLabel = "Channel " + channel.toString();
     var htmlContents = '<p id="channel">' + channelLabel + '</p>';
 
-    consoleLog("DISPLAY CHANNEL NUMBER: " + htmlContents);
-
     if (!$("#channel").length) {
         $("#videoControlRegion").append(htmlContents);
     }
     else {
         $("#channel").html(htmlContents);
     }
+    this.startChannelDisplayTimer();
 }
+
+
+displayEngineStateMachine.prototype.hideChannel = function (channel) {
+
+    if ($("#channel").length) {
+        $("#channel").remove();
+    }
+}
+
+
+displayEngineStateMachine.prototype.startChannelDisplayTimer = function () {
+
+    if (this.channelDisplayTimer != null) {
+        clearTimeout(this.channelDisplayTimer);
+        this.channelDisplayTimer = null;
+    }
+
+    var thisObj = this;
+    this.channelDisplayTimer = setTimeout(function () {
+        thisObj.hideChannel();
+    }, 2000);
+}
+
+
 
 displayEngineStateMachine.prototype.getChannelIdFromChannel = function (channel) {
 
