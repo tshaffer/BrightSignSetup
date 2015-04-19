@@ -336,6 +336,7 @@ displayEngineStateMachine.prototype.STLiveVideoEventHandler = function (event, s
         console.log("typeof ir_transmitter is " + typeof this.ir_transmitter);
 
         this.enteredChannel = "";
+        this.channelDisplayed = false;
         this.channelEntryTimer = null;
         this.channelDisplayTimer = null;
 
@@ -445,15 +446,25 @@ displayEngineStateMachine.prototype.displayChannel = function (channel) {
     else {
         $("#channel").html(htmlContents);
     }
+    $("#channel").stop(true);
+    $("#channel").fadeTo(0, 1);
+    $("#channel").show();
     this.startChannelDisplayTimer();
+    this.channelDisplayed = true;
 }
 
 
 displayEngineStateMachine.prototype.hideChannel = function (channel) {
 
     if ($("#channel").length) {
-        $("#channel").remove();
+        $("#channel").fadeOut(2000, fadedOut);
     }
+}
+
+
+function fadedOut() {
+    console.log("fadedOut invoked");
+    this.channelDisplayed = false;
 }
 
 
