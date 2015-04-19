@@ -301,6 +301,7 @@ recordingEngineStateMachine.prototype.startRecording = function (title, duration
         }
         this.addRecordingEndTimer(Number(duration) * 60 * 1000, title, new Date(), duration);
     }
+    displayUserMessage("Recording started: " + title);
 }
 
 // TODO - save this in case user wants to stop a recording?

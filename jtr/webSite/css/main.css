@@ -114,6 +114,12 @@ body {
     color: white;
 }
 
+#userMessage {
+  color: white;
+  position: fixed;
+  top: 100px;
+  left: 10%
+}
 
 #channel {
   color: white;
@@ -126,7 +132,6 @@ body {
   position: fixed;
   z-index: 2;
 }
-
 
 .meterTick
 {
