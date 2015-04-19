@@ -30,7 +30,7 @@
     this.stLiveVideo.getChannelIdFromChannel = this.getChannelIdFromChannel;
     this.stLiveVideo.displayChannel = this.displayChannel;
     //TODO
-    this.stLiveVideo.tunerChannels = ["2", "4", "5", "7", "9", "11", "36", "44"];
+    this.stLiveVideo.tunerChannels = ["2", "4", "5", "7", "9-1", "9-2", "9-3", "11", "36", "44"];
 
     this.stPlaying = new HState(this, "Playing");
     this.stPlaying.HStateEventHandler = this.STPlayingEventHandler;
