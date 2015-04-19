@@ -1,3 +1,7 @@
+#recordNowCheckBox, #manualRecordTuneCheckbox {
+    margin: 10px 0px 0px 0px;
+}
+
 .clearDisplay {
     display: none;
 }

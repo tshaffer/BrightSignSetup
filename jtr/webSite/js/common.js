@@ -289,18 +289,14 @@ function twoDigitFormat(val) {
 
 
 function setDefaultDateTimeFields() {
+
     var date = new Date();
 
-    var toAppendDate = "<input id=\"manualRecordDate\"  type=\"date\" class=\"form-control\" value=\"" + date.getFullYear() + "-" + twoDigitFormat((date.getMonth() + 1)) + "-" + twoDigitFormat(date.getDate()) + "\">";
-    var toAppendTime = "<input id=\"manualRecordTime\" type=\"time\" class=\"form-control\" value=\"" + twoDigitFormat(date.getHours()) + ":" + twoDigitFormat(date.getMinutes()) + "\">";
+    var dateVal = date.getFullYear() + "-" + twoDigitFormat((date.getMonth() + 1)) + "-" + twoDigitFormat(date.getDate());
+    $("#manualRecordDate").val(dateVal);
 
-    if ($("#manualRecordDate").length) {
-        $("#manualRecordDate").remove();
-        $("#manualRecordTime").remove();
-    }
-
-    $("#manualRecordDateId").append(toAppendDate);
-    $("#manualRecordTimeId").append(toAppendTime);
+    var timeVal = twoDigitFormat(date.getHours()) + ":" + twoDigitFormat(date.getMinutes());
+    $("#manualRecordTime").val(timeVal);
 }
 
 function getRecordingTitle(titleId, dateObj, useTuner, channel) {

@@ -93,41 +93,93 @@
         </div>
       </div>
 
-      <div id="recordNowPage" style="display: none;">
-        <h3>Record Now</h3>
-        <form class="navbar-form navbar-left" role="search">
-          <div class="form-group">
-            <p>Title (optional)  <input id="recordNowTitle" type="text" class="form-control"></p><br>
-            <p>Duration (mins)  <input id="recordNowDuration" type="number" class="form-control" value="1" step="1"></p><br>
-            <p>Tune (use antenna input)  <input id="recordNowTuneCheckbox" type="checkbox" value="false" class="form-control"></p><br>
-            <p>Channel  <input id="recordNowChannel" type="text" value="5" class="form-control"></p><br>
-          </div>
-          <br>
-          <button class="btn btn-primary" onclick="recordNow()">Record Now</button><br><br>
-        </form>
-      </div>
+        <div id="recordNowPage" style="display:none">
+            <h3>Record Now</h3>
+            <form class="form-horizontal">
+                <div class="form-group form-group-sm">
+                    <label for="recordNowTitle" class="col-sm-4 control-label">Title (optional)</label>
+                    <div class="col-sm-4">
+                      <input type="text" class="form-control input-sm" id="recordNowTitle" placeholder="">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="recordNowDuration" class="col-sm-4 control-label">Duration (mins)</label>
+                    <div class="col-sm-4">
+                      <input type="text" class="form-control input-sm" id="recordNowDuration" placeholder="">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="recordNowCheckBox" class="col-sm-4 control-label">Tune (use antenna input)</label>
+                    <div class="col-sm-4">
+                          <input type="checkbox" id="recordNowCheckBox">
+                    </div>
+                </div>
 
-      <div id="manualRecordPage" style="display: none;">
-        <h3>Create a Manual Recording</h3>
-        <form class="navbar-form navbar-left" role="search">
-          <div class="form-group">
-            <p> Title (optional)  <input id="manualRecordTitle" type="text" class="form-control"></p><br>
-            <p>Duration (mins)  <input id="manualRecordDuration" type="number" class="form-control" value="1" step="1"></p><br>
-            <p id="manualRecordDateId">Date  </p><br>
-            <p id="manualRecordTimeId">Time  </p><br>
-            <p>Tune (use antenna input)  <input id="manualRecordTuneCheckbox" type="checkbox" value="false" class="form-control"></p><br>
-            <p>Channel  <input id="manualRecordChannel" type="text" value="5" class="form-control"></p><br>
-          </div>
-          <br>
-          <!--<button type="submit" class="btn btn-primary" onclick="createManualRecording()">Set Scheduled Record</button>-->
-          <button class="btn btn-primary" onclick="createManualRecording()">Set Manual Record</button>
-        </form>
-      </div>
+                <div class="form-group">
+                    <label for="recordNowChannel" class="col-sm-4 control-label">Channel</label>
+                    <div class="col-sm-4">
+                      <input type="text" class="form-control input-sm" id="recordNowChannel" placeholder="5">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <div class="col-sm-offset-4 col-sm-4">
+                      <button type="submit" class="btn btn-default" onclick="recordNow()">Record Now</button>
+                    </div>
+                </div>
+            </form>
+        </div>
+
+        <div id="manualRecordPage" style="display:none">
+            <h3>Create a Manual Recording</h3>
+            <form class="form-horizontal">
+                <div class="form-group form-group-sm">
+                    <label for="manualRecordTitle" class="col-sm-4 control-label">Title (optional)</label>
+                    <div class="col-sm-4">
+                      <input type="text" class="form-control input-sm" id="manualRecordTitle" placeholder="">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="manualRecordDuration" class="col-sm-4 control-label">Duration (mins)</label>
+                    <div class="col-sm-4">
+                      <input type="text" class="form-control input-sm" id="manualRecordDuration" placeholder="">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="manualRecordDateId" class="col-sm-4 control-label">Date</label>
+                    <div class="col-sm-4" id="manualRecordDateDiv">
+                        <input type="date" class="form-control input-sm" id="manualRecordDate"  value="">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="manualRecordTimeId" class="col-sm-4 control-label">Time</label>
+                    <div class="col-sm-4" id="manualRecordTimeDiv">
+                        <input type="time" class="form-control input-sm" id="manualRecordTime" value="">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="manualRecordTuneCheckbox" class="col-sm-4 control-label">Tune (use antenna input)</label>
+                    <div class="col-sm-4">
+                          <input type="checkbox" id="manualRecordTuneCheckbox">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="manualRecordChannel" class="col-sm-4 control-label">Channel</label>
+                    <div class="col-sm-4">
+                      <input type="text" class="form-control input-sm" id="manualRecordChannel" placeholder="5">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <div class="col-sm-offset-4 col-sm-4">
+                      <button type="submit" class="btn btn-default" onclick="createManualRecording()">Set Manual Record</button>
+                    </div>
+                </div>
+            </form>
+        </div>
 
       <div id="recordedShowsPage" class="table-responsive" style="display: none;">
 
 		<p class="alignleft" id="recordedShowsTitle">Recorded Shows</p>
-		<p id="recordedShowsRemainingSpace" class="alignright">Free space: </p>
+		<p class="alignright" id="recordedShowsRemainingSpace">Free space: </p>
 		<div style="clear: both;"></div>
 
         <table class="table table-striped">
@@ -174,9 +226,6 @@
       </div>
 
       <div id="recordedShowDetailsPage" style="display: none;"></div>
-
-
-      
 
     </div> <!-- /container -->
 
