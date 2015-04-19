@@ -18,6 +18,7 @@
     this.stMainMenu = new HState(this, "MainMenu");
     this.stMainMenu.HStateEventHandler = this.STMainMenuEventHandler;
     this.stMainMenu.superState = this.stUIScreen;
+    this.stMainMenu.navigateHomePage = this.navigateHomePage;
 
     this.stShowingModalDlg = new HState(this, "ShowingModalDlg");
     this.stShowingModalDlg.HStateEventHandler = this.STShowingModalDlgEventHandler;
@@ -27,6 +28,7 @@
     this.stRecordedShows.HStateEventHandler = this.STRecordedShowsEventHandler;
     this.stRecordedShows.superState = this.stUIScreen;
     this.stRecordedShows.getAction = this.getAction;
+    this.stRecordedShows.navigateRecordedShowsPage = this.navigateRecordedShowsPage;
 
     this.topState = this.stTop;
 }
@@ -268,7 +270,7 @@ uiEngineStateMachine.prototype.STMainMenuEventHandler = function (event, stateDa
                 var command = eventData.toLowerCase();
                 consoleLog("currentActiveElementId is " + currentActiveElementId);
                 consoleLog("navigation remote key pressed while homePage visible");
-                navigateHomePage(command)
+                this.navigateHomePage(command)
                 return "HANDLED";
                 break;
             case "exit":
@@ -354,7 +356,7 @@ uiEngineStateMachine.prototype.STRecordedShowsEventHandler = function (event, st
                 var command = eventData.toLowerCase();
                 consoleLog("currentActiveElementId is " + currentActiveElementId);
                 consoleLog("navigation remote key pressed while recordedShowsPage visible");
-                navigateRecordedShowsPage(command)
+                this.navigateRecordedShowsPage(command)
                 return "HANDLED";
             case "exit":
                 stateData.nextState = this.stateMachine.stNone;
@@ -402,7 +404,7 @@ var mainMenuIds = [
     ['manualRecord', 'toDoList']
 ];
 
-function navigateHomePage(navigationCommand$) {
+uiEngineStateMachine.prototype.navigateHomePage = function (navigationCommand$) {
 
     var rowIndex = -1;
     var colIndex = -1;
@@ -455,8 +457,7 @@ function navigateHomePage(navigationCommand$) {
     $(newElementId).focus();
 }
 
-
-function navigateRecordedShowsPage(navigationCommand$) {
+uiEngineStateMachine.prototype.navigateRecordedShowsPage = function (navigationCommand$) {
 
     consoleLog("navigateRecordedShowsPage entry");
 
