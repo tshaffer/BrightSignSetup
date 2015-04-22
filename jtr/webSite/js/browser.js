@@ -58,7 +58,7 @@ function recordNow() {
     var currentDate = new Date();
 
     var duration = $("#recordNowDuration").val();
-    var useTuner = $("#recordNowTuneCheckbox").is(':checked');
+    var useTuner = $("#recordNowCheckBox").is(':checked');
     var channel = $("#recordNowChannel").val();
 
     var title = getRecordingTitle("#recordNowTitle", currentDate, false, "");

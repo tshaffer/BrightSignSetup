@@ -2,6 +2,7 @@ var sendConsoleOutputToBS = false;
 
 // BrightSign only
 var bsMessage;
+var ir_transmitter = null;
 var ir_receiver;
 
 // miscellaneous variables

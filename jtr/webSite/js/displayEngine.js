@@ -25,8 +25,6 @@
     this.stLiveVideo.playSelectedShow = this.playSelectedShow;
     this.stLiveVideo.startChannelEntryTimer = this.startChannelEntryTimer;
     this.stLiveVideo.tuneLiveVideoChannel = this.tuneLiveVideoChannel;
-    this.stLiveVideo.tuneDigit = this.tuneDigit;
-    this.stLiveVideo.sendIROut = this.sendIROut;
     this.stLiveVideo.getChannelIdFromChannel = this.getChannelIdFromChannel;
     this.stLiveVideo.displayChannel = this.displayChannel;
     this.stLiveVideo.hideChannel = this.hideChannel;
@@ -333,7 +331,9 @@ displayEngineStateMachine.prototype.STLiveVideoEventHandler = function (event, s
     if (event["EventType"] == "ENTRY_SIGNAL") {
         consoleLog(this.id + ": entry signal");
 
-        this.ir_transmitter = new BSIRTransmitter("IR-out");
+        if (ir_transmitter == null) {
+            ir_transmitter = new BSIRTransmitter("IR-out");
+        }
         console.log("typeof ir_transmitter is " + typeof this.ir_transmitter);
 
         this.enteredChannel = "";
@@ -506,81 +506,11 @@ displayEngineStateMachine.prototype.tuneLiveVideoChannel = function (saveChannel
 
     this.lastTunedChannel = this.enteredChannel;
 
-    this.channel = this.enteredChannel;
-    this.tuneDigit();
-
-    if (saveChannelToDB) {
-        // save lastTunedChannel in db
-        var parts = [];
-        parts.push("lastTunedChannel" + '=' + this.enteredChannel);
-        var paramString = parts.join('&');
-        var url = baseURL + "lastTunedChannel";
-        $.post(url, paramString);
-    }
+    tuneChannel(this.enteredChannel, saveChannelToDB);
 
     this.enteredChannel = "";
 }
 
-
-displayEngineStateMachine.prototype.tuneDigit = function () {
-
-    if (this.channel.length > 0) {
-        var char = this.channel.charAt(0);
-        this.sendIROut(char);
-        this.channel = this.channel.substr(1);
-        if (this.channel.length == 0) return;
-        var thisObj = this;
-        setTimeout(function () {
-            thisObj.tuneDigit();
-        }, 400);
-    }
-}
-
-displayEngineStateMachine.prototype.sendIROut = function (char) {
-
-    var irCode = -1;
-
-    switch (char) {
-        case "0":
-            irCode = 65295;
-            break;
-        case "1":
-            irCode = 65363;
-            break;
-        case "2":
-            irCode = 65360;
-            break;
-        case "3":
-            irCode = 65296;
-            break;
-        case "4":
-            irCode = 65367;
-            break;
-        case "5":
-            irCode = 65364;
-            break;
-        case "6":
-            irCode = 65300;
-            break;
-        case "7":
-            irCode = 65359;
-            break;
-        case "8":
-            irCode = 65356;
-            break;
-        case "9":
-            irCode = 65292;
-            break;
-        case "-":
-            irCode = 65303;
-            break;
-    }
-
-    if (irCode > 0) {
-        consoleLog("Send NEC " + irCode);
-        this.ir_transmitter.Send("NEC", irCode);
-    }
-}
 
 displayEngineStateMachine.prototype.STPlayingEventHandler = function (event, stateData) {
 

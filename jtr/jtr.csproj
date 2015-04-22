@@ -75,6 +75,7 @@
     <Content Include="webSite\js\less.min.js" />
     <Content Include="webSite\js\recordingEngine.js" />
     <Content Include="webSite\js\remote.js" />
+    <Content Include="webSite\js\tune.js" />
     <Content Include="webSite\js\uiEngine.js" />
     <Content Include="webSite\js\xml2json.js" />
   </ItemGroup>
