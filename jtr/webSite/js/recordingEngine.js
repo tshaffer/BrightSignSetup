@@ -30,6 +30,7 @@
     this.stRecording.endRecording = this.endRecording;
     this.stRecording.recordingObsolete = this.recordingObsolete;
     this.stRecording.addRecording = this.addRecording;
+    this.stRecording.startRecordingTimer = this.startRecordingTimer;
 
     this.topState = this.stTop;
 }
@@ -100,7 +101,7 @@ recordingEngineStateMachine.prototype.STIdleEventHandler = function (event, stat
                     else {
                         var actualDuration = {};
                         actualDuration.durationInMS = scheduledRecording.Duration;
-                        var recordNow = thisThisObj.addRecording(false, scheduledRecording.DateTime, scheduledRecording.Title, scheduledRecording.Duration, scheduledRecording.UseTuner, scheduledRecording.Channel, actualDuration);
+                        var recordNow = thisThisObj.addRecording(false, scheduledRecording.DateTime, scheduledRecording.Title, scheduledRecording.Duration, scheduledRecording.UseTuner, scheduledRecording.Channel, actualDuration, false);
                         if (recordNow) {
 
                             // post internal message to cause transition to recording state
@@ -168,7 +169,7 @@ recordingEngineStateMachine.prototype.STIdleEventHandler = function (event, stat
         var actualDuration = {};
         actualDuration.durationInMS = durationInMilliseconds;
 
-        var recordNow = this.addRecording(true, dateTime, title, durationInMilliseconds, useTuner, channel, actualDuration);
+        var recordNow = this.addRecording(true, dateTime, title, durationInMilliseconds, useTuner, channel, actualDuration, true);
         console.log("recordNow = " + recordNow);
         if (recordNow) {
             this.stateMachine.recordingTitle = title;
@@ -235,7 +236,7 @@ recordingEngineStateMachine.prototype.STRecordingEventHandler = function (event,
         var actualDuration = {};
         actualDuration.durationInMS = durationInMilliseconds;
 
-        var recordNow = this.addRecording(true, dateTime, title, durationInMilliseconds, useTuner, channel, actualDuration);
+        var recordNow = this.addRecording(true, dateTime, title, durationInMilliseconds, useTuner, channel, actualDuration, false);
         console.log("recordNow = " + recordNow);
         if (recordNow) {
             consoleLog("SetManualRecord indicates record now!! Reject: recording in progress");
@@ -249,7 +250,7 @@ recordingEngineStateMachine.prototype.STRecordingEventHandler = function (event,
 }
 
 
-recordingEngineStateMachine.prototype.addRecording = function (addToDB, dateTime, title, duration, useTuner, channel, actualDuration) {
+recordingEngineStateMachine.prototype.addRecording = function (addToDB, dateTime, title, duration, useTuner, channel, actualDuration, addToDBIfAlreadyActive) {
 
     var recordNow;
 
@@ -266,7 +267,7 @@ recordingEngineStateMachine.prototype.addRecording = function (addToDB, dateTime
         recordNow = false;
     }
 
-    if (addToDB) {
+    if (addToDB && (addToDBIfAlreadyActive || !recordNow)) {
         var aUrl = baseURL + "addScheduledRecording";
         var recordingData = { "dateTime": dateTime, "title": title, "duration": duration, "useTuner": useTuner, "channel": channel };
 
@@ -329,7 +330,7 @@ recordingEngineStateMachine.prototype.startRecording = function (title, duration
         tuneChannel(channel, false);
     }
 
-    //bsMessage.PostBSMessage({ command: "recordNow", "title": title, "duration": duration });
+    bsMessage.PostBSMessage({ command: "recordNow", "title": title, "duration": duration });
     this.addRecordingEndTimer(duration, title, new Date(), duration);
     displayUserMessage("Recording started: " + title);
 }
@@ -362,7 +363,7 @@ recordingEngineStateMachine.prototype.endRecording = function (title, dateTime, 
     //fileName = fileName.slice(0, 15);
     //consoleLog("fileName = " + fileName);
 
-    //bsMessage.PostBSMessage({ command: "endRecording", startSegmentation: true });
+    bsMessage.PostBSMessage({ command: "endRecording", startSegmentation: true });
 
     var event = {};
     event["EventType"] = "TRANSITION_TO_IDLE";
