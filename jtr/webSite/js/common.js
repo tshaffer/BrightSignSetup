@@ -14,6 +14,10 @@ function addMinutes(date, minutes) {
     return new Date(date.getTime() + minutes * 60000);
 }
 
+function addMilliseconds(date, milliseconds) {
+    return new Date(date.getTime() + milliseconds);
+}
+
 function switchToPage(newPage) {
 
     var newPageId = "#" + newPage;
