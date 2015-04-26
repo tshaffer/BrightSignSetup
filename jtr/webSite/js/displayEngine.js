@@ -11,6 +11,8 @@
     this.stIdle.HStateEventHandler = this.STIdleEventHandler;
     this.stIdle.superState = this.stTop;
     this.stIdle.playSelectedShow = this.playSelectedShow;
+    this.stIdle.toggleClock = this.toggleClock;
+    this.stIdle.formatCurrentTime = this.formatCurrentTime;
 
     this.stShowingVideo = new HState(this, "ShowingVideo");
     this.stShowingVideo.HStateEventHandler = this.STShowingVideoEventHandler;
@@ -76,6 +78,7 @@ displayEngineStateMachine.prototype.InitializeDisplayEngineHSM = function () {
 displayEngineStateMachine.prototype.STIdleEventHandler = function (event, stateData) {
 
     stateData.nextState = null;
+    this.clockTimer = null;
 
     if (event["EventType"] == "ENTRY_SIGNAL") {
         consoleLog(this.id + ": entry signal");
@@ -95,10 +98,64 @@ displayEngineStateMachine.prototype.STIdleEventHandler = function (event, stateD
         stateData.nextState = this.stateMachine.stLiveVideo;
         return "TRANSITION";
     }
+    else if (event["EventType"] == "REMOTE") {
+        var eventData = event["EventData"]
+        consoleLog(this.id + ": remote command input: " + eventData);
+
+        switch (eventData.toLowerCase()) {
+            case "clock":
+                consoleLog("+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++toggle the clock");
+                this.toggleClock(this.stateMachine.recordingDuration);
+                break;
+        }
+    }
 
     stateData.nextState = this.superState;
     return "SUPER";
 }
+
+
+displayEngineStateMachine.prototype.formatCurrentTime = function () {
+
+    var now = new Date();
+    var hours = now.getHours();
+    var minutes = now.getMinutes().toString();
+    if (minutes.length == 1)
+        minutes = "0" + minutes;
+
+    var amPM = "am";
+    if (hours > 12) {
+        hours -= 12;
+        amPM = "pm";
+    }
+    return hours.toString() + ":" + minutes + " " + amPM;
+}
+
+displayEngineStateMachine.prototype.toggleClock = function () {
+
+    if (!$("#clockP").length) {
+
+        var label = this.formatCurrentTime();
+
+        var htmlContents = '<div id="clock"><p id="clockP">' + label + '</p></div>';
+        $("#videoControlRegion").append(htmlContents);
+
+        var thisObj = this;
+        this.clockTimer = setInterval(function () {
+            var label = thisObj.formatCurrentTime();
+            console.log("set clockP to:" + label);
+            $("#clockP").text(label);
+        }, 10000);
+
+    } else {
+        $("#clock").remove();
+        if (this.clockTimer != null) {
+            clearTimeout(this.clockTimer);
+        }
+        this.clockTimer = null;
+    }
+}
+
 
 
 displayEngineStateMachine.prototype.playSelectedShow = function (recordingId) {
@@ -785,6 +842,3 @@ displayEngineStateMachine.prototype.STRewindingEventHandler = function (event, s
     stateData.nextState = this.superState;
     return "SUPER";
 }
-
-
-

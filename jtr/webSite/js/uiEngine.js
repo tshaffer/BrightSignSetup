@@ -125,6 +125,7 @@ uiEngineStateMachine.prototype.STUIScreenEventHandler = function (event, stateDa
             case "instant_replay":
             case "quick_skip":
             case "progress_bar":
+            case "clock":
                 return "HANDLED";
         }
     }
@@ -213,6 +214,7 @@ uiEngineStateMachine.prototype.STShowingModalDlgEventHandler = function (event, 
             case "instant_replay":
             case "quick_skip":
             case "progress_bar":
+            case "clock":
                 return "HANDLED";
 
         }

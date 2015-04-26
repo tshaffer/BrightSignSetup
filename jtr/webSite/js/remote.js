@@ -43,7 +43,8 @@ function SonyCommand(remoteCode) {
     else if (remoteCode == 163154)
         remoteCommand = "INSTANT_REPLAY"		// INSTANT_REPLAY = RETURN
     else if (remoteCode == 163143)
-        remoteCommand = "JUMP"					// JUMP = RECALL
+        //remoteCommand = "JUMP"					// JUMP = RECALL
+        remoteCommand = "CLOCK"					// JUMP = RECALL
     else if (remoteCode == 163136)
         remoteCommand = "PROGRESS_BAR"			// PROGRESS_BAR = INFO
     else if (remoteCode == 163089)
