@@ -21,6 +21,7 @@
     this.stIdle.startRecordingTimer = this.startRecordingTimer;
     this.stIdle.recordingObsolete = this.recordingObsolete;
     this.stIdle.deleteScheduledRecording = this.deleteScheduledRecording;
+    this.stIdle.handleSetManualRecord = this.handleSetManualRecord;
 
     this.stRecording = new HState(this, "Recording");
     this.stRecording.HStateEventHandler = this.STRecordingEventHandler;
@@ -31,6 +32,7 @@
     this.stRecording.recordingObsolete = this.recordingObsolete;
     this.stRecording.addRecording = this.addRecording;
     this.stRecording.startRecordingTimer = this.startRecordingTimer;
+    this.stRecording.handleSetManualRecord = this.handleSetManualRecord;
 
     this.topState = this.stTop;
 }
@@ -146,31 +148,40 @@ recordingEngineStateMachine.prototype.STIdleEventHandler = function (event, stat
         return "TRANSITION";
     }
     else if (event["EventType"] == "SET_MANUAL_RECORD") {
+        return this.handleSetManualRecord(event, true);
+    }
 
-        var dateTime = event["DateTime"];
-        var title = event["Title"];
-        var duration = event["Duration"];
-        var useTuner = false;
-        if (event["UseTuner"] == "true") {
-            useTuner = true;
-        }
-        var channel = event["Channel"];
+    stateData.nextState = this.superState;
+    return "SUPER";
+}
 
-        consoleLog("STRecordingControllerEventHandler: SET_MANUAL_RECORD received. DateTime = " + dateTime + ", title = " + title + ", duration in minutes = " + duration + ", useTuner = " + useTuner + ", channel = " + channel);
 
-        // ignore manual recordings that are in the past
-        var durationInMilliseconds = Number(duration) * 60000;
-        var recordingObsolete = this.recordingObsolete(dateTime, durationInMilliseconds);
-        if (recordingObsolete) {
-            consoleLog("Manual recording in the past, ignore request.");
-            return "HANDLED";
-        }
+recordingEngineStateMachine.prototype.handleSetManualRecord = function (event, idle) {
 
-        var actualDuration = {};
-        actualDuration.durationInMS = durationInMilliseconds;
+    var dateTime = event["DateTime"];
+    var title = event["Title"];
+    var duration = event["Duration"];
+    var useTuner = false;
+    if (event["UseTuner"] == "true") {
+        useTuner = true;
+    }
+    var channel = event["Channel"];
 
+    consoleLog("handleSetManualRecord: SET_MANUAL_RECORD received. DateTime = " + dateTime + ", title = " + title + ", duration in minutes = " + duration + ", useTuner = " + useTuner + ", channel = " + channel);
+
+    // ignore manual recordings that are in the past
+    var durationInMilliseconds = Number(duration) * 60000;
+    var recordingObsolete = this.recordingObsolete(dateTime, durationInMilliseconds);
+    if (recordingObsolete) {
+        consoleLog("Manual recording in the past, ignore request.");
+        return "HANDLED";
+    }
+
+    var actualDuration = {};
+    actualDuration.durationInMS = durationInMilliseconds;
+
+    if (idle) {
         var recordNow = this.addRecording(true, dateTime, title, durationInMilliseconds, useTuner, channel, actualDuration, true);
-        console.log("recordNow = " + recordNow);
         if (recordNow) {
             this.stateMachine.recordingTitle = title;
             this.stateMachine.recordingDuration = actualDuration.durationInMS;
@@ -179,14 +190,17 @@ recordingEngineStateMachine.prototype.STIdleEventHandler = function (event, stat
             stateData.nextState = this.stateMachine.stRecording;
             return "TRANSITION";
         }
-
-        return "HANDLED"
+    }
+    else {
+        var recordNow = this.addRecording(true, dateTime, title, durationInMilliseconds, useTuner, channel, actualDuration, false);
+        if (recordNow) {
+            consoleLog("SetManualRecord indicates record now!! Reject: recording in progress");
+        }
     }
 
-    stateData.nextState = this.superState;
-    return "SUPER";
-}
+    return "HANDLED"
 
+}
 
 recordingEngineStateMachine.prototype.STRecordingEventHandler = function (event, stateData) {
 
@@ -213,36 +227,7 @@ recordingEngineStateMachine.prototype.STRecordingEventHandler = function (event,
         return "TRANSITION";
     }
     else if (event["EventType"] == "SET_MANUAL_RECORD") {
-
-        var dateTime = event["DateTime"];
-        var title = event["Title"];
-        var duration = event["Duration"];
-        var useTuner = false;
-        if (event["UseTuner"] == "true") {
-            useTuner = true;
-        }
-        var channel = event["Channel"];
-
-        consoleLog("STRecordingControllerEventHandler: SET_MANUAL_RECORD received. DateTime = " + dateTime + ", title = " + title + ", duration in minutes = " + duration + ", useTuner = " + useTuner + ", channel = " + channel);
-
-        // ignore manual recordings that are in the past
-        var durationInMilliseconds = Number(duration) * 60000;
-        var recordingObsolete = this.recordingObsolete(dateTime, durationInMilliseconds);
-        if (recordingObsolete) {
-            consoleLog("Manual recording in the past, ignore request.");
-            return "HANDLED";
-        }
-
-        var actualDuration = {};
-        actualDuration.durationInMS = durationInMilliseconds;
-
-        var recordNow = this.addRecording(true, dateTime, title, durationInMilliseconds, useTuner, channel, actualDuration, false);
-        console.log("recordNow = " + recordNow);
-        if (recordNow) {
-            consoleLog("SetManualRecord indicates record now!! Reject: recording in progress");
-        }
-
-        return "HANDLED"
+        return this.handleSetManualRecord(event, false);
     }
 
     stateData.nextState = this.superState;
