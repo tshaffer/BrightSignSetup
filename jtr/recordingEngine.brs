@@ -76,7 +76,7 @@ Sub re_HandleHttpEvent(event As Object)
 				m.StartManualRecord()
 				
 			else if aa.command = "endRecording" then
-				startSegmentation = true
+				startSegmentation = false
 				if aa.startSegmentation = "false" then
 					startSegmentation = false
 				endif
