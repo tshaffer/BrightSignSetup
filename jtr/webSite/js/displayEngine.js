@@ -20,7 +20,9 @@
     this.stShowingVideo.calculateProgressBarParameters = this.calculateProgressBarParameters;
     this.stShowingVideo.toggleProgressBar = this.toggleProgressBar;
     this.stShowingVideo.updateProgressBarGraphics = this.updateProgressBarGraphics;
- 
+    this.stShowingVideo.toggleClock = this.toggleClock;
+    this.stShowingVideo.formatCurrentTime = this.formatCurrentTime;
+
     this.stLiveVideo = new HState(this, "LiveVideo");
     this.stLiveVideo.HStateEventHandler = this.STLiveVideoEventHandler;
     this.stLiveVideo.superState = this.stShowingVideo;
@@ -104,7 +106,6 @@ displayEngineStateMachine.prototype.STIdleEventHandler = function (event, stateD
 
         switch (eventData.toLowerCase()) {
             case "clock":
-                consoleLog("+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++toggle the clock");
                 this.toggleClock(this.stateMachine.recordingDuration);
                 break;
         }
@@ -133,12 +134,18 @@ displayEngineStateMachine.prototype.formatCurrentTime = function () {
 
 displayEngineStateMachine.prototype.toggleClock = function () {
 
+    console.log("toggle clock");
+
     if (!$("#clockP").length) {
+
+        console.log("show clock");
 
         var label = this.formatCurrentTime();
 
         var htmlContents = '<div id="clock"><p id="clockP">' + label + '</p></div>';
         $("#videoControlRegion").append(htmlContents);
+
+        console.log("set clock contents to " + htmlContents);
 
         var thisObj = this;
         this.clockTimer = setInterval(function () {
@@ -365,7 +372,9 @@ displayEngineStateMachine.prototype.STShowingVideoEventHandler = function (event
                 this.calculateProgressBarParameters();
                 this.toggleProgressBar(this.stateMachine.recordingDuration);
                 break;
-
+            case "clock":
+                this.toggleClock(this.stateMachine.recordingDuration);
+                break;
         }
     }
     else if (event["EventType"] == "EXIT_SIGNAL") {
