@@ -43,16 +43,15 @@ function SonyCommand(remoteCode) {
     else if (remoteCode == 163154)
         remoteCommand = "INSTANT_REPLAY"		// INSTANT_REPLAY = RETURN
     else if (remoteCode == 163143)
-        //remoteCommand = "JUMP"					// JUMP = RECALL
-        remoteCommand = "CLOCK"					// JUMP = RECALL
+        remoteCommand = "JUMP"					// JUMP = RECALL
     else if (remoteCode == 163136)
         remoteCommand = "PROGRESS_BAR"			// PROGRESS_BAR = INFO
     else if (remoteCode == 163089)
         remoteCommand = "RECORDED_SHOWS"		// RECORDED_SHOWS = FAVORITES
     else if (remoteCode == 163140)
-        remoteCommand = "HIGHEST_SPEED_FW"		// ->->|
+        remoteCommand = "HIGHEST_SPEED_FW"		// ->->| = CH LIST
     else if (remoteCode == 163096)
-        remoteCommand = "HIGHEST_SPEED_RW"		// |<-<-
+        remoteCommand = "HIGHEST_SPEED_RW"		// |<-<- ADD ERASE
     else if (remoteCode == 163072)
         remoteCommand = "0";
     else if (remoteCode == 163073)
@@ -80,7 +79,9 @@ function SonyCommand(remoteCode) {
     else if (remoteCode == 163162)
         remoteCommand = "CHANNEL_DOWN"
     else if (remoteCode == 163137)
-        remoteCommand = "ENTER"
+        remoteCommand = "ENTER";
+    else if (remoteCode == 163161)
+        remoteCommand = "CLOCK";                // PAGE + = CLOCK
 
     return remoteCommand
 }
@@ -125,9 +126,9 @@ function SeikiCommand(remoteCode)
     else if (remoteCode == 163089)
         remoteCommand = "RECORDED_SHOWS"		// RECORDED_SHOWS = SLEEP
     else if (remoteCode == 163140)
-        remoteCommand = "HIGHEST_SPEED_FW"		
+        remoteCommand = "HIGHEST_SPEED_FW"		// CH.LIST
     else if (remoteCode == 163096)
-        remoteCommand = "HIGHEST_SPEED_RW"
+        remoteCommand = "HIGHEST_SPEED_RW"      // ADD/ERASE
     else if (remoteCode == 163139) 
         remoteCommand = "STOP"					// STOP = S.Mode
     else if (remoteCode == 163072)
@@ -156,6 +157,8 @@ function SeikiCommand(remoteCode)
         remoteCommand = "CHANNEL_UP"
     else if (remoteCode == 163162)
         remoteCommand = "CHANNEL_DOWN"
+    else if (remoteCode == 163161)              // FAV
+        remoteCommand = "CLOCK";
     else
         remoteCommand = ""
 
