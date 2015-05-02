@@ -494,6 +494,12 @@ displayEngineStateMachine.prototype.STLiveVideoEventHandler = function (event, s
                 this.tuneLiveVideoChannel(true);
                 this.displayChannel(this.lastTunedChannel.toString());
                 return "HANDLED";
+            case "up":
+                cycleHDMIInputs(true);
+                return "HANDLED";
+            case "down":
+                cycleHDMIInputs(false);
+                return "HANDLED";
         }
     }
 

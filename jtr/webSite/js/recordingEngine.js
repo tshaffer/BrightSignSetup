@@ -92,7 +92,7 @@ recordingEngineStateMachine.prototype.STIdleEventHandler = function (event, stat
                 var thisThisObj = thisObj;
 
                 $.each(result.scheduledrecordings, function (index, scheduledRecording) {
-                    consoleLog(scheduledRecording.DateTime + " " + scheduledRecording.Channel + " " + scheduledRecording.Duration + " " + scheduledRecording.Id + " " + scheduledRecording.Title + " " + scheduledRecording.UseTuner);
+                    consoleLog(scheduledRecording.DateTime + " " + scheduledRecording.Channel + " " + scheduledRecording.Duration + " " + scheduledRecording.Id + " " + scheduledRecording.Title + " " + scheduledRecording.InputSource);
 
                     // if the recording is in the past, remove if from the db
                     var recordingObsolete = thisThisObj.recordingObsolete(scheduledRecording.DateTime, scheduledRecording.Duration);
@@ -103,7 +103,7 @@ recordingEngineStateMachine.prototype.STIdleEventHandler = function (event, stat
                     else {
                         var actualDuration = {};
                         actualDuration.durationInMS = scheduledRecording.Duration;
-                        var recordNow = thisThisObj.addRecording(false, scheduledRecording.DateTime, scheduledRecording.Title, scheduledRecording.Duration, scheduledRecording.UseTuner, scheduledRecording.Channel, actualDuration, false);
+                        var recordNow = thisThisObj.addRecording(false, scheduledRecording.DateTime, scheduledRecording.Title, scheduledRecording.Duration, scheduledRecording.InputSource, scheduledRecording.Channel, actualDuration, false);
                         if (recordNow) {
 
                             // post internal message to cause transition to recording state
@@ -111,7 +111,7 @@ recordingEngineStateMachine.prototype.STIdleEventHandler = function (event, stat
                             event["EventType"] = "TRANSITION_TO_RECORDING";
                             thisThisObj.stateMachine.recordingTitle = scheduledRecording.Title;
                             thisThisObj.stateMachine.recordingDuration = actualDuration.durationInMS;
-                            thisThisObj.stateMachine.recordingUseTuner = scheduledRecording.UseTuner;
+                            thisThisObj.stateMachine.recordingInputSource = scheduledRecording.InputSource;
                             thisThisObj.stateMachine.recordingChannel = scheduledRecording.Channel;
                             postMessage(event);
                         }
@@ -136,13 +136,10 @@ recordingEngineStateMachine.prototype.STIdleEventHandler = function (event, stat
     else if (event["EventType"] == "RECORD_NOW") {
         this.stateMachine.recordingTitle = event["Title"];
         this.stateMachine.recordingDuration = Number(event["Duration"]) * 60000;
-        this.stateMachine.recordingUseTuner = false;
-        if (event["UseTuner"] == "true") {
-            this.stateMachine.recordingUseTuner = true;
-        }
+        this.stateMachine.recordingInputSource = event["InputSource"];
         this.stateMachine.recordingChannel = event["Channel"];
 
-        consoleLog("STIdleEventHandler: RECORD_NOW received. Title = " + this.stateMachine.recordingTitle + ", duration = " + this.stateMachine.recordingDuration + ", useTuner = " + this.stateMachine.recordingUseTuner + ", channel = " + this.stateMachine.recordingChannel);
+        consoleLog("STIdleEventHandler: RECORD_NOW received. Title = " + this.stateMachine.recordingTitle + ", duration = " + this.stateMachine.recordingDuration + ", inputSource = " + this.stateMachine.recordingInputSource + ", channel = " + this.stateMachine.recordingChannel);
 
         stateData.nextState = this.stateMachine.stRecording;
         return "TRANSITION";
@@ -161,13 +158,10 @@ recordingEngineStateMachine.prototype.handleSetManualRecord = function (event, i
     var dateTime = event["DateTime"];
     var title = event["Title"];
     var duration = event["Duration"];
-    var useTuner = false;
-    if (event["UseTuner"] == "true") {
-        useTuner = true;
-    }
+    var inputSource = event["InputSource"];
     var channel = event["Channel"];
 
-    consoleLog("handleSetManualRecord: SET_MANUAL_RECORD received. DateTime = " + dateTime + ", title = " + title + ", duration in minutes = " + duration + ", useTuner = " + useTuner + ", channel = " + channel);
+    consoleLog("handleSetManualRecord: SET_MANUAL_RECORD received. DateTime = " + dateTime + ", title = " + title + ", duration in minutes = " + duration + ", inputSource = " + inputSource + ", channel = " + channel);
 
     // ignore manual recordings that are in the past
     var durationInMilliseconds = Number(duration) * 60000;
@@ -181,18 +175,18 @@ recordingEngineStateMachine.prototype.handleSetManualRecord = function (event, i
     actualDuration.durationInMS = durationInMilliseconds;
 
     if (idle) {
-        var recordNow = this.addRecording(true, dateTime, title, durationInMilliseconds, useTuner, channel, actualDuration, true);
+        var recordNow = this.addRecording(true, dateTime, title, durationInMilliseconds, inputSource, channel, actualDuration, true);
         if (recordNow) {
             this.stateMachine.recordingTitle = title;
             this.stateMachine.recordingDuration = actualDuration.durationInMS;
-            this.stateMachine.recordingUseTuner = useTuner;
+            this.stateMachine.recordingInputSource = inputSource;
             this.stateMachine.recordingChannel = channel;
             stateData.nextState = this.stateMachine.stRecording;
             return "TRANSITION";
         }
     }
     else {
-        var recordNow = this.addRecording(true, dateTime, title, durationInMilliseconds, useTuner, channel, actualDuration, false);
+        var recordNow = this.addRecording(true, dateTime, title, durationInMilliseconds, inputSource, channel, actualDuration, false);
         if (recordNow) {
             consoleLog("SetManualRecord indicates record now!! Reject: recording in progress");
         }
@@ -210,7 +204,7 @@ recordingEngineStateMachine.prototype.STRecordingEventHandler = function (event,
 
     if (event["EventType"] == "ENTRY_SIGNAL") {
         consoleLog(this.id + ": entry signal");
-        this.startRecording(this.stateMachine.recordingTitle, this.stateMachine.recordingDuration, this.stateMachine.recordingUseTuner, this.stateMachine.recordingChannel);
+        this.startRecording(this.stateMachine.recordingTitle, this.stateMachine.recordingDuration, this.stateMachine.recordingInputSource, this.stateMachine.recordingChannel);
         return "HANDLED";
     }
     else if (event["EventType"] == "EXIT_SIGNAL") {
@@ -235,7 +229,7 @@ recordingEngineStateMachine.prototype.STRecordingEventHandler = function (event,
 }
 
 
-recordingEngineStateMachine.prototype.addRecording = function (addToDB, dateTime, title, duration, useTuner, channel, actualDuration, addToDBIfAlreadyActive) {
+recordingEngineStateMachine.prototype.addRecording = function (addToDB, dateTime, title, duration, inputSource, channel, actualDuration, addToDBIfAlreadyActive) {
 
     var recordNow;
 
@@ -248,13 +242,13 @@ recordingEngineStateMachine.prototype.addRecording = function (addToDB, dateTime
         actualDuration.durationInMS = actualDuration.durationInMS + millisecondsUntilRecording;
     }
     else {
-        this.startRecordingTimer(millisecondsUntilRecording, title, duration, useTuner, channel);
+        this.startRecordingTimer(millisecondsUntilRecording, title, duration, inputSource, channel);
         recordNow = false;
     }
 
     if (addToDB && (addToDBIfAlreadyActive || !recordNow)) {
         var aUrl = baseURL + "addScheduledRecording";
-        var recordingData = { "dateTime": dateTime, "title": title, "duration": duration, "useTuner": useTuner, "channel": channel };
+        var recordingData = { "dateTime": dateTime, "title": title, "duration": duration, "inputSource": inputSource, "channel": channel };
 
         var thisObj = this;
 
@@ -280,7 +274,7 @@ recordingEngineStateMachine.prototype.addRecording = function (addToDB, dateTime
 // TODO - save this in case user wants to cancel a recording?
 var timerVar;
 
-recordingEngineStateMachine.prototype.startRecordingTimer = function (millisecondsUntilRecording, title, duration, useTuner, channel) {
+recordingEngineStateMachine.prototype.startRecordingTimer = function (millisecondsUntilRecording, title, duration, inputSource, channel) {
     consoleLog("startRecordingTimer - start timer: millisecondsUntilRecording=" + millisecondsUntilRecording);
     var thisObj = this;
     // when timeout occurs, setup variables and send message indicating a transition to recording state
@@ -290,7 +284,7 @@ recordingEngineStateMachine.prototype.startRecordingTimer = function (millisecon
 
         thisObj.stateMachine.recordingTitle = title;
         thisObj.stateMachine.recordingDuration = duration;
-        thisObj.stateMachine.recordingUseTuner = useTuner;
+        thisObj.stateMachine.recordingInputSource = inputSource;
         thisObj.stateMachine.recordingChannel = channel;
         var event = {};
         event["EventType"] = "TRANSITION_TO_RECORDING";
@@ -300,18 +294,20 @@ recordingEngineStateMachine.prototype.startRecordingTimer = function (millisecon
 }
 
 
-recordingEngineStateMachine.prototype.startRecording = function (title, duration, useTuner, channel) {
+recordingEngineStateMachine.prototype.startRecording = function (title, duration, inputSource, channel) {
 
-    consoleLog("startRecording: title=" + title + ", duration=" + duration + ", useTuner=" + useTuner + ",channel=" + channel);
+    consoleLog("startRecording: title=" + title + ", duration=" + duration + ", inputSource=" + inputSource + ",channel=" + channel);
 
-    if (!useTuner) {
-        consoleLog("No tuner: Title = " + title + ", duration = " + duration + ", useTuner = " + useTuner + ", channel = " + channel);
+    if (ir_transmitter == null) {
+        ir_transmitter = new BSIRTransmitter("IR-out");
+    }
+
+    setUserHDMIInput(inputSource);
+
+    if (inputSource != "tuner") {
+        consoleLog("Not tuner: Title = " + title + ", duration = " + duration + ", inputSource = " + inputSource + ", channel = " + channel);
     }
     else {
-        if (ir_transmitter == null) {
-            ir_transmitter = new BSIRTransmitter("IR-out");
-        }
-
         tuneChannel(channel, false);
     }
 

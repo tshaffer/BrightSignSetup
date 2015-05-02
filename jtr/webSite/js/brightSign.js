@@ -5,6 +5,10 @@ var bsMessage;
 var ir_transmitter = null;
 var ir_receiver;
 
+var _currentHDMIInput = 0;
+var _maxHDMIInput = 2;
+
+
 // miscellaneous variables
 var _showRecordingId;
 
@@ -223,7 +227,7 @@ function initializeBrightSign() {
                 event["EventType"] = "RECORD_NOW";
                 event["Title"] = message.title;
                 event["Duration"] = message.duration;
-                event["UseTuner"] = message.useTuner;
+                event["InputSource"] = message.inputSource;
                 event["Channel"] = message.channel;
                 postMessage(event);
                 break;
@@ -232,7 +236,7 @@ function initializeBrightSign() {
                 event["DateTime"] = message.dateTime;
                 event["Title"] = message.title;
                 event["Duration"] = message.duration;
-                event["UseTuner"] = message.useTuner;
+                event["InputSource"] = message.inputSource;
                 event["Channel"] = message.channel;
                 postMessage(event);
                 break;

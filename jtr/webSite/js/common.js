@@ -269,15 +269,47 @@ function selectLiveVideo() {
 }
 
 
+function disableText(textBoxId, disable) {
+    $(textBoxId).prop("disabled", disable);
+}
+
+
 function selectRecordNow() {
     switchToPage("recordNowPage");
+
+    $("#rbRecordNowTuner").change(function () {
+        disableText("#recordNowChannel", false);
+    });
+
+    $("#rbRecordNowRoku").change(function () {
+        disableText("#recordNowChannel", true);
+    });
+
+    $("#rbRecordNowTivo").change(function () {
+        disableText("#recordNowChannel", true);
+    });
+
     setDefaultDateTimeFields();
     $("#recordNowTitle").focus();
 }
 
 
 function selectManualRecord() {
+
     switchToPage("manualRecordPage");
+
+    $("#rbManualRecordTuner").change(function () {
+        disableText("#manualRecordChannel", false);
+    });
+
+    $("#rbManualRecordRoku").change(function () {
+        disableText("#manualRecordChannel", true);
+    });
+
+    $("#rbManualRecordTivo").change(function () {
+        disableText("#manualRecordChannel", true);
+    });
+
     setDefaultDateTimeFields();
     $("#manualRecordTitle").focus();
 }
@@ -303,15 +335,17 @@ function setDefaultDateTimeFields() {
     $("#manualRecordTime").val(timeVal);
 }
 
-function getRecordingTitle(titleId, dateObj, useTuner, channel) {
+function getRecordingTitle(titleId, dateObj, inputSource, channel) {
 
     var title = $(titleId).val();
     if (!title) {
         title = 'MR ' + dateObj.getFullYear() + "-" + twoDigitFormat((dateObj.getMonth() + 1)) + "-" + twoDigitFormat(dateObj.getDate()) + " " + twoDigitFormat(dateObj.getHours()) + ":" + twoDigitFormat(dateObj.getMinutes());
-        if (useTuner) {
+        if (inputSource == "tuner") {
             title += " Channel " + channel;
+        } else if (inputSource == "tivo") {
+            title += " Tivo";
         } else {
-            title += " HDMI-In";
+            title += " Roku";
         }
     }
 

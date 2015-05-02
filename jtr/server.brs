@@ -164,12 +164,7 @@ Sub addScheduledRecording(userData As Object, e as Object)
 	scheduledRecording.duration% = int(val(requestParams.duration))	' in minutes
 	scheduledRecording.title$ = requestParams.title
 	scheduledRecording.channel$ = requestParams.channel
-	if requestParams.useTuner = "false" then
-		scheduledRecording.useTuner% = 0
-	else
-		scheduledRecording.useTuner% = 1
-	endif
-
+	scheduledRecording.inputSource$ = requestParams.inputSource
 	mVar.AddDBScheduledRecording(scheduledRecording)
 
 	id = mVar.GetLastScheduledRecordingId()
@@ -295,7 +290,7 @@ Sub manualRecord(userData as Object, e as Object)
 	title$ = requestParams["title"]
 	duration% = int(val(requestParams["duration"]))
 	channel$ = requestParams["channel"]
-	useTuner$ = requestParams["useTuner"]	' true or false
+	inputSource$ = requestParams["inputSource"]
 
 	dateTime = CreateObject("roDateTime")
 	dateTime.FromIsoString(requestParams["bsIsoDateTime"])
@@ -306,7 +301,7 @@ Sub manualRecord(userData as Object, e as Object)
 	addManualRecordMessage["Channel"] = channel$
 	addManualRecordMessage["DateTime"] = dateTime
 	addManualRecordMessage["Duration"] = duration%
-	addManualRecordMessage["UseTuner"] = useTuner$
+	addManualRecordMessage["InputSource"] = inputSource$
 	mVar.msgPort.PostMessage(addManualRecordMessage)
 
     e.AddResponseHeader("Content-type", "text/plain")

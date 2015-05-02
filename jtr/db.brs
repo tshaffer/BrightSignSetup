@@ -19,7 +19,7 @@ Sub OpenDatabase()
 
 		m.CreateDBTable("CREATE TABLE Recordings (RecordingId INTEGER PRIMARY KEY AUTOINCREMENT, Title TEXT, StartDateTime TEXT, Duration INT, FileName TEXT, LastViewedPosition INT, TranscodeComplete INT, HLSSegmentationComplete INT, HLSUrl TEXT);")
 
-		m.CreateDBTable("CREATE TABLE ScheduledRecordings (Id INTEGER PRIMARY KEY AUTOINCREMENT, DateTime INT, Title TEXT, Duration INT, UseTuner INT, Channel TEXT);")
+		m.CreateDBTable("CREATE TABLE ScheduledRecordings (Id INTEGER PRIMARY KEY AUTOINCREMENT, DateTime INT, Title TEXT, Duration INT, InputSource TEXT, Channel TEXT);")
 
 		m.CreateDBTable("CREATE TABLE LastSelectedShow (Id TEXT);")
 
@@ -171,13 +171,13 @@ End Function
 
 Sub AddDBScheduledRecording(scheduledRecording As Object)
 
-	insertSQL$ = "INSERT INTO ScheduledRecordings (DateTime, Duration, Title, UseTuner, Channel) VALUES(?,?,?,?,?);"
+	insertSQL$ = "INSERT INTO ScheduledRecordings (DateTime, Duration, Title, InputSource, Channel) VALUES(?,?,?,?,?);"
 
 	params = CreateObject("roArray", 5, false)
 	params[ 0 ] = scheduledRecording.dateTime
 	params[ 1 ] = scheduledRecording.duration%
 	params[ 2 ] = scheduledRecording.title$
-	params[ 3 ] = scheduledRecording.useTuner%
+	params[ 3 ] = scheduledRecording.inputSource$
 	params[ 4 ] = scheduledRecording.channel$
 
 	m.ExecuteDBInsert(insertSQL$, params)
@@ -221,7 +221,7 @@ Function GetDBScheduledRecordings() As Object
 	selectData = {}
 	selectData.scheduledRecordings = []
 
-	select$ = "SELECT Id, DateTime, Duration, Title, UseTuner, Channel FROM ScheduledRecordings;"
+	select$ = "SELECT Id, DateTime, Duration, Title, InputSource, Channel FROM ScheduledRecordings;"
 	m.ExecuteDBSelect(select$, GetDBScheduledRecordingsCallback, selectData, invalid)
 
 	return selectData.scheduledRecordings

@@ -31,6 +31,56 @@ function tuneDigit(channel) {
 }
 
 
+function setUserHDMIInput(input) {
+
+    var physicalInput = "tivo";
+
+    switch (input) {
+        case "tivo":
+            physicalInput = 0;
+            break;
+        case "roku":
+            physicalInput = 1;
+            break;
+        case "tuner":
+            physicalInput = 2;
+            break;
+    }
+    setHDMIInput(physicalInput);
+}
+
+function setHDMIInput(input) {
+    _currentHDMIInput = input;
+    programHDMIInput(_currentHDMIInput);
+}
+
+function cycleHDMIInputs(up) {
+
+    _currentHDMIInput++;
+    if (_currentHDMIInput > _maxHDMIInput) {
+        _currentHDMIInput = 0;
+    }
+    programHDMIInput(_currentHDMIInput);
+}
+
+function programHDMIInput(port) {
+
+    switch (port) {
+        case 0:
+            irCode = 65286;
+            break;
+        case 1:
+            irCode = 65290;
+            break;
+        case 2:
+            irCode = 65294;
+            break;
+    }
+
+    consoleLog("cycleHDMIInputs: send NEC " + irCode);
+    ir_transmitter.Send("NEC", irCode);
+}
+
 function sendIROut(char) {
 
     var irCode = -1;
@@ -72,7 +122,7 @@ function sendIROut(char) {
     }
 
     if (irCode > 0) {
-        consoleLog("Send NEC " + irCode);
+        consoleLog("sendIROut: send NEC " + irCode);
         ir_transmitter.Send("NEC", irCode);
     }
 }

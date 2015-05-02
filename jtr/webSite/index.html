@@ -110,12 +110,13 @@
                     </div>
                 </div>
                 <div class="form-group">
-                    <label for="recordNowCheckBox" class="col-sm-4 control-label">Tune (use antenna input)</label>
-                    <div class="col-sm-4">
-                          <input type="checkbox" id="recordNowCheckBox" value="false" >
+                    <label class="col-sm-4 control-label">Input source</label>
+                    <div class="col-sm-4 btn-group">
+                        <label class="radio-inline"><input type="radio" id="rbRecordNowTuner" name="recordNowInputSource" value="tuner" checked>Tuner</label>
+                        <label class="radio-inline"><input type="radio" id="rbRecordNowRoku" name="recordNowInputSource" value="roku">Roku</label>
+                        <label class="radio-inline"><input type="radio" id="rbRecordNowTivo" name="recordNowInputSource" value="tivo">Tivo</label>
                     </div>
                 </div>
-
                 <div class="form-group">
                     <label for="recordNowChannel" class="col-sm-4 control-label">Channel</label>
                     <div class="col-sm-4">
@@ -124,7 +125,7 @@
                 </div>
                 <div class="form-group">
                     <div class="col-sm-offset-4 col-sm-4">
-                      <button type="submit" class="btn btn-default" onclick="recordNow()">Record Now</button>
+                      <button type="submit" class="btn btn-default" onclick="recordNow();return false;">Record Now</button>
                     </div>
                 </div>
             </form>
@@ -158,9 +159,11 @@
                     </div>
                 </div>
                 <div class="form-group">
-                    <label for="manualRecordTuneCheckbox" class="col-sm-4 control-label">Tune (use antenna input)</label>
-                    <div class="col-sm-4">
-                          <input type="checkbox" id="manualRecordTuneCheckbox">
+                    <label class="col-sm-4 control-label">Input source</label>
+                    <div class="col-sm-4 btn-group">
+                        <label class="radio-inline"><input type="radio" id="rbManualRecordTuner" name="manualRecordInputSource" value="tuner" checked>Tuner</label>
+                        <label class="radio-inline"><input type="radio" id="rbManualRecordRoku" name="manualRecordInputSource" value="roku">Roku</label>
+                        <label class="radio-inline"><input type="radio" id="rbManualRecordTivo" name="manualRecordInputSource" value="tivo">Tivo</label>
                     </div>
                 </div>
                 <div class="form-group">
@@ -171,7 +174,7 @@
                 </div>
                 <div class="form-group">
                     <div class="col-sm-offset-4 col-sm-4">
-                      <button type="submit" class="btn btn-default" onclick="createManualRecording()">Set Manual Record</button>
+                      <button type="submit" class="btn btn-default" onclick="createManualRecording();return false;">Set Manual Record</button>
                     </div>
                 </div>
             </form>

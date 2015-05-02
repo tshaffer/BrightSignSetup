@@ -58,13 +58,13 @@ function recordNow() {
     var currentDate = new Date();
 
     var duration = $("#recordNowDuration").val();
-    var useTuner = $("#recordNowCheckBox").is(':checked');
+    var inputSource = $("input:radio[name=recordNowInputSource]:checked").val();
     var channel = $("#recordNowChannel").val();
 
-    var title = getRecordingTitle("#recordNowTitle", currentDate, false, "");
+    var title = getRecordingTitle("#recordNowTitle", currentDate, inputSource, channel);
 
     var aUrl = baseURL + "browserCommand";
-    var commandData = { "command": "recordNow", "duration": duration, "title": title, "channel": channel, "useTuner": useTuner };
+    var commandData = { "command": "recordNow", "duration": duration, "title": title, "channel": channel, "inputSource": inputSource };
     console.log(commandData);
 
     $.get(aUrl, commandData)
@@ -93,7 +93,7 @@ function createManualRecording() {
     var dateObj = new Date(compatibleDateTimeStr);
 
     var duration = $("#manualRecordDuration").val();
-    var useTuner = $("#manualRecordTuneCheckbox").is(':checked');
+    var inputSource = $("input:radio[name=manualRecordInputSource]:checked").val();
     var channel = $("#manualRecordChannel").val();
 
     // check to see if recording is in the past
@@ -106,10 +106,9 @@ function createManualRecording() {
         return;
     }
 
-    var title = getRecordingTitle("#manualRecordTitle", dateObj, useTuner, channel);
-
+    var title = getRecordingTitle("#manualRecordTitle", dateObj, inputSource, channel);
     var aUrl = baseURL + "browserCommand";
-    var commandData = { "command": "manualRecord", "dateTime": compatibleDateTimeStr, "duration": duration, "title": title, "channel": channel, "useTuner": useTuner };
+    var commandData = { "command": "manualRecord", "dateTime": compatibleDateTimeStr, "duration": duration, "title": title, "channel": channel, "inputSource": inputSource };
     console.log(commandData);
 
     $.get(aUrl, commandData)
