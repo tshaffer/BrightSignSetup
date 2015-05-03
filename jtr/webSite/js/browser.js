@@ -64,7 +64,7 @@ function recordNow() {
     var title = getRecordingTitle("#recordNowTitle", currentDate, inputSource, channel);
 
     var aUrl = baseURL + "browserCommand";
-    var commandData = { "command": "recordNow", "duration": duration, "title": title, "channel": channel, "inputSource": inputSource };
+    var commandData = { "command": "recordNow", "duration": duration, "title": title, "channel": channel, "inputSource": inputSource, "recordingBitRate": _settings.recordingBitRate, "segmentRecording": _settings.segmentRecordings };
     console.log(commandData);
 
     $.get(aUrl, commandData)
@@ -108,7 +108,7 @@ function createManualRecording() {
 
     var title = getRecordingTitle("#manualRecordTitle", dateObj, inputSource, channel);
     var aUrl = baseURL + "browserCommand";
-    var commandData = { "command": "manualRecord", "dateTime": compatibleDateTimeStr, "duration": duration, "title": title, "channel": channel, "inputSource": inputSource };
+    var commandData = { "command": "manualRecord", "dateTime": compatibleDateTimeStr, "duration": duration, "title": title, "channel": channel, "inputSource": inputSource, "recordingBitRate": _settings.recordingBitRate, "segmentRecording": _settings.segmentRecordings };
     console.log(commandData);
 
     $.get(aUrl, commandData)

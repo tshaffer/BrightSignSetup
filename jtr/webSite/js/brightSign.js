@@ -229,6 +229,8 @@ function initializeBrightSign() {
                 event["Duration"] = message.duration;
                 event["InputSource"] = message.inputSource;
                 event["Channel"] = message.channel;
+                event["RecordingBitRate"] = message.recordingBitRate;
+                event["SegmentRecording"] = message.segmentRecording;
                 postMessage(event);
                 break;
             case "manualRecord":
@@ -238,6 +240,8 @@ function initializeBrightSign() {
                 event["Duration"] = message.duration;
                 event["InputSource"] = message.inputSource;
                 event["Channel"] = message.channel;
+                event["RecordingBitRate"] = message.recordingBitRate;
+                event["SegmentRecording"] = message.segmentRecording;
                 postMessage(event);
                 break;
             case "updateProgressBar":

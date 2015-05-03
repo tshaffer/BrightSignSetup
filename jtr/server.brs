@@ -59,6 +59,12 @@ Sub InitializeServer()
 	m.setLastTunedChannelAA =			{ HandleEvent: setLastTunedChannel, mVar: m }
 	m.localServer.AddPostToFormData({ url_path: "/lastTunedChannel", user_data: m.setLastTunedChannelAA })
 
+	' settings
+	m.getSettingsAA =					{ HandleEvent: getSettings, mVar: m }
+	m.localServer.AddGetFromEvent({ url_path: "/getSettings", user_data: m.getSettingsAA })
+	m.setSettingsAA =					{ HandleEvent: setSettings, mVar: m }
+	m.localServer.AddGetFromEvent({ url_path: "/setSettings", user_data: m.setSettingsAA })
+				
 ' incorporation of site downloader code
     m.siteFilePostedAA = { HandleEvent: siteFilePosted, mVar: m }
     m.localServer.AddPostToFile({ url_path: "/UploadFile", destination_directory: GetDefaultDrive(), user_data: m.siteFilePostedAA })
@@ -165,6 +171,8 @@ Sub addScheduledRecording(userData As Object, e as Object)
 	scheduledRecording.title$ = requestParams.title
 	scheduledRecording.channel$ = requestParams.channel
 	scheduledRecording.inputSource$ = requestParams.inputSource
+	scheduledRecording.recordingBitRate% = int(val(requestParams.recordingBitRate))
+	scheduledRecording.segmentRecording% = int(val(requestParams.segmentRecording))
 	mVar.AddDBScheduledRecording(scheduledRecording)
 
 	id = mVar.GetLastScheduledRecordingId()
@@ -485,6 +493,38 @@ Sub setLastTunedChannel(userData as Object, e as Object)
 	args = e.GetFormData()
 
 	mVar.SetDBLastTunedChannel(args.lastTunedChannel)
+
+	e.SetResponseBodyString("OK")
+	e.SendResponse(200)
+
+End Sub
+
+
+Sub getSettings(userData as Object, e as Object)
+
+	print "getSettings endpoint invoked"
+
+    mVar = userData.mVar
+
+	response = mVar.GetDBSettings()
+	json = FormatJson(response, 0)
+
+    e.AddResponseHeader("Content-type", "text/json")
+    e.SetResponseBodyString(json)
+    e.SendResponse(200)
+
+End Sub
+
+
+Sub setSettings(userData as Object, e as Object)
+
+	print "setSettings endpoint invoked"
+
+    mVar = userData.mVar
+
+	requestParams = e.GetRequestParams()
+
+	mVar.SetDBSettings(int(val(requestParams.recordingBitRate)), int(val(requestParams.segmentRecordings)))
 
 	e.SetResponseBodyString("OK")
 	e.SendResponse(200)

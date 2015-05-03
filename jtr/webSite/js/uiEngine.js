@@ -300,6 +300,9 @@ uiEngineStateMachine.prototype.STMainMenuEventHandler = function (event, stateDa
 
                         stateData.nextState = this.stateMachine.stNone;
                         return "TRANSITION";
+                    case "settings":
+                        selectSettingsPage();
+                        break;
                     //case "toDoList":
                 //        selectToDoList();
                 //        break;
@@ -403,7 +406,8 @@ uiEngineStateMachine.prototype.STRecordedShowsEventHandler = function (event, st
 var mainMenuIds = [
     ['recordedShows', 'liveVideo'],
     ['recordNow', 'channelGuide'],
-    ['manualRecord', 'toDoList']
+    ['manualRecord', 'toDoList'],
+    ['', 'settings']
 ];
 
 uiEngineStateMachine.prototype.navigateHomePage = function (navigationCommand$) {

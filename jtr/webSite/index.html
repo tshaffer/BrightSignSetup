@@ -91,6 +91,7 @@
           <button id="liveVideo" class="btn btn-secondary tv-words" onclick="selectLiveVideo()">Live Video</button><br><br>
           <button id="channelGuide" class="btn btn-secondary tv-words" onclick="selectChannelGuide()">Channel Guide</button><br><br>
           <button id="toDoList" class="btn btn-secondary tv-words" onclick="selectToDoList()">To Do List</button><br><br>
+          <button id="settings" class="btn btn-secondary tv-words" onclick="selectSettings()">Settings</button><br><br>
         </div>
       </div>
 
@@ -230,6 +231,26 @@
       </div>
 
       <div id="recordedShowDetailsPage" style="display: none;"></div>
+
+      <div id="settingsPage" style="display: none;">
+            <h3>Settings</h3>
+            <form class="form-horizontal">
+                <div class="form-group">
+                    <label class="col-sm-4 control-label">Recording Quality</label>
+                    <div class="col-sm-4 btn-group">
+                        <label class="radio-inline recordingQuality"><input type="radio" id="recordingQualityLow" name="recordingQuality" value="4" checked>Low</label>
+                        <label class="radio-inline recordingQuality"><input type="radio" id="recordingQualityMedium" name="recordingQuality" value="6" checked>Medium</label>
+                        <label class="radio-inline recordingQuality"><input type="radio" id="recordingQualityHigh" name="recordingQuality" value="10">High</label>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="segmentRecordingsCheckBox" class="col-sm-4 control-label">Segment Recordings</label>
+                    <div class="col-sm-4">
+                          <input type="checkbox" id="segmentRecordingsCheckBox" value="false" >
+                    </div>
+                </div>
+            </form>
+        </div>
 
     </div> <!-- /container -->
 

@@ -67,6 +67,14 @@ Sub re_HandleHttpEvent(event As Object)
 				scheduledRecording.title$ = title$
 				scheduledRecording.duration% = int(val(duration$))
 				scheduledRecording.channel$ = aa.channel
+				scheduledRecording.recordingBitRate% = int(val(aa.recordingBitRate))
+
+				segmentRecording = int(val(aa.segmentRecording))
+				if segmentRecording = 0 then
+					scheduledRecording.segmentRecording = false
+				else
+					scheduledRecording.segmentRecording = true
+				endif
 
 				systemTime = CreateObject("roSystemTime")
 				scheduledRecording.dateTime = systemTime.GetLocalDateTime()
@@ -112,7 +120,12 @@ Sub re_StartManualRecord()
 '		ok = m.encodingMediaStreamer.SetPipeline("hdmi:,encoder:,file:///" + path$)
 '		ok = m.encodingMediaStreamer.SetPipeline("hdmi:,encoder:vbitrate=12000,file:///" + path$)
 '		ok = m.encodingMediaStreamer.SetPipeline("hdmi:,encoder:vformat=1080i60&vbitrate=18000,file:///" + path$)
-		ok = m.encodingMediaStreamer.SetPipeline("hdmi:,encoder:vformat=1080i60&vbitrate=10000,file:///" + path$)
+'		ok = m.encodingMediaStreamer.SetPipeline("hdmi:,encoder:vformat=1080i60&vbitrate=10000,file:///" + path$)
+		
+		vbitrate% = m.scheduledRecording.recordingBitRate% * 1000
+		vbitrate$ = StripLeadingSpaces(stri(vbitrate%))
+
+		ok = m.encodingMediaStreamer.SetPipeline("hdmi:,encoder:vbitrate=" + vbitrate$ + ",file:///" + path$)
 		if not ok then stop
 
 		ok = m.encodingMediaStreamer.Start()
@@ -138,7 +151,7 @@ Sub re_EndManualRecord(startSegmentation)
 	' turn off record LED
 	m.jtr.SetRecordLED(false)
 
-	if startSegmentation then
+	if m.scheduledRecording.segmentRecording
 		m.recordingToSegment = m.jtr.GetDBRecordingByFileName(m.scheduledRecording.fileName$)
 		m.StartHLSSegmentation()
 	endif

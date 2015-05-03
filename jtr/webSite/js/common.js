@@ -4,6 +4,10 @@ var browserTypeIsSafari;
 var baseURL;
 var baseIP;
 
+var _settings = {};
+_settings.recordingBitRate = 10;
+_settings.segmentRecordings = 0;
+
 var _currentRecordings = {};
 
 var currentActiveElementId = "#homePage";
@@ -232,6 +236,79 @@ function addRecordedShowsLine(jtrRecording) {
         "<td>" + position + "</td>";
 
     return toAppend;
+}
+
+
+function selectSettings() {
+
+    switchToPage("settingsPage");
+
+    // get settings from db
+    var url = baseURL + "getSettings";
+
+    consoleLog("selectSettings invoked");
+
+    $.get(url, {})
+        .done(function (result) {
+            _settings.recordingBitRate = result.RecordingBitRate;
+            _settings.segmentRecordings = result.SegmentRecordings;
+
+            // initialize UI on settings page
+            // TODO - don't hard code these values; read through html
+            switch (_settings.recordingBitRate) {
+                case 4:
+                    $("#recordingQualityLow").prop('checked', true);
+                    break;
+                case 6:
+                    $("#recordingQualityMedium").prop('checked', true);
+                    break;
+                case 10:
+                    $("#recordingQualityHigh").prop('checked', true);
+                    break;
+            }
+
+            switch (_settings.segmentRecordings) {
+                case 0:
+                    $("#segmentRecordingsCheckBox").prop('checked', false);
+                    break;
+                case 1:
+                    $("#segmentRecordingsCheckBox").prop('checked', true);
+                    break;
+            }
+        })
+        .fail(function (jqXHR, textStatus, errorThrown) {
+            debugger;
+            console.log("getSettings failure");
+        })
+        .always(function () {
+        });
+
+    $(".recordingQuality").change(function () {
+        _settings.recordingBitRate = $('input:radio[name=recordingQuality]:checked').val();
+        updateSettings();
+    });
+
+    $("#segmentRecordingsCheckBox").change(function () {
+        var segmentRecordings = $("#segmentRecordingsCheckBox").is(':checked');
+        _settings.segmentRecordings = segmentRecordings ? 1 : 0;
+        updateSettings();
+    });
+}
+
+
+function updateSettings() {
+    var url = baseURL + "setSettings";
+    var settingsData = { "recordingBitRate": _settings.recordingBitRate, "segmentRecordings": _settings.segmentRecordings };
+    $.get(url, settingsData)
+        .done(function (result) {
+            console.log("setSettings success");
+        })
+    .fail(function (jqXHR, textStatus, errorThrown) {
+        debugger;
+        console.log("setSettings failure");
+    })
+    .always(function () {
+    });
 }
 
 
