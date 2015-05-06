@@ -236,13 +236,15 @@ End Function
 
 Sub AddDBRecording(scheduledRecording As Object)
 
-	
+	' convert duration from msec to minutes
+	duration% = (scheduledRecording.duration% + 30000) / 60000
+
 	insertSQL$ = "INSERT INTO Recordings (Title, StartDateTime, Duration, FileName, LastViewedPosition, TranscodeComplete, HLSSegmentationComplete, HLSUrl) VALUES(?,?,?,?,?,?,?,?);"
 
 	params = CreateObject("roArray", 7, false)
 	params[ 0 ] = scheduledRecording.title$
 	params[ 1 ] = scheduledRecording.dateTime.GetString()
-	params[ 2 ] = scheduledRecording.duration%
+	params[ 2 ] = duration%
 	params[ 3 ] = scheduledRecording.fileName$
 	params[ 4 ] = 0
 	params[ 5 ] = 0
