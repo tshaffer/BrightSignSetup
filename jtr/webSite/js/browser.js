@@ -52,8 +52,19 @@ function remoteRecord() {
     console.log("remoteRecord invoked");
 }
 
+
 function recordNow() {
 
+    // load settings from db if not previously loaded
+    if (!_settingsRetrieved) {
+        retrieveSettings(executeRecordNow);
+    }
+    else {
+        executeRecordNow();
+    }
+}
+
+function executeRecordNow() {
     // get current date/time - used as title if user doesn't provide one.
     var currentDate = new Date();
 
@@ -81,6 +92,17 @@ function recordNow() {
 }
 
 function createManualRecording() {
+
+    // load settings from db if not previously loaded
+    if (!_settingsRetrieved) {
+        retrieveSettings(executeCreateManualRecording);
+    }
+    else {
+        executeCreateManualRecording();
+    }
+}
+
+function executeCreateManualRecording() {
 
     // retrieve date/time from html elements and convert to a format that works on all devices
     var date = $("#manualRecordDate").val();

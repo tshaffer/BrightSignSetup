@@ -4,6 +4,7 @@ var browserTypeIsSafari;
 var baseURL;
 var baseIP;
 
+var _settingsRetrieved = false;
 var _settings = {};
 _settings.recordingBitRate = 10;
 _settings.segmentRecordings = 0;
@@ -239,6 +240,26 @@ function addRecordedShowsLine(jtrRecording) {
 }
 
 
+function retrieveSettings(nextFunction) {
+
+    // get settings from db
+    var url = baseURL + "getSettings";
+    $.get(url, {})
+        .done(function (result) {
+            consoleLog("XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX retrieveSettings success ************************************");
+            _settingsRetrieved = true;
+            _settings.recordingBitRate = result.RecordingBitRate;
+            _settings.segmentRecordings = result.SegmentRecordings;
+            nextFunction();
+        })
+    .fail(function (jqXHR, textStatus, errorThrown) {
+        debugger;
+        console.log("getSettings failure");
+    })
+    .always(function () {
+    });
+}
+
 function selectSettings() {
 
     switchToPage("settingsPage");
@@ -248,40 +269,7 @@ function selectSettings() {
 
     consoleLog("selectSettings invoked");
 
-    $.get(url, {})
-        .done(function (result) {
-            _settings.recordingBitRate = result.RecordingBitRate;
-            _settings.segmentRecordings = result.SegmentRecordings;
-
-            // initialize UI on settings page
-            // TODO - don't hard code these values; read through html
-            switch (_settings.recordingBitRate) {
-                case 4:
-                    $("#recordingQualityLow").prop('checked', true);
-                    break;
-                case 6:
-                    $("#recordingQualityMedium").prop('checked', true);
-                    break;
-                case 10:
-                    $("#recordingQualityHigh").prop('checked', true);
-                    break;
-            }
-
-            switch (_settings.segmentRecordings) {
-                case 0:
-                    $("#segmentRecordingsCheckBox").prop('checked', false);
-                    break;
-                case 1:
-                    $("#segmentRecordingsCheckBox").prop('checked', true);
-                    break;
-            }
-        })
-        .fail(function (jqXHR, textStatus, errorThrown) {
-            debugger;
-            console.log("getSettings failure");
-        })
-        .always(function () {
-        });
+    retrieveSettings(initializeSettingsUIElements);
 
     $(".recordingQuality").change(function () {
         _settings.recordingBitRate = $('input:radio[name=recordingQuality]:checked').val();
@@ -295,6 +283,32 @@ function selectSettings() {
     });
 }
 
+
+function initializeSettingsUIElements() {
+
+    // initialize UI on settings page
+    // TODO - don't hard code these values; read through html
+    switch (_settings.recordingBitRate) {
+        case 4:
+            $("#recordingQualityLow").prop('checked', true);
+            break;
+        case 6:
+            $("#recordingQualityMedium").prop('checked', true);
+            break;
+        case 10:
+            $("#recordingQualityHigh").prop('checked', true);
+            break;
+    }
+
+    switch (_settings.segmentRecordings) {
+        case 0:
+            $("#segmentRecordingsCheckBox").prop('checked', false);
+            break;
+        case 1:
+            $("#segmentRecordingsCheckBox").prop('checked', true);
+            break;
+    }
+}
 
 function updateSettings() {
     var url = baseURL + "setSettings";
