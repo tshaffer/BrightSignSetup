@@ -278,7 +278,11 @@ Sub PopulateRecordings(mVar As Object, response As Object)
 		' only include the entry if the file actually exists
 		readFile = CreateObject("roReadFile", recording.Path)
 		if type(readFile) = "roReadFile" then
+
 			response.recordings.push(recording)
+
+			' add handler so that the file for the recording can be retrieved for download
+			mVar.localServer.AddGetFromFile({ url_path: "/" + recording.Path, content_type: "video/mp4; charset=utf-8", filename: recording.Path})
 		else
 			print "recording " + recording.Title + " not found at " + recording.Path + ". Id = " + stri(recording.RecordingId)
 		endif

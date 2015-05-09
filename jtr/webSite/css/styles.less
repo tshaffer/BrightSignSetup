@@ -134,7 +134,6 @@ body {
   .mixinContainerWidth(@deviceType);
 }
 
-
 .mixinStreamIconVisibility (Safari) {
 }
 
@@ -145,4 +144,16 @@ body {
 
 .streamIcon {
     .mixinStreamIconVisibility(@browserType);
+}
+
+.mixinDownloadIconVisibility (Browser) {
+}
+
+.mixinDownloadIconVisibility (BrightSign) {
+    display: none;
+    visibility: collapse;
+}
+
+.downloadIcon {
+    .mixinDownloadIconVisibility(@deviceType);
 }

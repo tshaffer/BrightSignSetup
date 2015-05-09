@@ -49,6 +49,10 @@ th.stream {
     width: 20px;
 }
 
+th.download {
+    width: 20px;
+}
+
 th.recorded {
   width: 100px;
 }
