@@ -511,7 +511,9 @@ Function tsDeletable(recordingId% As Integer) As Boolean
 	recording = m.GetDBRecording(stri(recordingId%))
 	mp4FilePath$ = GetMP4FilePath(recording.FileName)
 	if mp4FilePath$ <> "" then
-		if recording.HLSSegmentationComplete = 1 return true
+		' if recording.HLSSegmentationComplete = 1 return true
+		' temporary - until information about whether or not segmentation will be complete is persistent
+		return true
 	endif
 
 	return false
