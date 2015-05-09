@@ -360,8 +360,13 @@ function selectLiveVideo() {
 }
 
 
-function disableText(textBoxId, disable) {
-    $(textBoxId).prop("disabled", disable);
+function setElementVisibility(divId, show) {
+    if (show) {
+        $(divId).show();
+    }
+    else {
+        $(divId).hide();
+    }
 }
 
 
@@ -369,15 +374,15 @@ function selectRecordNow() {
     switchToPage("recordNowPage");
 
     $("#rbRecordNowTuner").change(function () {
-        disableText("#recordNowChannel", false);
+        setElementVisibility("#recordNowChannelDiv", true);
     });
 
     $("#rbRecordNowRoku").change(function () {
-        disableText("#recordNowChannel", true);
+        setElementVisibility("#recordNowChannelDiv", false);
     });
 
     $("#rbRecordNowTivo").change(function () {
-        disableText("#recordNowChannel", true);
+        setElementVisibility("#recordNowChannelDiv", false);
     });
 
     setDefaultDateTimeFields();
@@ -390,15 +395,15 @@ function selectManualRecord() {
     switchToPage("manualRecordPage");
 
     $("#rbManualRecordTuner").change(function () {
-        disableText("#manualRecordChannel", false);
+        setElementVisibility("#manualRecordChannelDiv", true);
     });
 
     $("#rbManualRecordRoku").change(function () {
-        disableText("#manualRecordChannel", true);
+        setElementVisibility("#manualRecordChannelDiv", false);
     });
 
     $("#rbManualRecordTivo").change(function () {
-        disableText("#manualRecordChannel", true);
+        setElementVisibility("#manualRecordChannelDiv", false);
     });
 
     setDefaultDateTimeFields();
