@@ -30,57 +30,6 @@ function tuneDigit(channel) {
     }
 }
 
-
-function setUserHDMIInput(input) {
-
-    var physicalInput = "tivo";
-
-    switch (input) {
-        case "tivo":
-            physicalInput = 0;
-            break;
-        case "roku":
-            physicalInput = 1;
-            break;
-        case "tuner":
-            physicalInput = 2;
-            break;
-    }
-    setHDMIInput(physicalInput);
-}
-
-function setHDMIInput(input) {
-    _currentHDMIInput = input;
-    programHDMIInput(_currentHDMIInput);
-}
-
-function cycleHDMIInputs(up) {
-
-    _currentHDMIInput++;
-    if (_currentHDMIInput > _maxHDMIInput) {
-        _currentHDMIInput = 0;
-    }
-    programHDMIInput(_currentHDMIInput);
-}
-
-function programHDMIInput(port) {
-
-    switch (port) {
-        case 0:
-            irCode = 65286;
-            break;
-        case 1:
-            irCode = 65290;
-            break;
-        case 2:
-            irCode = 65294;
-            break;
-    }
-
-    consoleLog("cycleHDMIInputs: send NEC " + irCode);
-    ir_transmitter.Send("NEC", irCode);
-}
-
 function sendIROut(char) {
 
     var irCode = -1;
@@ -127,5 +76,100 @@ function sendIROut(char) {
     }
 }
 
+function setUserHDMIInput(input) {
+
+    switch (input) {
+        case "tuner":
+            physicalInput = 0;
+            break;
+        case "roku":
+            physicalInput = 1;
+            break;
+        case "tivo":
+            physicalInput = 2;
+            break;
+    }
+    setHDMIInput(physicalInput);
+}
+
+function setHDMIInput(port) {
+    programHDMIInput(port);
+}
+
+function cycleHDMIInputs(up) {
+
+    consoleLog("cycleHDMIInputs entry: _hdmiInputPort = " + _hdmiInputPort.toString());
+
+    var targetPort = _hdmiInputPort;
+    if (up) {
+        targetPort++;
+    }
+    else {
+        targetPort--; 
+    }
+    if (targetPort > _maxHDMIInput) {
+        targetPort = 0;
+    }
+    else if (targetPort < 0) {
+        targetPort = _maxHDMIInput;
+    }
+    programHDMIInput(targetPort);
+
+    consoleLog("cycleHDMIInputs exit: _hdmiInputPort = " + _hdmiInputPort.toString());
+}
+
+function programHDMIInput(targetPort) {
+
+    consoleLog("696969696969696969696969696969696969696969696969 programHDMIInput(): currentPort=" + _hdmiInputPort.toString() + ", targtePort=" + targetPort.toString());
+
+    if (targetPort == _hdmiInputPort) {
+        consoleLog("programHDMIInput(): port == _hdmiInputPort (" + targetPort.toString() + ")");
+    }
+    else {
+        var irCode;
+        var upIRCode = 65284;
+        var downIRCode = 65280;
+
+        switch (_hdmiInputPort) {
+            case 0:
+                switch (targetPort) {
+                    case 1:                     // 0 -> 1 : up
+                        irCode = upIRCode;
+                        break;
+                    case 2:                     // 0 -> 2 : down
+                        irCode = downIRCode;
+                        break;
+                }
+                break;
+            case 1:
+                switch (targetPort) {
+                    case 0:                     // 1 -> 0 : down
+                        irCode = downIRCode;
+                        break;
+                    case 2:                     // 1 -> 2 : up
+                        irCode = upIRCode;
+                        break;
+                }
+                break;
+            case 2:
+                switch (targetPort) {
+                    case 0:                     // 2 -> 0 : up
+                        irCode = upIRCode;
+                        break;
+                    case 1:                     // 2 -> 1 : down
+                        irCode = downIRCode;
+                        break;
+                }
+                break;
+        }
+    }
+
+    consoleLog("programHDMIInput: send NEC " + irCode);
+    ir_transmitter.Send("NEC", irCode);
+
+    _hdmiInputPort = targetPort;
+
+
+}
 
 

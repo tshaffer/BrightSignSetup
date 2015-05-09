@@ -1,11 +1,11 @@
-var sendConsoleOutputToBS = false;
+var sendConsoleOutputToBS = true;
 
 // BrightSign only
 var bsMessage;
 var ir_transmitter = null;
 var ir_receiver;
 
-var _currentHDMIInput = 0;
+var _hdmiInputPort = 0;
 var _maxHDMIInput = 2;
 
 

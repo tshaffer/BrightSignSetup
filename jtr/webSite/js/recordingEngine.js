@@ -11,6 +11,7 @@
     this.stRecordingController.HStateEventHandler = this.STRecordingControllerEventHandler;
     this.stRecordingController.superState = this.stTop;
     this.stRecordingController.addRecording = this.addRecording;
+    this.stRecordingController.executeStartRecording = this.executeStartRecording;
     this.stRecordingController.startRecordingTimer = this.startRecordingTimer;
     this.stRecordingController.recordingObsolete = this.recordingObsolete;
 
@@ -18,6 +19,7 @@
     this.stIdle.HStateEventHandler = this.STIdleEventHandler;
     this.stIdle.superState = this.stRecordingController;
     this.stIdle.addRecording = this.addRecording;
+    this.stIdle.executeStartRecording = this.executeStartRecording;
     this.stIdle.startRecordingTimer = this.startRecordingTimer;
     this.stIdle.recordingObsolete = this.recordingObsolete;
     this.stIdle.deleteScheduledRecording = this.deleteScheduledRecording;
@@ -31,6 +33,7 @@
     this.stRecording.endRecording = this.endRecording;
     this.stRecording.recordingObsolete = this.recordingObsolete;
     this.stRecording.addRecording = this.addRecording;
+    this.stRecording.executeStartRecording = this.executeStartRecording;
     this.stRecording.startRecordingTimer = this.startRecordingTimer;
     this.stRecording.handleSetManualRecord = this.handleSetManualRecord;
 
@@ -316,10 +319,18 @@ recordingEngineStateMachine.prototype.startRecording = function (title, duration
 
     if (inputSource != "tuner") {
         consoleLog("Not tuner: Title = " + title + ", duration = " + duration + ", inputSource = " + inputSource + ", channel = " + channel);
+        this.executeStartRecording(title, duration, recordingBitRate, segmentRecording);
     }
     else {
-        tuneChannel(channel, false);
+        var thisObj = this;
+        setTimeout(function () {
+            tuneChannel(channel, false);
+            thisObj.executeStartRecording(title, duration, recordingBitRate, segmentRecording);
+        }, 2000);
     }
+}
+
+recordingEngineStateMachine.prototype.executeStartRecording = function (title, duration, recordingBitRate, segmentRecording) {
 
     bsMessage.PostBSMessage({ command: "recordNow", "title": title, "duration": duration, "recordingBitRate": recordingBitRate, "segmentRecording": segmentRecording });
     this.addRecordingEndTimer(duration, title, new Date(), duration);

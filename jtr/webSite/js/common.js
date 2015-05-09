@@ -268,9 +268,6 @@ function selectSettings() {
 
     switchToPage("settingsPage");
 
-    // get settings from db
-    var url = baseURL + "getSettings";
-
     consoleLog("selectSettings invoked");
 
     retrieveSettings(initializeSettingsUIElements);
