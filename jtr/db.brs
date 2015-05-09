@@ -26,6 +26,8 @@ Sub OpenDatabase()
 		m.CreateDBTable("CREATE TABLE LastSelectedShow (Id TEXT);")
 
 		m.CreateDBTable("CREATE TABLE LastTunedChannel (Channel TEXT);")
+
+		m.CreateDBTable("CREATE TABLE HDMIInputPort (Port INT);")
 	endif
 
 End Sub
@@ -340,6 +342,33 @@ Sub SetDBLastSelectedShowId(lastSelectedShowId$ As String)
 '	else
 	    m.db.RunBackground("UPDATE LastSelectedShow SET Id='" + lastSelectedShowId$ + "';", {})
 '	endif
+
+End Sub
+
+
+Sub GetDBHDMIInputPortCallback(resultsData As Object, selectData As Object)
+
+	selectData.hdmiInputPort% = resultsData["Port"]
+
+End Sub
+
+
+Function GetDBHDMIInputPort() As Object
+
+	selectData = {}
+	selectData.hdmiInputPort% = -1
+
+	select$ = "SELECT Port FROM HDMIInputPort;"
+	m.ExecuteDBSelect(select$, GetDBHDMIInputPortCallback, selectData, invalid)
+
+	return selectData.hdmiInputPort%
+
+End Function
+
+
+Sub SetDBHDMIInputPort(hdmiInputPort% As Integer)
+
+    m.db.RunBackground("UPDATE HDMIInputPort SET Port=" + StripLeadingSpaces(stri(hdmiInputPort%)) + ";", {})
 
 End Sub
 

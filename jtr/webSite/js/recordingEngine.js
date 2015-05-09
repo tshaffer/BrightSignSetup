@@ -322,6 +322,7 @@ recordingEngineStateMachine.prototype.startRecording = function (title, duration
         this.executeStartRecording(title, duration, recordingBitRate, segmentRecording);
     }
     else {
+        // try to relieve issues with IR out interference by waiting two seconds.
         var thisObj = this;
         setTimeout(function () {
             tuneChannel(channel, false);

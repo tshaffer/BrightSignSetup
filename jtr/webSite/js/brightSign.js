@@ -6,8 +6,8 @@ var ir_transmitter = null;
 var ir_receiver;
 
 var _hdmiInputPort = 0;
+var _hdmiInputPortRetrieved = false;
 var _maxHDMIInput = 2;
-
 
 // miscellaneous variables
 var _showRecordingId;
