@@ -100,8 +100,6 @@ Function newJTR(msgPort As Object) As Object
 	JTR.SetDBLastTunedChannel			= SetDBLastTunedChannel
 	JTR.GetDBSettings					= GetDBSettings
 	JTR.SetDBSettings					= SetDBSettings
-	JTR.GetDBHDMIInputPort				= GetDBHDMIInputPort
-	JTR.SetDBHDMIInputPort				= SetDBHDMIInputPort
 
 	JTR.tsDeletable						= tsDeletable
 

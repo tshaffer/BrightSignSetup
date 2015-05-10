@@ -53,12 +53,6 @@ Sub InitializeServer()
 	m.setLastSelectedShowIdAA =			{ HandleEvent: setLastSelectedShowId, mVar: m }
 	m.localServer.AddPostToFormData({ url_path: "/lastSelectedShow", user_data: m.setLastSelectedShowIdAA })
 
-	' HDMI Input Port
-	m.getHDMIInputPortAA =			{ HandleEvent: getHDMIInputPort, mVar: m }
-	m.localServer.AddGetFromEvent({ url_path: "/hdmiInputPort", user_data: m.getHDMIInputPortAA })
-	m.setHDMIInputPortAA =			{ HandleEvent: setHDMIInputPort, mVar: m }
-	m.localServer.AddPostToFormData({ url_path: "/hdmiInputPort", user_data: m.setHDMIInputPortAA })
-
 	' last tuned channel
 	m.getLastTunedChannelAA =			{ HandleEvent: getLastTunedChannel, mVar: m }
 	m.localServer.AddGetFromEvent({ url_path: "/lastTunedChannel", user_data: m.getLastTunedChannelAA })
@@ -476,39 +470,6 @@ Sub setLastSelectedShowId(userData as Object, e as Object)
 	e.SendResponse(200)
 
 End Sub
-
-
-Sub getHDMIInputPort(userData as Object, e as Object)
-
-	print "getHDMIInputPort endpoint invoked"
-
-    mVar = userData.mVar
-
-	response = {}
-	response.hdmiInputPort = mVar.GetDBHDMIInputPort()
-	print "getHDMIInputPort: response.hdmiInputPort=";response.hdmiInputPort
-	e.AddResponseHeader("Content-type", "text/plain")
-	e.SetResponseBodyString(StripLeadingSpaces(stri(response.hdmiInputPort)))
-	e.SendResponse(200)
-
-End Sub
-
-
-Sub setHDMIInputPort(userData as Object, e as Object)
-
-	print "setHDMIInputPort endpoint invoked"
-
-    mVar = userData.mVar
-
-	args = e.GetFormData()
-
-	mVar.SetDBHDMIInputPort(int(val(args.port)))
-
-	e.SetResponseBodyString("OK")
-	e.SendResponse(200)
-
-End Sub
-
 
 
 Sub getLastTunedChannel(userData as Object, e as Object)

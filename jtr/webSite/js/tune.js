@@ -76,70 +76,27 @@ function sendIROut(char) {
     }
 }
 
-
-function retrieveHDMIInputPort(nextFunction, functionParameter) {
-
-    // get settings from db
-    var url = baseURL + "hdmiInputPort";
-    $.get(url, {})
-        .done(function (result) {
-            consoleLog("XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX retrieveHDMIInputPort success ************************************");
-            _hdmiInputPortRetrieved = true;
-            _hdmiInputPort = Number(result);
-            consoleLog("type of _hdmiInputPort is " + typeof _hdmiInputPort + " and its value is " + _hdmiInputPort);
-            nextFunction(functionParameter);
-        })
-    .fail(function (jqXHR, textStatus, errorThrown) {
-        debugger;
-        console.log("retrieveHDMIInputPort failure");
-    })
-    .always(function () {
-    });
-}
-
-
-function updateHDMIInputPort() {
-
-    // save hdmiInputPort in db
-    var parts = [];
-    parts.push("port" + '=' + _hdmiInputPort.toString());
-    var paramString = parts.join('&');
-    var url = baseURL + "hdmiInputPort";
-    $.post(url, paramString);
-}
-
-
 function setUserHDMIInput(input) {
-
-    var port = -1;
 
     switch (input) {
         case "tuner":
-            port = 0;
+            physicalInput = 0;
             break;
         case "roku":
-            port = 1;
+            physicalInput = 1;
             break;
         case "tivo":
-            port = 2;
+            physicalInput = 2;
             break;
     }
+    setHDMIInput(physicalInput);
+}
+
+function setHDMIInput(port) {
     programHDMIInput(port);
 }
 
-
 function cycleHDMIInputs(up) {
-
-    if (!_hdmiInputPortRetrieved) {
-        retrieveHDMIInputPort(executeCycleHDMIInputs, up);
-    }
-    else {
-        executeCycleHDMIInputs(up);
-    }
-}
-
-
-function executeCycleHDMIInputs(up) {
 
     consoleLog("cycleHDMIInputs entry: _hdmiInputPort = " + _hdmiInputPort.toString());
 
@@ -148,7 +105,7 @@ function executeCycleHDMIInputs(up) {
         targetPort++;
     }
     else {
-        targetPort--;
+        targetPort--; 
     }
     if (targetPort > _maxHDMIInput) {
         targetPort = 0;
@@ -161,19 +118,7 @@ function executeCycleHDMIInputs(up) {
     consoleLog("cycleHDMIInputs exit: _hdmiInputPort = " + _hdmiInputPort.toString());
 }
 
-
 function programHDMIInput(targetPort) {
-
-    if (!_hdmiInputPortRetrieved) {
-        retrieveHDMIInputPort(executeProgramHDMIInput, targetPort);
-    }
-    else {
-        executeProgramHDMIInput(targetPort);
-    }
-}
-
-
-function executeProgramHDMIInput(targetPort) {
 
     consoleLog("696969696969696969696969696969696969696969696969 programHDMIInput(): currentPort=" + _hdmiInputPort.toString() + ", targtePort=" + targetPort.toString());
 
@@ -224,7 +169,7 @@ function executeProgramHDMIInput(targetPort) {
 
     _hdmiInputPort = targetPort;
 
-    updateHDMIInputPort();
+
 }
 
 
