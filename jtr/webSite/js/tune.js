@@ -168,8 +168,20 @@ function programHDMIInput(targetPort) {
     ir_transmitter.Send("NEC", irCode);
 
     _hdmiInputPort = targetPort;
-
-
 }
 
+
+function resetHDMIInputPort() {
+
+    // to get this to work, set it to port 1 then go down 1
+    var port1IRCode = 65290;
+    var downIRCode = 65280;
+
+    consoleLog("resetHDMIInputPort() - send port1IRCode");
+    ir_transmitter.Send("NEC", port1IRCode);
+    setTimeout(function () {
+        consoleLog("resetHDMIInputPort() - send downIRCode");
+        ir_transmitter.Send("NEC", downIRCode);
+    }, 2000);
+}
 

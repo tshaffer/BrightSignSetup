@@ -311,10 +311,6 @@ recordingEngineStateMachine.prototype.startRecording = function (title, duration
 
     consoleLog("startRecording: title=" + title + ", duration=" + duration + ", inputSource=" + inputSource + ",channel=" + channel + ",recordingBitRate=" + recordingBitRate + ",segmentRecording=" + segmentRecording);
 
-    if (ir_transmitter == null) {
-        ir_transmitter = new BSIRTransmitter("IR-out");
-    }
-
     setUserHDMIInput(inputSource);
 
     if (inputSource != "tuner") {

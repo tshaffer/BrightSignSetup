@@ -141,8 +141,6 @@ function initializeBrightSign() {
         consoleLog("unable to create ir_receiver");
     }
 
-    consoleLog("typeof ir_receiver is " + typeof ir_receiver);
-
     if (typeof ir_receiver != 'undefined') {
         ir_receiver.onremotedown = function (e) {
             consoleLog('############ onremotedown: ' + e.irType + " - " + e.code);
@@ -169,6 +167,15 @@ function initializeBrightSign() {
         //ir_receiver.onremoteup = function (e) {
         //    consoleLog('############ onremoteup: ' + e.irType + " - " + e.code);
         //}
+    }
+
+    // ir transmitter
+    try {
+        ir_transmitter = new BSIRTransmitter("IR-out");
+        resetHDMIInputPort();
+    }
+    catch (err) {
+        consoleLog("unable to create ir_transmitter");
     }
 
     // message port for getting messages from the BrightSign via roMessagePort

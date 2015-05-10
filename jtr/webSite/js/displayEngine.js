@@ -397,11 +397,6 @@ displayEngineStateMachine.prototype.STLiveVideoEventHandler = function (event, s
     if (event["EventType"] == "ENTRY_SIGNAL") {
         consoleLog(this.id + ": entry signal");
 
-        if (ir_transmitter == null) {
-            ir_transmitter = new BSIRTransmitter("IR-out");
-        }
-        console.log("typeof ir_transmitter is " + typeof this.ir_transmitter);
-
         this.enteredChannel = "";
         this.channelDisplayed = false;
         this.channelEntryTimer = null;
