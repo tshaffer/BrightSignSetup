@@ -32,8 +32,9 @@
         var userAgent = navigator.userAgent;
         var n = userAgent.lastIndexOf("BrightSign");
         var browserTypeIsSafari = false;
-        if (userAgent.indexOf("Mac") >= 0 && userAgent.indexOf("Chrome") < 0) {
-            browserTypeIsSafari = true;
+        //if (userAgent.indexOf("Mac") >= 0 && userAgent.indexOf("Chrome") < 0) {
+        if (userAgent.indexOf("Mac") >= 0 && userAgent.indexOf("CriOS") < 0) {
+                browserTypeIsSafari = true;
         }
         if (n >= 0) {
             less.modifyVars({
