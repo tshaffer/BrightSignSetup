@@ -101,17 +101,55 @@ Sub AddHandlers(serverDirectory$ As String, listOfHandlers As Object)
 			contentType$ = GetMimeTypeByExtension(ext)
 	
 			url$ = Right(filePath, len(filePath) - len(serverDirectory$))
+print "filePath = ";filePath
+print "url = ";url$
 
-			m.localServer.AddGetFromFile({ url_path: url$, filename: filePath, content_type: contentType$ })
+			if url$ = "/css/styles.css" then
 
-			if url$ = "/index.html" then
-				m.localServer.AddGetFromFile({ url_path: "/", filename: filePath, content_type: contentType$ })
+				m.cssFetcherAA = { HandleEvent: cssFetcher, mVar: m}
+				m.localServer.AddGetFromEvent({ url_path: "/css/styles.css", user_data: m.cssFetcherAA })
+
+			else
+
+				m.localServer.AddGetFromFile({ url_path: url$, filename: filePath, content_type: contentType$ })
+
+				if url$ = "/index.html" then
+					m.localServer.AddGetFromFile({ url_path: "/", filename: filePath, content_type: contentType$ })
+				endif
+
 			endif
 
 		endif
 
 	next
 
+End Sub
+
+
+Sub cssFetcher(userData, e as Object)
+
+	requestHeaders = e.GetRequestHeaders()
+	userAgent = requestHeaders["User-Agent"]
+
+	bsIndex = instr(1, userAgent, "BrightSign")
+	macIndex = instr(1, userAgent, "Mac")
+	chromeIndex = instr(1, userAgent, "CriOS")
+	
+	if bsIndex >= 1 then
+		brightSign = true
+		css = ReadAsciiFile("webSite/css/stylesBrightSign.css")
+	else
+		if macIndex >=1 and chromeIndex = 0 then
+			css = ReadAsciiFile("webSite/css/stylesBrowserSafari.css")
+		else
+			css = ReadAsciiFile("webSite/css/stylesBrowserNotSafari.css")
+		endif
+	endif 
+
+    e.AddResponseHeader("Content-type", "text/css")
+    e.SetResponseBodyString(css)
+    e.SendResponse(200)
+	
 End Sub
 
 

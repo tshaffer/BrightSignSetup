@@ -1,0 +1,159 @@
+﻿@deviceType: Browser;
+@browserType: Safari;
+
+.mixinFooterContainer(BrightSign) {
+    display: none;
+}
+
+.mixinFooterContainer(Browser) {
+    display: block;
+}
+
+#footerContainer {
+    .mixinFooterContainer(@deviceType);
+}
+
+.mixinIPAddress(BrightSign) {
+    display: block;
+}
+
+.mixinIPAddress(Browser) {
+    display: none;
+}
+
+#IPAddressLabel {
+    .mixinIPAddress(@deviceType);
+}
+
+.mixintv-words(BrightSign) {
+  font-size: 36px;
+}
+
+.mixintv-words(Browser) {
+    /* use default font size */
+}
+
+.tv-words {
+    .mixintv-words(@deviceType);
+}
+
+.mixinBody(BrightSign) {
+  font-size: 36px;
+  background-color: rgba(0,0,0,0);
+}
+
+.mixinBody(Browser) {
+    /* use default font size */
+}
+
+body {
+    .mixinBody(@deviceType);
+}
+
+.mixinBtnSecondary(BrightSign) {
+     color: white;
+     background-color: #777;
+     border-color: #555;
+}
+
+.mixinBtnSecondary(Browser) {
+    /* use default font size */
+}
+
+.btn-secondary {
+    .mixinBtnSecondary(@deviceType);
+}
+
+/* Container class */
+.mixinContainer(BrightSign) {
+  background-color: rgba(200,200,200,255);
+  width: 80%;
+}
+
+.mixinContainer(Browser) {
+}
+
+.container {
+    .mixinContainer(@deviceType);
+}
+
+/* footer class */
+.mixinFooter(BrightSign) {
+  background-color: rgba(200,200,200,255);
+  padding-top: 19px;
+  color: #777;
+  border-top: 1px solid #e5e5e5;
+}
+
+.mixinFooter(Browser) {
+}
+
+.footer {
+    .mixinFooter(@deviceType);
+}
+
+/* controlIcon class */
+.mixinControlIcon(BrightSign) {
+  color: white;
+  position: fixed;
+  top: 1000px;
+  left: 50%;
+}
+
+.mixinControlIcon(Browser) {
+  top: 50px;
+  left: 2%;
+}
+
+.controlIcon {
+    .mixinControlIcon(@deviceType);
+}
+
+/* recordedShowsTitle element */
+.mixinRecordedShowsTitle(BrightSign) {
+}
+
+.mixinRecordedShowsTitle(Browser) {
+  font-size:30px
+}
+
+#recordedShowsTitle {
+    .mixinRecordedShowsTitle(@deviceType);
+}
+
+.mixinContainerWidth (BrightSign) {
+}
+
+.mixinContainerWidth (Browser) {
+  .container {
+     max-width: 730px; 
+  }
+}
+
+@media (min-width: 768px) {
+  .mixinContainerWidth(@deviceType);
+}
+
+.mixinStreamIconVisibility (Safari) {
+}
+
+.mixinStreamIconVisibility (notSafari) {
+    display: none;
+    visibility: collapse;
+}
+
+.streamIcon {
+    .mixinStreamIconVisibility(@browserType);
+}
+
+.mixinDownloadIconVisibility (Browser) {
+}
+
+.mixinDownloadIconVisibility (BrightSign) {
+    display: none;
+    visibility: collapse;
+}
+
+.downloadIcon {
+    .mixinDownloadIconVisibility(@deviceType);
+}

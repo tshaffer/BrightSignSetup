@@ -65,6 +65,11 @@
     <Content Include="webSite\bootstrap\js\bootstrap.js" />
     <Content Include="webSite\bootstrap\js\bootstrap.min.js" />
     <Content Include="webSite\css\main.css" />
+    <Content Include="webSite\css\styles.css" />
+    <Content Include="webSite\css\stylesBrightSign.css" />
+    <Content Include="webSite\css\stylesBrowserNotSafari.css" />
+    <Content Include="webSite\css\stylesBrowserNotSafari.less" />
+    <Content Include="webSite\css\stylesBrowserSafari.css" />
     <Content Include="webSite\index.html" />
     <Content Include="webSite\js\brightSign.js" />
     <Content Include="webSite\js\browser.js" />
@@ -102,7 +107,8 @@
     <Content Include="webSite\bootstrap\fonts\glyphicons-halflings-regular.woff" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="webSite\css\styles.less" />
+    <Content Include="webSite\css\stylesBrightSign.less" />
+    <Content Include="webSite\css\stylesBrowserSafari.less" />
   </ItemGroup>
   <PropertyGroup>
     <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">10.0</VisualStudioVersion>

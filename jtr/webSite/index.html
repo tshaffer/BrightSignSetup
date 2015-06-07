@@ -12,6 +12,7 @@
 
     <link href="./bootstrap/css/bootstrap.min.css" rel="stylesheet">
     <link href="./css/main.css" rel="stylesheet">
+    <link href="./css/styles.css" rel="stylesheet">
     <script src="./js/jquery-2.1.1.min.js"></script>
     <script src="./bootstrap/js/bootstrap.js"></script>
     <script src="./js/remote.js"></script>
@@ -24,31 +25,6 @@
     <script src="./js/browser.js"></script>
     <script src="./js/brightSign.js"></script>
     <script src="./js/xml2json.js"></script>
-
-    <link rel="stylesheet/less" type="text/css" href="./css/styles.less" />
-
-    <script src="./js/less.min.js" type="text/javascript"></script>
-    <script>
-        var userAgent = navigator.userAgent;
-        var n = userAgent.lastIndexOf("BrightSign");
-        var browserTypeIsSafari = false;
-        //if (userAgent.indexOf("Mac") >= 0 && userAgent.indexOf("Chrome") < 0) {
-        if (userAgent.indexOf("Mac") >= 0 && userAgent.indexOf("CriOS") < 0) {
-                browserTypeIsSafari = true;
-        }
-        if (n >= 0) {
-            less.modifyVars({
-                '@deviceType': 'BrightSign',              // BrightSign
-                '@browserType': 'notSafari'
-        });
-        }
-        else {
-            less.modifyVars({
-                '@deviceType': 'Browser',              // Browser
-                '@browserType': browserTypeIsSafari ? 'Safari' : 'notSafari'
-            });
-        }
-    </script>
   </head>
 
   <body>
