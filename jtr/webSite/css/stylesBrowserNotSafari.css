@@ -26,9 +26,17 @@ body {
 }
 @media (min-width: 768px) {
   .container {
-    max-width: 730px;
+    /*max-width: 730px;*/
+    max-width: 1400px;
   }
 }
+
+@media (min-width: 1200px) {
+  .container {
+    width: 1500px;
+  }
+}
+
 .streamIcon {
   display: none;
   visibility: collapse;

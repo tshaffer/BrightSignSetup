@@ -92,6 +92,7 @@ Sub de_InitializeWebkit()
 	m.htmlWidget.EnableMouseEvents(true)
 	m.htmlWidget.SetHWZDefault("on")
 	m.htmlWidget.EnableJavascript(true)
+	m.htmlWidget.EnableSecurity(false)
 	m.htmlWidget.AllowJavaScriptUrls({ all: "*" })
 	m.htmlWidget.StartInspectorServer(2999)
 	m.htmlWidget.SetLocalStorageDir("localstorage")
@@ -112,6 +113,16 @@ Sub de_EventHandler(event As Object)
 	if type(event) = "roHtmlWidgetEvent" then
 		m.HandleHttpEvent(event)
 	
+' {"code":0,"message":"OK","serverID":"20141201.web.1","token":"5801004984e3ccb3f9289232b745f797"}
+	else if type(event) = "roUrlEvent" then
+		if event.GetResponseCode() = 200 then
+			stop
+			if m.jtr.epgUrl.GetIdentity() = event.GetSourceIdentity() then
+				jsonStr$ = event.getstring()
+				aa=ParseJson(jsonstr$)
+				return
+			endif
+		endif
 	else if type(event) = "roTimerEvent" then
 
 		eventIdentity$ = stri(event.GetSourceIdentity())
@@ -205,6 +216,44 @@ Sub de_HandleHttpEvent(event)
 					m.ForwardToTick(int(val(aa.offset)), int(val(aa.duration)), int(val(aa.minutesPerTick)), int(val(aa.numTicks)))
 				else if command$ = "backToTick" then
 					m.BackToTick(int(val(aa.offset)), int(val(aa.duration)), int(val(aa.minutesPerTick)), int(val(aa.numTicks)))
+				else if command$ = "addDBStationSchedulesForSingleDay" then
+					stationSchedulesForSingleDayToInsert = parseJSON(aa.schedulesToInsert)
+					stationSchedulesForSingleDayToUpdate = parseJSON(aa.schedulesToUpdate)
+
+					if stationSchedulesForSingleDayToInsert.Count() > 0 then
+						m.jtr.AddDBStationSchedulesForSingleDay(stationSchedulesForSingleDayToInsert)
+					endif
+
+					if stationSchedulesForSingleDayToUpdate.Count() > 0 then
+						m.jtr.UpdateDBStationSchedulesForSingleDay(stationSchedulesForSingleDayToUpdate)
+					endif
+
+				else if command$ = "addDBProgramsForStations" then
+					
+					' get the list of station/date items that will be replaced in the db	
+					stationDatesToReplace = parseJSON(aa.station_dates)
+
+					' and the programs to add
+					programsForStations = parseJSON(aa.programs)
+
+					m.jtr.AddDBProgramsForStation(stationDatesToReplace, programsForStations)
+
+				else if command$ = "addDBPrograms" then	
+				
+					programsToInsert = parseJSON(aa.programsToInsert)
+					m.jtr.AddDBPrograms(programsToInsert)
+
+					programsToUpdate = parseJSON(aa.programsToUpdate)
+					m.jtr.UpdateDBPrograms(programsToUpdate)
+								
+				else if command$ = "addDBProgramCast" then
+						
+					programCastsToDelete = parseJSON(aa.programCastsToDelete)
+					programCasts = parseJSON(aa.castMembers)
+
+					m.jtr.DeleteDBProgramCasts(programCastsToDelete)
+					m.jtr.AddDBCastMembers(programCasts)
+
 				else if command$ = "remoteCommand" then
 					if aa.remoteCommand = "pause" then
 						m.PausePlayback()
@@ -227,7 +276,6 @@ Sub de_HandleHttpEvent(event)
 					endif
 				endif
 			endif
-
 		endif
 	endif
 

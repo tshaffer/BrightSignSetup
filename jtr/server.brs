@@ -33,6 +33,18 @@ Sub InitializeServer()
 	m.playRecordingAA =					{ HandleEvent: playRecording, mVar: m }
 	m.localServer.AddGetFromEvent({ url_path: "/recording", user_data: m.playRecordingAA })
 
+	' retrieve and return all stations
+	m.getStationsAA =					{ HandleEvent: getStations, mVar: m }
+	m.localServer.AddGetFromEvent({ url_path: "/getStations", user_data: m.getStationsAA })
+
+	' retrieve and return all stationSchedulesForSingleDay
+	m.stationSchedulesForSingleDayAA =					{ HandleEvent: getStationSchedulesForSingleDay, mVar: m }
+	m.localServer.AddGetFromEvent({ url_path: "/getStationSchedulesForSingleDay", user_data: m.stationSchedulesForSingleDayAA })
+
+	' retrieve and return all programs
+	m.getProgramsAA =					{ HandleEvent: getPrograms, mVar: m }
+	m.localServer.AddGetFromEvent({ url_path: "/getPrograms", user_data: m.getProgramsAA })
+
 	' part of file transcoding process
 	m.fileToTranscodeAA =				{ HandleEvent: fileToTranscode, mVar: m }
 	m.localServer.AddGetFromEvent({ url_path: "/fileToTranscode", user_data: m.fileToTranscodeAA })
@@ -64,6 +76,10 @@ Sub InitializeServer()
 	m.localServer.AddGetFromEvent({ url_path: "/getSettings", user_data: m.getSettingsAA })
 	m.setSettingsAA =					{ HandleEvent: setSettings, mVar: m }
 	m.localServer.AddGetFromEvent({ url_path: "/setSettings", user_data: m.setSettingsAA })
+				
+	' epg
+	m.getEpgAA =					{ HandleEvent: getEpg, mVar: m }
+	m.localServer.AddGetFromEvent({ url_path: "/getEpg", user_data: m.getEpgAA })
 				
 ' incorporation of site downloader code
     m.siteFilePostedAA = { HandleEvent: siteFilePosted, mVar: m }
@@ -101,8 +117,6 @@ Sub AddHandlers(serverDirectory$ As String, listOfHandlers As Object)
 			contentType$ = GetMimeTypeByExtension(ext)
 	
 			url$ = Right(filePath, len(filePath) - len(serverDirectory$))
-print "filePath = ";filePath
-print "url = ";url$
 
 			if url$ = "/css/styles.css" then
 
@@ -271,12 +285,80 @@ Sub PopulateScheduledRecordings(mVar As Object, response As Object)
 End Sub
 
 
+Sub getStations(userData as Object, e as Object)
+
+	print "getStations endpoint invoked"
+
+    mVar = userData.mVar
+
+	response = {}
+	jtrStations = mVar.GetDBStations()
+
+	response.stations = []
+	for each station in jtrStations
+		response.stations.push(station)
+	next
+
+	json = FormatJson(response, 0)
+
+    e.AddResponseHeader("Content-type", "text/json")
+    e.SetResponseBodyString(json)
+    e.SendResponse(200)
+
+End Sub
+
+
+Sub getStationSchedulesForSingleDay(userData as Object, e as Object)
+
+	print "getStationSchedulesForSingleDay endpoint invoked"
+
+    mVar = userData.mVar
+
+	response = {}
+	jtrStationSchedulesForSingleDay = mVar.GetDBStationSchedulesForSingleDay()
+
+	response.stationSchedulesForSingleDay = []
+	for each stationScheduleForSingleDay in jtrStationSchedulesForSingleDay
+		response.stationSchedulesForSingleDay.push(stationScheduleForSingleDay)
+	next
+
+	json = FormatJson(response, 0)
+
+    e.AddResponseHeader("Content-type", "text/json")
+    e.SetResponseBodyString(json)
+    e.SendResponse(200)
+
+End Sub
+
+
+Sub getPrograms(userData as Object, e as Object)
+
+	print "getPrograms endpoint invoked"
+
+    mVar = userData.mVar
+
+	response = {}
+	programs = mVar.GetDBPrograms()
+
+	response.programs = []
+	for each program in programs
+		response.programs.push(program)
+	next
+
+	json = FormatJson(response, 0)
+
+    e.AddResponseHeader("Content-type", "text/json")
+    e.SetResponseBodyString(json)
+    e.SendResponse(200)
+
+End Sub
+
 
 Sub getRecordings(userData as Object, e as Object)
 
-	print "getRecordings endpoint invoked"
+	mVar = userData.mvar
 
-    mVar = userData.mVar
+	print "getRecordings endpoint invoked"
 
 	response = {}
 
@@ -570,6 +652,23 @@ Sub setSettings(userData as Object, e as Object)
 
 	e.SetResponseBodyString("OK")
 	e.SendResponse(200)
+
+End Sub
+
+
+Sub getEpg(userData as Object, e as Object)
+
+	print "getEpg endpoint invoked"
+
+    mVar = userData.mVar
+
+	requestParams = e.GetRequestParams()
+	response = mVar.GetDBEpgData(requestParams.startDate)
+	json = FormatJson(response, 0)
+
+    e.AddResponseHeader("Content-type", "text/json")
+    e.SetResponseBodyString(json)
+    e.SendResponse(200)
 
 End Sub
 

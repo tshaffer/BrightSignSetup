@@ -30,6 +30,11 @@
     this.stRecordedShows.getAction = this.getAction;
     this.stRecordedShows.navigateRecordedShowsPage = this.navigateRecordedShowsPage;
 
+    this.stChannelGuide = new HState(this, "ChannelGuide");
+    this.stChannelGuide.HStateEventHandler = this.STChannelGuideEventHandler;
+    this.stChannelGuide.superState = this.stUIScreen;
+    //this.stChannelGuide.navigateChannelGuidePage = this.navigateChannelGuidePage;
+    
     this.topState = this.stTop;
 }
 
@@ -283,10 +288,10 @@ uiEngineStateMachine.prototype.STMainMenuEventHandler = function (event, stateDa
                 var currentElementId = currentElement.id;
                 consoleLog("active home page item is " + currentElementId);
                 switch (currentElementId) {
-                    //case "channelGuide":
-                //        selectChannelGuide();
-                //        break;
-                //    case "manualRecord":
+                    case "channelGuide":
+                        stateData.nextState = this.stateMachine.stChannelGuide;
+                        return "TRANSITION";
+                    case "manualRecord":
                 //        selectManualRecord();
                 //        break;
                     case "recordedShows":
@@ -329,6 +334,76 @@ uiEngineStateMachine.prototype.getAction = function (actionButtonId) {
     return "";
 }
 
+
+uiEngineStateMachine.prototype.STChannelGuideEventHandler = function (event, stateData) {
+
+    stateData.nextState = null;
+
+    if (event["EventType"] == "ENTRY_SIGNAL") {
+        consoleLog(this.id + ": entry signal");
+
+        selectChannelGuide();
+
+        return "HANDLED";
+    }
+    else if (event["EventType"] == "EXIT_SIGNAL") {
+        consoleLog(this.id + ": exit signal");
+    }
+    else if (event["EventType"] == "REMOTE") {
+        var eventData = event["EventData"]
+        consoleLog(this.id + ": remote command input: " + eventData);
+
+        switch (eventData.toLowerCase()) {
+            case "menu":
+                stateData.nextState = this.stateMachine.stMainMenu;
+                return "TRANSITION";
+            case "recorded_shows":
+                stateData.nextState = this.stateMachine.stRecordedShows;
+                return "TRANSITION";
+            case "up":
+            case "down":
+            case "left":
+            case "right":
+                navigateChannelGuide(eventData.toLowerCase());
+                return "HANDLED";
+            case "exit":
+                stateData.nextState = this.stateMachine.stNone;
+                return "TRANSITION";
+            case "select":
+                //var currentElement = document.activeElement;
+                //var currentElementId = currentElement.id;
+                //consoleLog("active recorded shows page item is " + currentElementId);
+
+                //var action = this.getAction(currentElementId);
+                //if (action != "") {
+                //    var recordingId = currentElementId.substring(action.length);
+                //    switch (action) {
+                //        case "recording":
+                //            consoleLog({ command: "debugPrint", "debugMessage": "STRecordedShowsEventHandler: PLAY_RECORDED_SHOW, recordingId=" + recordingId });
+                //            if (recordingId in _currentRecordings) {
+
+                //                var event = {};
+                //                event["EventType"] = "PLAY_RECORDED_SHOW";
+                //                event["EventData"] = recordingId;
+                //                postMessage(event);
+
+                //                stateData.nextState = this.stateMachine.stNone;
+                //                return "TRANSITION"
+                //            }
+                //            break;
+                //        case "delete":
+                //            executeDeleteSelectedShow(recordingId);
+                //            getRecordedShows();
+                //            break;
+                //    }
+                //}
+                return "HANDLED";
+        }
+    }
+
+    stateData.nextState = this.superState;
+    return "SUPER";
+}
 
 uiEngineStateMachine.prototype.STRecordedShowsEventHandler = function (event, stateData) {
 

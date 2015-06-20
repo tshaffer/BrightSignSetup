@@ -202,6 +202,9 @@ function initializeBrightSign() {
                 baseURL = "http://" + brightSignIPAddress + ":8080/";
                 consoleLog("baseURL from BrightSign message is: " + baseURL);
 
+                // temporary location
+                initializeEpgData();
+
                 // post message indicating that initialization is complete ??
                 event["EventType"] = "READY";
                 postMessage(event);

@@ -1,3 +1,124 @@
+#programInfo {
+    font-size: 16px;
+}
+
+#cgData {
+/*height: 400px;*/
+width: 1200px;
+overflow: hidden;
+float:left;
+}
+
+#stationLabelDiv {
+width: 140px;
+float:left;
+overflow: hidden;
+}
+
+.cgStationLine {
+    width: 140px;
+    height: 50px;
+    background-color: lightcyan;
+    font-size: 16px;
+    margin-bottom: 0px;
+    border:solid;
+    border-width: 1px;
+    text-align: center;
+}
+
+.timeLine {
+    height: 50px;
+    /*width: 3000px;*/
+    width: 50000px;
+    background-color: lightblue;
+
+    margin-bottom: 0px;
+    border:solid;
+    border-width: 1px;
+}
+
+.thirtyMinuteTime {
+    width: 240px;
+    height: 48px;
+    /*border:solid;
+    border-width: 1px;*/
+    padding:5px 10px;
+    font-size: 16px;
+    display:inline-block;
+    text-align: center;
+
+    border:solid;
+    /*border-right: 1px;*/
+    border-right-width: 1px;
+    border-left-width: 0px;
+    border-top-width: 0px;
+    border-bottom-width:0px;
+    border-right-color: black;
+    border-left-color: black;
+}
+
+
+.cgLine {
+    height: 50px;
+    /*width: 3000px;*/
+    /*width: 10000px;*/
+    width: 50000px;
+    background-color: coral;
+}
+
+
+.thirtyMinuteButton {
+display:inline-block;
+width: 240px;
+padding:5px 10px;
+font-size: 16px;
+height: 48px;
+/*border-width: 1px;*/
+    background-color: lightcyan;
+/*overflow: hidden;*/               /* didn't work  */
+max-width: 240px;
+max-height: 48px;
+
+white-space: nowrap;
+width: 100%;                   
+overflow: hidden;              
+-o-text-overflow: ellipsis;    
+text-overflow:    ellipsis;    
+}
+
+.sixtyMinuteButton {
+display:inline-block;
+width: 480px;
+padding:5px 10px;
+font-size: 16px;
+height: 48px;
+    background-color: lightcyan;
+max-width: 480px;
+max-height: 48px;
+
+white-space: nowrap;
+width: 100%;                   /* IE6 needs any width */
+overflow: hidden;              /* "overflow" value must be different from  visible"*/ 
+-o-text-overflow: ellipsis;    /* Opera < 11*/
+text-overflow:    ellipsis;    /* IE, Safari (WebKit), Opera >= 11, FF > 6 */
+}
+
+.variableButton {
+display:inline-block;
+padding:5px 10px;
+font-size: 16px;
+height: 48px;
+    background-color: lightcyan;
+max-height: 48px;
+
+white-space: nowrap;
+width: 100%;                   /* IE6 needs any width */
+overflow: hidden;              /* "overflow" value must be different from  visible"*/ 
+-o-text-overflow: ellipsis;    /* Opera < 11*/
+text-overflow:    ellipsis;    /* IE, Safari (WebKit), Opera >= 11, FF > 6 */
+}
+
+
 #segmentRecordingsCheckBox {
     margin: 10px 0px 0px 0px;
 }
@@ -91,8 +212,16 @@ body {
 /* Customize container */
 @media (min-width: 768px) {
   .container {
+    max-width: 1400px;
   }
 }
+
+@media (min-width: 1200px) {
+  .container {
+    width: 1500px;
+  }
+}
+
 .container-narrow > hr {
   margin: 30px 0;
 }

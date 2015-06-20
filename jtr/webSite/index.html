@@ -18,6 +18,7 @@
     <script src="./js/remote.js"></script>
     <script src="./js/hsm.js"></script>
     <script src="./js/tune.js"></script>
+    <script src="./js/epg.js"></script>
     <script src="./js/recordingEngine.js"></script>
     <script src="./js/displayEngine.js"></script>
     <script src="./js/uiEngine.js"></script>
@@ -231,6 +232,43 @@
                 </div>
             </form>
         </div>
+
+        <div id="channelGuidePage" style="display: none;">
+            <h3>Channel Guide</h3>
+
+            <div id="programInfo">
+
+            </div>
+
+            <div id="stationLabelDiv">
+                <p id="cgDayDate" class="cgStationLine">Thu 7/16</p>
+                <p class="cgStationLine">2 KTVU<br />Fox</p>
+                <p class="cgStationLine">4 KRON</p>
+                <p class="cgStationLine">5 KTVU CBS</p>
+                <p class="cgStationLine">7 KGO ABC</p>
+                <p class="cgStationLine">9 KQED PBS</p>
+                <p class="cgStationLine">9.1 KQED-2</p>
+                <p class="cgStationLine">9.2 KQED-3</p>
+                <p class="cgStationLine">11 KNTV NBC</p>
+                <p class="cgStationLine">36 KTVU</p>
+                <p class="cgStationLine">44 KBCW</p>
+            </div>
+
+            <div id="cgData">
+                <div id="cgTimeLine" class="timeLine"></div>
+                <div id="cgStation0Data" class="cgLine"></div>
+                <div id="cgStation1Data" class="cgLine"></div>
+                <div id="cgStation2Data" class="cgLine"></div>
+                <div id="cgStation3Data" class="cgLine"></div>
+                <div id="cgStation4Data" class="cgLine"></div>
+                <div id="cgStation5Data" class="cgLine"></div>
+                <div id="cgStation6Data" class="cgLine"></div>
+                <div id="cgStation7Data" class="cgLine"></div>
+                <div id="cgStation8Data" class="cgLine"></div>
+                <div id="cgStation9Data" class="cgLine"></div>
+            </div>
+        </div>
+
 
     </div> <!-- /container -->
 

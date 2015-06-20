@@ -100,6 +100,30 @@ Function newJTR(msgPort As Object) As Object
 	JTR.SetDBLastTunedChannel			= SetDBLastTunedChannel
 	JTR.GetDBSettings					= GetDBSettings
 	JTR.SetDBSettings					= SetDBSettings
+	JTR.AddDBStation					= AddDBStation
+	JTR.PopulateStationsTable			= PopulateStationsTable
+	JTR.GetDBStations					= GetDBStations
+'	JTR.AddDBStationScheduleForSingleDay= AddDBStationScheduleForSingleDay
+	JTR.GetDBStationSchedulesForSingleDay = GetDBStationSchedulesForSingleDay
+	JTR.AddDBPrograms					= AddDBPrograms
+	JTR.AddDBCastMembers				= AddDBCastMembers
+	JTR.AddDBStationSchedulesForSingleDay = AddDBStationSchedulesForSingleDay
+	JTR.UpdateDBStationSchedulesForSingleDay = UpdateDBStationSchedulesForSingleDay
+	JTR.UpdateDBStationScheduleForSingleDay = UpdateDBStationScheduleForSingleDay
+	JTR.AddDBProgramsForStation			= AddDBProgramsForStation
+	JTR.DeleteDBProgramsForStation		= DeleteDBProgramsForStation
+	JTR.AddDBProgramsForStations		= AddDBProgramsForStations
+	JTR.GetDBPrograms					= GetDBPrograms
+	JTR.UpdateDBPrograms				= UpdateDBPrograms
+	JTR.UpdateDBProgram					= UpdateDBProgram
+	JTR.DeleteDBProgramCasts			= DeleteDBProgramCasts
+	JTR.DeleteDBProgramCast				= DeleteDBProgramCast
+	JTR.GetDBEpgData					= GetDBEpgData
+	JTR.GetDBLastChannelGuideSelection	= GetDBLastChannelGuideSelection
+	JTR.UpdateDBLastChannelGuideSelection	= UpdateDBLastChannelGuideSelection
+	
+	JTR.AddDBItems						= AddDBItems
+	JTR.GenerateSQLInsert				= GenerateSQLInsert
 
 	JTR.tsDeletable						= tsDeletable
 
