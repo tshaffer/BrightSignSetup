@@ -1,6 +1,6 @@
 ﻿var schedulesDirectToken;
 
-var numDaysEpgData = 2;
+var numDaysEpgData = 3;
 
 var stations = [];
 var scheduleValidityByStationDate = {};     // schedule information for each station/date 
@@ -411,6 +411,9 @@ function getSchedulesDirectProgramSchedules(stationIdDatesToRetrieve, stationIdD
                 jtrProgramForStation.scheduleDate = jtrStationScheduleForSingleDay.scheduleDate;
                 jtrProgramForStation.programId = program.programID;
                 jtrProgramForStation.airDateTime = program.airDateTime;
+                var endDateTime = new Date(program.airDateTime);
+                endDateTime.setSeconds(endDateTime.getSeconds() + program.duration);
+                jtrProgramForStation.endDateTime = endDateTime.toISOString();
                 jtrProgramForStation.duration = program.duration / 60;      // convert from seconds to minutes
                 
                 var newShow = boolValueIfMetadataExists(program, "new");
@@ -611,34 +614,45 @@ function getSchedulesDirectPrograms(nextFunction) {
             jtrProgram.programId = program.programID;
             jtrProgram.title = program.titles[0].title120;
             jtrProgram.episodeTitle = valueIfMetadataExists(program, "episodeTitle150");
-            jtrProgram.description = "";
+            jtrProgram.shortDescription = "";
+            jtrProgram.longDescription = "";
             if ("descriptions" in program) {
-                // if ("description100" in program.descriptions) {
-                //     jtrProgram.description = program.descriptions.description100[0].description;
-                // }
-                // else if ("description1000" in program.descriptions) {
-                //     jtrProgram.description = program.descriptions.description1000[0].description;
-                // }
+                if ("description100" in program.descriptions) {
+                    jtrProgram.shortDescription = program.descriptions.description100[0].description;
+                }
                 if ("description1000" in program.descriptions) {
-                    jtrProgram.description = program.descriptions.description1000[0].description;
+                    jtrProgram.longDescription = program.descriptions.description1000[0].description;
                 }
-                else if ("description100" in program.descriptions) {
-                    jtrProgram.description = program.descriptions.description100[0].description;
-                }
+            }
+            
+            //if ("eventDetails" in program) {
+            //    debugger;
+            //}
+
+            if ("genres" in program) {
+                $.each(program.genres, function (genreIndex, genre) {
+                    //console.log("genre is " + genre);
+                });
             }
 
             jtrProgram.showType = valueIfMetadataExists(program, "showType");
             
             jtrProgram.originalAirDate = valueIfMetadataExists(program, "originalAirDate");
-            
-            jtrProgram.gracenoteSeasonEpisode = "";
+
+            jtrProgram.seasonEpisode = "";
             if ("metadata" in program) {
-                if ("Gracenote" in program.metadata[0]) {
-                    if (("season" in program.metadata[0].Gracenote) && ("episode" in program.metadata[0].Gracenote)) {
-                        jtrProgram.gracenoteSeasonEpisode = "Season " + program.metadata[0].Gracenote.season.toString() + ", " + "Episode " + program.metadata[0].Gracenote.episode.toString();
+                if (typeof program.metadata[0] == "object") {
+                    var se = program.metadata[0];
+                    for (var key in se) {
+                        if (se.hasOwnProperty(key)) {
+                            if (("season" in se[key]) && ("episode" in se[key])) {
+                                jtrProgram.seasonEpisode = "Season " + se[key].season.toString() + ", " + "Episode " + se[key].episode.toString();
+                            }
+                        }
                     }
                 }
             }
+
             jtrProgram.md5 = valueIfMetadataExists(program, "md5");
 
             if ("cast" in program) {
@@ -653,11 +667,44 @@ function getSchedulesDirectPrograms(nextFunction) {
             }
             else
             {
-                    var castMember = {};
-                    castMember.programId = program.programID;
-                    castMember.name = "01none";
-                    castMember.billingOrder = "01";
-                    jtrCastMembers.push(castMember);
+                var castMember = {};
+                castMember.programId = program.programID;
+                castMember.name = "01none";
+                castMember.billingOrder = "01";
+                jtrCastMembers.push(castMember);
+            }
+
+            jtrProgram.movieYear = "";
+            jtrProgram.movieRating = "";
+            jtrProgram.movieMinRating = "";
+            jtrProgram.movieMaxRating = "";
+            jtrProgram.movieRatingIncrement = "";
+
+            if ("movie" in program) {
+                if ("year" in program.movie) {
+                    jtrProgram.movieYear = program.movie.year;
+                }
+                if ("duration" in program.movie) {
+                    var movieDuration = program.movie.duration;             // number
+                }
+                if ("qualityRating" in program.movie) {
+                    var qualityRating = program.movie.qualityRating[0];
+                    if ("ratingsBody" in qualityRating) {
+                        var ratingsBody = qualityRating.ratingsBody;
+                    }
+                    if ("rating" in qualityRating) {
+                        jtrProgram.movieRating = qualityRating.rating;      // string
+                    }
+                    if ("minRating" in qualityRating) {
+                        jtrProgram.movieMinRating = qualityRating.minRating;     // string
+                    }
+                    if ("maxRating" in qualityRating) {
+                        jtrProgram.movieMaxRating = qualityRating.maxRating;     // string
+                    }
+                    if ("increment" in qualityRating) {
+                        jtrProgram.movieRatingIncrement = qualityRating.increment;     // string
+                    }
+                }
             }
 
             if (program.programID in programIdsNeedingInserts) {

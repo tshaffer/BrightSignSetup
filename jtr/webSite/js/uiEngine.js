@@ -2,6 +2,8 @@
 
     HSM.call(this); //call super constructor.
 
+    this.recordIconDisplayTime = 1500;
+
     this.InitialPseudoStateHandler = this.InitializeUIEngineHSM;
 
     this.stTop = new HState(this, "Top");
@@ -24,6 +26,10 @@
     this.stShowingModalDlg.HStateEventHandler = this.STShowingModalDlgEventHandler;
     this.stShowingModalDlg.superState = this.stTop;
 
+    this.stShowingCGProgramModalDlg = new HState(this, "ShowingCGProgramModalDlg");
+    this.stShowingCGProgramModalDlg.HStateEventHandler = this.STShowingCGProgramModalDlgEventHandler;
+    this.stShowingCGProgramModalDlg.superState = this.stTop;
+
     this.stRecordedShows = new HState(this, "RecordedShows");
     this.stRecordedShows.HStateEventHandler = this.STRecordedShowsEventHandler;
     this.stRecordedShows.superState = this.stUIScreen;
@@ -33,7 +39,6 @@
     this.stChannelGuide = new HState(this, "ChannelGuide");
     this.stChannelGuide.HStateEventHandler = this.STChannelGuideEventHandler;
     this.stChannelGuide.superState = this.stUIScreen;
-    //this.stChannelGuide.navigateChannelGuidePage = this.navigateChannelGuidePage;
     
     this.topState = this.stTop;
 }
@@ -67,6 +72,7 @@ uiEngineStateMachine.prototype.STNoneEventHandler = function (event, stateData) 
     }
     else if (event["EventType"] == "EXIT_SIGNAL") {
         consoleLog(this.id + ": exit signal");
+        TransportIconSingleton.getInstance().eraseIcon();
         return "HANDLED";
     }
     else if (event["EventType"] == "DISPLAY_DELETE_SHOW_DLG") {
@@ -83,6 +89,9 @@ uiEngineStateMachine.prototype.STNoneEventHandler = function (event, stateData) 
         switch (eventData.toLowerCase()) {
             case "menu":
                 stateData.nextState = this.stateMachine.stMainMenu;
+                return "TRANSITION";
+            case "guide":
+                stateData.nextState = this.stateMachine.stChannelGuide;
                 return "TRANSITION";
             case "recorded_shows":
                 stateData.nextState = this.stateMachine.stRecordedShows;
@@ -144,6 +153,77 @@ uiEngineStateMachine.prototype.STUIScreenEventHandler = function (event, stateDa
     return "SUPER";
 }
 
+
+
+uiEngineStateMachine.prototype.STShowingCGProgramModalDlgEventHandler = function (event, stateData) {
+
+    stateData.nextState = null;
+
+    if (event["EventType"] == "ENTRY_SIGNAL") {
+        consoleLog(this.id + ": entry signal");
+
+        return "HANDLED";
+    }
+    else if (event["EventType"] == "EXIT_SIGNAL") {
+        return "HANDLED";
+    }
+    else if (event["EventType"] == "REMOTE") {
+        var eventData = event["EventData"]
+        consoleLog(this.id + ": remote command input: " + eventData);
+
+        switch (eventData.toLowerCase()) {
+            case "up":
+                cgProgramDlgUp();
+                return "HANDLED";
+            case "down":
+                cgProgramDlgDown();
+                return "HANDLED";
+            case "select":
+                functionInvoked = cgSelectEventHandler();
+
+                switch (functionInvoked) {
+                    case "record":
+                        // mark the recorded show?
+                        // just return to channel guide
+                        ChannelGuideSingleton.getInstance().resetSelectedProgram = false;
+                        stateData.nextState = this.stateMachine.stChannelGuide;
+                        return "TRANSITION";
+                    case "tune":
+                        stateData.nextState = this.stateMachine.stNone;
+                        return "TRANSITION";
+                    case "close":
+                        ChannelGuideSingleton.getInstance().resetSelectedProgram = false;
+                        stateData.nextState = this.stateMachine.stChannelGuide;
+                        return "TRANSITION";
+                }
+            case "exit":
+                cgProgramDlgCloseInvoked();
+                ChannelGuideSingleton.getInstance().resetSelectedProgram = false;
+                stateData.nextState = this.stateMachine.stChannelGuide;
+                return "TRANSITION";
+
+            // swallow the following keys so that they're not used by displayEngine
+            case "left":
+            case "right":
+            case "play":
+            case "pause":
+            case "ff":
+            case "fastforward":
+            case "rw":
+            case "rewind":
+            case "jump":
+            case "instant_replay":
+            case "quick_skip":
+            case "progress_bar":
+            case "clock":
+                return "HANDLED";
+
+        }
+    }
+
+    stateData.nextState = this.superState;
+    return "SUPER";
+}
 
 
 uiEngineStateMachine.prototype.STShowingModalDlgEventHandler = function (event, stateData) {
@@ -267,6 +347,9 @@ uiEngineStateMachine.prototype.STMainMenuEventHandler = function (event, stateDa
         switch (eventData.toLowerCase()) {
             case "menu":
                 return "HANDLED";
+            case "guide":
+                stateData.nextState = this.stateMachine.stChannelGuide;
+                return "TRANSITION";
             case "recorded_shows":
                 stateData.nextState = this.stateMachine.stRecordedShows;
                 return "TRANSITION";
@@ -302,6 +385,24 @@ uiEngineStateMachine.prototype.STMainMenuEventHandler = function (event, stateDa
                         var event = {};
                         event["EventType"] = "TUNE_LIVE_VIDEO";
                         postMessage(event);
+
+                        // after the device transitions to live video, it will get the last tuned channel and tune to it
+                        var url = baseURL + "lastTunedChannel";
+                        $.get(url)
+                            .done(function (result) {
+                                consoleLog("lastTunedChannel successfully retrieved");
+                                var event = {};
+                                event["EventType"] = "TUNE_LIVE_VIDEO_CHANNEL";
+                                event["EnteredChannel"] = result;
+                                postMessage(event);
+                            })
+                            .fail(function (jqXHR, textStatus, errorThrown) {
+                                debugger;
+                                consoleLog("lastTunedChannel failure");
+                            })
+                            .always(function () {
+                                //alert("recording transmission finished");
+                            });
 
                         stateData.nextState = this.stateMachine.stNone;
                         return "TRANSITION";
@@ -342,12 +443,13 @@ uiEngineStateMachine.prototype.STChannelGuideEventHandler = function (event, sta
     if (event["EventType"] == "ENTRY_SIGNAL") {
         consoleLog(this.id + ": entry signal");
 
-        selectChannelGuide();
+        ChannelGuideSingleton.getInstance().selectChannelGuide();
 
         return "HANDLED";
     }
     else if (event["EventType"] == "EXIT_SIGNAL") {
         consoleLog(this.id + ": exit signal");
+        ChannelGuideSingleton.getInstance().resetSelectedProgram = true;
     }
     else if (event["EventType"] == "REMOTE") {
         var eventData = event["EventData"]
@@ -360,43 +462,39 @@ uiEngineStateMachine.prototype.STChannelGuideEventHandler = function (event, sta
             case "recorded_shows":
                 stateData.nextState = this.stateMachine.stRecordedShows;
                 return "TRANSITION";
+            case "guide":
+                //stateData.nextState = this.stateMachine.stChannelGuide;
+                //return "TRANSITION";
+                // ????
+                return "HANDLED";
             case "up":
             case "down":
             case "left":
             case "right":
-                navigateChannelGuide(eventData.toLowerCase());
+                ChannelGuideSingleton.getInstance().navigateChannelGuide(eventData.toLowerCase());
+                return "HANDLED";
+            case "highest_speed_rw":
+                ChannelGuideSingleton.getInstance().navigateBackwardOneDay();
+                return "HANDLED";
+            case "prev":
+                ChannelGuideSingleton.getInstance().navigateBackwardOneScreen();
+                return "HANDLED";
+            case "next":
+                ChannelGuideSingleton.getInstance().navigateForwardOneScreen();
+                return "HANDLED";
+            case "highest_speed_fw":
+                ChannelGuideSingleton.getInstance().navigateForwardOneDay();
                 return "HANDLED";
             case "exit":
                 stateData.nextState = this.stateMachine.stNone;
                 return "TRANSITION";
             case "select":
-                //var currentElement = document.activeElement;
-                //var currentElementId = currentElement.id;
-                //consoleLog("active recorded shows page item is " + currentElementId);
-
-                //var action = this.getAction(currentElementId);
-                //if (action != "") {
-                //    var recordingId = currentElementId.substring(action.length);
-                //    switch (action) {
-                //        case "recording":
-                //            consoleLog({ command: "debugPrint", "debugMessage": "STRecordedShowsEventHandler: PLAY_RECORDED_SHOW, recordingId=" + recordingId });
-                //            if (recordingId in _currentRecordings) {
-
-                //                var event = {};
-                //                event["EventType"] = "PLAY_RECORDED_SHOW";
-                //                event["EventData"] = recordingId;
-                //                postMessage(event);
-
-                //                stateData.nextState = this.stateMachine.stNone;
-                //                return "TRANSITION"
-                //            }
-                //            break;
-                //        case "delete":
-                //            executeDeleteSelectedShow(recordingId);
-                //            getRecordedShows();
-                //            break;
-                //    }
-                //}
+                displayCGPopUp();
+                stateData.nextState = this.stateMachine.stShowingCGProgramModalDlg;
+                return "TRANSITION";
+            case "record":
+                TransportIconSingleton.getInstance().displayIcon(null, "record", this.stateMachine.recordIconDisplayTime);
+                cgRecordSelectedProgram();
                 return "HANDLED";
         }
     }
@@ -427,6 +525,9 @@ uiEngineStateMachine.prototype.STRecordedShowsEventHandler = function (event, st
             case "menu":
                 stateData.nextState = this.stateMachine.stMainMenu;
                 return "TRANSITION";
+            case "guide":
+                stateData.nextState = this.stateMachine.stChannelGuide;
+                return "TRANSITION";
             case "recorded_shows":
                 return "HANDLED";
             case "up":
@@ -440,6 +541,9 @@ uiEngineStateMachine.prototype.STRecordedShowsEventHandler = function (event, st
                 return "HANDLED";
             case "exit":
                 stateData.nextState = this.stateMachine.stNone;
+                return "TRANSITION";
+            case "guide":
+                stateData.nextState = this.stateMachine.stChannelGuide;
                 return "TRANSITION";
             case "select":
                 var currentElement = document.activeElement;

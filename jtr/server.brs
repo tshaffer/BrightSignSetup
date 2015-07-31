@@ -13,17 +13,29 @@ Sub InitializeServer()
 
 	' RECORD NOW - removed
 
-	' add a scheduled recording
-	m.addScheduledRecordingAA =			{ HandleEvent: addScheduledRecording, mVar: m }
-	m.localServer.AddGetFromEvent({ url_path: "/addScheduledRecording", user_data: m.addScheduledRecordingAA })
+	' add a scheduled single recording
+	m.addScheduledSingleRecordingAA =			{ HandleEvent: addScheduledSingleRecording, mVar: m }
+	m.localServer.AddGetFromEvent({ url_path: "/addScheduledSingleRecording", user_data: m.addScheduledSingleRecordingAA })
 
-	' delete a scheduled recording
-	m.deleteScheduledRecordingAA =			{ HandleEvent: deleteScheduledRecording, mVar: m }
-	m.localServer.addGetFromEvent({ url_path: "/deleteScheduledRecording", user_data: m.deleteScheduledRecordingAA })
+	' add a scheduled series recording
+	m.addScheduledSeriesRecordingAA =			{ HandleEvent: addScheduledSeriesRecording, mVar: m }
+	m.localServer.AddGetFromEvent({ url_path: "/addScheduledSeriesRecording", user_data: m.addScheduledSeriesRecordingAA })
 
-	' get scheduled recordings
-	m.getScheduledRecordingsAA =		{ HandleEvent: getScheduledRecordings, mVar: m }
-	m.localServer.AddGetFromEvent({ url_path: "/getScheduledRecordings", user_data: m.getScheduledRecordingsAA })
+	' delete a scheduled single recording
+	m.deleteScheduledSingleRecordingAA =			{ HandleEvent: deleteScheduledSingleRecording, mVar: m }
+	m.localServer.addGetFromEvent({ url_path: "/deleteScheduledSingleRecording", user_data: m.deleteScheduledSingleRecordingAA })
+
+	' delete a scheduled series recording
+	m.deleteScheduledSeriesRecordingAA =			{ HandleEvent: deleteScheduledSeriesRecording, mVar: m }
+	m.localServer.addGetFromEvent({ url_path: "/deleteScheduledSeriesRecording", user_data: m.deleteScheduledSeriesRecordingAA })
+
+	' get scheduled single recordings
+	m.getScheduledSingleRecordingsAA =		{ HandleEvent: getScheduledSingleRecordings, mVar: m }
+	m.localServer.AddGetFromEvent({ url_path: "/getScheduledSingleRecordings", user_data: m.getScheduledSingleRecordingsAA })
+
+	' get scheduled series recordings
+	m.getScheduledSeriesRecordingsAA =		{ HandleEvent: getScheduledSeriesRecordings, mVar: m }
+	m.localServer.AddGetFromEvent({ url_path: "/getScheduledSeriesRecordings", user_data: m.getScheduledSeriesRecordingsAA })
 
 	' retrieve and return information about all recordings
 	m.getRecordingsAA =					{ HandleEvent: getRecordings, mVar: m }
@@ -80,7 +92,11 @@ Sub InitializeServer()
 	' epg
 	m.getEpgAA =					{ HandleEvent: getEpg, mVar: m }
 	m.localServer.AddGetFromEvent({ url_path: "/getEpg", user_data: m.getEpgAA })
-				
+	
+	' epgMatchingPrograms		
+	m.getEpgMatchingProgramsAA =	{ HandleEvent: getEpgMatchingPrograms, mVar: m }
+	m.localServer.AddGetFromEvent({ url_path: "/getEpgMatchingPrograms", user_data: m.getEpgMatchingProgramsAA })
+	
 ' incorporation of site downloader code
     m.siteFilePostedAA = { HandleEvent: siteFilePosted, mVar: m }
     m.localServer.AddPostToFile({ url_path: "/UploadFile", destination_directory: GetDefaultDrive(), user_data: m.siteFilePostedAA })
@@ -161,6 +177,7 @@ Sub cssFetcher(userData, e as Object)
 	endif 
 
     e.AddResponseHeader("Content-type", "text/css")
+    e.AddResponseHeader("Access-Control-Allow-Origin", "*")
     e.SetResponseBodyString(css)
     e.SendResponse(200)
 	
@@ -180,6 +197,7 @@ Sub browserCommand(userData as Object, e as Object)
 	ok = mVar.htmlWidget.PostJSMessage(message)
 
     e.AddResponseHeader("Content-type", "text/plain")
+    e.AddResponseHeader("Access-Control-Allow-Origin", "*")
     e.SetResponseBodyString("ok")
     e.SendResponse(200)
 
@@ -203,15 +221,16 @@ Sub playRecording(userData as Object, e as Object)
 	StartPlayback(recording)
 
     e.AddResponseHeader("Content-type", "text/plain")
+    e.AddResponseHeader("Access-Control-Allow-Origin", "*")
     e.SetResponseBodyString("ok")
     e.SendResponse(200)
 
 End Sub
 
 
-Sub addScheduledRecording(userData As Object, e as Object)
+Sub addScheduledSingleRecording(userData As Object, e as Object)
 
-	print "addScheduledRecording endpoint invoked"
+	print "addScheduledSingleRecording endpoint invoked"
 
     mVar = userData.mVar
 
@@ -225,18 +244,51 @@ Sub addScheduledRecording(userData As Object, e as Object)
 	scheduledRecording.inputSource$ = requestParams.inputSource
 	scheduledRecording.recordingBitRate% = int(val(requestParams.recordingBitRate))
 	scheduledRecording.segmentRecording% = int(val(requestParams.segmentRecording))
-	mVar.AddDBScheduledRecording(scheduledRecording)
+	scheduledRecording.showType$ = requestParams.showType
 
-	id = mVar.GetLastScheduledRecordingId()
+	mVar.AddDBScheduledSingleRecording(scheduledRecording)
+
+	id = mVar.GetDBLastScheduledSingleRecordingId()
 
     e.AddResponseHeader("Content-type", "text/plain")
+    e.AddResponseHeader("Access-Control-Allow-Origin", "*")
 	e.SetResponseBodyString(stri(id))
 	e.SendResponse(200)
 
 End Sub
 
 
-Sub deleteScheduledRecording(userData As Object, e as Object)
+Sub addScheduledSeriesRecording(userData As Object, e as Object)
+
+	print "addScheduledSeriesRecording endpoint invoked"
+
+    mVar = userData.mVar
+
+	requestParams = e.GetRequestParams()
+
+	scheduledRecording = {}
+	scheduledRecording.title$ = requestParams.title
+	scheduledRecording.channel$ = requestParams.channel
+	scheduledRecording.inputSource$ = requestParams.inputSource
+	scheduledRecording.recordingBitRate% = int(val(requestParams.recordingBitRate))
+	scheduledRecording.segmentRecording% = int(val(requestParams.segmentRecording))
+	scheduledRecording.showType$ = requestParams.showType
+	scheduledRecording.maxRecordings% = int(val(requestParams.maxRecordings))
+	scheduledRecording.recordReruns% = int(val(requestParams.recordReruns))
+
+	mVar.AddDBScheduledSeriesRecording(scheduledRecording)
+
+	id = mVar.GetDBLastScheduledSeriesRecordingId()
+
+    e.AddResponseHeader("Content-type", "text/plain")
+    e.AddResponseHeader("Access-Control-Allow-Origin", "*")
+	e.SetResponseBodyString(stri(id))
+	e.SendResponse(200)
+
+End Sub
+
+
+Sub deleteScheduledRecording(fn As Object, userData As Object, e as Object)
 
 	print "deleteScheduledRecording endpoint invoked"
 
@@ -244,16 +296,54 @@ Sub deleteScheduledRecording(userData As Object, e as Object)
 
 	requestParams = e.GetRequestParams()
 
-	mVar.DeleteDBScheduledRecording(requestParams.id)
+	fn(requestParams.id)
 
     e.AddResponseHeader("Content-type", "text/plain")
+    e.AddResponseHeader("Access-Control-Allow-Origin", "*")
 	e.SetResponseBodyString("OK")
 	e.SendResponse(200)
 
 End Sub
 
 
-Sub getScheduledRecordings(userData As Object, e as Object)
+Sub deleteScheduledSingleRecording(userData As Object, e as Object)
+
+	print "deleteScheduledSingleRecording endpoint invoked"
+
+    mVar = userData.mVar
+	mVar.deleteScheduledRecording(mVar.DeleteDBScheduledSingleRecording, userData, e)
+
+End Sub
+
+
+Sub deleteScheduledSeriesRecording(userData As Object, e as Object)
+
+	print "deleteScheduledSeriesRecording endpoint invoked"
+
+    mVar = userData.mVar
+	mVar.deleteScheduledRecording(mVar.DeleteDBScheduledSeriesRecording, userData, e)
+
+End Sub
+
+
+Sub PopulateScheduledRecordings(getSingleRecordings As Boolean, mVar As Object, response As Object, currentDateTime As String)
+
+	if getSingleRecordings then
+		scheduledRecordings = mVar.GetDBScheduledSingleRecordings(currentDateTime)
+	else
+		scheduledRecordings = mVar.GetDBScheduledSeriesRecordings()
+	endif
+
+	response.scheduledRecordings = []
+
+	for each scheduledRecording in scheduledRecordings
+		response.scheduledRecordings.push(scheduledRecording)
+	next
+
+End Sub
+
+
+Sub getScheduledRecordings(getSingleRecordings As Boolean, userData As Object, e as Object, currentDateTime As String)
 
 	print "getScheduledRecordings endpoint invoked"
 
@@ -261,26 +351,33 @@ Sub getScheduledRecordings(userData As Object, e as Object)
 
 	response = {}
 
-	PopulateScheduledRecordings(mVar, response)
+	PopulateScheduledRecordings(getSingleRecordings, mVar, response, currentDateTime)
 
 	json = FormatJson(response, 0)
 
     e.AddResponseHeader("Content-type", "text/json")
+    e.AddResponseHeader("Access-Control-Allow-Origin", "*")
     e.SetResponseBodyString(json)
     e.SendResponse(200)
 
 End Sub
 
 
-Sub PopulateScheduledRecordings(mVar As Object, response As Object)
+Sub getScheduledSingleRecordings(userData As Object, e as Object)
 
-	scheduledRecordings = mVar.GetDBScheduledRecordings()
+	print "getScheduledSingleRecordings endpoint invoked"
 
-	response.scheduledRecordings = []
+	requestParams = e.GetRequestParams()
+	getScheduledRecordings(true, userData, e, requestParams.currentDateTime)
 
-	for each scheduledRecording in scheduledRecordings
-		response.scheduledRecordings.push(scheduledRecording)
-	next
+End Sub
+
+
+Sub getScheduledSeriesRecordings(userData As Object, e as Object)
+
+	print "getScheduledSeriesRecordings endpoint invoked"
+
+	getScheduledRecordings(false, userData, e, "")
 
 End Sub
 
@@ -302,6 +399,7 @@ Sub getStations(userData as Object, e as Object)
 	json = FormatJson(response, 0)
 
     e.AddResponseHeader("Content-type", "text/json")
+    e.AddResponseHeader("Access-Control-Allow-Origin", "*")
     e.SetResponseBodyString(json)
     e.SendResponse(200)
 
@@ -325,6 +423,7 @@ Sub getStationSchedulesForSingleDay(userData as Object, e as Object)
 	json = FormatJson(response, 0)
 
     e.AddResponseHeader("Content-type", "text/json")
+    e.AddResponseHeader("Access-Control-Allow-Origin", "*")
     e.SetResponseBodyString(json)
     e.SendResponse(200)
 
@@ -348,6 +447,7 @@ Sub getPrograms(userData as Object, e as Object)
 	json = FormatJson(response, 0)
 
     e.AddResponseHeader("Content-type", "text/json")
+    e.AddResponseHeader("Access-Control-Allow-Origin", "*")
     e.SetResponseBodyString(json)
     e.SendResponse(200)
 
@@ -372,6 +472,7 @@ Sub getRecordings(userData as Object, e as Object)
 	json = FormatJson(response, 0)
 
     e.AddResponseHeader("Content-type", "text/json")
+    e.AddResponseHeader("Access-Control-Allow-Origin", "*")
     e.SetResponseBodyString(json)
     e.SendResponse(200)
 
@@ -437,6 +538,7 @@ Sub manualRecord(userData as Object, e as Object)
 	mVar.msgPort.PostMessage(addManualRecordMessage)
 
     e.AddResponseHeader("Content-type", "text/plain")
+    e.AddResponseHeader("Access-Control-Allow-Origin", "*")
     e.SetResponseBodyString("herro Joel")
     e.SendResponse(200)
 
@@ -460,6 +562,7 @@ Sub hlsUrl(userData as Object, e as Object)
 	if recording.HLSSegmentationComplete = 0 then
 		' HLS segments don't exist
 		e.AddResponseHeader("Content-type", "text/plain; charset=utf-8")
+	    e.AddResponseHeader("Access-Control-Allow-Origin", "*")
 		e.SetResponseBodyString("Recording not found.")
 	    e.SendResponse(404)
 	else
@@ -467,6 +570,7 @@ Sub hlsUrl(userData as Object, e as Object)
 		response.hlsUrl = "/content/hls/" + recording.FileName + "/" + recording.FileName + "_index.m3u8"
 		json = FormatJson(response, 0)
 		e.AddResponseHeader("Content-type", "text/json")
+	    e.AddResponseHeader("Access-Control-Allow-Origin", "*")
 		e.SetResponseBodyString(json)
 		e.SendResponse(200)
 	endif
@@ -484,6 +588,7 @@ Sub currentJTRState(userData as Object, e as Object)
 	response.currentState = mVar.GetCurrentState()
 	json = FormatJson(response, 0)
 	e.AddResponseHeader("Content-type", "text/json")
+    e.AddResponseHeader("Access-Control-Allow-Origin", "*")
 	e.SetResponseBodyString(json)
 	e.SendResponse(200)
 
@@ -519,10 +624,12 @@ Sub fileToTranscode(userData as Object, e as Object)
 	    xml = root.GenXML({ indent: " ", newline: chr(10), header: true })
 
 		e.AddResponseHeader("Content-type", "text/xml")
+	    e.AddResponseHeader("Access-Control-Allow-Origin", "*")
 		e.SetResponseBodyString(xml)
 		e.SendResponse(200)
 	else
 		e.AddResponseHeader("Content-type", "text/plain; charset=utf-8")
+	    e.AddResponseHeader("Access-Control-Allow-Origin", "*")
 		e.SetResponseBodyString("No file to transcode.")
 		e.SendResponse(404)
 	endif
@@ -570,6 +677,7 @@ Sub getLastSelectedShowId(userData as Object, e as Object)
 	response.lastSelectedShowId = mVar.GetDBLastSelectedShowId()
 	json = FormatJson(response, 0)
 	e.AddResponseHeader("Content-type", "text/json")
+    e.AddResponseHeader("Access-Control-Allow-Origin", "*")
 	e.SetResponseBodyString(json)
 	e.SendResponse(200)
 
@@ -602,6 +710,7 @@ Sub getLastTunedChannel(userData as Object, e as Object)
 	response.lastTunedChannel = mVar.GetDBLastTunedChannel()
 	print "getLastTunedChannel: response.lastTunedChannel=";response.lastTunedChannel
 	e.AddResponseHeader("Content-type", "text/plain")
+    e.AddResponseHeader("Access-Control-Allow-Origin", "*")
 	e.SetResponseBodyString(response.lastTunedChannel)
 	e.SendResponse(200)
 
@@ -634,6 +743,7 @@ Sub getSettings(userData as Object, e as Object)
 	json = FormatJson(response, 0)
 
     e.AddResponseHeader("Content-type", "text/json")
+    e.AddResponseHeader("Access-Control-Allow-Origin", "*")
     e.SetResponseBodyString(json)
     e.SendResponse(200)
 
@@ -667,10 +777,30 @@ Sub getEpg(userData as Object, e as Object)
 	json = FormatJson(response, 0)
 
     e.AddResponseHeader("Content-type", "text/json")
+    e.AddResponseHeader("Access-Control-Allow-Origin", "*")
     e.SetResponseBodyString(json)
     e.SendResponse(200)
 
 End Sub
+
+
+Sub getEpgMatchingPrograms(userData as Object, e as Object)
+
+	print "epgMatchingPrograms endpoint invoked"
+
+    mVar = userData.mVar
+
+	requestParams = e.GetRequestParams()
+	response = mVar.GetDBEpgMatchingPrograms(requestParams.startDate, requestParams.title, requestParams.atscMajor, requestParams.atscMinor)
+	json = FormatJson(response, 0)
+
+    e.AddResponseHeader("Content-type", "text/json")
+    e.AddResponseHeader("Access-Control-Allow-Origin", "*")
+    e.SetResponseBodyString(json)
+    e.SendResponse(200)
+
+End Sub
+
 
 
 Function GetFileExtension(file as String) as Object

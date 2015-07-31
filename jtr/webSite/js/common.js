@@ -15,8 +15,25 @@ var currentActiveElementId = "#homePage";
 
 var recordedPageIds = [];
 
-var epgProgramSchedule = null;
-var epgProgramScheduleStartDateTime;
+var cgPopupId = "";
+var cgPopupTitle = "";
+var cgPopupElements;
+var cgPopupHandlers;
+
+var cgRecordEpisodeId;
+var cgRecordSeriesId;
+var cgTuneEpisodeId;
+var cgCloseEpisodeId;
+
+var cgSelectedStationId;
+var cgSelectedProgram;
+var cgPopupSelectedIndex;
+
+var cgPopupEpisodeElements = ["#cgProgramRecord", "#cgProgramTune", "#cgProgramClose"];
+var cgPopupEpisodeHandlers = [cgRecordSelectedProgram, cgTune, cgModalClose];
+
+var cgPopupSeriesElements = ["#cgEpisodeRecord", "#cgSeriesRecord", "#cgSeriesTune", "#cgSeriesClose"];
+var cgPopupSeriesHandlers = [cgRecordSelectedProgram, cgRecordSelectedSeries, cgTune, cgModalClose];
 
 function addMinutes(date, minutes) {
     return new Date(date.getTime() + minutes * 60000);
@@ -24,6 +41,14 @@ function addMinutes(date, minutes) {
 
 function addMilliseconds(date, milliseconds) {
     return new Date(date.getTime() + milliseconds);
+}
+
+function msecToMinutes(msec) {
+    return msec / 60000;
+}
+
+function minutesToMsec(minutes) {
+    return minutes * 60000;
 }
 
 function switchToPage(newPage) {
@@ -330,565 +355,6 @@ function updateSettings() {
 }
 
 
-function initiateRenderChannelGuide() {
-
-    // display channel guide one station at a time, from current time for the duration of the channel guide
-    getStations(renderChannelGuide);
-}
-
-
-function renderChannelGuide() {
-
-    // start date/time for channel guide display is current time, rounded down to nearest 30 minutes
-    var currentDate = new Date();
-    var startMinute = (parseInt(currentDate.getMinutes() / 30) * 30) % 60;
-    var startHour = currentDate.getHours();
-    var channelGuideDisplayStartDateTime = new Date(currentDate.getFullYear(), currentDate.getMonth(), currentDate.getDate(), startHour, startMinute, 0, 0);
-
-    // start date/time of data structure containing channel guide data
-    var channelGuideDataStructureStartDateTime = epgProgramScheduleStartDateTime;
-
-    // time difference between start of channel guide display and start of channel guide data
-    var timeDiffInMsec = channelGuideDisplayStartDateTime - channelGuideDataStructureStartDateTime;
-    var timeDiffInSeconds = timeDiffInMsec / 1000;
-    var timeDiffInMinutes = timeDiffInSeconds / 60;
-
-    // index into the data structure (time slots) that contains the first show to display in the channel guide based on the time offset into channel guide data
-    var currentChannelGuideOffsetIndex = parseInt(timeDiffInMinutes / 30);
-
-    // JTRTODO - remove me
-    firstRow = true;
-
-    var maxMinutesToDisplay = 0;
-    var minutesToDisplay;
-
-    $.each(stations, function (stationIndex, station) {
-
-        // channel guide data for this station
-        var programStationData = epgProgramSchedule[station.StationId]
-
-        // iterate through initialShowsByTimeSlot to get programs to display
-        var programSlotIndices = programStationData.initialShowsByTimeSlot;
-        var programList = programStationData.programList;
-
-        var indexIntoProgramList = programSlotIndices[currentChannelGuideOffsetIndex];
-
-        var minutesAlreadyDisplayed = 0;
-
-        // build id of div containing the UI elements of the programs for the current station
-        var cgProgramLineName = "#cgStation" + stationIndex.toString() + "Data";
-        $(cgProgramLineName).empty();
-
-        // first show to display for this station
-        showToDisplay = programList[indexIntoProgramList];
-
-        // calculate the time delta between the time of the channel guide display start and the start of the first show to display
-        timeDiffInMsec = channelGuideDisplayStartDateTime - new Date(showToDisplay.date);
-        var timeDiffInSeconds = timeDiffInMsec / 1000;
-        var timeDiffInMinutes = timeDiffInSeconds / 60;
-        // reduce the duration of the first show by this amount (time the show would have already been airing as of this time)
-
-        var toAppend = "";
-        minutesToDisplay = 0;
-        while (indexIntoProgramList < programList.length) {
-            try
-            {
-                var durationInMinutes = Number(showToDisplay.duration);
-            }
-            catch (err)
-            {
-                debugger;
-            }
-            // perform reduction for only the first show in case it's already in progress at the beginning of this station's display
-            if (toAppend == "") {
-                durationInMinutes -= timeDiffInMinutes;
-            }
-
-            minutesToDisplay += durationInMinutes;
-
-            var cssClass = "";
-            var widthSpec = "";
-            if (durationInMinutes == 30) {
-                cssClass = "'thirtyMinuteButton'";
-            }
-            else if (durationInMinutes == 60) {
-                cssClass = "'sixtyMinuteButton'";
-            }
-            else {
-                cssClass = "'variableButton'";
-                var width = (durationInMinutes / 60) * 480;
-                widthSpec = " style='width:" + width.toString() + "px'";
-                // JTR TODO - maxWidth
-            }
-            var id = "show-" + station.StationId + "-" + indexIntoProgramList.toString();
-            var title = showToDisplay.title;
-            toAppend +=
-                "<button id='" + id + "' class=" + cssClass + widthSpec + ">" + title + "</button>";
-
-            minutesAlreadyDisplayed += durationInMinutes;
-            indexIntoProgramList++;
-            showToDisplay = programList[indexIntoProgramList];
-        }
-        $(cgProgramLineName).append(toAppend);
-
-        if (minutesToDisplay > maxMinutesToDisplay) {
-            maxMinutesToDisplay = minutesToDisplay;
-        }
-        // JTRTODO - setup handlers on children for browser - when user clicks on program to record, etc.
-
-        // setup handlers on children - use for testing on Chrome
-        var buttonsInCGLine = $(cgProgramLineName).children();
-        $.each(buttonsInCGLine, function (buttonIndex, buttonInCGLine) {
-            //$(buttonInCGLine).click({ recordingId: recordingId }, selectProgram);
-            if (firstRow && buttonIndex == 0) {
-                $(buttonInCGLine).focus();
-                firstRow = false;
-                lastActiveButton = buttonInCGLine;
-            }
-        });
-
-        // JTRTODO - change in the future - different algorithm for selecting which program to highlight first
-        //$(lastActiveButton).removeClass("btn-secondary");
-        //$(lastActiveButton).addClass("btn-primary");
-
-        //$(lastActiveButton).focus();
-        selectProgram(null, lastActiveButton);
-    });
-
-    // build and display timeline
-    var toAppend = "";
-    $("#cgTimeLine").empty();
-    var timeLineCurrentValue = channelGuideDisplayStartDateTime;
-    var minutesDisplayed = 0;
-    while (minutesDisplayed < maxMinutesToDisplay) {
-
-        var timeLineTime = timeOfDay(timeLineCurrentValue);
-
-        //toAppend += "<span class='thirtyMinuteTime'>" + timeLineTime + "</span>";
-        toAppend += "<button class='thirtyMinuteTime'>" + timeLineTime + "</button>";
-        timeLineCurrentValue = new Date(timeLineCurrentValue.getTime() + 30 * 60000);
-        minutesDisplayed += 30;
-    }
-    $("#cgTimeLine").append(toAppend);
-
-
-}
-
-
-// get the index of the button in a row / div
-function getActiveButtonIndex(activeButton, buttonsInRow) {
-
-    var positionOfActiveElement = $(activeButton).position();
-
-    var indexOfActiveButton = -1;
-    $.each(buttonsInRow, function (buttonIndex, buttonInRow) {
-        var buttonPosition = $(buttonInRow).position();
-        if (buttonPosition.left == positionOfActiveElement.left) {
-            indexOfActiveButton = buttonIndex;
-            return false;
-        }
-    });
-    return indexOfActiveButton;
-}
-
-function getActiveRowIndex(activeRow) {
-
-    var rowPosition = $(activeRow).position();
-
-    var cgStationDiv = activeRow.parentElement;
-    var stationDivs = $(cgStationDiv).children();
-    var indexOfActiveRow = -1;
-    $.each(stationDivs, function (stationDivIndex, stationDiv) {
-        if (stationDivIndex > 0) {          // div 0 is the timeline; skip it
-            var stationDivPosition = $(stationDiv).position();
-            if (stationDivPosition.top == rowPosition.top) {
-                indexOfActiveRow = stationDivIndex;
-                return false;
-            }
-        }
-    });
-    return indexOfActiveRow - 1;    // 0 is the first station
-}
-
-function updateActiveProgramUIElement(activeProgramUIElement, newActiveProgramUIElement) {
-
-    if (activeProgramUIElement != null) {
-        $(activeProgramUIElement).removeClass("btn-primary");
-        $(activeProgramUIElement).addClass("btn-secondary");
-    }
-
-    $(newActiveProgramUIElement).removeClass("btn-secondary");
-    $(newActiveProgramUIElement).addClass("btn-primary");
-
-    $(newActiveProgramUIElement).focus();
-
-    lastActiveButton = newActiveProgramUIElement;
-}
-
-function selectProgram(activeProgramUIElement, newActiveProgramUIElement) {
-
-    updateActiveProgramUIElement(activeProgramUIElement, newActiveProgramUIElement);
-
-    var programId = $(newActiveProgramUIElement)[0].id;
-    var idParts = programId.split("-");
-    var stationId = idParts[1];
-    var programIndex = idParts[2];
-
-    var programStationData = epgProgramSchedule[stationId];
-    var programList = programStationData.programList;
-    var selectedProgram = programList[programIndex];
-
-    // display day/date of selected program in upper left of channel guide
-    var programDayDate = dayDate(selectedProgram.date);
-    $("#cgDayDate").text(programDayDate);
-
-    $("#programInfo").empty();
-
-     // day, date, and time
-    var startTime = timeOfDay(selectedProgram.date);
-
-    var endDate = new Date(selectedProgram.date.getTime() + selectedProgram.duration * 60000);
-    var endTime = timeOfDay(endDate);
-
-    var dateTimeInfo = programDayDate + " " + startTime + " - " + endTime;
-
-   // program title, episode title, and description, and episode info
-    var programInfo = selectedProgram.title;
-    programInfo += "<br>";
-
-    if (selectedProgram.episodeTitle != "") {
-        programInfo += '"' + selectedProgram.episodeTitle + '"';
-    }
-    programInfo += "<br>";
-    if (selectedProgram.description != "") {
-        programInfo += selectedProgram.description;
-    }
-    programInfo += "<br>";
-    
-    if (selectedProgram.castMembers != 'none') {
-        programInfo += selectedProgram.castMembers;        
-    }
-    programInfo += "<br>";        
-    
-    var episodeInfo = "";
-    if (selectedProgram.showType == "Series" && selectedProgram.newShow == 0) {
-        episodeInfo = "Rerun.";
-        if (selectedProgram.originalAirDate != "") {
-            episodeInfo += " The original air date was " + selectedProgram.originalAirDate;
-            if (selectedProgram.gracenoteSeasonEpisode != "") {
-                episodeInfo += ", " + selectedProgram.gracenoteSeasonEpisode;
-            }
-        }
-    }
-    programInfo += episodeInfo + "<br>";
-
-    var htmlContent = "<p>";
-    htmlContent += dateTimeInfo;
-    htmlContent += "<br>";
-    htmlContent += programInfo;
-    htmlContent += "</p>";
-
-    $("#programInfo").html(htmlContent);
-
-}
-
-function dayDate(dateTime) {
-    var dayInWeek = dayOfWeek(dateTime);
-    var month = (dateTime.getMonth() + 1).toString();
-    var date = dateTime.getDate().toString();
-
-    return dayInWeek + " " + month + "/" + date;
-}
-
-function dayOfWeek(dateTime) {
-    var weekday = new Array(7);
-    weekday[0] = "Sun";
-    weekday[1] = "Mon";
-    weekday[2] = "Tue";
-    weekday[3] = "Wed";
-    weekday[4] = "Thu";
-    weekday[5] = "Fri";
-    weekday[6] = "Sat";
-
-    return weekday[dateTime.getDay()];
-}
-
-function timeOfDay(dateTime) {
-
-    var hoursLbl = "";
-    var amPm = " am";
-    var hours = dateTime.getHours();
-    if (hours == 0) {
-        hoursLbl = "12";
-    }
-    else if (hours < 12) {
-        hoursLbl = hours.toString();
-    }
-    else if (hours == 12) {
-        hoursLbl = "12";
-        amPm = "pm";
-    }
-    else {
-        hoursLbl = (hours - 12).toString();
-        amPm = "pm";
-    }
-
-    var minutesLbl = twoDigitFormat(dateTime.getMinutes().toString());
-
-    return (hoursLbl + ":" + minutesLbl + amPm);
-}
-
-
-function navigateChannelGuide(direction) {
-
-    // JTRTODO
-    //          var currentElement = document.activeElement;
-    var activeProgramUIElement = lastActiveButton;
-    // JTRTODO - the following may be necessary for some tbd functionality??
-    //var currentElementId = currentElement.id;
-
-    // get div for current active button
-    var activeStationRowUIElement = activeProgramUIElement.parentElement;           // current row of the channel guide
-    var programUIElementsInStation = $(activeStationRowUIElement).children();       // programs in that row
-    var programUIElementPosition = $(activeProgramUIElement).position();            // returns members 'top' and 'left'
-    var allRowsUIElement = activeStationRowUIElement.parentElement;                 // element representing all rows (why not just use #cgData)
-    var stationRowsUIElements = $(allRowsUIElement).children();                     // stations in the channel guide (the rows)
-
-    var indexOfActiveProgramUIElement = getActiveButtonIndex(activeProgramUIElement, programUIElementsInStation);
-    if (indexOfActiveProgramUIElement >= 0) {
-        if (direction == "right") {
-            // JTRTODO - check for limit on right side; either fetch more epg data or stop scrolling at the end
-            var indexOfNewProgramUIElement = indexOfActiveProgramUIElement + 1;
-            if (indexOfNewProgramUIElement < $(programUIElementsInStation).length) {
-                var newActiveProgramUIElement = $(programUIElementsInStation)[indexOfNewProgramUIElement];
-                selectProgram(activeProgramUIElement, newActiveProgramUIElement);
-            }
-        }
-        else if (direction == "left") {
-            if (indexOfActiveProgramUIElement > 0) {
-                var indexOfNewProgramUIElement = indexOfActiveProgramUIElement - 1;
-                if (indexOfNewProgramUIElement < $(programUIElementsInStation).length) {
-                    var newActiveProgramUIElement = $(programUIElementsInStation)[indexOfNewProgramUIElement];
-                    selectProgram(activeProgramUIElement, newActiveProgramUIElement);
-                }
-            }
-        }
-        else if (direction == "down" || direction == "up") {
-            var xPosition = programUIElementPosition.left;
-            var activeRowIndex = getActiveRowIndex(activeStationRowUIElement);
-            if ((activeRowIndex < stations.length - 1 && direction == "down")  || (activeRowIndex > 0 && direction == "up")) {
-
-                var newRowIndex;
-                if (direction == "down") {
-                    newRowIndex = activeRowIndex + 1;
-                }
-                else {
-                    newRowIndex = activeRowIndex - 1;
-                }
-
-                // find program whose x value is closest to the x value of the last program
-                var newActiveRow = stationRowsUIElements[newRowIndex + 1];
-                var programsInStation = $(newActiveRow).children();
-
-                var minDistance = 1920;
-                $.each(programsInStation, function (programInStationIndex, programInStation) {
-                    var programPosition = $(programInStation).position();
-                    var xProgramPosition = programPosition.left;
-                    var distanceFromPreviousProgram = Math.abs(xProgramPosition - xPosition);
-                    if (distanceFromPreviousProgram < minDistance) {
-                        minDistance = distanceFromPreviousProgram;
-                        newActiveProgram = programInStation;
-                    }
-                });
-                selectProgram(activeProgramUIElement, newActiveProgram);
-            }
-        }
-    }
-}
-
-function displayChannelGuide() {
-
-    if (epgProgramSchedule == null) {
-
-        // first time displaying channel guide; retrieve epg data from database
-        epgProgramSchedule = {};
-
-        epgProgramScheduleStartDateTime = new Date();
-        epgProgramScheduleStartDateTime.setFullYear(2100, 0, 0);
-
-        // retrieve data from db starting on today's date
-        var startDate = new Date();
-        var year = startDate.getFullYear().toString();
-        var month = (startDate.getMonth() + 1).toString();
-        var dayInMonth = startDate.getDate().toString();
-        var epgStartDate = year + "-" + twoDigitFormat(month) + "-" + twoDigitFormat(dayInMonth);
-        var url = baseURL + "getEpg";
-        var epgData = { "startDate": epgStartDate };
-        $.get(url, epgData)
-        .done(function (result) {
-
-            consoleLog("XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX getEpg success ************************************");
-
-            // for each station, generate an ordered list (by airDateTime) of all shows in the current epg data
-            $.each(result, function (index, sdProgram) {
-
-                // convert to local time zone
-                var localDate = new Date(sdProgram.AirDateTime);
-
-                // capture the earliest date in the epg data (in local time, so may be earlier than date passed to db)
-                if (localDate < epgProgramScheduleStartDateTime) {
-                    epgProgramScheduleStartDateTime = localDate;
-                }
-
-                // create program from data in db
-                var program = {}
-                program.date = localDate;
-                //program.station = sdProgram.AtscMajor.toString() + "." + sdProgram.AtscMinor.toString();
-                program.title = sdProgram.Title;
-                program.duration = sdProgram.Duration;
-                program.episodeTitle = sdProgram.EpisodeTitle;
-                program.description = sdProgram.Description;
-                program.showType = sdProgram.ShowType;
-
-                if (sdProgram.NewShow == undefined) {
-                    program.newShow = 1;
-                }
-                else {
-                    program.newShow = sdProgram.NewShow;
-                }
-                if (sdProgram.OriginalAirDate == undefined) {
-                    program.originalAirDate = "";
-                }
-                else {
-                    program.originalAirDate = sdProgram.OriginalAirDate;
-                }
-                if (sdProgram.GracenoteSeasonEpisode == undefined) {
-                    program.gracenoteSeasonEpisode = "";
-                }
-                else {
-                    program.gracenoteSeasonEpisode = sdProgram.GracenoteSeasonEpisode;
-                }
-                
-                var aggregatedCastMembers = sdProgram.CastMembers;
-                var castMembersArray = aggregatedCastMembers.split(',');
-                var castMembers = "";
-                $.each(castMembersArray, function (index, castMemberEntry) {
-                    if (index > 0) {
-                        castMembers += ", ";
-                    }
-                    castMembers += castMemberEntry.substring(2);
-                });
-                if (castMembers != "") {
-                    console.log(castMembers);
-                }
-                program.castMembers = castMembers;
-                
-                // append to program list for  this station (create new station object if necessary)
-                var stationId = sdProgram.StationId;
-                if (stationId == "undefined") {
-                    debugger;
-                }
-                if (!(stationId in epgProgramSchedule)) {
-                    var programStationData = {};
-                    programStationData.station = sdProgram.AtscMajor.toString() + "." + sdProgram.AtscMinor.toString();
-                    programStationData.programList = [];
-                    epgProgramSchedule[stationId] = programStationData;
-                }
-
-                // append program to list of programs for this station
-                var programList = epgProgramSchedule[stationId].programList;
-                programList.push(program);
-            });
-
-            // generate data for each time slot in the schedule - indicator of the first program to display at any given time slot
-            for (var stationId in epgProgramSchedule)
-            {
-                if (epgProgramSchedule.hasOwnProperty(stationId)) {
-                    var programStationData = epgProgramSchedule[stationId];
-                    var programList = programStationData.programList;
-                    var programIndex = 0;
-
-                    var programSlotIndices = [];
-
-                    var lastProgram = null;
-
-                    for (var slotIndex = 0; slotIndex < 48 * numDaysEpgData; slotIndex++) {
-
-                        var slotTimeOffsetSinceStartOfEpgData = slotIndex * 30;
-
-                        while (true) {
-
-                            // check for the case where we're at the end of the list of programs - occurs when the last show in the schedule is > 30 minutes
-                            if (programIndex >= programList.length) {
-                                programSlotIndices.push(programIndex - 1);
-                                break;
-                            }
-
-                            var program = programList[programIndex];
-
-                            var programTimeOffsetSinceStartOfEPGData = (program.date - epgProgramScheduleStartDateTime) / 60000; // minutes
-
-                            if (programTimeOffsetSinceStartOfEPGData == slotTimeOffsetSinceStartOfEpgData) {
-                                // program starts at exactly this time slot
-                                programSlotIndices.push(programIndex);
-                                programIndex++;
-                                lastProgram = program;
-                                break;
-                            }
-                            else if (programTimeOffsetSinceStartOfEPGData > slotTimeOffsetSinceStartOfEpgData) {
-                                // this program starts at some time after the current time slot - use prior show when navigating to this timeslot
-                                if (lastProgram != null) {
-                                    lastProgram.indexIntoProgramList = programIndex - 1;
-                                }
-                                programSlotIndices.push(programIndex - 1);
-                                // leave program index as it is - wait for timeslot to catch up
-                                break;
-                            }
-                            else if (programTimeOffsetSinceStartOfEPGData < slotTimeOffsetSinceStartOfEpgData) {
-                                // this program starts at sometime before the current time slot - continue to look for the last show that starts before the current time slot (or == to the current time slot)
-                                programIndex++;
-                                lastProgram = program;
-                            }
-                        }
-                    }
-
-                    programStationData.initialShowsByTimeSlot = programSlotIndices;
-                }
-            }
-
-            switchToPage("channelGuidePage");
-            initiateRenderChannelGuide();
-        })
-        .fail(function (jqXHR, textStatus, errorThrown) {
-            debugger;
-            console.log("getEpg failure");
-        })
-        .always(function () {
-        });
-    }
-    else {
-        switchToPage("channelGuidePage");
-        initiateRenderChannelGuide();
-    }
-        
-    $( "#cgData" ).keydown(function(keyEvent) {
-        var keyIdentifier = event.keyIdentifier;
-        if (keyIdentifier == "Right" || keyIdentifier == "Left" || keyIdentifier == "Up" || keyIdentifier == "Down") {
-            console.log("keyIdentifier " + event.keyIdentifier);
-            navigateChannelGuide(keyIdentifier.toLowerCase());
-            return false;
-        }
-
-    });
-}
-
-function selectChannelGuide() {
-
-    // initializeEpgData();
-    
-    displayChannelGuide();
-}
-
 
 function selectToDoList() {
     switchToPage("toDoListPage");
@@ -1029,6 +495,308 @@ function getShowDescription(showId) {
     // body...
 }
 
+
+function cgTune() {
+
+    // enter live video
+    var event = {};
+    event["EventType"] = "TUNE_LIVE_VIDEO";
+    postMessage(event);
+
+    // tune to selected channel
+    var stationName = getStationFromId(cgSelectedStationId);
+    stationName = stationName.replace(".", "-");
+    event["EventType"] = "TUNE_LIVE_VIDEO_CHANNEL";
+    event["EnteredChannel"] = stationName;
+    postMessage(event);
+
+    return "tune";
+}
+
+
+function cgTuneFromClient() {
+
+    var stationName = getStationFromId(cgSelectedStationId);
+    stationName = stationName.replace(".", "-");
+
+    var aUrl = baseURL + "browserCommand";
+    var commandData = { "command": "tuneLiveVideoChannel", "enteredChannel": stationName };
+    console.log(commandData);
+
+    $.get(aUrl, commandData)
+        .done(function (result) {
+            console.log("browserCommand successfully sent");
+        })
+        .fail(function (jqXHR, textStatus, errorThrown) {
+            debugger;
+            console.log("browserCommand failure");
+        })
+        .always(function () {
+            //alert("recording transmission finished");
+        });
+}
+
+
+function updateCGProgramDlgSelection() {
+
+    for (i = 0; i < cgPopupElements.length; i++) {
+        $(cgPopupElements[i]).removeClass("btn-primary");
+        $(cgPopupElements[i]).addClass("btn-secondary");
+    }
+
+    $(cgPopupElements[cgPopupSelectedIndex]).removeClass("btn-secondary");
+    $(cgPopupElements[cgPopupSelectedIndex]).addClass("btn-primary");
+}
+
+
+function cgRecordProgram(showType) {
+    // redundant in some cases (when selected from pop up); not when record button pressed
+    var programData = ChannelGuideSingleton.getInstance().getSelectedStationAndProgram();
+    cgSelectedProgram = programData.program;
+    cgSelectedStationId = programData.stationId;
+
+    var event = {};
+    event["EventType"] = "ADD_RECORD";
+    event["DateTime"] = cgSelectedProgram.date;
+    event["Title"] = cgSelectedProgram.title;
+    event["Duration"] = cgSelectedProgram.duration;
+    event["ShowType"] = showType;
+    event["InputSource"] = "tuner";
+
+    var stationName = getStationFromId(cgSelectedStationId);
+
+    stationName = stationName.replace(".", "-");
+
+    event["Channel"] = stationName;
+
+    event["RecordingBitRate"] = _settings.recordingBitRate;
+    event["SegmentRecording"] = _settings.segmentRecordings;
+
+    postMessage(event);
+
+    return "record";
+}
+
+
+function cgRecordSelectedProgram() {
+
+    // redundant in some cases (when selected from pop up); not when record button pressed
+    var programData = ChannelGuideSingleton.getInstance().getSelectedStationAndProgram();
+    cgSelectedProgram = programData.program;
+    cgSelectedStationId = programData.stationId;
+
+    if (cgSelectedProgram.showType == "Series") {
+        return cgRecordProgram("");
+    }
+    else {
+        return cgRecordProgram(cgSelectedProgram.showType);
+    }
+}
+
+
+function cgRecordSelectedSeries() {
+    return cgRecordProgram("Series");
+}
+
+
+function cgRecordProgramFromClient(showType) {
+
+    var programData = ChannelGuideSingleton.getInstance().getSelectedStationAndProgram();
+    cgSelectedProgram = programData.program;
+    cgSelectedStationId = programData.stationId;
+
+    var stationName = getStationFromId(cgSelectedStationId);
+    stationName = stationName.replace(".", "-");
+
+    var aUrl = baseURL + "browserCommand";
+    var commandData = { "command": "addRecord", "dateTime": cgSelectedProgram.date, "title": cgSelectedProgram.title, "duration": cgSelectedProgram.duration, "showType": showType,
+        "inputSource": "tuner", "channel": stationName, "recordingBitRate": _settings.recordingBitRate, "segmentRecording": _settings.segmentRecordings };
+    console.log(commandData);
+
+    $.get(aUrl, commandData)
+        .done(function (result) {
+            console.log("browserCommand successfully sent");
+        })
+        .fail(function (jqXHR, textStatus, errorThrown) {
+            debugger;
+            console.log("browserCommand failure");
+        })
+        .always(function () {
+            //alert("recording transmission finished");
+        });
+}
+
+
+function cgRecordSelectedProgramFromClient() {
+
+    // redundant in some cases (when selected from pop up); not when record button pressed
+    var programData = ChannelGuideSingleton.getInstance().getSelectedStationAndProgram();
+    cgSelectedProgram = programData.program;
+    cgSelectedStationId = programData.stationId;
+
+    if (cgSelectedProgram.showType == "Series") {
+        return cgRecordProgramFromClient("");
+    }
+    else {
+        return cgRecordProgramFromClient(cgSelectedProgram.showType);
+    }
+}
+
+
+function cgRecordSelectedSeriesFromClient() {
+
+    return cgRecordProgramFromClient("Series");
+}
+
+
+function displayCGPopUp() {
+
+    consoleLog("displayCGPopUp() invoked");
+
+    var programData = ChannelGuideSingleton.getInstance().getSelectedStationAndProgram();
+    cgSelectedProgram = programData.program;
+    cgSelectedStationId = programData.stationId;
+
+    if (cgSelectedProgram.showType == "Series") {
+        cgPopupId = '#cgSeriesDlg';
+        cgPopupTitle = '#cgSeriesDlgShowTitle';
+        cgPopupElements = cgPopupSeriesElements;
+        cgPopupHandlers = cgPopupSeriesHandlers;
+
+        cgRecordEpisodeId = "#cgEpisodeRecord";
+        cgRecordSeriesId = "#cgSeriesRecord";
+        cgTuneEpisodeId = "#cgSeriesTune";
+        cgCloseEpisodeId = "#cgSeriesClose";
+    }
+    else {
+        cgPopupId = '#cgProgramDlg';
+        cgPopupTitle = '#cgProgramDlgShowTitle';
+        cgPopupElements = cgPopupEpisodeElements;
+        cgPopupHandlers = cgPopupEpisodeHandlers;
+
+        cgRecordEpisodeId = "#cgProgramRecord";
+        cgRecordSeriesId = null;
+        cgTuneEpisodeId = "#cgProgramTune";
+        cgCloseEpisodeId = "#cgProgramClose";
+    }
+
+    // setup handlers for browser
+    $(cgRecordEpisodeId).off();
+    $(cgRecordEpisodeId).click(function (event) {
+        cgRecordSelectedProgramFromClient();
+        cgProgramDlgCloseInvoked();
+        ChannelGuideSingleton.getInstance().reselectCurrentProgram();
+    });
+    if (cgRecordSeriesId) {
+        $(cgRecordSeriesId).off();
+        $(cgRecordSeriesId).click(function (event) {
+            cgRecordSelectedSeriesFromClient();
+            cgProgramDlgCloseInvoked();
+            ChannelGuideSingleton.getInstance().reselectCurrentProgram();
+        });
+    }
+    $(cgTuneEpisodeId).off();
+    $(cgTuneEpisodeId).click(function (event) {
+        cgTuneFromClient();
+        cgProgramDlgCloseInvoked();
+        ChannelGuideSingleton.getInstance().reselectCurrentProgram();
+    });
+    $(cgCloseEpisodeId).off();
+    $(cgCloseEpisodeId).click(function (event) {
+        cgProgramDlgCloseInvoked();
+        ChannelGuideSingleton.getInstance().reselectCurrentProgram();
+    });
+
+    cgPopupSelectedIndex = 0;
+
+    var options = {
+        "backdrop": "true"
+    }
+    $(cgPopupId).modal(options);
+    $(cgPopupTitle).html(cgSelectedProgram.title);
+
+    // highlight first button; unhighlight other buttons
+    $(cgPopupElements[0]).removeClass("btn-secondary");
+    $(cgPopupElements[0]).addClass("btn-primary");
+
+    for (i = 1; i < cgPopupElements.length; i++) {
+        $(cgPopupElements[i]).removeClass("btn-primary");
+        $(cgPopupElements[i]).addClass("btn-secondary");
+    }
+
+    $(cgPopupId).off("keydown");
+    $(cgPopupId).keydown(function (keyEvent) {
+        var keyIdentifier = event.keyIdentifier;
+        console.log("Key " + keyIdentifier.toString() + "pressed")
+        if (keyIdentifier == "Up") {
+            cgProgramDlgUp();
+        }
+        else if (keyIdentifier == "Down") {
+            cgProgramDlgDown();
+        }
+        else if (keyIdentifier == "Enter") {
+            var functionInvoked = cgPopupHandlers[cgPopupSelectedIndex]();
+            cgProgramDlgCloseInvoked();
+        }
+    });
+    // browser event handlers - browser.js - this approach didn't work - why?
+    //for (i = 0; i < cgPopupEpisodeElements.length; i++) {
+    //    var foo = cgPopupEpisodeHandlers[i];
+    //    var foo2 = cgPopupEpisodeElements[i];
+    //    $(foo2).click(function () {
+    //        foo();
+    //    });
+
+    //$(cgPopupEpisodeElements[i]).click(function () {
+    //    //cgPopupEpisodeHandlers[i]();
+    //    foo();
+    //    cgProgramDlgCloseInvoked();
+    //});
+
+    //click(cgPopupEpisodeHandlers[i]);
+    //}
+}
+
+
+
+function cgModalClose() {
+    // don't need to do anything other than close the dialog
+    return "close";
+}
+
+
+// brightsign.js only?
+function cgSelectEventHandler() {
+    var functionInvoked = cgPopupHandlers[cgPopupSelectedIndex]();
+    cgProgramDlgCloseInvoked();
+    return functionInvoked;
+}
+
+
+function cgProgramDlgUp() {
+
+    if (cgPopupSelectedIndex > 0) {
+
+        cgPopupSelectedIndex--;
+        updateCGProgramDlgSelection();
+    }
+}
+
+
+function cgProgramDlgDown() {
+    if (cgPopupSelectedIndex < cgPopupElements.length - 1) {
+
+        cgPopupSelectedIndex++;
+        updateCGProgramDlgSelection();
+    }
+}
+
+
+function cgProgramDlgCloseInvoked() {
+    $(cgPopupId).modal('hide');
+}
+
+
 function eraseUI() {
     $("#ipAddress").css("display", "none");
     $(currentActiveElementId).css("display", "none");
@@ -1067,7 +835,7 @@ $(document).ready(function () {
     if (userAgent.indexOf("BrightSign") >= 0) {
         clientType = "BrightSign"
     }
-    else if (userAgent.indexOf("iPad")) {
+    else if (userAgent.indexOf("iPad") >= 0) {
         clientType = "iPad"
     }
 
@@ -1081,6 +849,9 @@ $(document).ready(function () {
     if (clientType != "BrightSign") {
         baseURL = document.baseURI.replace("?", "");
         baseIP = document.baseURI.substr(0, document.baseURI.lastIndexOf(":"));
+
+        //baseURL = "http://10.10.212.44:8080/";
+        baseURL = "http://192.168.2.17:8080/";
 
         console.log("baseURL from document.baseURI is: " + baseURL + ", baseIP is: " + baseIP);
     }

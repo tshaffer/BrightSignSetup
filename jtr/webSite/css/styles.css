@@ -19,7 +19,7 @@ body {
 /* Container class */
 .container {
   background-color: #c8c8c8;
-  width: 80%;
+  /*width: 80%;*/
 }
 /* footer class */
 .footer {

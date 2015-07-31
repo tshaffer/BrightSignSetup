@@ -20,6 +20,9 @@ function tuneDigit(channel) {
 
     if (channel.length > 0) {
         var char = channel.charAt(0);
+        if (char == ".") {
+            char = "-";
+        }
         consoleLog("XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX tuneDigit: channel = " + channel + ", char=" + char);
         sendIROut(char);
         channel = channel.substr(1);

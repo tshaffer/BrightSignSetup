@@ -14,18 +14,21 @@ Sub OpenDatabase()
 		if not ok then stop
 
 		m.CreateDBTable("CREATE TABLE SchemaVersion (Version TEXT);")
-
 		m.SetDBVersion(m.dbSchemaVersion$)
 
-		m.CreateDBTable("CREATE TABLE Recordings (RecordingId INTEGER PRIMARY KEY AUTOINCREMENT, Title TEXT, StartDateTime TEXT, Duration INT, FileName TEXT, LastViewedPosition INT, TranscodeComplete INT, HLSSegmentationComplete INT, HLSUrl TEXT);")
+		m.CreateDBTable("CREATE TABLE Recordings (RecordingId INTEGER PRIMARY KEY AUTOINCREMENT, Title TEXT, StartDateTime TEXT, Duration INT, ShowType TEXT, FileName TEXT, LastViewedPosition INT, TranscodeComplete INT, HLSSegmentationComplete INT, HLSUrl TEXT);")
 
-		m.CreateDBTable("CREATE TABLE ScheduledRecordings (Id INTEGER PRIMARY KEY AUTOINCREMENT, DateTime INT, Title TEXT, Duration INT, InputSource TEXT, Channel TEXT, RecordingBitRate INT, SegmentRecording INT);")
+'		m.CreateDBTable("CREATE TABLE ScheduledRecordings (Id INTEGER PRIMARY KEY AUTOINCREMENT, DateTime INT, Title TEXT, Duration INT, InputSource TEXT, Channel TEXT, RecordingBitRate INT, SegmentRecording INT, ShowType TEXT);")
+		m.CreateDBTable("CREATE TABLE ScheduledSingleRecordings (Id INTEGER PRIMARY KEY AUTOINCREMENT, DateTime TEXT, Title TEXT, Duration INT, InputSource TEXT, Channel TEXT, RecordingBitRate INT, SegmentRecording INT, ShowType TEXT);")
+		m.CreateDBTable("CREATE TABLE ScheduledSeriesRecordings (Id INTEGER PRIMARY KEY AUTOINCREMENT, Title TEXT, InputSource TEXT, Channel TEXT, RecordingBitRate INT, SegmentRecording INT, ShowType TEXT, MaxRecordings INT, RecordReruns INT);")
 
 		m.CreateDBTable("CREATE TABLE Settings (RecordingBitRate INT, SegmentRecordings INT);")
-
+		m.InitializeDBSettings()
+		
 		m.CreateDBTable("CREATE TABLE LastSelectedShow (Id TEXT);")
 
 		m.CreateDBTable("CREATE TABLE LastTunedChannel (Channel TEXT);")
+		m.InitializeDBLastTunedChannel()
 
 '		m.CreateDBTable("CREATE TABLE Stations (StationId PRIMARY KEY TEXT, AtscMajor INT, AtscMinor INT, CommonName TEXT, Name TEXT, CallSign TEXT);")
 		m.CreateDBTable("CREATE TABLE Stations (StationId, AtscMajor INT, AtscMinor INT, CommonName TEXT, Name TEXT, CallSign TEXT);")
@@ -35,9 +38,9 @@ Sub OpenDatabase()
 		m.CreateDBTable("CREATE TABLE StationSchedulesForSingleDay (StationId TEXT, ScheduleDate TEXT, ModifiedDate TEXT, MD5 TEXT);")
 
 		' JTR TODO - is it appropriate to store the MD5 in this table, or is it just used transiently when ProgramsForStations data is retrieved from the server?
-		m.CreateDBTable("CREATE TABLE ProgramsForStations (StationId TEXT, ScheduleDate TEXT, ProgramId TEXT, AirDateTime TEXT, Duration TEXT, NewShow TEXT, MD5 TEXT);")
+		m.CreateDBTable("CREATE TABLE ProgramsForStations (StationId TEXT, ScheduleDate TEXT, ProgramId TEXT, AirDateTime TEXT, EndDateTime TEXT, Duration TEXT, NewShow TEXT, MD5 TEXT);")
 	
-		m.CreateDBTable("CREATE TABLE Programs (ProgramId TEXT, Title TEXT, EpisodeTitle TEXT, Description TEXT, ShowType TEXT, OriginalAirDate TEXT, GracenoteSeasonEpisode TEXT, MD5 TEXT);")
+		m.CreateDBTable("CREATE TABLE Programs (ProgramId TEXT, Title TEXT, EpisodeTitle TEXT, ShortDescription TEXT, LongDescription TEXT, ShowType TEXT, OriginalAirDate TEXT, SeasonEpisode TEXT, MD5 TEXT, MovieYear TEXT, MovieRating TEXT, MovieMinRating TEXT, MovieMaxRating TEXT, MovieRatingIncrement TEXT);")
 
 		m.CreateDBTable("CREATE TABLE ProgramCast (ProgramId TEXT, Name TEXT, BillingOrder TEXT);")
 
@@ -169,30 +172,44 @@ Function GetDBVersion() As String
 End Function
 
 
-Sub GetLastScheduledRecordingIdCallback(resultsData As Object, selectData As Object)
+Sub GetDBLastScheduledRecordingIdCallback(resultsData As Object, selectData As Object)
 
 	selectData.id = resultsData["MaxId"]
 
 End Sub
 
 
-Function GetLastScheduledRecordingId() As Integer
+Function GetDBLastScheduledRecordingId(tableName$ As String) As Integer
 
 	selectData = {}
 
-	select$ = "SELECT MAX (Id) as MaxId FROM ScheduledRecordings;"
-	m.ExecuteDBSelect(select$, GetLastScheduledRecordingIdCallback, selectData, invalid)
+	select$ = "SELECT MAX (Id) as MaxId FROM " + tableName$ + ";"
+	m.ExecuteDBSelect(select$, GetDBLastScheduledRecordingIdCallback, selectData, invalid)
 
 	return selectData.id
 
 End Function
 
 
-Sub AddDBScheduledRecording(scheduledRecording As Object)
+Function GetDBLastScheduledSingleRecordingId() As Integer
 
-	insertSQL$ = "INSERT INTO ScheduledRecordings (DateTime, Duration, Title, InputSource, Channel, RecordingBitRate, SegmentRecording) VALUES(?,?,?,?,?,?,?);"
+	return m.GetDBLastScheduledRecordingId("ScheduledSingleRecordings")
 
-	params = CreateObject("roArray", 5, false)
+End Function
+
+
+Function GetDBLastScheduledSeriesRecordingId() As Integer
+
+	return m.GetDBLastScheduledRecordingId("ScheduledSeriesRecordings")
+
+End Function
+
+
+Sub AddDBScheduledSingleRecording(scheduledRecording As Object)
+
+	insertSQL$ = "INSERT INTO ScheduledSingleRecordings (DateTime, Duration, Title, InputSource, Channel, RecordingBitRate, SegmentRecording, ShowType) VALUES(?,?,?,?,?,?,?,?);"
+
+	params = CreateObject("roArray", 8, false)
 	params[ 0 ] = scheduledRecording.dateTime
 	params[ 1 ] = scheduledRecording.duration%
 	params[ 2 ] = scheduledRecording.title$
@@ -200,17 +217,37 @@ Sub AddDBScheduledRecording(scheduledRecording As Object)
 	params[ 4 ] = scheduledRecording.channel$
 	params[ 5 ] = scheduledRecording.recordingBitRate%
 	params[ 6 ] = scheduledRecording.segmentRecording%
+	params[ 7 ] = scheduledRecording.showType$
 
 	m.ExecuteDBInsert(insertSQL$, params)
 
 End Sub
 
 
-Sub DeleteDBScheduledRecording(scheduledRecordingId$ As String)
+Sub AddDBScheduledSeriesRecording(scheduledRecording As Object)
+
+	insertSQL$ = "INSERT INTO ScheduledSeriesRecordings (Title, InputSource, Channel, RecordingBitRate, SegmentRecording, ShowType, MaxRecordings, RecordReruns) VALUES(?,?,?,?,?,?,?,?);"
+
+	params = CreateObject("roArray", 8, false)
+	params[ 0 ] = scheduledRecording.title$
+	params[ 1 ] = scheduledRecording.inputSource$
+	params[ 2 ] = scheduledRecording.channel$
+	params[ 3 ] = scheduledRecording.recordingBitRate%
+	params[ 4 ] = scheduledRecording.segmentRecording%
+	params[ 5 ] = scheduledRecording.showType$
+	params[ 6 ] = scheduledRecording.maxRecordings%
+	params[ 7 ] = scheduledRecording.recordReruns%
+
+	m.ExecuteDBInsert(insertSQL$, params)
+
+End Sub
+
+
+Sub DeleteDBScheduledRecording(tableName$ As String, scheduledRecordingId$ As String)
 
 	SQLITE_COMPLETE = 100
 
-	delete$ = "DELETE FROM ScheduledRecordings WHERE Id = " + scheduledRecordingId$ + ";"
+	delete$ = "DELETE FROM " + tableName$ + " WHERE Id = " + scheduledRecordingId$ + ";"
 
 	deleteStatement = m.db.CreateStatement(delete$)
 
@@ -230,6 +267,20 @@ Sub DeleteDBScheduledRecording(scheduledRecordingId$ As String)
 End Sub
 
 
+Sub DeleteDBScheduledSingleRecording(scheduledRecordingId$ As String)
+
+	m.DeleteDBScheduledRecording("ScheduledSingleRecordings", scheduledRecordingId$)
+
+End Sub
+
+
+Sub DeleteDBScheduledSeriesRecording(scheduledRecordingId$ As String)
+
+	m.DeleteDBScheduledRecording("ScheduledSeriesRecordings", scheduledRecordingId$)
+
+End Sub
+
+
 Sub GetDBScheduledRecordingsCallback(resultsData As Object, selectData As Object)
 
 	selectData.scheduledRecordings.push(resultsData)
@@ -237,12 +288,25 @@ Sub GetDBScheduledRecordingsCallback(resultsData As Object, selectData As Object
 End Sub
 
 
-Function GetDBScheduledRecordings() As Object
+Function GetDBScheduledSingleRecordings(currentDateTime$ As String) As Object
 
 	selectData = {}
 	selectData.scheduledRecordings = []
 
-	select$ = "SELECT Id, DateTime, Duration, Title, InputSource, Channel, RecordingBitRate, SegmentRecording FROM ScheduledRecordings;"
+	select$ = "SELECT Id, DateTime, Duration, Title, InputSource, Channel, RecordingBitRate, SegmentRecording, ShowType FROM ScheduledSingleRecordings WHERE DateTime >= '" + currentDateTime$ + "' order by DateTime;"
+	m.ExecuteDBSelect(select$, GetDBScheduledRecordingsCallback, selectData, invalid)
+
+	return selectData.scheduledRecordings
+
+End Function
+
+
+Function GetDBScheduledSeriesRecordings() As Object
+
+	selectData = {}
+	selectData.scheduledRecordings = []
+
+	select$ = "SELECT Id, Title, InputSource, Channel, RecordingBitRate, SegmentRecording, ShowType, MaxRecordings, RecordReruns FROM ScheduledSeriesRecordings;"
 	m.ExecuteDBSelect(select$, GetDBScheduledRecordingsCallback, selectData, invalid)
 
 	return selectData.scheduledRecordings
@@ -256,17 +320,18 @@ Sub AddDBRecording(scheduledRecording As Object)
 	' convert duration from msec to minutes
 	duration% = (scheduledRecording.duration% + 30000) / 60000
 
-	insertSQL$ = "INSERT INTO Recordings (Title, StartDateTime, Duration, FileName, LastViewedPosition, TranscodeComplete, HLSSegmentationComplete, HLSUrl) VALUES(?,?,?,?,?,?,?,?);"
+	insertSQL$ = "INSERT INTO Recordings (Title, StartDateTime, Duration, ShowType, FileName, LastViewedPosition, TranscodeComplete, HLSSegmentationComplete, HLSUrl) VALUES(?,?,?,?,?,?,?,?,?);"
 
-	params = CreateObject("roArray", 7, false)
+	params = CreateObject("roArray", 9, false)
 	params[ 0 ] = scheduledRecording.title$
 	params[ 1 ] = scheduledRecording.dateTime.GetString()
 	params[ 2 ] = duration%
-	params[ 3 ] = scheduledRecording.fileName$
-	params[ 4 ] = 0
+	params[ 3 ] = scheduledRecording.showType$
+	params[ 4 ] = scheduledRecording.fileName$
 	params[ 5 ] = 0
 	params[ 6 ] = 0
-	params[ 7 ] = ""
+	params[ 7 ] = 0
+	params[ 8 ] = ""
 
 	m.ExecuteDBInsert(insertSQL$, params)
 
@@ -326,6 +391,14 @@ Sub SetDBLastTunedChannel(channel$ As String)
 End Sub
 
 
+Sub InitializeDBLastTunedChannel()
+
+	insertSQL$ = "INSERT INTO LastTunedChannel (Channel) VALUES(:channel_param);"
+	params = { channel_param: "2" }
+	m.ExecuteDBInsert(insertSQL$, params)
+
+End Sub
+
 
 Sub GetDBLastSelectedShowIdCallback(resultsData As Object, selectData As Object)
 
@@ -374,7 +447,7 @@ Function GetDBRecordings() As Object
 	selectData = {}
 	selectData.recordings = []
 
-	select$ = "SELECT RecordingId, Title, StartDateTime, Duration, FileName, LastViewedPosition, TranscodeComplete, HLSSegmentationComplete, HLSUrl FROM Recordings;"
+	select$ = "SELECT RecordingId, Title, StartDateTime, Duration, ShowType, FileName, LastViewedPosition, TranscodeComplete, HLSSegmentationComplete, HLSUrl FROM Recordings;"
 	m.ExecuteDBSelect(select$, GetDBRecordingsCallback, selectData, invalid)
 
 	return selectData.recordings
@@ -395,7 +468,7 @@ Function GetDBRecording(recordingId As String) As Object
 	selectData = {}
 	selectData.recording = invalid
 
-	select$ = "SELECT RecordingId, Title, StartDateTime, Duration, FileName, LastViewedPosition, TranscodeComplete, HLSSegmentationComplete, HLSUrl FROM Recordings WHERE RecordingId='" + recordingId + "';"
+	select$ = "SELECT RecordingId, Title, StartDateTime, Duration, ShowType, FileName, LastViewedPosition, TranscodeComplete, HLSSegmentationComplete, HLSUrl FROM Recordings WHERE RecordingId='" + recordingId + "';"
 	m.ExecuteDBSelect(select$, GetDBRecordingCallback, selectData, invalid)
 
 	return selectData.recording
@@ -408,7 +481,7 @@ Function GetDBRecordingByFileName(fileName$ As String) As Object
 	selectData = {}
 	selectData.recording = invalid
 
-	select$ = "SELECT RecordingId, Title, StartDateTime, Duration, FileName, LastViewedPosition, TranscodeComplete, HLSSegmentationComplete, HLSUrl FROM Recordings WHERE FileName='" + fileName$ + "';"
+	select$ = "SELECT RecordingId, Title, StartDateTime, Duration, ShowType, FileName, LastViewedPosition, TranscodeComplete, HLSSegmentationComplete, HLSUrl FROM Recordings WHERE FileName='" + fileName$ + "';"
 	m.ExecuteDBSelect(select$, GetDBRecordingCallback, selectData, invalid)
 
 	return selectData.recording
@@ -443,6 +516,19 @@ Sub SetDBSettings(recordingBitRate As Integer, segmentRecordings As Integer)
 End Sub
 
 
+Sub InitializeDBSettings()
+
+	insertSQL$ = "INSERT INTO Settings (RecordingBitRate, SegmentRecordings) VALUES(?,?);"
+
+	params = CreateObject("roArray", 7, false)
+	params[ 0 ] = 10
+	params[ 1 ] = 0
+
+	m.ExecuteDBInsert(insertSQL$, params)
+
+End Sub
+
+
 Sub GetDBFileToTranscodeCallback(resultsData As Object, selectData As Object)
 
 	resultsData.Path = GetFilePath(resultsData.FileName)
@@ -456,7 +542,7 @@ Function GetDBFileToTranscode() As Object
 	selectData = {}
 	selectData.recording = invalid
 
-	select$ = "SELECT RecordingId, Title, StartDateTime, Duration, FileName, LastViewedPosition, TranscodeComplete FROM Recordings WHERE TranscodeComplete=0;"
+	select$ = "SELECT RecordingId, Title, StartDateTime, Duration, ShowType, FileName, LastViewedPosition, TranscodeComplete FROM Recordings WHERE TranscodeComplete=0;"
 	m.ExecuteDBSelect(select$, GetDBFileToTranscodeCallback, selectData, invalid)
 
 	return selectData.recording
@@ -699,7 +785,8 @@ Sub AddDBItems(insertItems As Object, columnKeys As Object, dbColumnNames As Obj
 
 	itemIndex = 0
 '	chunkSize = 500
-	chunkSize = 100
+'	chunkSize = 100
+	chunkSize = 50
 	remainingItems = insertItems.Count()
 
 	while remainingItems > 0
@@ -816,6 +903,7 @@ Sub AddDBProgramsForStations(programsForStations)
 	columnKeys.push("scheduleDate")
 	columnKeys.push("programId")
 	columnKeys.push("airDateTime")
+	columnKeys.push("endDateTime")
 	columnKeys.push("duration")
 	columnKeys.push("newShow")
 	columnKeys.push("md5")
@@ -825,6 +913,7 @@ Sub AddDBProgramsForStations(programsForStations)
 	dbColumnNames.push("ScheduleDate")
 	dbColumnNames.push("ProgramId")
 	dbColumnNames.push("AirDateTime")
+	dbColumnNames.push("EndDateTime")
 	dbColumnNames.push("Duration")
 	dbColumnNames.push("NewShow")
 	dbColumnNames.push("MD5")
@@ -859,7 +948,7 @@ Function GetDBPrograms() As Object
 	selectData = {}
 	selectData.programs = []
 
-	select$ = "SELECT ProgramId, Title, Description, MD5 FROM Programs;"
+	select$ = "SELECT ProgramId, Title, MD5 FROM Programs;"
 	m.ExecuteDBSelect(select$, GetDBProgramsCallback, selectData, invalid)
 
 	return selectData.programs
@@ -873,31 +962,44 @@ Sub AddDBPrograms(programs)
 	columnKeys.push("programId")
 	columnKeys.push("title")
 	columnKeys.push("episodeTitle")
-	columnKeys.push("description")
+	columnKeys.push("shortDescription")
+	columnKeys.push("longDescription")
 	columnKeys.push("showType")
 	columnKeys.push("originalAirDate")
-	columnKeys.push("gracenoteSeasonEpisode")
+	columnKeys.push("seasonEpisode")
 	columnKeys.push("md5")
+	columnKeys.push("movieYear")
+	columnKeys.push("movieRating")
+	columnKeys.push("movieMinRating")
+	columnKeys.push("movieMaxRating")
+	columnKeys.push("movieRatingIncrement")
 
 	dbColumnNames = []
 	dbColumnNames.push("ProgramId")
 	dbColumnNames.push("Title")
 	dbColumnNames.push("EpisodeTitle")
-	dbColumnNames.push("Description")
+	dbColumnNames.push("ShortDescription")
+	dbColumnNames.push("LongDescription")
 	dbColumnNames.push("ShowType")
 	dbColumnNames.push("OriginalAirDate")
-	dbColumnNames.push("GracenoteSeasonEpisode")
+	dbColumnNames.push("SeasonEpisode")
 	dbColumnNames.push("MD5")
+	dbColumnNames.push("MovieYear")
+	dbColumnNames.push("MovieRating")
+	dbColumnNames.push("MovieMinRating")
+	dbColumnNames.push("MovieMaxRating")
+	dbColumnNames.push("MovieRatingIncrement")
 
 	m.AddDBItems(programs, columnKeys, dbColumnNames, "Programs")
 
 End Sub
 
 
-Sub UpdateDBProgram(programId As String, title As String, description As String, showType As String, originalAirDate As String, graceNoteSeasonEpisode As String, md5 As String)
+' JTR TODO - no movie information can be updated currently
+Sub UpdateDBProgram(programId As String, title As String, shortDescription As String, longDescription As String, showType As String, originalAirDate As String, seasonEpisode As String, md5 As String)
 
-	params = { pid_param: programId, t_param: title, d_param: description, s_param: showType, o_param: originalAirDate, g_param:  graceNoteSeasonEpisode, md5_param: md5 }
-    m.db.RunBackground("UPDATE Programs SET Title=:t_param, Description=:d_param, ShowType=:s_param, OriginalAirDate=:o_param, GraceNoteSeasonEpisode=:g_param, MD5=:md5_param WHERE ProgramId=:pid_param;", params)
+	params = { pid_param: programId, t_param: title, sd_param: shortDescription, ld_param: longDescription, s_param: showType, o_param: originalAirDate, g_param:  seasonEpisode, md5_param: md5 }
+    m.db.RunBackground("UPDATE Programs SET Title=:t_param, ShortDescription=:sd_param, LongDescription=:ld_param, ShowType=:s_param, OriginalAirDate=:o_param, SeasonEpisode=:g_param, MD5=:md5_param WHERE ProgramId=:pid_param;", params)
 
 End Sub
 
@@ -905,7 +1007,7 @@ End Sub
 Sub UpdateDBPrograms(programs As Object)
 
 	for each program in programs
-		m.UpdateDBProgram(program.programId, program.title, program.description, program.showType, program.originalAirDate, program.graceNoteSeasonEpisode, program.md5)
+		m.UpdateDBProgram(program.programId, program.title, program.shortDescription, program.longDescription, program.showType, program.originalAirDate, program.seasonEpisode, program.md5)
 	next
 
 End Sub
@@ -992,12 +1094,32 @@ Function GetDBEpgData(startDate$ As String)
 	selectData = {}
 	selectData.epgData = []
 
-'	select$ = "SELECT Stations.AtscMajor, Stations.AtscMinor, Programs.Title, ProgramsForStations.ScheduleDate, ProgramsForStations.StationId, ProgramsForStations.AirDateTime, ProgramsForStations.Duration, ProgramsForStations.NewShow, Programs.EpisodeTitle, Programs.Description, Programs.ShowType, Programs.OriginalAirDate, Programs.GracenoteSeasonEpisode, group_concat(DISTINCT ProgramCast.Name) as CastMembers from ProgramsForStations, Programs, Stations, ProgramCast where ScheduleDate >= '" + startDate$ + "' and Programs.ProgramId=ProgramsForStations.ProgramId and ProgramsForStations.StationId=Stations.StationId and Programs.ProgramId=ProgramCast.ProgramId GROUP BY ProgramsForStations.ProgramId order by ScheduleDate asc, AirDateTime asc, Stations.AtscMajor asc, Stations.AtscMinor asc;"	
-	
-	select$ = "SELECT Stations.AtscMajor, Stations.AtscMinor, Programs.Title, ProgramsForStations.ScheduleDate, ProgramsForStations.StationId, ProgramsForStations.AirDateTime, ProgramsForStations.Duration, ProgramsForStations.NewShow, Programs.EpisodeTitle, Programs.Description, Programs.ShowType, Programs.OriginalAirDate, Programs.GracenoteSeasonEpisode, group_concat(DISTINCT ProgramCast.Name) as CastMembers from ProgramsForStations, Programs, Stations, ProgramCast where ScheduleDate >= '" + startDate$ + "' and Programs.ProgramId=ProgramsForStations.ProgramId and ProgramsForStations.StationId=Stations.StationId and Programs.ProgramId=ProgramCast.ProgramId GROUP BY Stations.AtscMajor, Stations.AtscMinor, Programs.Title, ProgramsForStations.ScheduleDate, ProgramsForStations.StationId, ProgramsForStations.AirDateTime, ProgramsForStations.Duration, ProgramsForStations.NewShow, Programs.EpisodeTitle, Programs.Description, Programs.ShowType, Programs.OriginalAirDate, Programs.GracenoteSeasonEpisode, ProgramsForStations.ProgramId order by ProgramsForStations.StationId, ScheduleDate asc, AirDateTime asc, Stations.AtscMajor asc, Stations.AtscMinor asc;"
+'	select$ = "SELECT Stations.AtscMajor, Stations.AtscMinor, Programs.Title, ProgramsForStations.ScheduleDate, ProgramsForStations.StationId, ProgramsForStations.AirDateTime, ProgramsForStations.EndDateTime, ProgramsForStations.Duration, ProgramsForStations.NewShow, Programs.EpisodeTitle, Programs.Description, Programs.ShowType, Programs.OriginalAirDate, Programs.GracenoteSeasonEpisode, group_concat(DISTINCT ProgramCast.Name) as CastMembers from ProgramsForStations, Programs, Stations, ProgramCast where ScheduleDate >= '" + startDate$ + "' and Programs.ProgramId=ProgramsForStations.ProgramId and ProgramsForStations.StationId=Stations.StationId and Programs.ProgramId=ProgramCast.ProgramId GROUP BY ProgramsForStations.ProgramId order by ScheduleDate asc, AirDateTime asc, Stations.AtscMajor asc, Stations.AtscMinor asc;"
+	select$ = "SELECT Stations.AtscMajor, Stations.AtscMinor, Programs.Title, ProgramsForStations.ScheduleDate, ProgramsForStations.StationId, ProgramsForStations.AirDateTime, ProgramsForStations.EndDateTime, ProgramsForStations.Duration, ProgramsForStations.NewShow, Programs.EpisodeTitle, Programs.ShortDescription, Programs.LongDescription, Programs.ShowType, Programs.OriginalAirDate, Programs.SeasonEpisode, Programs.MovieYear, Programs.MovieRating, Programs.MovieMinRating, Programs.MovieMaxRating, Programs.MovieRatingIncrement, group_concat(DISTINCT ProgramCast.Name) as CastMembers from ProgramsForStations, Programs, Stations, ProgramCast where ScheduleDate >= '" + startDate$ + "' and Programs.ProgramId=ProgramsForStations.ProgramId and ProgramsForStations.StationId=Stations.StationId and Programs.ProgramId=ProgramCast.ProgramId GROUP BY Stations.AtscMajor, Stations.AtscMinor, Programs.Title, ProgramsForStations.ScheduleDate, ProgramsForStations.StationId, ProgramsForStations.AirDateTime, ProgramsForStations.EndDateTime, ProgramsForStations.Duration, ProgramsForStations.NewShow, Programs.EpisodeTitle, Programs.ShortDescription, Programs.LongDescription, Programs.ShowType, Programs.OriginalAirDate, Programs.SeasonEpisode, ProgramsForStations.ProgramId order by ProgramsForStations.StationId, ScheduleDate asc, AirDateTime asc, Stations.AtscMajor asc, Stations.AtscMinor asc;"
 
 	m.ExecuteDBSelect(select$, GetDBEpgDataCallback, selectData, invalid)
 
 	return selectData.epgData
+
+End Function
+
+
+Sub GetDBEpgMatchingProgramsCallback(resultsData As Object, selectData As Object)
+
+	selectData.epgMatchingPrograms.push(resultsData)
+
+End Sub
+
+
+Function GetDBEpgMatchingPrograms(startDate$ As String, title$ As string, atscMajor$ As String, atscMinor$ As String)
+
+	selectData = {}
+	selectData.epgMatchingPrograms = []
+
+	select$ = "SELECT ProgramsForStations.AirDateTime, ProgramsForStations.EndDateTime, ProgramsForStations.Duration FROM Programs, ProgramsForStations, Stations WHERE ProgramsForStations.EndDateTime >= '" + startDate$ + "' AND Programs.Title='" + title$ + "' AND Programs.ProgramId=ProgramsForStations.ProgramId AND Stations.AtscMajor='" + atscMajor$ + "' AND Stations.AtscMinor='" + atscMinor$ + "' AND Stations.StationId==ProgramsForStations.StationId order by ProgramsForStations.AirDateTime;"
+
+	m.ExecuteDBSelect(select$, GetDBEpgMatchingProgramsCallback, selectData, invalid)
+
+	return selectData.epgMatchingPrograms
 
 End Function

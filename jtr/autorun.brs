@@ -81,10 +81,16 @@ Function newJTR(msgPort As Object) As Object
 	JTR.SetDBVersion					= SetDBVersion
 	JTR.ExecuteDBInsert					= ExecuteDBInsert
 	JTR.ExecuteDBSelect					= ExecuteDBSelect
-	JTR.AddDBScheduledRecording			= AddDBScheduledRecording
-	JTR.GetLastScheduledRecordingId		= GetLastScheduledRecordingId
+	JTR.AddDBScheduledSingleRecording	= AddDBScheduledSingleRecording
+	JTR.AddDBScheduledSeriesRecording	= AddDBScheduledSeriesRecording
+	JTR.GetDBLastScheduledRecordingId	= GetDBLastScheduledRecordingId
+	JTR.GetDBLastScheduledSingleRecordingId = GetDBLastScheduledSingleRecordingId
+	JTR.GetDBLastScheduledSeriesRecordingId = GetDBLastScheduledSeriesRecordingId
 	JTR.DeleteDBScheduledRecording		= DeleteDBScheduledRecording
-	JTR.GetDBScheduledRecordings		= GetDBScheduledRecordings
+	JTR.DeleteDBScheduledSingleRecording= DeleteDBScheduledSingleRecording
+	JTR.DeleteDBScheduledSeriesRecording= DeleteDBScheduledSeriesRecording
+	JTR.GetDBScheduledSingleRecordings	= GetDBScheduledSingleRecordings
+	JTR.GetDBScheduledSeriesRecordings	= GetDBScheduledSeriesRecordings
 	JTR.AddDBRecording					= AddDBRecording
 	JTR.DeleteDBRecording				= DeleteDBRecording
 	JTR.GetDBLastSelectedShowId			= GetDBLastSelectedShowId
@@ -98,8 +104,10 @@ Function newJTR(msgPort As Object) As Object
 	JTR.UpdateHLSSegmentationComplete	= UpdateHLSSegmentationComplete
 	JTR.GetDBLastTunedChannel			= GetDBLastTunedChannel
 	JTR.SetDBLastTunedChannel			= SetDBLastTunedChannel
+	JTR.InitializeDBLastTunedChannel	= InitializeDBLastTunedChannel
 	JTR.GetDBSettings					= GetDBSettings
 	JTR.SetDBSettings					= SetDBSettings
+	JTR.InitializeDBSettings			= InitializeDBSettings
 	JTR.AddDBStation					= AddDBStation
 	JTR.PopulateStationsTable			= PopulateStationsTable
 	JTR.GetDBStations					= GetDBStations
@@ -119,6 +127,7 @@ Function newJTR(msgPort As Object) As Object
 	JTR.DeleteDBProgramCasts			= DeleteDBProgramCasts
 	JTR.DeleteDBProgramCast				= DeleteDBProgramCast
 	JTR.GetDBEpgData					= GetDBEpgData
+	JTR.GetDBEpgMatchingPrograms		= GetDBEpgMatchingPrograms
 	JTR.GetDBLastChannelGuideSelection	= GetDBLastChannelGuideSelection
 	JTR.UpdateDBLastChannelGuideSelection	= UpdateDBLastChannelGuideSelection
 	

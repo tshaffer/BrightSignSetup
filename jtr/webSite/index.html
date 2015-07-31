@@ -15,13 +15,16 @@
     <link href="./css/styles.css" rel="stylesheet">
     <script src="./js/jquery-2.1.1.min.js"></script>
     <script src="./bootstrap/js/bootstrap.js"></script>
+    <script src="./js/date.js"></script>
     <script src="./js/remote.js"></script>
     <script src="./js/hsm.js"></script>
     <script src="./js/tune.js"></script>
     <script src="./js/epg.js"></script>
     <script src="./js/recordingEngine.js"></script>
+    <script src="./js/transportIcon.js"></script>
     <script src="./js/displayEngine.js"></script>
     <script src="./js/uiEngine.js"></script>
+    <script src="./js/channelGuide.js"></script>
     <script src="./js/common.js"></script>
     <script src="./js/browser.js"></script>
     <script src="./js/brightSign.js"></script>
@@ -48,8 +51,56 @@
       </div>
     </div>
         
+    <div class="modal fade" id="cgProgramDlg" tabindex="-1" role="dialog" aria-labelledby="cgProgramDlg" aria-hidden="true">
+      <div class="modal-dialog">
+        <div class="modal-content">
+<!--          <div class="modal-header">
+            <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+            <h4 class="modal-title" id="cgProgramDlgTitle">Program</h4>
+          </div>-->
+          <div class="modal-body">
+            <h3 id="cgProgramDlgShowTitle">Pizza for Everyone!!</h3>
+            <button type="button" class="btn btn-primary modalButton" id="cgProgramRecord">Record</button> <br />
+            <button type="button" class="btn btn-default btn-secondary modalButton" id="cgProgramTune">Tune</button> <br />
+            <button type="button" class="btn btn-default btn-secondary modalButton" id="cgProgramClose">Close</button> <br />
+          </div>
+<!--          <div class="modal-footer">
+            <button type="button" id="cgProgramDlgClose" class="btn btn-default btn-secondary" data-dismiss="modal">Close</button>
+            <button type="button" id="cgProgramDlgRecord" class="btn btn-primary">Record</button>
+          </div>-->
+        </div>
+      </div>
+    </div>
+
+    <div class="modal fade" id="cgSeriesDlg" tabindex="-1" role="dialog" aria-labelledby="cgSeriesDlg" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <!--          <div class="modal-header">
+                            <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                            <h4 class="modal-title" id="cgProgramDlgTitle">Program</h4>
+                          </div>-->
+                <div class="modal-body">
+                    <h3 id="cgSeriesDlgShowTitle">Pizza for Everyone!!</h3>
+                    <button type="button" class="btn btn-primary modalButton" id="cgEpisodeRecord">Record Episode</button> <br />
+                    <button type="button" class="btn btn-primary modalButton" id="cgSeriesRecord">Record Series</button> <br />
+                    <button type="button" class="btn btn-default btn-secondary modalButton" id="cgSeriesTune">Tune</button> <br />
+                    <button type="button" class="btn btn-default btn-secondary modalButton" id="cgSeriesClose">Close</button> <br />
+                </div>
+                <!--          <div class="modal-footer">
+                            <button type="button" id="cgProgramDlgClose" class="btn btn-default btn-secondary" data-dismiss="modal">Close</button>
+                            <button type="button" id="cgProgramDlgRecord" class="btn btn-primary">Record</button>
+                          </div>-->
+            </div>
+        </div>
+    </div>
+
     <div id="videoPlayer">
-      <div id="videoControlRegion"></div>
+      <div id="videoControlRegion">
+        <button type='button' id="transportIconButton" class='btn btn-default recorded-shows-icon transportIcon' aria-label='Left Align'>
+            <span id="transportPrefix"></span>
+            <span id="transportIconSpan" class='glyphicon glyphicon-play' aria-hidden='true'></span>
+        </button>
+      </div>
     </div>
 
     <div id="cont" class="container">
@@ -234,12 +285,18 @@
         </div>
 
         <div id="channelGuidePage" style="display: none;">
-            <h3>Channel Guide</h3>
+            <h3 id="cgProgramName"></h3>
+            <div id="cgDateTimeInfo"></div>
+            <div id="cgEpisodeTitle"></div>
+            <div id="cgDescription"></div>
+            <div id="cgCastMembers"></div>
+            <div id="episodeInfo"></div>
 
-            <div id="programInfo">
-
+            <div id="cgBackward">
+                <button type='button' class='btn btn-default' onclick="navigateBackwardOneDay()" aria-label='Left Align'><span class='glyphicon glyphicon-step-backward' aria-hidden='true'></span></button>
+                <button type='button' class='btn btn-default' onclick="navigateBackwardOneScreen()" aria-label='Left Align'><span class='glyphicon glyphicon-backward' aria-hidden='true'></span></button>
             </div>
-
+            
             <div id="stationLabelDiv">
                 <p id="cgDayDate" class="cgStationLine">Thu 7/16</p>
                 <p class="cgStationLine">2 KTVU<br />Fox</p>
@@ -267,8 +324,13 @@
                 <div id="cgStation8Data" class="cgLine"></div>
                 <div id="cgStation9Data" class="cgLine"></div>
             </div>
-        </div>
+            
+            <div id="cgForward">
+                <button type='button' class='btn btn-default' onclick="navigateForwardOneScreen()" aria-label='Left Align'><span class='glyphicon glyphicon-forward' aria-hidden='true'></span></button>
+                <button type='button' class='btn btn-default' onclick="navigateForwardOneDay()" aria-label='Left Align'><span class='glyphicon glyphicon-step-forward' aria-hidden='true'></span></button>
+            </div>
 
+        </div>
 
     </div> <!-- /container -->
 

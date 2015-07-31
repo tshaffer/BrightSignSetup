@@ -111,6 +111,14 @@ function executeDeleteSelectedShow(recordingId) {
 
 function initializeBrightSign() {
 
+    // ir receiver
+    try {
+        ir_receiver = new BSIRReceiver("Iguana", "NEC");
+    }
+    catch (err) {
+        consoleLog("********************************************************************* UNABLE TO CREATE IR_RECEIVER ***************************** ");
+    }
+
     var lastRemoteEventTime = 0;
 
     // Create displayEngine state machine
@@ -131,15 +139,6 @@ function initializeBrightSign() {
 
     registerStateMachine(recordingEngineHSM);
     recordingEngineHSM.Initialize();
-
-    // ir receiver
-    try
-    {
-        ir_receiver = new BSIRReceiver("Iguana", "NEC");
-    }
-    catch (err) {
-        consoleLog("unable to create ir_receiver");
-    }
 
     if (typeof ir_receiver != 'undefined') {
         ir_receiver.onremotedown = function (e) {
@@ -202,12 +201,10 @@ function initializeBrightSign() {
                 baseURL = "http://" + brightSignIPAddress + ":8080/";
                 consoleLog("baseURL from BrightSign message is: " + baseURL);
 
-                // temporary location
+                // temporary location - JTRTODO
                 initializeEpgData();
 
-                // post message indicating that initialization is complete ??
-                event["EventType"] = "READY";
-                postMessage(event);
+                retrieveSettings(indicateReady);
                 break;
             case "remoteCommand":
                 var event = {};
@@ -233,6 +230,18 @@ function initializeBrightSign() {
                 event["EventData"] = msg.data[name];
                 postMessage(event);
                 break;
+            case "addRecord":
+                event["EventType"] = "ADD_RECORD";
+                event["DateTime"] = message.dateTime;
+                event["Title"] = message.title;
+                event["Duration"] = message.duration;
+                event["ShowType"] = message.showType;
+                event["InputSource"] = message.inputSource;
+                event["Channel"] = message.channel;
+                event["RecordingBitRate"] = message.recordingBitRate;
+                event["SegmentRecording"] = message.segmentRecording;
+                postMessage(event);
+                break;
             case "recordNow":
                 event["EventType"] = "RECORD_NOW";
                 event["Title"] = message.title;
@@ -241,10 +250,11 @@ function initializeBrightSign() {
                 event["Channel"] = message.channel;
                 event["RecordingBitRate"] = message.recordingBitRate;
                 event["SegmentRecording"] = message.segmentRecording;
+                event["ShowType"] = message.showType;
                 postMessage(event);
                 break;
             case "manualRecord":
-                event["EventType"] = "SET_MANUAL_RECORD";
+                event["EventType"] = "ADD_RECORD";
                 event["DateTime"] = message.dateTime;
                 event["Title"] = message.title;
                 event["Duration"] = message.duration;
@@ -252,6 +262,17 @@ function initializeBrightSign() {
                 event["Channel"] = message.channel;
                 event["RecordingBitRate"] = message.recordingBitRate;
                 event["SegmentRecording"] = message.segmentRecording;
+                event["ShowType"] = message.showType;
+                postMessage(event);
+                break;
+            case "tuneLiveVideoChannel":
+                // first tune to live video
+                event["EventType"] = "TUNE_LIVE_VIDEO";
+                postMessage(event);
+                // next, tune to the channel
+                event = {};
+                event["EventType"] = "TUNE_LIVE_VIDEO_CHANNEL";
+                event["EnteredChannel"] = message.enteredChannel;
                 postMessage(event);
                 break;
             case "updateProgressBar":
@@ -266,4 +287,11 @@ function initializeBrightSign() {
                 break;
         }
     }
+}
+
+function indicateReady() {
+
+    // post message indicating that initialization is complete ??
+    event["EventType"] = "READY";
+    postMessage(event);
 }
