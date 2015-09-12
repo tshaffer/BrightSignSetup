@@ -1,3 +1,8 @@
+th.dayOfWeek, th.date, th.time, th.channel, th.stationName, th.title {
+    width: 40px;
+    font-size: 16px;
+}
+
 .modalButton {
     font-size: 20px;
 }

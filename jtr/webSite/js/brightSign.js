@@ -213,6 +213,7 @@ function initializeBrightSign() {
                 postMessage(event);
                 break;
             case "recordings":
+                //initializeEpgData();
                 var recordings = JSON.parse(message.value);
                 var jtrRecordings = recordings.recordings;
                 _currentRecordings = {};
@@ -240,6 +241,7 @@ function initializeBrightSign() {
                 event["Channel"] = message.channel;
                 event["RecordingBitRate"] = message.recordingBitRate;
                 event["SegmentRecording"] = message.segmentRecording;
+                event["RecordingType"] = message.recordingType;
                 postMessage(event);
                 break;
             case "recordNow":
@@ -283,6 +285,10 @@ function initializeBrightSign() {
                 break;
             case "mediaEnd":
                 event["EventType"] = "MEDIA_END";
+                postMessage(event);
+                break;
+            case "epgDBUpdatesComplete":
+                event["EventType"] = "EPG_DB_UPDATES_COMPLETE";
                 postMessage(event);
                 break;
         }

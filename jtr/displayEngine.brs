@@ -238,7 +238,7 @@ Sub de_HandleHttpEvent(event)
 
 					m.jtr.AddDBProgramsForStation(stationDatesToReplace, programsForStations)
 
-				else if command$ = "addDBPrograms" then	
+				else if command$ = "addDBPrograms" then
 				
 					programsToInsert = parseJSON(aa.programsToInsert)
 					m.jtr.AddDBPrograms(programsToInsert)
@@ -253,6 +253,13 @@ Sub de_HandleHttpEvent(event)
 
 					m.jtr.DeleteDBProgramCasts(programCastsToDelete)
 					m.jtr.AddDBCastMembers(programCasts)
+
+				else if command$ = "epgUpdatesComplete" then
+
+					' send message to js to indicate db updates are complete
+					aa = {}
+					aa.AddReplace("command", "epgDBUpdatesComplete")
+					m.htmlWidget.PostJSMessage(aa)
 
 				else if command$ = "remoteCommand" then
 					if aa.remoteCommand = "pause" then

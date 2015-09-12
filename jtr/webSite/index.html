@@ -226,7 +226,7 @@
               <th class="repeat"></th>
               <th class="stream"></th>
               <th class="download"></th>
-              <th class="title">Title</th>
+              <th class="replayGuideTitle">Title</th>
               <th class="recorded">Recorded</th>              
               <th class="showInfo">Info</th>
               <th class="position">Position</th>
@@ -239,27 +239,26 @@
         </table><br><br>
       </div>
 
-      <div id="toDoListPage" style="display: none;">
+      <div id="toDoListPage" class="table-responsive" style="display: none;">
         <h3>To Do List</h3>
-        <table class="table table-striped">
-          <thead>
-            <tr>
-              <th>Date To Be Recorded</th>
-              <th>Title</th>
-            </tr>
-          </thead>
-          
-          <tbody id="toDoListTableBody">
-            <tr>
-              <td>Pizza</td>
-              <td>Ice Cream</td>
-            </tr>
-            <tr>
-              <td>Pizza</td>  
-              <td>Ice Cream</td>
-            </tr>
-          </tbody>
-        </table><br><br>
+
+          <table class="table table-striped">
+              <thead>
+              <tr>
+                  <th class="dayOfWeek"></th>
+                  <th class="date"></th>
+                  <th class="time"></th>
+                  <th class="channel"></th>
+                  <th class="stationName"></th>
+                  <th class="title"></th>
+              </tr>
+              </thead>
+
+              <tbody id="toDoListTableBody">
+              </tbody>
+
+          </table><br><br>
+
       </div>
 
       <div id="recordedShowDetailsPage" style="display: none;"></div>

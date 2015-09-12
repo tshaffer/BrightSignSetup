@@ -266,7 +266,8 @@ function addRecordedShowsLine(jtrRecording) {
         "<td>" + jtrRecording.Title + "</td>" +
         "<td>" + formattedDayDate + "</td>" +
 	    "<td><button type='button' class='btn btn-default recorded-shows-icon' id='info" + jtrRecording.RecordingId.toString() + "' aria-label='Left Align'><span class='glyphicon glyphicon-info-sign' aria-hidden='true'></span></button></td>" +
-        "<td>" + position + "</td>";
+        "<td>" + position + "</td>" +
+        "</tr>";
 
     return toAppend;
 }
@@ -363,21 +364,125 @@ function selectToDoList() {
 
 
 function getToDoList() {
-    var aUrl = baseURL + "toDoList";
 
-    $.ajax({
-        type: "GET",
-        url: aUrl
-    })
-    .done(function (result) {
-        var toAppend = "";
+    console.log("getToDoList() invoked");
 
-        for (i = 0; i < result.length; i++) {
-            toAppend += "<tr id=\"toDoListRow" + i + " \"><td>date to record</td><td>title</td></tr>";
-        }
-        $("#recordedShowsTableBody").append(toAppend);
+    var getStationsPromise = new Promise(function (resolve, reject) {
+
+        var aUrl = baseURL + "getStations";
+
+        $.get(
+            aUrl
+        ).then(function (result) {
+                resolve(result.stations);
+            }, function () {
+                reject();
+            });
+    });
+
+    getStationsPromise.then(function(stations) {
+
+        var aUrl = baseURL + "getToDoList";
+
+        $.ajax({
+            type: "GET",
+            url: aUrl,
+            dataType: "json",
+            success: function (toDoList) {
+
+                // toDoList is the array of scheduled recordings
+
+                console.log("getToDoList success");
+
+                // display scheduled recordings
+                var toAppend = "";
+
+                $("#toDoListTableBody").empty();
+
+                $.each(toDoList, function (index, scheduledRecording) {
+                    toAppend += addScheduledRecordingShowLine(scheduledRecording, stations);
+                });
+
+                $("#toDoListTableBody").append(toAppend);
+
+                // add button handlers for each scheduled recording - note, the handlers need to be added after the html has been added!!
+                //$.each(toDoList, function (index, scheduledRecording) {
+                //    // TBD
+                //});
+            }
+        });
     });
 }
+
+function addScheduledRecordingShowLine(scheduledRecording, stations) {
+
+    /*
+    DayOfWeek
+    Date
+    Time
+    Channel
+    Station Name
+    Title
+     */
+
+    var weekday = new Array(7);
+    weekday[0] = "Sun";
+    weekday[1] = "Mon";
+    weekday[2] = "Tue";
+    weekday[3] = "Wed";
+    weekday[4] = "Thu";
+    weekday[5] = "Fri";
+    weekday[6] = "Sat";
+
+    var date = new Date(scheduledRecording.DateTime);
+
+    var dayOfWeek = weekday[date.getDay()];
+
+    var monthDay = (date.getMonth() + 1).toString() + "/" + date.getDate().toString();
+
+    var amPM = "am";
+
+    var numHours = date.getHours();
+    if (numHours == 0) numHours = 12;
+    if (numHours > 12) {
+        numHours -= 12;
+        amPM = "pm";
+    }
+    var hoursLbl = numHours.toString();
+    if (hoursLbl.length == 1) hoursLbl = "&nbsp" + hoursLbl;
+
+    var minutesLbl = twoDigitFormat(date.getMinutes().toString());
+
+    var timeOfDay = hoursLbl + ":" + minutesLbl + amPM;
+
+    var channel = scheduledRecording.Channel;
+    var channelParts = channel.split('-');
+    if (channelParts.length == 2 && channelParts[1] == "1") {
+        channel = channelParts[0];
+    }
+
+    var station = getStationFromAtsc(stations, channelParts[0], channelParts[1]);
+
+    var stationName = "TBD";
+    if (station != null) {
+        stationName = station.CommonName;
+    }
+
+    var title = scheduledRecording.Title;
+
+    var toAppend =
+        "<tr>" +
+        "<td>" + dayOfWeek + "</td>" +
+        "<td>" + monthDay + "</td>" +
+        "<td>" + timeOfDay + "</td>" +
+        "<td>" + channel + "</td>" +
+        "<td>" + stationName + "</td>" +
+        "<td>" + title + "</td>" +
+        "</tr>";
+
+    return toAppend;
+}
+
 
 
 function selectLiveVideo() {
@@ -549,7 +654,7 @@ function updateCGProgramDlgSelection() {
 }
 
 
-function cgRecordProgram(showType) {
+function cgRecordProgram(showType, recordingType) {
     // redundant in some cases (when selected from pop up); not when record button pressed
     var programData = ChannelGuideSingleton.getInstance().getSelectedStationAndProgram();
     cgSelectedProgram = programData.program;
@@ -562,6 +667,7 @@ function cgRecordProgram(showType) {
     event["Duration"] = cgSelectedProgram.duration;
     event["ShowType"] = showType;
     event["InputSource"] = "tuner";
+    event["RecordingType"] = recordingType;
 
     var stationName = getStationFromId(cgSelectedStationId);
 
@@ -586,20 +692,20 @@ function cgRecordSelectedProgram() {
     cgSelectedStationId = programData.stationId;
 
     if (cgSelectedProgram.showType == "Series") {
-        return cgRecordProgram("");
+        return cgRecordProgram("", "single");
     }
     else {
-        return cgRecordProgram(cgSelectedProgram.showType);
+        return cgRecordProgram(cgSelectedProgram.showType, "single");
     }
 }
 
 
 function cgRecordSelectedSeries() {
-    return cgRecordProgram("Series");
+    return cgRecordProgram("Series", "series");
 }
 
 
-function cgRecordProgramFromClient(showType) {
+function cgRecordProgramFromClient(showType, recordingType) {
 
     var programData = ChannelGuideSingleton.getInstance().getSelectedStationAndProgram();
     cgSelectedProgram = programData.program;
@@ -610,7 +716,8 @@ function cgRecordProgramFromClient(showType) {
 
     var aUrl = baseURL + "browserCommand";
     var commandData = { "command": "addRecord", "dateTime": cgSelectedProgram.date, "title": cgSelectedProgram.title, "duration": cgSelectedProgram.duration, "showType": showType,
-        "inputSource": "tuner", "channel": stationName, "recordingBitRate": _settings.recordingBitRate, "segmentRecording": _settings.segmentRecordings };
+        "inputSource": "tuner", "channel": stationName, "recordingBitRate": _settings.recordingBitRate, "segmentRecording": _settings.segmentRecordings,
+        "recordingType": recordingType };
     console.log(commandData);
 
     $.get(aUrl, commandData)
@@ -635,17 +742,17 @@ function cgRecordSelectedProgramFromClient() {
     cgSelectedStationId = programData.stationId;
 
     if (cgSelectedProgram.showType == "Series") {
-        return cgRecordProgramFromClient("");
+        return cgRecordProgramFromClient("", "single");
     }
     else {
-        return cgRecordProgramFromClient(cgSelectedProgram.showType);
+        return cgRecordProgramFromClient(cgSelectedProgram.showType, "single");
     }
 }
 
 
 function cgRecordSelectedSeriesFromClient() {
 
-    return cgRecordProgramFromClient("Series");
+    return cgRecordProgramFromClient("Series", "series");
 }
 
 
@@ -851,7 +958,7 @@ $(document).ready(function () {
         baseIP = document.baseURI.substr(0, document.baseURI.lastIndexOf(":"));
 
         //baseURL = "http://10.10.212.44:8080/";
-        baseURL = "http://192.168.2.17:8080/";
+        baseURL = "http://192.168.2.12:8080/";
 
         console.log("baseURL from document.baseURI is: " + baseURL + ", baseIP is: " + baseIP);
     }

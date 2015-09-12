@@ -13,29 +13,37 @@ Sub InitializeServer()
 
 	' RECORD NOW - removed
 
-	' add a scheduled single recording
-	m.addScheduledSingleRecordingAA =			{ HandleEvent: addScheduledSingleRecording, mVar: m }
-	m.localServer.AddGetFromEvent({ url_path: "/addScheduledSingleRecording", user_data: m.addScheduledSingleRecordingAA })
+	' add a scheduled recording
+	m.addScheduledRecordingAA =			{ HandleEvent: addScheduledRecording, mVar: m }
+	m.localServer.AddGetFromEvent({ url_path: "/addScheduledRecording", user_data: m.addScheduledRecordingAA })
 
 	' add a scheduled series recording
 	m.addScheduledSeriesRecordingAA =			{ HandleEvent: addScheduledSeriesRecording, mVar: m }
 	m.localServer.AddGetFromEvent({ url_path: "/addScheduledSeriesRecording", user_data: m.addScheduledSeriesRecordingAA })
 
-	' delete a scheduled single recording
-	m.deleteScheduledSingleRecordingAA =			{ HandleEvent: deleteScheduledSingleRecording, mVar: m }
-	m.localServer.addGetFromEvent({ url_path: "/deleteScheduledSingleRecording", user_data: m.deleteScheduledSingleRecordingAA })
+	' delete a scheduled recording
+	m.deleteScheduledRecordingAA =			{ HandleEvent: deleteScheduledRecording, mVar: m }
+	m.localServer.addGetFromEvent({ url_path: "/deleteScheduledRecording", user_data: m.deleteScheduledRecordingAA })
 
 	' delete a scheduled series recording
 	m.deleteScheduledSeriesRecordingAA =			{ HandleEvent: deleteScheduledSeriesRecording, mVar: m }
 	m.localServer.addGetFromEvent({ url_path: "/deleteScheduledSeriesRecording", user_data: m.deleteScheduledSeriesRecordingAA })
 
-	' get scheduled single recordings
-	m.getScheduledSingleRecordingsAA =		{ HandleEvent: getScheduledSingleRecordings, mVar: m }
-	m.localServer.AddGetFromEvent({ url_path: "/getScheduledSingleRecordings", user_data: m.getScheduledSingleRecordingsAA })
+	' get scheduled recordings
+	m.getScheduledRecordingsAA =		{ HandleEvent: getScheduledRecordings, mVar: m }
+	m.localServer.AddGetFromEvent({ url_path: "/getScheduledRecordings", user_data: m.getScheduledRecordingsAA })
 
 	' get scheduled series recordings
 	m.getScheduledSeriesRecordingsAA =		{ HandleEvent: getScheduledSeriesRecordings, mVar: m }
 	m.localServer.AddGetFromEvent({ url_path: "/getScheduledSeriesRecordings", user_data: m.getScheduledSeriesRecordingsAA })
+
+	' set to do list
+	m.setToDoListAA =					{ HandleEvent: setToDoList, mVar: m }
+	m.localServer.AddGetFromEvent({ url_path: "/setToDoList", user_data: m.setToDoListAA })
+
+	' retrieve and return to do list
+	m.getToDoListAA =					{ HandleEvent: getToDoList, mVar: m }
+	m.localServer.AddGetFromEvent({ url_path: "/getToDoList", user_data: m.getToDoListAA })
 
 	' retrieve and return information about all recordings
 	m.getRecordingsAA =					{ HandleEvent: getRecordings, mVar: m }
@@ -56,6 +64,10 @@ Sub InitializeServer()
 	' retrieve and return all programs
 	m.getProgramsAA =					{ HandleEvent: getPrograms, mVar: m }
 	m.localServer.AddGetFromEvent({ url_path: "/getPrograms", user_data: m.getProgramsAA })
+
+	' retrieve stations in channel guide
+	m.getStationsAA =					{ HandleEvent: getStations, mVar: m }
+	m.localServer.AddGetFromEvent({ url_path: "/getStations", user_data: m.getStationsAA })
 
 	' part of file transcoding process
 	m.fileToTranscodeAA =				{ HandleEvent: fileToTranscode, mVar: m }
@@ -97,6 +109,10 @@ Sub InitializeServer()
 	m.getEpgMatchingProgramsAA =	{ HandleEvent: getEpgMatchingPrograms, mVar: m }
 	m.localServer.AddGetFromEvent({ url_path: "/getEpgMatchingPrograms", user_data: m.getEpgMatchingProgramsAA })
 	
+	' epgMatchingProgramsOnDate
+	m.getEpgMatchingProgramsOnDateAA =	{ HandleEvent: getEpgMatchingProgramsOnDate, mVar: m }
+	m.localServer.AddGetFromEvent({ url_path: "/getEpgMatchingProgramsOnDate", user_data: m.getEpgMatchingProgramsOnDateAA })
+
 ' incorporation of site downloader code
     m.siteFilePostedAA = { HandleEvent: siteFilePosted, mVar: m }
     m.localServer.AddPostToFile({ url_path: "/UploadFile", destination_directory: GetDefaultDrive(), user_data: m.siteFilePostedAA })
@@ -228,9 +244,9 @@ Sub playRecording(userData as Object, e as Object)
 End Sub
 
 
-Sub addScheduledSingleRecording(userData As Object, e as Object)
+Sub addScheduledRecording(userData As Object, e as Object)
 
-	print "addScheduledSingleRecording endpoint invoked"
+	print "addScheduledRecording endpoint invoked"
 
     mVar = userData.mVar
 
@@ -238,6 +254,7 @@ Sub addScheduledSingleRecording(userData As Object, e as Object)
 
 	scheduledRecording = {}
 	scheduledRecording.dateTime = requestParams.dateTime
+	scheduledRecording.endDateTime = requestParams.endDateTime
 	scheduledRecording.duration% = int(val(requestParams.duration))	' in minutes
 	scheduledRecording.title$ = requestParams.title
 	scheduledRecording.channel$ = requestParams.channel
@@ -245,10 +262,11 @@ Sub addScheduledSingleRecording(userData As Object, e as Object)
 	scheduledRecording.recordingBitRate% = int(val(requestParams.recordingBitRate))
 	scheduledRecording.segmentRecording% = int(val(requestParams.segmentRecording))
 	scheduledRecording.showType$ = requestParams.showType
+	scheduledRecording.recordingType$ = requestParams.recordingType
 
-	mVar.AddDBScheduledSingleRecording(scheduledRecording)
+	mVar.AddDBScheduledRecording(scheduledRecording)
 
-	id = mVar.GetDBLastScheduledSingleRecordingId()
+	id = mVar.GetDBLastScheduledRecordingId()
 
     e.AddResponseHeader("Content-type", "text/plain")
     e.AddResponseHeader("Access-Control-Allow-Origin", "*")
@@ -288,11 +306,7 @@ Sub addScheduledSeriesRecording(userData As Object, e as Object)
 End Sub
 
 
-Sub deleteScheduledRecording(fn As Object, userData As Object, e as Object)
-
-	print "deleteScheduledRecording endpoint invoked"
-
-    mVar = userData.mVar
+Sub deleteScheduledRecordingRow(fn As Object, userData As Object, e as Object)
 
 	requestParams = e.GetRequestParams()
 
@@ -306,12 +320,12 @@ Sub deleteScheduledRecording(fn As Object, userData As Object, e as Object)
 End Sub
 
 
-Sub deleteScheduledSingleRecording(userData As Object, e as Object)
+Sub deleteScheduledRecording(userData As Object, e as Object)
 
-	print "deleteScheduledSingleRecording endpoint invoked"
+	print "deleteScheduledRecording endpoint invoked"
 
     mVar = userData.mVar
-	mVar.deleteScheduledRecording(mVar.DeleteDBScheduledSingleRecording, userData, e)
+	mVar.deleteScheduledRecordingRow(mVar.DeleteDBScheduledRecording, userData, e)
 
 End Sub
 
@@ -321,15 +335,15 @@ Sub deleteScheduledSeriesRecording(userData As Object, e as Object)
 	print "deleteScheduledSeriesRecording endpoint invoked"
 
     mVar = userData.mVar
-	mVar.deleteScheduledRecording(mVar.DeleteDBScheduledSeriesRecording, userData, e)
+	mVar.deleteScheduledRecordingRow(mVar.DeleteDBScheduledSeriesRecording, userData, e)
 
 End Sub
 
 
-Sub PopulateScheduledRecordings(getSingleRecordings As Boolean, mVar As Object, response As Object, currentDateTime As String)
+Sub PopulateScheduledRecordings(getRecordingsList As Boolean, mVar As Object, response As Object, currentDateTime As String)
 
-	if getSingleRecordings then
-		scheduledRecordings = mVar.GetDBScheduledSingleRecordings(currentDateTime)
+	if getRecordingsList then
+		scheduledRecordings = mVar.GetDBScheduledRecordings(currentDateTime)
 	else
 		scheduledRecordings = mVar.GetDBScheduledSeriesRecordings()
 	endif
@@ -343,7 +357,7 @@ Sub PopulateScheduledRecordings(getSingleRecordings As Boolean, mVar As Object, 
 End Sub
 
 
-Sub getScheduledRecordings(getSingleRecordings As Boolean, userData As Object, e as Object, currentDateTime As String)
+Sub getScheduledRecordingsData(getRecordingsList As Boolean, userData As Object, e as Object, currentDateTime As String)
 
 	print "getScheduledRecordings endpoint invoked"
 
@@ -351,7 +365,7 @@ Sub getScheduledRecordings(getSingleRecordings As Boolean, userData As Object, e
 
 	response = {}
 
-	PopulateScheduledRecordings(getSingleRecordings, mVar, response, currentDateTime)
+	PopulateScheduledRecordings(getRecordingsList, mVar, response, currentDateTime)
 
 	json = FormatJson(response, 0)
 
@@ -363,12 +377,12 @@ Sub getScheduledRecordings(getSingleRecordings As Boolean, userData As Object, e
 End Sub
 
 
-Sub getScheduledSingleRecordings(userData As Object, e as Object)
+Sub getScheduledRecordings(userData As Object, e as Object)
 
-	print "getScheduledSingleRecordings endpoint invoked"
+	print "getScheduledRecordings endpoint invoked"
 
 	requestParams = e.GetRequestParams()
-	getScheduledRecordings(true, userData, e, requestParams.currentDateTime)
+	getScheduledRecordingsData(true, userData, e, requestParams.currentDateTime)
 
 End Sub
 
@@ -377,7 +391,7 @@ Sub getScheduledSeriesRecordings(userData As Object, e as Object)
 
 	print "getScheduledSeriesRecordings endpoint invoked"
 
-	getScheduledRecordings(false, userData, e, "")
+	getScheduledRecordingsData(false, userData, e, "")
 
 End Sub
 
@@ -443,6 +457,71 @@ Sub getPrograms(userData as Object, e as Object)
 	for each program in programs
 		response.programs.push(program)
 	next
+
+	json = FormatJson(response, 0)
+
+    e.AddResponseHeader("Content-type", "text/json")
+    e.AddResponseHeader("Access-Control-Allow-Origin", "*")
+    e.SetResponseBodyString(json)
+    e.SendResponse(200)
+
+End Sub
+
+
+Sub getStations(userData as Object, e as Object)
+
+	print "getStations endpoint invoked"
+
+	response = {}
+
+	response.stations = []
+
+    $.each(stations, function (index, station) {
+		response.stations.push(station)
+    });
+
+	json = FormatJson(response, 0)
+
+    e.AddResponseHeader("Content-type", "text/json")
+    e.AddResponseHeader("Access-Control-Allow-Origin", "*")
+    e.SetResponseBodyString(json)
+    e.SendResponse(200)
+
+End Sub
+
+
+Sub setToDoList(userData as Object, e as Object)
+
+	print "setToDoList endpoint invoked"
+
+    mVar = userData.mVar
+
+	requestParams = e.GetRequestParams()
+
+	toDoList = parseJSON(requestParams["toDoList"])
+
+	globalAA = GetGlobalAA()
+	globalAA.toDoList = toDoList
+
+    e.AddResponseHeader("Content-type", "text/plain")
+    e.AddResponseHeader("Access-Control-Allow-Origin", "*")
+    e.SetResponseBodyString("ok")
+    e.SendResponse(200)
+
+End Sub
+
+
+Sub getToDoList(userData as Object, e as Object)
+
+	print "getToDoList endpoint invoked"
+
+    mVar = userData.mVar
+
+	response = {}
+	globalAA = GetGlobalAA()
+	toDoList = globalAA.toDoList
+
+	response = toDoList
 
 	json = FormatJson(response, 0)
 
@@ -792,6 +871,24 @@ Sub getEpgMatchingPrograms(userData as Object, e as Object)
 
 	requestParams = e.GetRequestParams()
 	response = mVar.GetDBEpgMatchingPrograms(requestParams.startDate, requestParams.title, requestParams.atscMajor, requestParams.atscMinor)
+	json = FormatJson(response, 0)
+
+    e.AddResponseHeader("Content-type", "text/json")
+    e.AddResponseHeader("Access-Control-Allow-Origin", "*")
+    e.SetResponseBodyString(json)
+    e.SendResponse(200)
+
+End Sub
+
+
+Sub getEpgMatchingProgramsOnDate(userData as Object, e as Object)
+
+	print "getEpgMatchingProgramsOnDate endpoint invoked"
+
+    mVar = userData.mVar
+
+	requestParams = e.GetRequestParams()
+	response = mVar.GetDBEpgMatchingProgramsOnDate(requestParams.date, requestParams.title, requestParams.atscMajor, requestParams.atscMinor)
 	json = FormatJson(response, 0)
 
     e.AddResponseHeader("Content-type", "text/json")

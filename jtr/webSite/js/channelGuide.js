@@ -57,8 +57,6 @@ ChannelGuide.prototype.reselectCurrentProgram = function() {
 
 ChannelGuide.prototype.selectChannelGuide = function() {
 
-    //initializeEpgData();
-
     // if returning from pop up modal, just re-select the last program and return
     if (!this.resetSelectedProgram) {
         this.selectProgram(null, this._currentSelectedProgramButton);
@@ -852,6 +850,21 @@ function getStationFromId(stationId) {
     });
 
     return selectedStation;
+}
+
+
+function getStationFromAtsc(stations, atscMajor, atscMinor) {
+
+    var foundStation = null;
+
+    $.each(stations, function (stationIndex, station) {
+        if (station.AtscMajor == atscMajor && station.AtscMinor == atscMinor) {
+            foundStation = station;
+            return;
+        }
+    });
+
+    return foundStation;
 }
 
 
