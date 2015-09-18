@@ -1,6 +1,6 @@
 ﻿var schedulesDirectToken;
 
-var numDaysEpgData = 2;
+var numDaysEpgData = 3;
 
 var stations = [];
 var scheduleValidityByStationDate = {};     // schedule information for each station/date 
@@ -828,9 +828,11 @@ function updateScheduledRecordings() {
                                     // add scheduledEpisode to scheduledRecordings
                                     aUrl = baseURL + "addScheduledRecording";
                                     var isoDateTime = scheduledEpisode.DateTime.toISOString();
+                                    var isoEndDateTime = scheduledEpisode.EndDateTime.toISOString();
+
                                     recordingData = {
                                         "dateTime": isoDateTime,
-                                        "endDateTime": scheduledEpisode.EndDateTime,
+                                        "endDateTime": isoEndDateTime,
                                         "title": scheduledEpisode.Title,
                                         "duration": scheduledEpisode.Duration,
                                         "inputSource": scheduledEpisode.InputSource,
@@ -840,6 +842,7 @@ function updateScheduledRecordings() {
                                         "showType": scheduledEpisode.ShowType,
                                         "recordingType": "single"
                                     };
+
                                     $.get(aUrl, recordingData)
                                         .then(function (result) {
                                             seriesEpisodesAdded++;

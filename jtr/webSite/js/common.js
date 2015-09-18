@@ -14,6 +14,7 @@ var _currentRecordings = {};
 var currentActiveElementId = "#homePage";
 
 var recordedPageIds = [];
+var scheduledRecordingIds = [];
 
 var cgPopupId = "";
 var cgPopupTitle = "";
@@ -382,41 +383,55 @@ function getToDoList() {
 
     getStationsPromise.then(function(stations) {
 
-        var aUrl = baseURL + "getToDoList";
+        var aUrl = baseURL + "getScheduledRecordings";
+        var currentDateTimeIso = new Date().toISOString();
+        var currentDateTime = { "currentDateTime": currentDateTimeIso };
 
-        $.ajax({
-            type: "GET",
-            url: aUrl,
-            dataType: "json",
-            success: function (toDoList) {
-
-                // toDoList is the array of scheduled recordings
-
-                console.log("getToDoList success");
+        $.get(aUrl, currentDateTime)
+            .done(function (scheduledRecordings) {
+                console.log("getScheduledRecordings success");
 
                 // display scheduled recordings
                 var toAppend = "";
 
-                $("#toDoListTableBody").empty();
+                $("#scheduledRecordingsTableBody").empty();
 
-                $.each(toDoList, function (index, scheduledRecording) {
+                $.each(scheduledRecordings.scheduledrecordings, function (index, scheduledRecording) {
                     toAppend += addScheduledRecordingShowLine(scheduledRecording, stations);
                 });
 
-                $("#toDoListTableBody").append(toAppend);
+                $("#scheduledRecordingsTableBody").append(toAppend);
 
-                // add button handlers for each scheduled recording - note, the handlers need to be added after the html has been added!!
-                //$.each(toDoList, function (index, scheduledRecording) {
-                //    // TBD
-                //});
-            }
-        });
+                scheduledRecordingIds.length = 0;
+
+                // add button handlers for each recording - note, the handlers need to be added after the html has been added!!
+                $.each(scheduledRecordings.scheduledrecordings, function (index, scheduledRecording) {
+
+                    var scheduledRecordingId = scheduledRecording.Id;
+
+                    // delete a scheduled recording
+                    var btnIdDelete = "#delete" + scheduledRecordingId;
+                    $(btnIdDelete).click({ scheduledRecordingId: scheduledRecordingId }, deleteScheduledRecording);
+
+                    var scheduledRecordingRow = [];
+                    scheduledRecordingRow.push(btnIdDelete);
+                    scheduledRecordingIds.push(scheduledRecordingRow);
+                });
+            })
+            .fail(function (jqXHR, textStatus, errorThrown) {
+                debugger;
+                console.log("browserCommand failure");
+            })
+            .always(function () {
+                //alert("recording transmission finished");
+            });
     });
 }
 
 function addScheduledRecordingShowLine(scheduledRecording, stations) {
 
     /*
+    Delete / Stop icon
     DayOfWeek
     Date
     Time
@@ -448,6 +463,9 @@ function addScheduledRecordingShowLine(scheduledRecording, stations) {
         numHours -= 12;
         amPM = "pm";
     }
+    else if (numHours == 12) {
+        amPM = "pm";
+    }
     var hoursLbl = numHours.toString();
     if (hoursLbl.length == 1) hoursLbl = "&nbsp" + hoursLbl;
 
@@ -472,6 +490,7 @@ function addScheduledRecordingShowLine(scheduledRecording, stations) {
 
     var toAppend =
         "<tr>" +
+        "<td><button type='button' class='btn btn-default recorded-shows-icon' id='delete" + scheduledRecording.Id.toString() + "' aria-label='Left Align'><span class='glyphicon glyphicon-remove' aria-hidden='true'></span></button></td>" +
         "<td>" + dayOfWeek + "</td>" +
         "<td>" + monthDay + "</td>" +
         "<td>" + timeOfDay + "</td>" +

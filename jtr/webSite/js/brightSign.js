@@ -109,6 +109,14 @@ function executeDeleteSelectedShow(recordingId) {
 }
 
 
+function executeDeleteScheduledRecording(scheduledRecordingId) {
+
+    consoleLog("executeDeleteScheduledRecording " + scheduledRecordingId);
+
+    bsMessage.PostBSMessage({ command: "deleteScheduledRecording", "scheduledRecordingId": scheduledRecordingId });
+}
+
+
 function initializeBrightSign() {
 
     // ir receiver
@@ -229,6 +237,11 @@ function initializeBrightSign() {
             case "deleteRecordedShow":
                 event["EventType"] = "DELETE_RECORDED_SHOW";
                 event["EventData"] = msg.data[name];
+                postMessage(event);
+                break;
+            case "deleteScheduledRecording":
+                event["EventType"] = "DELETE_SCHEDULED_RECORDING";
+                event["EventData"] = msg.data.scheduledRecordingId;
                 postMessage(event);
                 break;
             case "addRecord":

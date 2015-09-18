@@ -268,16 +268,16 @@ Sub DeleteDBScheduledRecordingRow(tableName$ As String, scheduledRecordingId$ As
 End Sub
 
 
-Sub DeleteDBScheduledRecording(scheduledRecordingId$ As String)
+Sub DeleteDBScheduledRecording(mVar As Object, scheduledRecordingId$ As String)
 
-	m.DeleteDBScheduledRecordingRow("ScheduledRecordings", scheduledRecordingId$)
+	mVar.DeleteDBScheduledRecordingRow("ScheduledRecordings", scheduledRecordingId$)
 
 End Sub
 
 
-Sub DeleteDBScheduledSeriesRecording(scheduledRecordingId$ As String)
+Sub DeleteDBScheduledSeriesRecording(mVar As Object, scheduledRecordingId$ As String)
 
-	m.DeleteDBScheduledRecordingRow("ScheduledSeriesRecordings", scheduledRecordingId$)
+	mVar.DeleteDBScheduledRecordingRow("ScheduledSeriesRecordings", scheduledRecordingId$)
 
 End Sub
 

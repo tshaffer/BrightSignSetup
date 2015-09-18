@@ -19,6 +19,7 @@ Function newDisplayEngine(jtr As Object) As Object
 	DisplayEngine.QuickSkipVideo				= de_QuickSkipVideo
 	DisplayEngine.InstantReplayVideo			= de_InstantReplayVideo
 	DisplayEngine.DeleteRecording				= de_DeleteRecording
+	DisplayEngine.DeleteScheduledRecording		= de_DeleteScheduledRecording
 	DisplayEngine.SeekToCurrentVideoPosition	= de_SeekToCurrentVideoPosition
 	DisplayEngine.InitiateFastForward			= de_InitiateFastForward
 	DisplayEngine.NextFastForward				= de_NextFastForward
@@ -212,6 +213,9 @@ Sub de_HandleHttpEvent(event)
 				else if command$ = "deleteRecordedShow" then
 					print "deleteRecordedShow: recordingId=";aa.recordingId
 					m.DeleteRecording(aa.recordingId)
+				else if command$ = "deleteScheduledRecording" then
+					print "deleteScheduledRecord: scheduledRecordingId=";aa.scheduledRecordingId
+					m.DeleteScheduledRecording(aa.scheduledRecordingId)
 				else if command$ = "forwardToTick" then
 					m.ForwardToTick(int(val(aa.offset)), int(val(aa.duration)), int(val(aa.minutesPerTick)), int(val(aa.numTicks)))
 				else if command$ = "backToTick" then
@@ -349,6 +353,14 @@ Sub de_StartPlayback(recording As Object)
 	m.SeekToCurrentVideoPosition()
 
 	m.StartVideoPlaybackTimer()
+
+End Sub
+
+
+Sub de_DeleteScheduledRecording(scheduledRecordingId As String)
+
+	' remove from database
+	m.jtr.DeleteDBScheduledRecording(scheduledRecordingId)
 
 End Sub
 
