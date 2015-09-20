@@ -82,9 +82,10 @@ function getStations(nextFunction) {
         url: url,
         dataType: "json",
     })
-        .done(function (result) {
+        // JTRTODO - can I just put stations here?
+        .done(function (stationsFromServer) {
             console.log("successful return from getStations");
-            stations = result.stations;
+            stations = stationsFromServer;
 
             if (nextFunction != null) {
                 nextFunction();
@@ -145,7 +146,7 @@ function retrieveEpgDataStep2() {
         url: url,
         dataType: "json",
     })
-    .done(function (result) {
+    .done(function (stationSchedulesForSingleDay) {
         console.log("successful return from getStationSchedulesForSingleDay");
 
         // dump StationSchedulesForSingleDay table from db
@@ -154,7 +155,7 @@ function retrieveEpgDataStep2() {
         // fill in scheduleValidityByStationDate with appropriate data from db
 // JTR TODO
 // change return value so that I dont have to use the nonsense on the next line.
-        $.each(result.stationschedulesforsingleday, function (index, jtrStationScheduleForSingleDay) {
+        $.each(stationSchedulesForSingleDay, function (index, jtrStationScheduleForSingleDay) {
             var stationDate = jtrStationScheduleForSingleDay.StationId + "-" + jtrStationScheduleForSingleDay.ScheduleDate;
 
             // is the station/date retrieved from db in the initialized data structure?
@@ -488,17 +489,17 @@ function GetProgramsFromDB(nextFunction) {
         url: url,
         dataType: "json",
     })
-        .done(function (result) {
+        .done(function (programs) {
             console.log("successful return from getPrograms");
 
             // dump programs retrieved from db
-            //console.log(JSON.stringify(result, null, 4));
-            console.log("number of programs in database is " + result.programs.length);
+            //console.log(JSON.stringify(programs, null, 4));
+            console.log("number of programs in database is " + programs.length);
             console.log("number of programs in out of date station/dates is " + Object.keys(programsValidity).length);
 
             // move these programs from the db into an associative array
             var programsInDB = {};
-            $.each(result.programs, function (index, program) {
+            $.each(programs, function (index, program) {
                 programsInDB[program.ProgramId] = program;
             });
 
@@ -770,8 +771,8 @@ function updateScheduledRecordings() {
 
         $.get(
             aUrl
-        ).then(function (result) {
-                resolve(result.scheduledrecordings);
+        ).then(function (scheduledRecordings) {
+                resolve(scheduledRecordings);
             });
     });
 
@@ -822,8 +823,8 @@ function updateScheduledRecordings() {
                                     scheduledEpisode.InputSource = scheduledSeriesRecording.InputSource;
                                     scheduledEpisode.RecordingBitRate = scheduledSeriesRecording.RecordingBitRate;
                                     scheduledEpisode.SegmentRecording = scheduledSeriesRecording.SegmentRecording;
-                                    scheduledEpisode.ShowType = scheduledSeriesRecording.ShowType;
                                     scheduledEpisode.Title = scheduledSeriesRecording.Title;
+                                    scheduledEpisode.ScheduledSeriesRecordingId = scheduledSeriesRecording.Id;
 
                                     // add scheduledEpisode to scheduledRecordings
                                     aUrl = baseURL + "addScheduledRecording";
@@ -839,8 +840,9 @@ function updateScheduledRecordings() {
                                         "channel": scheduledEpisode.Channel,
                                         "recordingBitRate": scheduledEpisode.RecordingBitRate,
                                         "segmentRecording": scheduledEpisode.SegmentRecording,
-                                        "showType": scheduledEpisode.ShowType,
-                                        "recordingType": "single"
+                                        "scheduledSeriesRecordingId": scheduledEpisode.ScheduledSeriesRecordingId,
+                                        "startTimeOffset": 0,
+                                        "stopTimeOffset": 0
                                     };
 
                                     $.get(aUrl, recordingData)

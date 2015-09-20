@@ -43,6 +43,14 @@ Sub re_EventHandler(event As Object)
 
 		m.HLSSegmentationComplete()
 
+	else if type(event) = "roAssociativeArray" then
+
+		if event.EventType = "STOP_RECORDING" then
+
+			recordingId = event.RecordingId
+
+		endif
+
 	endif
 
 End Sub
@@ -57,39 +65,41 @@ Sub re_HandleHttpEvent(event As Object)
         print "reason = " + eventData.reason
 		if eventData.reason = "message" then
 			aa = eventData.message
-			if aa.command = "recordNow" then
+			if type(aa.command) = "roString" then
+			command$ = aa.command
+				if command$ = "recordNow" then
 
-				title$ = aa.title
-				duration$ = aa.duration
+					title$ = aa.title
+					duration$ = aa.duration
 
-				' capture recording parameters
-				scheduledRecording = {}
-				scheduledRecording.title$ = title$
-				scheduledRecording.duration% = int(val(duration$))
-				scheduledRecording.channel$ = aa.channel
-				scheduledRecording.recordingBitRate% = int(val(aa.recordingBitRate))
-				scheduledRecording.showType$ = aa.showType
+					' capture recording parameters
+					scheduledRecording = {}
+					scheduledRecording.title$ = title$
+					scheduledRecording.duration% = int(val(duration$))
+					scheduledRecording.channel$ = aa.channel
+					scheduledRecording.recordingBitRate% = int(val(aa.recordingBitRate))
 
-				segmentRecording = int(val(aa.segmentRecording))
-				if segmentRecording = 0 then
-					scheduledRecording.segmentRecording = false
-				else
-					scheduledRecording.segmentRecording = true
-				endif
+					segmentRecording = int(val(aa.segmentRecording))
+					if segmentRecording = 0 then
+						scheduledRecording.segmentRecording = false
+					else
+						scheduledRecording.segmentRecording = true
+					endif
 
-				systemTime = CreateObject("roSystemTime")
-				scheduledRecording.dateTime = systemTime.GetLocalDateTime()
+					systemTime = CreateObject("roSystemTime")
+					scheduledRecording.dateTime = systemTime.GetLocalDateTime()
 
-				m.scheduledRecording = scheduledRecording
+					m.scheduledRecording = scheduledRecording
 
-				m.StartManualRecord()
-				
-			else if aa.command = "endRecording" then
-				startSegmentation = false
-				if aa.startSegmentation = "false" then
+					m.StartManualRecord()
+
+				else if command$ = "endRecording" then
 					startSegmentation = false
+					if aa.startSegmentation = "false" then
+						startSegmentation = false
+					endif
+					m.EndManualRecord(aa.duration, startSegmentation)
 				endif
-				m.EndManualRecord(startSegmentation)
 			endif
 		endif
 	' don't understand the following
@@ -140,11 +150,14 @@ Sub re_StartManualRecord()
 End Sub
 
 
-Sub re_EndManualRecord(startSegmentation)
+Sub re_EndManualRecord(duration As String, startSegmentation)
 
 	print "EndManualRecord " + m.scheduledRecording.title$
 	ok = m.encodingMediaStreamer.Stop()
 	if not ok then stop
+
+	' finalize duration
+	m.scheduledRecording.duration% = int(val(duration))
 
 	' Add or update record in database
 	m.jtr.AddDBRecording(m.scheduledRecording)

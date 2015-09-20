@@ -104,10 +104,10 @@ uiEngineStateMachine.prototype.STNoneEventHandler = function (event, stateData) 
         executeDeleteSelectedShow(recordingId);
         //getRecordedShows();       // TODO - is this required to get the data structure updated?
     }
-    else if (event["EventType"] == "DELETE_SCHEDULED_RECORDING") {
-        var scheduledRecordingId = event["EventData"];
-        executeDeleteScheduledRecording(scheduledRecordingId);
-    }
+    //else if (event["EventType"] == "DELETE_SCHEDULED_RECORDING") {
+    //    var scheduledRecordingId = event["EventData"];
+    //    executeDeleteScheduledRecording(scheduledRecordingId);
+    //}
 
     stateData.nextState = this.superState;
     return "SUPER";
@@ -152,10 +152,10 @@ uiEngineStateMachine.prototype.STUIScreenEventHandler = function (event, stateDa
         executeDeleteSelectedShow(recordingId);
         //getRecordedShows();       // TODO - is this required to get the data structure updated?
     }
-    else if (event["EventType"] == "DELETE_SCHEDULED_RECORDING") {
-        var scheduledRecordingId = event["EventData"];
-        executeDeleteScheduledRecording(scheduledRecordingId);
-    }
+    //else if (event["EventType"] == "DELETE_SCHEDULED_RECORDING") {
+    //    var scheduledRecordingId = event["EventData"];
+    //    executeDeleteScheduledRecording(scheduledRecordingId);
+    //}
 
     stateData.nextState = this.superState;
     return "SUPER";

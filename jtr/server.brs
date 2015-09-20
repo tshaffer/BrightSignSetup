@@ -17,17 +17,25 @@ Sub InitializeServer()
 	m.addScheduledRecordingAA =			{ HandleEvent: addScheduledRecording, mVar: m }
 	m.localServer.AddGetFromEvent({ url_path: "/addScheduledRecording", user_data: m.addScheduledRecordingAA })
 
+	' update a scheduled recording
+	m.updateScheduledRecordingAA =			{ HandleEvent: updateScheduledRecording, mVar: m }
+	m.localServer.AddGetFromEvent({ url_path: "/updateScheduledRecording", user_data: m.updateScheduledRecordingAA })
+
 	' add a scheduled series recording
 	m.addScheduledSeriesRecordingAA =			{ HandleEvent: addScheduledSeriesRecording, mVar: m }
 	m.localServer.AddGetFromEvent({ url_path: "/addScheduledSeriesRecording", user_data: m.addScheduledSeriesRecordingAA })
+
+	' stop a recording
+	m.stopRecordingAA =			{ HandleEvent: stopRecording, mVar: m }
+	m.localServer.addGetFromEvent({ url_path: "/stopRecording", user_data: m.stopRecordingAA })
 
 	' delete a scheduled recording
 	m.deleteScheduledRecordingAA =			{ HandleEvent: deleteScheduledRecording, mVar: m }
 	m.localServer.addGetFromEvent({ url_path: "/deleteScheduledRecording", user_data: m.deleteScheduledRecordingAA })
 
 	' delete a scheduled series recording
-	m.deleteScheduledSeriesRecordingAA =			{ HandleEvent: deleteScheduledSeriesRecording, mVar: m }
-	m.localServer.addGetFromEvent({ url_path: "/deleteScheduledSeriesRecording", user_data: m.deleteScheduledSeriesRecordingAA })
+	m.deleteScheduledSeriesAA =			{ HandleEvent: deleteScheduledSeries, mVar: m }
+	m.localServer.addGetFromEvent({ url_path: "/deleteScheduledSeries", user_data: m.deleteScheduledSeriesAA })
 
 	' get scheduled recordings
 	m.getScheduledRecordingsAA =		{ HandleEvent: getScheduledRecordings, mVar: m }
@@ -249,8 +257,9 @@ Sub addScheduledRecording(userData As Object, e as Object)
 	scheduledRecording.inputSource$ = requestParams.inputSource
 	scheduledRecording.recordingBitRate% = int(val(requestParams.recordingBitRate))
 	scheduledRecording.segmentRecording% = int(val(requestParams.segmentRecording))
-	scheduledRecording.showType$ = requestParams.showType
-	scheduledRecording.recordingType$ = requestParams.recordingType
+	scheduledRecording.scheduledSeriesRecordingId% = int(val(requestParams.scheduledSeriesRecordingId))
+	scheduledRecording.startTimeOffset% = int(val(requestParams.startTimeOffset))
+	scheduledRecording.stopTimeOffset% = int(val(requestParams.stopTimeOffset))
 
 	mVar.AddDBScheduledRecording(scheduledRecording)
 
@@ -259,6 +268,28 @@ Sub addScheduledRecording(userData As Object, e as Object)
     e.AddResponseHeader("Content-type", "text/plain")
     e.AddResponseHeader("Access-Control-Allow-Origin", "*")
 	e.SetResponseBodyString(stri(id))
+	e.SendResponse(200)
+
+End Sub
+
+
+Sub updateScheduledRecording(userData As Object, e as Object)
+
+	print "updateScheduledRecording endpoint invoked"
+
+    mVar = userData.mVar
+
+	requestParams = e.GetRequestParams()
+
+	id% = int(val(requestParams.id))
+	startTimeOffset% = int(val(requestParams.startTimeOffset))
+	stopTimeOffset% = int(val(requestParams.stopTimeOffset))
+
+	mVar.UpdateDBScheduledRecording(id%, startTimeOffset%, stopTimeOffset%)
+
+    e.AddResponseHeader("Content-type", "text/plain")
+    e.AddResponseHeader("Access-Control-Allow-Origin", "*")
+	e.SetResponseBodyString("OK")
 	e.SendResponse(200)
 
 End Sub
@@ -278,7 +309,6 @@ Sub addScheduledSeriesRecording(userData As Object, e as Object)
 	scheduledRecording.inputSource$ = requestParams.inputSource
 	scheduledRecording.recordingBitRate% = int(val(requestParams.recordingBitRate))
 	scheduledRecording.segmentRecording% = int(val(requestParams.segmentRecording))
-	scheduledRecording.showType$ = requestParams.showType
 	scheduledRecording.maxRecordings% = int(val(requestParams.maxRecordings))
 	scheduledRecording.recordReruns% = int(val(requestParams.recordReruns))
 
@@ -289,6 +319,30 @@ Sub addScheduledSeriesRecording(userData As Object, e as Object)
     e.AddResponseHeader("Content-type", "text/plain")
     e.AddResponseHeader("Access-Control-Allow-Origin", "*")
 	e.SetResponseBodyString(stri(id))
+	e.SendResponse(200)
+
+End Sub
+
+
+Sub stopRecording(userData As Object, e as Object)
+
+	print "stopRecording endpoint invoked"
+
+    mVar = userData.mVar
+
+	requestParams = e.GetRequestParams()
+	recordingId = requestParams.scheduledRecordingId
+
+	aa = {}
+	aa.AddReplace("command", "stopRecording")
+	aa.AddReplace("value", recordingId)
+
+	ok = mVar.htmlWidget.PostJSMessage(aa)
+	if not ok stop
+
+    e.AddResponseHeader("Content-type", "text/plain")
+    e.AddResponseHeader("Access-Control-Allow-Origin", "*")
+	e.SetResponseBodyString("OK")
 	e.SendResponse(200)
 
 End Sub
@@ -313,17 +367,39 @@ Sub deleteScheduledRecording(userData As Object, e as Object)
 	print "deleteScheduledRecording endpoint invoked"
 
     mVar = userData.mVar
+
+    ' delete the scheduled recording from the database
 	mVar.deleteScheduledRecordingRow(mVar, mVar.DeleteDBScheduledRecording, userData, e)
+
+	' send a message to get the scheduling record list rebuilt
+	aa = {}
+	aa.AddReplace("command", "deleteScheduledRecording")
+	ok = mVar.htmlWidget.PostJSMessage(aa)
+	if not ok stop
 
 End Sub
 
 
-Sub deleteScheduledSeriesRecording(userData As Object, e as Object)
+Sub deleteScheduledSeries(userData As Object, e as Object)
 
-	print "deleteScheduledSeriesRecording endpoint invoked"
+	print "deleteScheduledSeries endpoint invoked"
 
-    mVar = userData.mVar
-	mVar.deleteScheduledRecordingRow(mVar, mVar.DeleteDBScheduledSeriesRecording, userData, e)
+	mVar = userData.mVar
+	requestParams = e.GetRequestParams()
+
+	mVar.DeleteDBScheduledSeries(int(val(requestParams.scheduledSeriesRecordingId)))
+	mVar.DeleteDBScheduledProgramsInSeries(int(val(requestParams.scheduledSeriesRecordingId)))
+
+	' send a message to get the scheduling record list rebuilt
+	aa = {}
+	aa.AddReplace("command", "deleteScheduledRecording")
+	ok = mVar.htmlWidget.PostJSMessage(aa)
+	if not ok stop
+
+    e.AddResponseHeader("Content-type", "text/plain")
+    e.AddResponseHeader("Access-Control-Allow-Origin", "*")
+	e.SetResponseBodyString("OK")
+	e.SendResponse(200)
 
 End Sub
 
@@ -336,10 +412,8 @@ Sub PopulateScheduledRecordings(getRecordingsList As Boolean, mVar As Object, re
 		scheduledRecordings = mVar.GetDBScheduledSeriesRecordings()
 	endif
 
-	response.scheduledRecordings = []
-
 	for each scheduledRecording in scheduledRecordings
-		response.scheduledRecordings.push(scheduledRecording)
+		response.push(scheduledRecording)
 	next
 
 End Sub
@@ -351,7 +425,7 @@ Sub getScheduledRecordingsData(getRecordingsList As Boolean, userData As Object,
 
     mVar = userData.mVar
 
-	response = {}
+	response = []
 
 	PopulateScheduledRecordings(getRecordingsList, mVar, response, currentDateTime)
 
@@ -394,9 +468,9 @@ Sub getStations(userData as Object, e as Object)
 	response = {}
 	jtrStations = mVar.GetDBStations()
 
-	response.stations = []
+	response = []
 	for each station in jtrStations
-		response.stations.push(station)
+		response.push(station)
 	next
 
 	json = FormatJson(response, 0)
@@ -415,12 +489,11 @@ Sub getStationSchedulesForSingleDay(userData as Object, e as Object)
 
     mVar = userData.mVar
 
-	response = {}
+	response = []
 	jtrStationSchedulesForSingleDay = mVar.GetDBStationSchedulesForSingleDay()
 
-	response.stationSchedulesForSingleDay = []
 	for each stationScheduleForSingleDay in jtrStationSchedulesForSingleDay
-		response.stationSchedulesForSingleDay.push(stationScheduleForSingleDay)
+		response.push(stationScheduleForSingleDay)
 	next
 
 	json = FormatJson(response, 0)
@@ -439,12 +512,11 @@ Sub getPrograms(userData as Object, e as Object)
 
     mVar = userData.mVar
 
-	response = {}
 	programs = mVar.GetDBPrograms()
 
-	response.programs = []
+	response = []
 	for each program in programs
-		response.programs.push(program)
+		response.push(program)
 	next
 
 	json = FormatJson(response, 0)

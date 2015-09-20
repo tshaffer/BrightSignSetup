@@ -25,7 +25,10 @@
     this.stIdle.recordingObsolete = this.recordingObsolete;
     this.stIdle.deleteScheduledRecording = this.deleteScheduledRecording;
     this.stIdle.handleAddRecord = this.handleAddRecord;
-    this.stIdle.addToDB = this.addToDB;
+    this.stIdle.handleUpdateRecord = this.handleUpdateRecord;
+    this.stIdle.handleAddSeries = this.handleAddSeries;
+    this.stIdle.addProgramToDB = this.addProgramToDB;
+    this.stIdle.addSeriesToDB = this.addSeriesToDB;
 
     this.stRecording = new HState(this, "Recording");
     this.stRecording.HStateEventHandler = this.STRecordingEventHandler;
@@ -36,7 +39,11 @@
     this.stRecording.recordingObsolete = this.recordingObsolete;
     this.stRecording.executeStartRecording = this.executeStartRecording;
     this.stRecording.handleAddRecord = this.handleAddRecord;
-    this.stRecording.addToDB = this.addToDB;
+    this.stRecording.handleUpdateRecord = this.handleUpdateRecord;
+    this.stRecording.handleAddSeries = this.handleAddSeries;
+    this.stRecording.addProgramToDB = this.addProgramToDB;
+    this.stRecording.addSeriesToDB = this.addSeriesToDB;
+    this.stRecording.deleteScheduledRecording = this.deleteScheduledRecording;
 
     this.topState = this.stTop;
 }
@@ -99,8 +106,8 @@ recordingEngineStateMachine.prototype.buildToDoList = function () {
         $.get(
             aUrl,
             currentDateTime
-        ).then(function (result) {
-                $.each(result.scheduledrecordings, function (index, scheduledRecording) {
+        ).then(function (scheduledRecordings) {
+                $.each(scheduledRecordings, function (index, scheduledRecording) {
                     // convert from string object (as stored by db) back into Date object
                     scheduledRecording.DateTime = new Date(scheduledRecording.DateTime);
                     self.toDoList.push(scheduledRecording);
@@ -113,7 +120,7 @@ recordingEngineStateMachine.prototype.buildToDoList = function () {
 
     getScheduledRecordingsPromise.then(function() {
 
-        console.log("scheduledRecordings retrieved from db");
+        console.log("buildToDoList: scheduledRecordings retrieved from db");
 
         // sort scheduled recordings by date
         self.toDoList.sort(function (a, b) {
@@ -158,22 +165,31 @@ recordingEngineStateMachine.prototype.checkForPendingRecord = function () {
             this.toDoList.shift();
         }
         else {
+            // adjust start time, duration by startTimeOffset, stopTimeOffset
+            var actualStartDateTime = scheduledRecording.DateTime;
+            actualStartDateTime.setMinutes(scheduledRecording.DateTime.getMinutes() + scheduledRecording.StartTimeOffset);
+
+            var actualDuration = Number(scheduledRecording.Duration);
+            actualDuration = actualDuration - scheduledRecording.StartTimeOffset + scheduledRecording.StopTimeOffset;
+
+            var durationInMilliseconds = minutesToMsec(actualDuration);
+
             // see if recording should start immediately (program in progress)
-            var msUntilRecordingStarts = this.msUntilRecordingStarts(scheduledRecording.DateTime);
+            var msUntilRecordingStarts = this.msUntilRecordingStarts(actualStartDateTime);
             if (msUntilRecordingStarts <= 0) {
                 // reduce duration of recording by elapsed time since program began
-                var durationInMilliseconds = minutesToMsec(Number(scheduledRecording.Duration)) + msUntilRecordingStarts;
+                durationInMilliseconds += msUntilRecordingStarts;
 
                 // post internal message to cause transition to recording state
                 var event = {};
                 event["EventType"] = "TRANSITION_TO_RECORDING";
+                this.recordingId = scheduledRecording.Id;
                 this.recordingTitle = scheduledRecording.Title;
                 this.recordingDuration = durationInMilliseconds;
                 this.recordingInputSource = scheduledRecording.InputSource;
                 this.recordingChannel = scheduledRecording.Channel;
                 this.recordingBitRate = scheduledRecording.RecordingBitRate;
                 this.recordingSegment = scheduledRecording.SegmentRecording;
-                this.recordingShowType = scheduledRecording.ShowType;
 
                 postMessage(event);
             }
@@ -184,7 +200,7 @@ recordingEngineStateMachine.prototype.checkForPendingRecord = function () {
                     clearTimeout(this.timerVar);
                     this.timerVar = null;
                 }
-                this.startRecordingTimer(msUntilRecordingStarts, scheduledRecording.Title, scheduledRecording.Duration, scheduledRecording.InputSource, scheduledRecording.Channel, scheduledRecording.RecordingBitRate, scheduledRecording.SegmentRecording, scheduledRecording.ShowType);
+                this.startRecordingTimer(msUntilRecordingStarts, scheduledRecording.Id, scheduledRecording.Title, durationInMilliseconds, scheduledRecording.InputSource, scheduledRecording.Channel, scheduledRecording.RecordingBitRate, scheduledRecording.SegmentRecording);
             }
             return;
         }
@@ -198,6 +214,7 @@ recordingEngineStateMachine.prototype.STRecordingControllerEventHandler = functi
 
     if (event["EventType"] == "ENTRY_SIGNAL") {
         consoleLog(this.id + ": entry signal");
+        this.stateMachine.endOfRecordingTimer = null;
         return "HANDLED";
     }
     else if (event["EventType"] == "EXIT_SIGNAL") {
@@ -206,6 +223,12 @@ recordingEngineStateMachine.prototype.STRecordingControllerEventHandler = functi
     else if (event["EventType"] == "EPG_DB_UPDATES_COMPLETE") {
         console.log("EPG_DB_UPDATES_COMPLETE received.")
         updateScheduledRecordings();
+    }
+    else if (event["EventType"] == "STOP_RECORDING") {
+        //JTRTODO - recordingId used here?
+        var recordingId = event["EventData"];
+        console.log("STOP_RECORDING invoked for recordingId = " + recordingId);
+        this.stateMachine.stopRecording();
     }
 
     stateData.nextState = this.superState;
@@ -244,15 +267,15 @@ recordingEngineStateMachine.prototype.STIdleEventHandler = function (event, stat
         return "TRANSITION";
     }
     else if (event["EventType"] == "RECORD_NOW") {
+        this.stateMachine.recordingId = -1;         // not in db
         this.stateMachine.recordingTitle = event["Title"];
-        this.stateMachine.recordingDuration = Number(event["Duration"]);
+        this.stateMachine.recordingDuration = minutesToMsec(Number(event["Duration"]));
         this.stateMachine.recordingInputSource = event["InputSource"];
         this.stateMachine.recordingChannel = event["Channel"];
         this.stateMachine.recordingBitRate = event["RecordingBitRate"];
         this.stateMachine.recordingSegment = event["SegmentRecording"];
-        this.stateMachine.recordingShowType = event["ShowType"];
 
-        consoleLog("STIdleEventHandler: RECORD_NOW received. Title = " + this.stateMachine.recordingTitle + ", duration = " + this.stateMachine.recordingDuration + ", inputSource = " + this.stateMachine.recordingInputSource + ", channel = " + this.stateMachine.recordingChannel + ", recordingBitRate = " + this.stateMachine.recordingBitRate + ", segmentRecording = " + this.stateMachine.recordingSegment + ", showType = " + this.stateMachine.showType);
+        consoleLog("STIdleEventHandler: RECORD_NOW received. Title = " + this.stateMachine.recordingTitle + ", duration = " + this.stateMachine.recordingDuration + ", inputSource = " + this.stateMachine.recordingInputSource + ", channel = " + this.stateMachine.recordingChannel + ", recordingBitRate = " + this.stateMachine.recordingBitRate + ", segmentRecording = " + this.stateMachine.recordingSegment);
 
         stateData.nextState = this.stateMachine.stRecording;
         return "TRANSITION";
@@ -260,41 +283,48 @@ recordingEngineStateMachine.prototype.STIdleEventHandler = function (event, stat
     else if (event["EventType"] == "ADD_RECORD") {
         return this.handleAddRecord(event, stateData, true);
     }
+    else if (event["EventType"] == "UPDATE_SCHEDULED_RECORDING") {
+        return this.handleUpdateRecord(event, stateData, true);
+    }
+    else if (event["EventType"] == "ADD_SERIES") {
+        return this.handleAddSeries(event, stateData, true);
+    }
     else if (event["EventType"] == "SCHEDULED_RECORDINGS_UPDATED") {
         console.log("SCHEDULED_RECORDINGS_UPDATED received.");
         this.stateMachine.buildToDoList();
         this.stateMachine.firstTime = false;
         return "HANDLED";
     }
+    else if (event["EventType"] == "DELETE_SCHEDULED_RECORDING") {
+        console.log("DELETE_SCHEDULED_RECORDING received.");
+        this.stateMachine.buildToDoList();
+        this.stateMachine.firstTime = false;
+        return "HANDLED";
+    }
+
 
     stateData.nextState = this.superState;
     return "SUPER";
 }
 
 
-recordingEngineStateMachine.prototype.addToDB = function (dateTime, title, durationInMinutes, inputSource, channel, recordingBitRate, segmentRecording, showType, recordingType, idle) {
+recordingEngineStateMachine.prototype.addProgramToDB = function (dateTime, title, durationInMinutes, inputSource, channel, recordingBitRate, segmentRecording, scheduledSeriesRecordingId, startTimeOffset, stopTimeOffset, idle) {
 
     var aUrl;
     var recordingData;
     var recordingEngineIdle = idle;
 
-    if (recordingType.toLowerCase() == "series") {
-        aUrl = baseURL + "addScheduledSeriesRecording";
-        recordingData = { "title": title, "inputSource": inputSource, "channel": channel, "recordingBitRate": recordingBitRate, "segmentRecording": segmentRecording, "showType": showType, "maxRecordings": 5, "recordReruns": 1, "recordingType": "series" };
-    }
-    else {
+    aUrl = baseURL + "addScheduledRecording";
 
-        aUrl = baseURL + "addScheduledRecording";
+    var dtStartOfRecording = new Date(dateTime);
+    var isoDateTime = dtStartOfRecording.toISOString();
 
-        var dtStartOfRecording = new Date(dateTime);
-        var isoDateTime = dtStartOfRecording.toISOString();
+    var endDateTime = new Date(dtStartOfRecording);
+    endDateTime.setSeconds(endDateTime.getSeconds() + durationInMinutes * 60);
+    var isoEndDate = endDateTime.toISOString();
 
-        var endDateTime = new Date(dtStartOfRecording);
-        endDateTime.setSeconds(endDateTime.getSeconds() + durationInMinutes * 60);
-        var isoEndDate = endDateTime.toISOString();
-
-        recordingData = { "dateTime": isoDateTime, "endDateTime": isoEndDate, "title": title, "duration": durationInMinutes, "inputSource": inputSource, "channel": channel, "recordingBitRate": recordingBitRate, "segmentRecording": segmentRecording, "showType": showType, "recordingType": "single" };
-    }
+    recordingData = { "dateTime": isoDateTime, "endDateTime": isoEndDate, "title": title, "duration": durationInMinutes, "inputSource": inputSource, "channel": channel, "recordingBitRate": recordingBitRate, "segmentRecording": segmentRecording, "scheduledSeriesRecordingId": scheduledSeriesRecordingId,
+        "startTimeOffset": startTimeOffset, "stopTimeOffset": stopTimeOffset };
 
     var self = this;
 
@@ -302,28 +332,64 @@ recordingEngineStateMachine.prototype.addToDB = function (dateTime, title, durat
         .done(function (result) {
             consoleLog("addScheduledRecording successfully sent");
             var scheduledRecordingId = Number(result);
+            this.recordingId = scheduledRecordingId;
             consoleLog("scheduledRecordingId=" + scheduledRecordingId);
 
-            if (recordingType == "series") {
+            if (idle) {
+                self.stateMachine.buildToDoList();
+            }
+        })
 
-                // series recording has been added - add episodes in epg data to scheduledRecordings
-                var epgStartDate = Date.now().toISOString();
-                var atsc = channel.split("-");
-                var getEpgMatchingProgramsData = {
-                    "startDate": epgStartDate,
-                    "title": title,
-                    "atscMajor": atsc[0],
-                    "atscMinor": atsc[1]
-                };
+        .fail(function (jqXHR, textStatus, errorThrown) {
+            debugger;
+            consoleLog("addScheduledRecording failure");
+        })
+        .always(function () {
+            //alert("recording transmission finished");
+        }
+        );
+}
 
-                var url = baseURL + "getEpgMatchingPrograms";
-                $.get(url, getEpgMatchingProgramsData)
-                    .done(function (result) {
 
-                        consoleLog("XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX getEpgMatchingPrograms success ************************************");
+recordingEngineStateMachine.prototype.addSeriesToDB = function (title, inputSource, channel, recordingBitRate, segmentRecording, idle) {
 
-                        // add each matching program to scheduledRecordings
-                        $.each(result, function (index, seriesEpisode) {
+    var recordingData;
+    var recordingEngineIdle = idle;
+
+    var aUrl = baseURL + "addScheduledSeriesRecording";
+    recordingData = { "title": title, "inputSource": inputSource, "channel": channel, "recordingBitRate": recordingBitRate, "segmentRecording": segmentRecording, "maxRecordings": 5, "recordReruns": 1 };
+
+    var self = this;
+
+    $.get(aUrl, recordingData)
+        .done(function (result) {
+            consoleLog("addScheduledSeriesRecording successfully sent");
+            var scheduledSeriesRecordingId = Number(result);
+            consoleLog("scheduledSeriesRecordingId=" + scheduledSeriesRecordingId);
+
+            // series recording has been added - add episodes in epg data to scheduledRecordings
+            var epgStartDate = Date.now().toISOString();
+            var atsc = channel.split("-");
+            var getEpgMatchingProgramsData = {
+                "startDate": epgStartDate,
+                "title": title,
+                "atscMajor": atsc[0],
+                "atscMinor": atsc[1]
+            };
+
+            var url = baseURL + "getEpgMatchingPrograms";
+            $.get(url, getEpgMatchingProgramsData)
+                .done(function (result) {
+
+                    // save all promises so that their completion can be tracked
+                    var promises = [];
+
+                    consoleLog("XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX getEpgMatchingPrograms success ************************************");
+
+                    // add each matching program to scheduledRecordings
+                    $.each(result, function (index, seriesEpisode) {
+
+                        promises.push(new Promise(function(resolve, reject) {
 
                             // add scheduledEpisode to scheduledRecordings
                             aUrl = baseURL + "addScheduledRecording";
@@ -342,32 +408,34 @@ recordingEngineStateMachine.prototype.addToDB = function (dateTime, title, durat
                                 "channel": channel,
                                 "recordingBitRate": recordingBitRate,
                                 "segmentRecording": segmentRecording,
-                                "showType": showType,
-                                "recordingType": "single"
+                                "scheduledSeriesRecordingId": scheduledSeriesRecordingId,
+                                "startTimeOffset": 0,
+                                "stopTimeOffset": 0
                             };
                             $.get(aUrl, recordingData)
-                                .done(function (result) {
+                                .then(function (result) {
+                                    resolve();
                                     console.log("series episode added successfully")
-                                })
+                                }, function() {
+                                    reject();
+                                });
+                        }))
+                    });
 
-                        });
-                });
-            }
-
-            // JTRTODO - add isn't really complete due to ajax calls above
-            // add complete, move on to next step
-            if (idle) {
-                self.stateMachine.buildToDoList();
-            }
+                    Promise.all(promises).then(function() {
+                        if (idle) {
+                            self.stateMachine.buildToDoList();
+                        }
+                    });
+            });
         })
-
         .fail(function (jqXHR, textStatus, errorThrown) {
             debugger;
             consoleLog("addScheduledRecording failure");
         })
         .always(function () {
             //alert("recording transmission finished");
-        });
+        })
 }
 
 
@@ -381,10 +449,12 @@ recordingEngineStateMachine.prototype.handleAddRecord = function (event, stateDa
     var channel = event["Channel"];
     var recordingBitRate = event["RecordingBitRate"];
     var segmentRecording = event["SegmentRecording"];
-    var showType = event["ShowType"];
-    var recordingType = event["RecordingType"];
+    var scheduledSeriesRecordingId = event["ScheduledSeriesRecordingId"];
+    var startTimeOffset = event["StartTimeOffset"];
+    var stopTimeOffset = event["StopTimeOffset"];
 
     // ignore manual recordings that are in the past
+    // EXTENDOMATIC - need to take into account startTimeOffset, stopTimeOffset
     var durationInMilliseconds = minutesToMsec(Number(durationInMinutes));
     console.log("handleAddRecord: durationInMinutes=" + durationInMinutes.toString());
     var recordingObsolete = this.recordingObsolete(dateTime, durationInMilliseconds);
@@ -394,7 +464,55 @@ recordingEngineStateMachine.prototype.handleAddRecord = function (event, stateDa
     }
 
     // add the recording to the db
-    this.addToDB(dateTime, title, durationInMinutes, inputSource, channel, recordingBitRate, segmentRecording, showType, recordingType, idle);
+    this.addProgramToDB(dateTime, title, durationInMinutes, inputSource, channel, recordingBitRate, segmentRecording, scheduledSeriesRecordingId,
+        startTimeOffset, stopTimeOffset, idle);
+}
+
+
+recordingEngineStateMachine.prototype.handleUpdateRecord = function (event, stateData, idle) {
+
+    var id = event["Id"];
+    var startTimeOffset = event["StartTimeOffset"];
+    var stopTimeOffset = event["StopTimeOffset"];
+
+    // JTRTODO - changing the recording could mean that the recording should start now. not supported yet.
+
+    var aUrl = baseURL + "updateScheduledRecording";
+
+    var scheduledRecording = { "id": id, "startTimeOffset": startTimeOffset, "stopTimeOffset": stopTimeOffset };
+
+    var self = this;
+
+    $.get(aUrl, scheduledRecording)
+        .done(function (result) {
+            consoleLog("updateScheduledRecording successfully sent");
+
+            if (idle) {
+                self.stateMachine.buildToDoList();
+            }
+        })
+
+        .fail(function (jqXHR, textStatus, errorThrown) {
+            debugger;
+            consoleLog("updateScheduledRecording failure");
+        })
+        .always(function () {
+            //alert("recording transmission finished");
+        }
+    );
+}
+
+recordingEngineStateMachine.prototype.handleAddSeries = function (event, stateData, idle) {
+
+    // get recording parameters
+    var title = event["Title"];
+    var inputSource = event["InputSource"];
+    var channel = event["Channel"];
+    var recordingBitRate = event["RecordingBitRate"];
+    var segmentRecording = event["SegmentRecording"];
+
+    // add the series to the db
+    this.addSeriesToDB(title, inputSource, channel, recordingBitRate, segmentRecording, idle);
 }
 
 
@@ -406,7 +524,7 @@ recordingEngineStateMachine.prototype.STRecordingEventHandler = function (event,
 
     if (event["EventType"] == "ENTRY_SIGNAL") {
         consoleLog(this.id + ": entry signal");
-        this.startRecording(this.stateMachine.recordingTitle, this.stateMachine.recordingDuration, this.stateMachine.recordingInputSource, this.stateMachine.recordingChannel, this.stateMachine.recordingBitRate, this.stateMachine.recordingSegment);
+        this.startRecording(this.stateMachine.recordingId, this.stateMachine.recordingTitle, this.stateMachine.recordingDuration, this.stateMachine.recordingInputSource, this.stateMachine.recordingChannel, this.stateMachine.recordingBitRate, this.stateMachine.recordingSegment);
         return "HANDLED";
     }
     else if (event["EventType"] == "EXIT_SIGNAL") {
@@ -425,24 +543,25 @@ recordingEngineStateMachine.prototype.STRecordingEventHandler = function (event,
     else if (event["EventType"] == "ADD_RECORD") {
         return this.handleAddRecord(event, stateData, false);
     }
+    else if (event["EventType"] == "UPDATE_SCHEDULED_RECORDING") {
+        return this.handleUpdateRecord(event, stateData, false);
+    }
+    else if (event["EventType"] == "ADD_SERIES") {
+        return this.handleAddSeries(event, stateData, false);
+    }
 
     stateData.nextState = this.superState;
     return "SUPER";
 }
 
 
-// TODO - save this in case user wants to cancel a recording?
-
-// duration passed in as minutes here where msec are expected?
-recordingEngineStateMachine.prototype.startRecordingTimer = function (millisecondsUntilRecording, title, duration, inputSource, channel, recordingBitRate, segmentRecording, showType) {
+recordingEngineStateMachine.prototype.startRecordingTimer = function (millisecondsUntilRecording, recordingId, title, durationInMilliseconds, inputSource, channel, recordingBitRate, segmentRecording) {// duration passed in as minutes here where msec are expected?
     consoleLog("startRecordingTimer - start timer: millisecondsUntilRecording=" + millisecondsUntilRecording);
     var self = this;
     // when timeout occurs, setup variables and send message indicating a transition to recording state
 
     console.log("startTimer at: ");
     printNow();
-
-    var durationInMilliseconds = minutesToMsec(duration);
 
     this.timerVar = setTimeout(function () {
 
@@ -453,13 +572,13 @@ recordingEngineStateMachine.prototype.startRecordingTimer = function (millisecon
         console.log("startRecordingTimer timeout at: ");
         printNow();
 
+        self.recordingId = recordingId;
         self.recordingTitle = title;
         self.recordingDuration = durationInMilliseconds;
         self.recordingInputSource = inputSource;
         self.recordingChannel = channel;
         self.recordingBitRate = recordingBitRate;
         self.recordingSegment = segmentRecording;
-        self.recordingShowType = showType;
 
         var event = {};
         event["EventType"] = "TRANSITION_TO_RECORDING";
@@ -468,56 +587,86 @@ recordingEngineStateMachine.prototype.startRecordingTimer = function (millisecon
 }
 
 
-recordingEngineStateMachine.prototype.startRecording = function (title, durationInMilliseconds, inputSource, channel, recordingBitRate, segmentRecording, showType) {
+recordingEngineStateMachine.prototype.startRecording = function (recordingId, title, durationInMilliseconds, inputSource, channel, recordingBitRate, segmentRecording) {
 
-    consoleLog("startRecording: title=" + title + ", durationInMilliseconds=" + durationInMilliseconds + ", inputSource=" + inputSource + ",channel=" + channel + ",recordingBitRate=" + recordingBitRate + ",segmentRecording=" + segmentRecording + ",showType=" + showType);
+    consoleLog("startRecording: title=" + title + ", durationInMilliseconds=" + durationInMilliseconds + ", inputSource=" + inputSource + ",channel=" + channel + ",recordingBitRate=" + recordingBitRate + ",segmentRecording=" + segmentRecording);
 
     setUserHDMIInput(inputSource);
 
     if (inputSource != "tuner") {
         consoleLog("Not tuner: Title = " + title + ", durationInMilliseconds = " + durationInMilliseconds + ", inputSource = " + inputSource + ", channel = " + channel);
-        this.executeStartRecording(title, durationInMilliseconds, recordingBitRate, segmentRecording, showType);
+        this.executeStartRecording(recordingId, title, durationInMilliseconds, recordingBitRate, segmentRecording);
     }
     else {
         // try to relieve issues with IR out interference by waiting two seconds.
         var self = this;
         setTimeout(function () {
             tuneChannel(channel, false);
-            self.executeStartRecording(title, durationInMilliseconds, recordingBitRate, segmentRecording, showType);
+            self.executeStartRecording(recordingId, title, durationInMilliseconds, recordingBitRate, segmentRecording);
         }, 2000);
     }
 }
 
-recordingEngineStateMachine.prototype.executeStartRecording = function (title, durationInMilliseconds, recordingBitRate, segmentRecording, showType) {
+recordingEngineStateMachine.prototype.executeStartRecording = function (recordingId, title, durationInMilliseconds, recordingBitRate, segmentRecording) {
 
     // subtract 4 seconds from duration
     durationInMilliseconds -= 4000;
 
-    bsMessage.PostBSMessage({ command: "recordNow", "title": title, "duration": durationInMilliseconds, "recordingBitRate": recordingBitRate, "segmentRecording": segmentRecording, "showType": showType });
-    this.addRecordingEndTimer(durationInMilliseconds, title, new Date(), durationInMilliseconds);
+    bsMessage.PostBSMessage({ command: "recordNow", "title": title, "duration": durationInMilliseconds, "recordingBitRate": recordingBitRate, "segmentRecording": segmentRecording });
+    this.stateMachine.recordingStartTime = new Date();
+    consoleLog("------------------------------ executeStartRecording: recordingId=" + recordingId.toString());
+
+    // extendomatic todo
+    // durationInMilliseconds should be actual duration here (adjusted by startTimeOffset, stopTimeOffset)
+    // however, recordingStartTime is not the actual startTime
+    // no, I think it is - notice how this.stateMachine.recordingStartTime is set a few lines above and is 'now'
+    this.addRecordingEndTimer(recordingId, durationInMilliseconds, title, this.stateMachine.recordingStartTime);
     displayUserMessage("Recording started: " + title);
 }
 
 
 // TODO - save this in case user wants to stop a recording?
-var endOfRecordingTimer;
-recordingEngineStateMachine.prototype.addRecordingEndTimer = function (durationInMilliseconds, title, dateTime, duration) {
+recordingEngineStateMachine.prototype.addRecordingEndTimer = function (recordingId, durationInMilliseconds, title, dateTime) {
     consoleLog("addRecordingEndTimer - start timer: durationInMilliseconds=" + durationInMilliseconds);
     var self = this;
-    endOfRecordingTimer = setTimeout(function () {
-        consoleLog("addRecordingEndTimer - endOfRecordingTimer triggered");
-        console.log("endOfRecordingTimer triggered at: ");
+    this.stateMachine.endOfRecordingTimer = setTimeout(function () {
+
+        self.stateMachine.endOfRecordingTimer = null;
+
+        consoleLog("addRecordingEndTimer - endOfRecordingTimer triggered at:");
         printNow();
 
-        self.endRecording(title, dateTime, duration);
+        self.endRecording(title, dateTime, durationInMilliseconds);
+        self.deleteScheduledRecording(recordingId, "");
+
     }, durationInMilliseconds);
 }
 
 
+recordingEngineStateMachine.prototype.stopRecording = function () {
+
+    if (this.endOfRecordingTimer != null) {
+        clearTimeout(this.endOfRecordingTimer);
+        this.endOfRecordingTimer = null;
+    }
+
+    consoleLog("stopRecording at: ");
+    printNow();
+
+    var currentTime = new Date();
+    // extendomatic todo - recordingStartTime may not be the actual start time; therefore, durationInMilliseconds might not be the actual duration
+    // what is this.recordingStartTime - where was it set?
+    // executeStartRecording?? - perhaps it is okay?
+
+    var durationInMilliseconds = currentTime - this.recordingStartTime;
+    this.endRecording(this.recordingTitle, this.recordingStartTime, durationInMilliseconds);
+    this.deleteScheduledRecording(this.recordingId, "Single");
+}
+
 recordingEngineStateMachine.prototype.endRecording = function (title, dateTime, duration) {
     consoleLog("endRecording: title = " + title + ", dateTime = " + dateTime + ", duration = " + duration);
 
-    bsMessage.PostBSMessage({ command: "endRecording", startSegmentation: true });
+    bsMessage.PostBSMessage({ command: "endRecording", duration: duration, startSegmentation: true });
 
     var event = {};
     event["EventType"] = "TRANSITION_TO_IDLE";
@@ -526,32 +675,24 @@ recordingEngineStateMachine.prototype.endRecording = function (title, dateTime, 
 
 
 // is this or will it ever be used?
-//recordingEngineStateMachine.prototype.deleteScheduledRecording = function (scheduledRecordingId, showType) {
-//
-//    var aUrl;
-//
-//    if (showType == "Series") {
-//        aUrl = baseURL + "deleteScheduledSeriesRecording";
-//    }
-//    else {
-//        aUrl = baseURL + "deleteScheduledRecording";
-//    }
-//
-//    var recordingId = { "scheduledRecordingId": scheduledRecordingId };
-//
-//    $.get(aUrl, recordingId)
-//        .done(function (result) {
-//            consoleLog("deleteScheduledRecording successfully sent");
-//        })
-//        .fail(function (jqXHR, textStatus, errorThrown) {
-//            debugger;
-//            consoleLog("deleteScheduledRecording failure");
-//        })
-//        .always(function () {
-//            //alert("recording transmission finished");
-//        });
-//}
-//
+recordingEngineStateMachine.prototype.deleteScheduledRecording = function (scheduledRecordingId) {
+
+    var aUrl = baseURL + "deleteScheduledRecording";
+    var recordingId = { "scheduledRecordingId": scheduledRecordingId };
+
+    $.get(aUrl, recordingId)
+        .done(function (result) {
+            consoleLog("deleteScheduledRecording successfully sent");
+        })
+        .fail(function (jqXHR, textStatus, errorThrown) {
+            debugger;
+            consoleLog("deleteScheduledRecording failure");
+        })
+        .always(function () {
+            //alert("recording transmission finished");
+        });
+}
+
 
 function printNow() {
     var currentdate = new Date();
@@ -565,160 +706,4 @@ function printNow() {
     console.log("current dateTime is " + datetime);
 }
 
-
-//recordingEngineStateMachine.prototype.buildToDoList = function (nextFunction, idle) {
-//
-//    var self = this;
-//
-//    // build initial toDoList
-//    // get scheduled recordings from db
-//    // for each scheduled recording that is a series, query the epg db to find all programs that have the
-//    //      same series name and channel
-//
-//    this.toDoList = [];
-//
-//    // save all promises so that their completion can be tracked
-//    var promises = [];
-//
-//    // get scheduled recordings from db
-//
-//    // single recordings
-//    var p1 = new Promise(function(resolve, reject) {
-//
-//        var aUrl = baseURL + "getScheduledRecordings";
-//
-//        var currentDateTimeIso = new Date().toISOString();
-//        var currentDateTime = { "currentDateTime": currentDateTimeIso };
-//
-//        $.get(
-//            aUrl,
-//            currentDateTime
-//        ).then(function (result) {
-//                $.each(result.scheduledrecordings, function (index, scheduledRecording) {
-//                    // convert from string object (as stored by db) back into Date object
-//                    scheduledRecording.DateTime = new Date(scheduledRecording.DateTime);
-//                    self.toDoList.push(scheduledRecording);
-//                });
-//                resolve();
-//            }, function () {
-//                reject();
-//            });
-//    });
-//
-//    p1.then(function() {
-//        console.log("p1 resolved");
-//    }, function() {
-//        console.log("p1 error");
-//    });
-//
-//    promises.push(p1);
-//
-//    var p2 = new Promise(function(resolve, reject) {
-//
-//        var aUrl = baseURL + "getScheduledSeriesRecordings";
-//
-//        $.get(
-//            aUrl
-//        ).then(function (result) {
-//                resolve(result.scheduledrecordings);
-//            });
-//    });
-//
-//    p2.then(function(scheduledRecordings) {
-//
-//        console.log("p2 resolved");
-//
-//        var epgStartDate = Date.now().toISOString();
-//
-//        $.each(scheduledRecordings, function (index, scheduledRecording) {
-//
-//            promises.push(new Promise(function(resolve, reject) {
-//
-//                // get matching programs from epg data
-//                var atsc = scheduledRecording.Channel.split("-");
-//                var getEpgMatchingProgramsData = {
-//                    "startDate": epgStartDate,
-//                    "title": scheduledRecording.Title,
-//                    "atscMajor": atsc[0],
-//                    "atscMinor": atsc[1]
-//                };
-//
-//                var url = baseURL + "getEpgMatchingPrograms";
-//                $.get(
-//                    url,
-//                    getEpgMatchingProgramsData
-//                ).then(function(result) {
-//                        consoleLog("XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX getEpgMatchingPrograms success ************************************");
-//
-//                        // add each matching program to toDoList
-//                        $.each(result, function (index, sdProgram) {
-//
-//                            // make a copy of scheduledRecording to get a unique object
-//                            scheduledEpisode = {};
-//                            scheduledEpisode.Channel = scheduledRecording.Channel;
-//                            scheduledEpisode.DateTime = new Date(sdProgram.AirDateTime);
-//                            scheduledEpisode.EndDateTime = new Date(sdProgram.EndDateTime);
-//                            scheduledEpisode.Duration = sdProgram.Duration;
-//                            scheduledEpisode.InputSource = scheduledRecording.InputSource;
-//                            scheduledEpisode.RecordingBitRate = scheduledRecording.RecordingBitRate;
-//                            scheduledEpisode.SegmentRecording = scheduledRecording.SegmentRecording;
-//                            scheduledEpisode.ShowType = scheduledRecording.ShowType;
-//                            scheduledEpisode.Title = scheduledRecording.Title;
-//                            self.toDoList.push(scheduledEpisode);
-//
-//                            self.toDoList.sort(function (a, b) {
-//                                var aStr = a.DateTime.toISOString();
-//                                var bStr = b.DateTime.toISOString();
-//                                if (aStr > bStr) {
-//                                    return 1;
-//                                }
-//                                else if (aStr < bStr) {
-//                                    return -1;
-//                                }
-//                                else {
-//                                    return 0;
-//                                }
-//                            });
-//                        });
-//
-//                        resolve();
-//                    }, function () {
-//                        reject();
-//                    });
-//            }));
-//
-//            promises[index].then(function() {
-//                console.log("resolved");
-//            }, function() {
-//                console.log("error");
-//            });
-//        });
-//
-//        Promise.all(promises).then(function() {
-//            console.log("all promises completed");
-//
-//            // send updated toDoList to server
-//            var url = baseURL + "setToDoList";
-//            var toDoListData = {
-//                "toDoList": JSON.stringify(self.toDoList)
-//            };
-//            $.get(
-//                url,
-//                toDoListData
-//            ).done(function(result) {
-//                    consoleLog("XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX setToDoList success ************************************");
-//                }, function () {
-//                    //reject();
-//                });
-//
-//            if (nextFunction != null) {
-//                nextFunction.call(self, idle);
-//            }
-//        });
-//
-//    }, function() {
-//        console.log("error");
-//    });
-//}
-//
 

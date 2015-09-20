@@ -82,13 +82,19 @@ Function newJTR(msgPort As Object) As Object
 	JTR.ExecuteDBInsert					= ExecuteDBInsert
 	JTR.ExecuteDBSelect					= ExecuteDBSelect
 	JTR.AddDBScheduledRecording			= AddDBScheduledRecording
+	JTR.UpdateDBScheduledRecording		= UpdateDBScheduledRecording
 	JTR.AddDBScheduledSeriesRecording	= AddDBScheduledSeriesRecording
 	JTR.GetDBLastScheduledRecordingRowId= GetDBLastScheduledRecordingRowId
 	JTR.GetDBLastScheduledRecordingId	= GetDBLastScheduledRecordingId
 	JTR.GetDBLastScheduledSeriesRecordingId = GetDBLastScheduledSeriesRecordingId
-	JTR.DeleteDBScheduledRecordingRow	= DeleteDBScheduledRecordingRow
+'	JTR.DeleteDBScheduledRecordingRow	= DeleteDBScheduledRecordingRow
 	JTR.DeleteDBScheduledRecording		= DeleteDBScheduledRecording
-	JTR.DeleteDBScheduledSeriesRecording= DeleteDBScheduledSeriesRecording
+'	JTR.DeleteDBScheduledSeriesRecording= DeleteDBScheduledSeriesRecording
+
+	JTR.DeleteDBFromTable				= DeleteDBFromTable
+	JTR.DeleteDBScheduledSeries			= DeleteDBScheduledSeries
+	JTR.DeleteDBScheduledProgramsInSeries	= DeleteDBScheduledProgramsInSeries
+
 	JTR.GetDBScheduledRecordings		= GetDBScheduledRecordings
 	JTR.GetDBScheduledSeriesRecordings	= GetDBScheduledSeriesRecordings
 	JTR.AddDBRecording					= AddDBRecording

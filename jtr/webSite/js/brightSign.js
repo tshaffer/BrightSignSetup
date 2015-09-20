@@ -109,12 +109,12 @@ function executeDeleteSelectedShow(recordingId) {
 }
 
 
-function executeDeleteScheduledRecording(scheduledRecordingId) {
-
-    consoleLog("executeDeleteScheduledRecording " + scheduledRecordingId);
-
-    bsMessage.PostBSMessage({ command: "deleteScheduledRecording", "scheduledRecordingId": scheduledRecordingId });
-}
+//function executeDeleteScheduledRecording(scheduledRecordingId) {
+//
+//    consoleLog("executeDeleteScheduledRecording " + scheduledRecordingId);
+//
+//    bsMessage.PostBSMessage({ command: "deleteScheduledRecording", "scheduledRecordingId": scheduledRecordingId });
+//}
 
 
 function initializeBrightSign() {
@@ -234,6 +234,11 @@ function initializeBrightSign() {
                 event["EventData"] = message.recordingId;
                 postMessage(event);
                 break;
+            case "stopRecording":
+                event["EventType"] = "STOP_RECORDING";
+                event["EventData"] = message.value;
+                postMessage(event);
+                break;
             case "deleteRecordedShow":
                 event["EventType"] = "DELETE_RECORDED_SHOW";
                 event["EventData"] = msg.data[name];
@@ -241,7 +246,14 @@ function initializeBrightSign() {
                 break;
             case "deleteScheduledRecording":
                 event["EventType"] = "DELETE_SCHEDULED_RECORDING";
-                event["EventData"] = msg.data.scheduledRecordingId;
+                //event["EventData"] = message.scheduledRecordingId;
+                postMessage(event);
+                break;
+            case "updateScheduledRecording":
+                event["EventType"] = "UPDATE_SCHEDULED_RECORDING";
+                event["Id"] = message.id;
+                event["StartTimeOffset"] = message.startTimeOffset;
+                event["StopTimeOffset"] = message.stopTimeOffset;
                 postMessage(event);
                 break;
             case "addRecord":
@@ -249,12 +261,23 @@ function initializeBrightSign() {
                 event["DateTime"] = message.dateTime;
                 event["Title"] = message.title;
                 event["Duration"] = message.duration;
-                event["ShowType"] = message.showType;
                 event["InputSource"] = message.inputSource;
                 event["Channel"] = message.channel;
                 event["RecordingBitRate"] = message.recordingBitRate;
                 event["SegmentRecording"] = message.segmentRecording;
-                event["RecordingType"] = message.recordingType;
+                event["ScheduledSeriesRecordingId"] = message.scheduledSeriesRecordingId;
+                event["StartTimeOffset"] = message.startTimeOffset;
+                event["StopTimeOffset"] = message.stopTimeOffset;
+                postMessage(event);
+                break;
+            case "addSeries":
+                event["EventType"] = "ADD_SERIES";
+                event["Title"] = message.title;
+                event["InputSource"] = message.inputSource;
+                event["Channel"] = message.channel;
+                event["RecordingBitRate"] = message.recordingBitRate;
+                event["SegmentRecording"] = message.segmentRecording;
+                event["ScheduledSeriesRecordingId"] = message.scheduledSeriesRecordingId;
                 postMessage(event);
                 break;
             case "recordNow":
@@ -265,7 +288,7 @@ function initializeBrightSign() {
                 event["Channel"] = message.channel;
                 event["RecordingBitRate"] = message.recordingBitRate;
                 event["SegmentRecording"] = message.segmentRecording;
-                event["ShowType"] = message.showType;
+                event["ScheduledSeriesRecordingId"] = -1;
                 postMessage(event);
                 break;
             case "manualRecord":
@@ -277,7 +300,9 @@ function initializeBrightSign() {
                 event["Channel"] = message.channel;
                 event["RecordingBitRate"] = message.recordingBitRate;
                 event["SegmentRecording"] = message.segmentRecording;
-                event["ShowType"] = message.showType;
+                event["ScheduledSeriesRecordingId"] = -1;
+                event["StartTimeOffset"] = 0;
+                event["StopTimeOffset"] = 0;
                 postMessage(event);
                 break;
             case "tuneLiveVideoChannel":

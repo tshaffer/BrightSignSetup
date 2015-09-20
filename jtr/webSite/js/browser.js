@@ -70,12 +70,12 @@ function executeRecordNow() {
     var duration = $("#recordNowDuration").val();
     var inputSource = $("input:radio[name=recordNowInputSource]:checked").val();
     var channel = $("#recordNowChannel").val();
-    var showType = "";
+    var scheduledSeriesRecordingId = -1;
 
     var title = getRecordingTitle("#recordNowTitle", currentDate, inputSource, channel);
 
     var aUrl = baseURL + "browserCommand";
-    var commandData = { "command": "recordNow", "duration": duration, "title": title, "channel": channel, "inputSource": inputSource, "recordingBitRate": _settings.recordingBitRate, "segmentRecording": _settings.segmentRecordings, "showType": showType };
+    var commandData = { "command": "recordNow", "duration": duration, "title": title, "channel": channel, "inputSource": inputSource, "recordingBitRate": _settings.recordingBitRate, "segmentRecording": _settings.segmentRecordings, "scheduledSeriesRecordingId": scheduledSeriesRecordingId };
     console.log(commandData);
 
     $.get(aUrl, commandData)
@@ -117,7 +117,7 @@ function executeCreateManualRecording() {
     var duration = $("#manualRecordDuration").val();
     var inputSource = $("input:radio[name=manualRecordInputSource]:checked").val();
     var channel = $("#manualRecordChannel").val();
-    var showType = "";
+    var scheduledSeriesRecordingId = -1;
 
     // check to see if recording is in the past
     var dtEndOfRecording = addMinutes(dateObj, duration);
@@ -131,7 +131,8 @@ function executeCreateManualRecording() {
 
     var title = getRecordingTitle("#manualRecordTitle", dateObj, inputSource, channel);
     var aUrl = baseURL + "browserCommand";
-    var commandData = { "command": "manualRecord", "dateTime": compatibleDateTimeStr, "duration": duration, "title": title, "channel": channel, "inputSource": inputSource, "recordingBitRate": _settings.recordingBitRate, "segmentRecording": _settings.segmentRecordings, "showType": showType };
+    var commandData = { "command": "manualRecord", "dateTime": compatibleDateTimeStr, "duration": duration, "title": title, "channel": channel, "inputSource": inputSource, "recordingBitRate": _settings.recordingBitRate, "segmentRecording": _settings.segmentRecordings, "scheduledSeriesRecordingId": scheduledSeriesRecordingId,
+        "startTimeOffset": 0, "stopTimeOffset": 0 };
     console.log(commandData);
 
     $.get(aUrl, commandData)
@@ -194,17 +195,48 @@ function deleteSelectedShow(event) {
         });
 }
 
-function deleteScheduledRecording(event) {
+function stopActiveRecording(event) {
 
     var scheduledRecordingId = event.data.scheduledRecordingId;
 
-    var aUrl = baseURL + "deleteScheduledRecording";
+    var aUrl = baseURL + "stopRecording";
     var params = { "scheduledRecordingId": scheduledRecordingId };
 
     $.get(aUrl, params)
         .done(function (result) {
-            console.log("deleteScheduledRecording successfully sent");
+            console.log("stopRecording successful");
             getToDoList();
+        })
+        .fail(function (jqXHR, textStatus, errorThrown) {
+            debugger;
+            console.log("stopRecording failure");
+        })
+        .always(function () {
+            //alert("recording transmission finished");
+        });
+
+}
+
+
+function deleteScheduledRecordingHandler(event) {
+    var scheduledRecordingId = event.data.scheduledRecordingId;
+    deleteScheduledRecording(scheduledRecordingId, getToDoList);
+}
+
+
+function deleteScheduledRecording(scheduledRecordingId, nextFunction) {
+
+    var aUrl = baseURL + "deleteScheduledRecording";
+    var commandData = { "scheduledRecordingId": scheduledRecordingId };
+    console.log(commandData);
+
+    $.get(aUrl, commandData)
+        .done(function (result) {
+            console.log("deleteScheduledRecording success");
+            if (nextFunction != null) {
+                nextFunction();
+            }
+            //getToDoList();
         })
         .fail(function (jqXHR, textStatus, errorThrown) {
             debugger;
@@ -213,6 +245,30 @@ function deleteScheduledRecording(event) {
         .always(function () {
             //alert("recording transmission finished");
         });
+
+}
+
+function deleteScheduledSeries(scheduledSeriesRecordingId, nextFunction) {
+
+    var aUrl = baseURL + "deleteScheduledSeries";
+    var commandData = { "scheduledSeriesRecordingId": scheduledSeriesRecordingId };
+    console.log(commandData);
+
+    $.get(aUrl, commandData)
+        .done(function (result) {
+            console.log("deleteScheduledSeries success");
+            if (nextFunction != null) {
+                nextFunction();
+            }
+        })
+        .fail(function (jqXHR, textStatus, errorThrown) {
+            debugger;
+            console.log("deleteScheduledSeries failure");
+        })
+        .always(function () {
+            //alert("recording transmission finished");
+        });
+
 }
 
 function playSelectedShowFromBeginning(event) {

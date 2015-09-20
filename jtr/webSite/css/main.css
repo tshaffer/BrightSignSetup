@@ -3,6 +3,19 @@ th.dayOfWeek, th.date, th.time, th.channel, th.stationName, th.title {
     font-size: 16px;
 }
 
+.cgOptionsSpan {
+    width:150px;
+    text-align:center;
+    display:inline-block;
+}
+
+.modalLeftArrow {
+    margin-left: 70px;
+}
+
+.modalRightArrow {
+}
+
 .modalButton {
     font-size: 20px;
 }
