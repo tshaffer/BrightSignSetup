@@ -1,0 +1,49 @@
+div.wrapper { padding-left: 40px; padding-right: 40px; }
+
+div.pageHeader h1 { float: left; margin-bottom: 5px; }
+div.pageHeader h1.margin { margin-bottom: 20px; }
+div.pageHeader a { display: block; float: left; margin-top: 39px; margin-left: 40px; }
+div.pageHeader a.SmallLeftMargin { margin-left: 6px; }
+div.pageHeader div.controlBox { float: left; margin-top: 43px; margin-left: 40px; font-size: 12px; color: #321D54; }
+div.pageHeader div.controlBox input { width: 130px; }
+div.pageHeader div.searchBox span#toolTip { font-size: 11px; color: #979797; display: none; position: absolute; background-color: #fff; border: 1px solid #979797; padding: 2px 5px; margin-top: 1px; margin-left: 0px; z-index: 1;  }
+div.pageHeader div.ViewModeBox { float: right; margin-top: 55px; }
+div.pageHeader div.ViewModeBox div.libraryViewModeBox { margin-right: 0px; }
+
+
+/* ======================================== Device Setup Page ===================================== */
+
+.advancedNetworkSetupTabContent { height: 425px; }
+.advancedNetworkSetupTabContent table td { vertical-align: top; }
+
+div.deviceSetupPanelsBox input,
+div.deviceSetupPanelsBox select { margin-bottom: 3px; }
+div.deviceSetupPanelsBox div.panelBox { float: left; }
+div.deviceSetupPanelsBox div.panel { margin: 0 12px 12px 0; border: 1px solid #e5e5e5; -webkit-border-radius: 7px; -moz-border-radius: 7px; border-radius: 7px; }
+div.deviceSetupPanelsBox div.x4 { width: 357px; height: 100%; min-height: 150px; padding: 5px; }
+div.deviceSetupPanelsBox div.saveAdvancedNetworkSettingsBox { position:absolute; bottom: 45px; right: 10px; }
+
+div.deviceSetupPanelsBox div.panelContent { padding: 15px 15px 5px 10px; font-size: 12px; }
+div.deviceSetupPanelsBox div.panelContent h4 { margin: 0 0 12px 0; }
+
+div.deviceSetupPanelsBox div.nameSpecification { min-height: 170px; }
+div.deviceSetupPanelsBox div.networkProperties { min-height: 360px; }
+div.deviceSetupPanelsBox div.unitConfigurationBox { min-height: 534px; }
+div.deviceSetupPanelsBox div.firmwaresBox { min-height: 167px; }
+div.deviceSetupPanelsBox div.remoteSnapshotBox { min-height: 80px; }
+
+div.deviceSetupPanelsBox div.panel div.panelCaption { margin: 15px 0 7px 0; white-space: nowrap; }
+div.deviceSetupPanelsBox div.panel div.sectionCaption { margin: 15px 0 7px 0; white-space: nowrap; font-weight: bold; }
+div.deviceSetupPanelsBox div.panel table td.limit { text-align:right; }
+div.deviceSetupPanelsBox div.panel table td.border { border-left: 1px dotted #979797; padding: 3px; }
+div.deviceSetupPanelsBox div.panel table.level1 { margin-top: 7px; margin-bottom: 7px; white-space: nowrap; }
+div.deviceSetupPanelsBox div.panel table.level2 { margin: 7px 0 7px 23px; white-space: nowrap; }
+div.deviceSetupPanelsBox div.panel table.level3 { margin: 7px 0 7px 47px; white-space: nowrap; }
+
+div.panelContent table { border-spacing: initial; }
+div.panelContent table.firmwareUpdate select { width: 130px; }
+div.panelContent div.smallDescription { color:Gray; font-size:smaller; }
+div.panelContent input.buttonDownloadFirmware { margin-left: 160px; margin-top: 10px; }
+
+div.buttonBoxCreateSetupFiles { clear: left; }
+
