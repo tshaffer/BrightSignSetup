@@ -20,145 +20,154 @@
                         <tr>
                             <td>Name:</td>
                             <td>
-                                <textarea ID="TextBoxUnitName"></textarea>
+                                <input type="text" name="txtBoxUnitName" value=""><br>
                             </td>
                         </tr>
                         <tr>
                             <td>Description:</td>
                             <td>
-                                <textarea ID="TextBoxUnitDescription"></textarea>
+                                <input type="text" name="txtBoxUnitDescription" value=""><br>
                             </td>
                         </tr>
                         <tr>
                             <td>Customization:</td>
                             <td>
-                                <input type='radio' name='useNameOnly' value='1' checked>Use Name Only
+                                <input type='radio' name='customization' value='useNameOnly' checked>Use Name Only
                             </td>
                         </tr>
                         <tr>
                             <td></td>
                             <td>
-                                <input type='radio' name='useNameOnly' value='0'>Append Unit ID
+                                <input type='radio' name='customization' value='appendUnitID'>Append Unit ID
                             </td>
                         </tr>
                     </table>
                 </div>
             </div>
 
-            <!--<div class="panel x4 networkProperties">-->
-                <!--<div class="panelContent">-->
-                    <!--<h4>Network Properties</h4>-->
-                    <!--<asp:CheckBox runat="server" ID="CheckBoxEnableWireless" Text="Enable Wireless" />-->
-                    <!--<table class="level2">-->
-                        <!--<tr>-->
-                            <!--<td>SSID:</td>-->
-                            <!--<td><asp:TextBox runat="server" ID="TextBoxSSID" CssClass="SSID" /></td>-->
-                        <!--</tr>-->
-                        <!--<tr>-->
-                            <!--<td>Security Key:</td>-->
-                            <!--<td><asp:TextBox runat="server" ID="TextBoxSecurityKey" TextMode="Password" /></td>-->
-                        <!--</tr>-->
-                    <!--</table>-->
+            <div class="panel x4 networkProperties">
+                <div class="panelContent">
+                    <h4>Network Properties</h4>
+                    <input type="checkbox" id="checkBoxEnableWireless">Enable Wireless
+                    <table class="level2">
+                        <tr>
+                            <td>SSID:</td>
+                            <td>
+                                <input type="text" name="txtBoxSSID" value=""><br>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>Security Key:</td>
+                            <td>
+                                <input type="text" name="txtBoxSecurityKey" value=""><br>
+                            </td>
+                        </tr>
+                    </table>
 
-                    <!--<div class="panelCaption">Network Connection Priority:</div>-->
-                    <!--<table class="level2">-->
-                        <!--<tr>-->
-                            <!--<td><asp:RadioButton runat="server" ID="RadioButtonWired" Checked="true" Text="Wired" GroupName="NetworkConnectionPriorityGroup" /></td>-->
-                        <!--</tr>-->
-                        <!--<tr>-->
-                            <!--<td><asp:RadioButton runat="server" ID="RadioButtonWireless" Text="Wireless" GroupName="NetworkConnectionPriorityGroup" /></td>-->
-                        <!--</tr>-->
-                    <!--</table>-->
+                    <div class="panelCaption">Network Connection Priority:</div>
+                    <table class="level2">
+                        <tr>
+                            <td>
+                                <input type='radio' name='networkConnectionPriority' value='wired' checked>Wired
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <input type='radio' name='networkConnectionPriority' value='wireless'>Wireless
+                            </td>
+                        </tr>
+                    </table>
 
-                    <!--<div class="advancedNetworkSetupButtonBox">-->
+                    <div class="advancedNetworkSetupButtonBox">
+                        <button type="button">Advanced Network Setup</button>
                         <!--<asp:ImageButton runat="server" ID="ImageButtonAdvancedNetworkSetup"-->
                                          <!--ImageUrl="~/_images/button_adv_network_setup.png"-->
                                          <!--AlternateText="Advanced Network Setup" />-->
-                    <!--</div>-->
+                    </div>
 
-                    <!--<hexad:AdvancedNetworkSetupDialog runat="server" ID="AdvancedNetworkSetupDialog" ClientInstanceName="AdvancedNetworkSetupDialog" />-->
-
-                    <!--<table class="level1">-->
-                        <!--<tr>-->
-                            <!--<td>Time Zone:</td>-->
-                            <!--<td>-->
-                                <!--<asp:DropDownList runat="server" ID="DropDownListTimeZone" Width="250px">-->
-                                    <!--<asp:ListItem Value="EST">EST: US Eastern Time</asp:ListItem>-->
-                                    <!--<asp:ListItem Value="CST">CST: US Central Time</asp:ListItem>-->
-                                    <!--<asp:ListItem Value="MST">MST: US Mountain Time</asp:ListItem>-->
-                                    <!--<asp:ListItem Value="PST">PST: US Pacific Time</asp:ListItem>-->
-                                    <!--<asp:ListItem Value="GMTBST">GMTBST: London\Dublin Time</asp:ListItem>-->
-                                    <!--<asp:ListItem Value="WET">WET: Western European Time</asp:ListItem>-->
-                                    <!--<asp:ListItem Value="CET">CET: Central European Time</asp:ListItem>-->
-                                    <!--<asp:ListItem Value="EET">EET: Eastern European Time</asp:ListItem>-->
-                                    <!--<asp:ListItem Value="MSK">MSK: Moscow Time</asp:ListItem>-->
-                                    <!--<asp:ListItem Value="AWST">AWST: Australian Western Time</asp:ListItem>-->
-                                    <!--<asp:ListItem Value="AWST1">AWST1: Australian Western Time without Daylight Saving Time</asp:ListItem>-->
-                                    <!--<asp:ListItem Value="ACST">ACST: Australian Central Standard Time (CST) with Daylight Saving Time</asp:ListItem>-->
-                                    <!--<asp:ListItem Value="ACST1">ACST1: Darwin, Australia/Darwin, and Australian Central Standard Time (CST) without Daylight Saving Time</asp:ListItem>-->
-                                    <!--<asp:ListItem Value="AEST">AEST: Australian Eastern Time</asp:ListItem>-->
-                                    <!--<asp:ListItem Value="AEST1">AEST1: Australian Eastern Time without Daylight Saving Time(Brisbane)</asp:ListItem>-->
-                                    <!--<asp:ListItem Value="NFT">NFT: Norfolk(Island) Time(Australia)</asp:ListItem>-->
-                                    <!--<asp:ListItem Value="NZST">NZST: New Zealand Time(Auckland)</asp:ListItem>-->
-                                    <!--<asp:ListItem Value="GMT">GMT: Greenwich Mean Time</asp:ListItem>-->
-                                    <!--<asp:ListItem Value="AKST">AKST: Alaska Time</asp:ListItem>-->
-                                    <!--<asp:ListItem Value="HST">HST: Hawaii Time with no Daylight Saving</asp:ListItem>-->
-                                    <!--<asp:ListItem Value="HST1">HST1: Hawaii - Aleutian Time with Daylight Saving</asp:ListItem>-->
-                                    <!--<asp:ListItem Value="MST1">MST1: US MT without Daylight Saving Time(Arizona)</asp:ListItem>-->
-                                    <!--<asp:ListItem Value="EST1">EST1: US ET without Daylight Saving Time(East Indiana)</asp:ListItem>-->
-                                    <!--<asp:ListItem Value="AST">AST: Atlantic Time</asp:ListItem>-->
-                                    <!--<asp:ListItem Value="CSTS">CST2: Mexico(Mexico City)</asp:ListItem>-->
-                                    <!--<asp:ListItem Value="MST2">MST2: Mexico(Chihuahua)</asp:ListItem>-->
-                                    <!--<asp:ListItem Value="PST2">PST2: Mexico(Tijuana)</asp:ListItem>-->
-                                    <!--<asp:ListItem Value="BST">BRT: Brazil Time(Sao Paulo)</asp:ListItem>-->
-                                    <!--<asp:ListItem Value="NST">NST: Newfoundland Time</asp:ListItem>-->
-                                    <!--<asp:ListItem Value="AZOT">AZOT: Azores Time</asp:ListItem>-->
-                                    <!--<asp:ListItem Value="SAMT">SAMT: Delta Time Zone(Samara)</asp:ListItem>-->
-                                    <!--<asp:ListItem Value="YEKT">YEKT: Echo Time Zone(Yekaterinburg)</asp:ListItem>-->
-                                    <!--<asp:ListItem Value="IST">IST: Indian Standart Time</asp:ListItem>-->
-                                    <!--<asp:ListItem Value="NPT">NPT: Nepal Time</asp:ListItem>-->
-                                    <!--<asp:ListItem Value="OMST">OMST: Foxtrot Time Zome(Omsk)</asp:ListItem>-->
-                                    <!--<asp:ListItem Value="JST">JST: Japanese Standart Time</asp:ListItem>-->
-                                    <!--<asp:ListItem Value="CXT">CXT: Christmas Island Time(Australia)</asp:ListItem>-->
-                                    <!--<asp:ListItem Value="GMT-1">GMT-1: 1 hour ahead of Greenwich Mean Time</asp:ListItem>-->
-                                    <!--<asp:ListItem Value="GMT-2">GMT-2: 2 hours ahead of Greenwich Mean Time</asp:ListItem>-->
-                                    <!--<asp:ListItem Value="GMT-3">GMT-3: 3 hours ahead of Greenwich Mean Time</asp:ListItem>-->
-                                    <!--<asp:ListItem Value="GMT-4">GMT-4: 4 hours ahead of Greenwich Mean Time</asp:ListItem>-->
-                                    <!--<asp:ListItem Value="GMT-5">GMT-5: 5 hours ahead of Greenwich Mean Time</asp:ListItem>-->
-                                    <!--<asp:ListItem Value="GMT-6">GMT-6: 6 hours ahead of Greenwich Mean Time</asp:ListItem>-->
-                                    <!--<asp:ListItem Value="GMT-7">GMT-7: 7 hours ahead of Greenwich Mean Time</asp:ListItem>-->
-                                    <!--<asp:ListItem Value="GMT-8">GMT-8: 8 hours ahead of Greenwich Mean Time</asp:ListItem>-->
-                                    <!--<asp:ListItem Value="GMT-9">GMT-9: 9 hours ahead of Greenwich Mean Time</asp:ListItem>-->
-                                    <!--<asp:ListItem Value="GMT-10">GMT-10: 10 hours ahead of Greenwich Mean Time</asp:ListItem>-->
-                                    <!--<asp:ListItem Value="GMT-11">GMT-11: 11 hours ahead of Greenwich Mean Time</asp:ListItem>-->
-                                    <!--<asp:ListItem Value="GMT-12">GMT-12: 12 hours ahead of Greenwich Mean Time</asp:ListItem>-->
-                                    <!--<asp:ListItem Value="GMT-13">GMT-13: 13 hours ahead of Greenwich Mean Time</asp:ListItem>-->
-                                    <!--<asp:ListItem Value="GMT-14">GMT-14: 14 hours ahead of Greenwich Mean Time</asp:ListItem>-->
-                                    <!--<asp:ListItem Value="GMT+1">GMT+1: 1 hour ahead of Greenwich Mean Time</asp:ListItem>-->
-                                    <!--<asp:ListItem Value="GMT+2">GMT+2: 2 hours ahead of Greenwich Mean Time</asp:ListItem>-->
-                                    <!--<asp:ListItem Value="GMT+3">GMT+3: 3 hours ahead of Greenwich Mean Time</asp:ListItem>-->
-                                    <!--<asp:ListItem Value="GMT+4">GMT+4: 4 hours ahead of Greenwich Mean Time</asp:ListItem>-->
-                                    <!--<asp:ListItem Value="GMT+5">GMT+5: 5 hours ahead of Greenwich Mean Time</asp:ListItem>-->
-                                    <!--<asp:ListItem Value="GMT+6">GMT+6: 6 hours ahead of Greenwich Mean Time</asp:ListItem>-->
-                                    <!--<asp:ListItem Value="GMT+7">GMT+7: 7 hours ahead of Greenwich Mean Time</asp:ListItem>-->
-                                    <!--<asp:ListItem Value="GMT+8">GMT+8: 8 hours ahead of Greenwich Mean Time</asp:ListItem>-->
-                                    <!--<asp:ListItem Value="GMT+9">GMT+9: 9 hours ahead of Greenwich Mean Time</asp:ListItem>-->
-                                    <!--<asp:ListItem Value="GMT+9:30">GMT+9:30: 9.5 hours ahead of Greenwich Mean Time</asp:ListItem>-->
-                                    <!--<asp:ListItem Value="GMT+10">GMT+10: 10 hours ahead of Greenwich Mean Time</asp:ListItem>-->
-                                    <!--<asp:ListItem Value="GMT+11">GMT+11: 11 hours ahead of Greenwich Mean Time</asp:ListItem>-->
-                                    <!--<asp:ListItem Value="GMT+12">GMT+12: 12 hours ahead of Greenwich Mean Time</asp:ListItem>-->
-                                    <!--<asp:ListItem Value="GMT+13">GMT+13: 13 hours ahead of Greenwich Mean Time</asp:ListItem>-->
-                                    <!--<asp:ListItem Value="GMT+14">GMT+14: 14 hours ahead of Greenwich Mean Time</asp:ListItem>-->
-                                <!--</asp:DropDownList>-->
-                            <!--</td>-->
-                        <!--</tr>-->
-                        <!--<tr>-->
-                            <!--<td>Time Server:</td>-->
-                            <!--<td><asp:TextBox runat="server" ID="TextBoxTimeServer" Text="http://time.brightsignnetwork.com" Width="245px" /></td>-->
-                        <!--</tr>-->
-                    <!--</table>-->
-                <!--</div>-->
-            <!--</div>-->
+                    <table class="level1">
+                        <tr>
+                            <td>Time Zone:</td>
+                            <td>
+                                <select width="250px">
+                                    <option value="EST">EST: US Eastern Time</option>
+                                    <option value="CST">CST: US Central Time</option>
+                                    <option value="MST">MST: US Mountain Time</option>
+                                    <option value="PST">PST: US Pacific Time</option>
+                                    <option value="GMTBST">GMTBST: London\Dublin Time</option>
+                                    <option value="WET">WET: Western European Time</option>
+                                    <option value="CET">CET: Central European Time</option>
+                                    <option value="EET">EET: Eastern European Time</option>
+                                    <option value="MSK">MSK: Moscow Time</option>
+                                    <option value="AWST">AWST: Australian Western Time</option>
+                                    <option value="AWST1">AWST1: Australian Western Time without Daylight Saving Time</option>
+                                    <option value="ACST">ACST: Australian Central Standard Time (CST) with Daylight Saving Time</option>
+                                    <option value="ACST1">ACST1: Darwin, Australia/Darwin, and Australian Central Standard Time (CST) without Daylight Saving Time</option>
+                                    <option value="AEST">AEST: Australian Eastern Time</option>
+                                    <option value="AEST1">AEST1: Australian Eastern Time without Daylight Saving Time(Brisbane)</option>
+                                    <option value="NFT">NFT: Norfolk(Island) Time(Australia)</option>
+                                    <option value="NZST">NZST: New Zealand Time(Auckland)</option>
+                                    <option value="GMT">GMT: Greenwich Mean Time</option>
+                                    <option value="AKST">AKST: Alaska Time</option>
+                                    <option value="HST">HST: Hawaii Time with no Daylight Saving</option>
+                                    <option value="HST1">HST1: Hawaii - Aleutian Time with Daylight Saving</option>
+                                    <option value="MST1">MST1: US MT without Daylight Saving Time(Arizona)</option>
+                                    <option value="EST1">EST1: US ET without Daylight Saving Time(East Indiana)</option>
+                                    <option value="AST">AST: Atlantic Time</option>
+                                    <option value="CSTS">CST2: Mexico(Mexico City)</option>
+                                    <option value="MST2">MST2: Mexico(Chihuahua)</option>
+                                    <option value="PST2">PST2: Mexico(Tijuana)</option>
+                                    <option value="BST">BRT: Brazil Time(Sao Paulo)</option>
+                                    <option value="NST">NST: Newfoundland Time</option>
+                                    <option value="AZOT">AZOT: Azores Time</option>
+                                    <option value="SAMT">SAMT: Delta Time Zone(Samara)</option>
+                                    <option value="YEKT">YEKT: Echo Time Zone(Yekaterinburg)</option>
+                                    <option value="IST">IST: Indian Standart Time</option>
+                                    <option value="NPT">NPT: Nepal Time</option>
+                                    <option value="OMST">OMST: Foxtrot Time Zome(Omsk)</option>
+                                    <option value="JST">JST: Japanese Standart Time</option>
+                                    <option value="CXT">CXT: Christmas Island Time(Australia)</option>
+                                    <option value="GMT-1">GMT-1: 1 hour ahead of Greenwich Mean Time</option>
+                                    <option value="GMT-2">GMT-2: 2 hours ahead of Greenwich Mean Time</option>
+                                    <option value="GMT-3">GMT-3: 3 hours ahead of Greenwich Mean Time</option>
+                                    <option value="GMT-4">GMT-4: 4 hours ahead of Greenwich Mean Time</option>
+                                    <option value="GMT-5">GMT-5: 5 hours ahead of Greenwich Mean Time</option>
+                                    <option value="GMT-6">GMT-6: 6 hours ahead of Greenwich Mean Time</option>
+                                    <option value="GMT-7">GMT-7: 7 hours ahead of Greenwich Mean Time</option>
+                                    <option value="GMT-8">GMT-8: 8 hours ahead of Greenwich Mean Time</option>
+                                    <option value="GMT-9">GMT-9: 9 hours ahead of Greenwich Mean Time</option>
+                                    <option value="GMT-10">GMT-10: 10 hours ahead of Greenwich Mean Time</option>
+                                    <option value="GMT-11">GMT-11: 11 hours ahead of Greenwich Mean Time</option>
+                                    <option value="GMT-12">GMT-12: 12 hours ahead of Greenwich Mean Time</option>
+                                    <option value="GMT-13">GMT-13: 13 hours ahead of Greenwich Mean Time</option>
+                                    <option value="GMT-14">GMT-14: 14 hours ahead of Greenwich Mean Time</option>
+                                    <option value="GMT+1">GMT+1: 1 hour ahead of Greenwich Mean Time</option>
+                                    <option value="GMT+2">GMT+2: 2 hours ahead of Greenwich Mean Time</option>
+                                    <option value="GMT+3">GMT+3: 3 hours ahead of Greenwich Mean Time</option>
+                                    <option value="GMT+4">GMT+4: 4 hours ahead of Greenwich Mean Time</option>
+                                    <option value="GMT+5">GMT+5: 5 hours ahead of Greenwich Mean Time</option>
+                                    <option value="GMT+6">GMT+6: 6 hours ahead of Greenwich Mean Time</option>
+                                    <option value="GMT+7">GMT+7: 7 hours ahead of Greenwich Mean Time</option>
+                                    <option value="GMT+8">GMT+8: 8 hours ahead of Greenwich Mean Time</option>
+                                    <option value="GMT+9">GMT+9: 9 hours ahead of Greenwich Mean Time</option>
+                                    <option value="GMT+9:30">GMT+9:30: 9.5 hours ahead of Greenwich Mean Time</option>
+                                    <option value="GMT+10">GMT+10: 10 hours ahead of Greenwich Mean Time</option>
+                                    <option value="GMT+11">GMT+11: 11 hours ahead of Greenwich Mean Time</option>
+                                    <option value="GMT+12">GMT+12: 12 hours ahead of Greenwich Mean Time</option>
+                                    <option value="GMT+13">GMT+13: 13 hours ahead of Greenwich Mean Time</option>
+                                    <option value="GMT+14">GMT+14: 14 hours ahead of Greenwich Mean Time</option>
+                                </select>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>Time Server:</td>
+                            <td>
+                                <input type="text" name="txtBoxTimeServer" value="http://time.brightsignnetwork.com" width="245px"><br>
+                            </td>
+                        </tr>
+                    </table>
+                </div>
+            </div>
         </div>
 
         <!--<div class="panelBox">-->
