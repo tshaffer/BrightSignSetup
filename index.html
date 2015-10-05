@@ -2,9 +2,17 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <link rel="stylesheet" type="text/css" href="css/styles.css">
-    <link rel="stylesheet" type="text/css" href="css/styles.min.css">
-    <title></title>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="">
+    <meta name="author" content="">
+
+    <title>BrightSign Setup</title>
+
+    <link rel="stylesheet" type="text/css" href="./css/styles.css">
+    <link rel="stylesheet" type="text/css" href="./css/styles.min.css">
+    <script src="./js/jquery-2.1.1.min.js"></script>
+    <script src="./js/brightSignSetup.js"></script>
 </head>
 
 <body>
@@ -266,143 +274,48 @@
                 </div>
             </div>
         </div>
-        <!--<div class="panelBox">-->
-            <!--<div class="panel x4">-->
-                <!--<div class="panelContent unitConfigurationBox">-->
 
-                    <!--<table class="level2">-->
-                        <!--<tr>-->
-                            <!--<td>-->
-                                <!--<asp:Label runat="server" Text="Update Health Frequency:" Width="170" />-->
-                                <!--<asp:DropDownList runat="server" ID="DropDownListUpdateHealthFrequency" Width="136">-->
-                                    <!--<asp:ListItem Text="Every 5 minutes" Value="300" />-->
-                                    <!--<asp:ListItem Text="Every 15 minutes" Value="900" Selected="True" />-->
-                                    <!--<asp:ListItem Text="Every 30 minutes" Value="1800" />-->
-                                    <!--<asp:ListItem Text="Every 1 hour" Value="3600" />-->
-                                    <!--<asp:ListItem Text="Every 6 hours" Value="21600" />-->
-                                    <!--<asp:ListItem Text="Every 12 hours" Value="43200" />-->
-                                    <!--<asp:ListItem Text="Every 24 hours" Value="86400" />-->
-                                <!--</asp:DropDownList>-->
-                            <!--</td>-->
-                        <!--</tr>-->
-                    <!--</table>-->
-                    <!--<br />-->
-                    <!--<table>-->
-                        <!--<tr>-->
-                            <!--<td>-->
-                                <!--Background Color:-->
-                            <!--</td>-->
-                            <!--<td id="colorPicker">-->
-                                <!--<select id="DropDownListBackgroundScreenColor" name="DropDownListBackgroundScreenColor">-->
-                                    <!--<option title="#ffffff" value="ffffff" />-->
-                                    <!--<option title="#ffccc9" value="ffccc9" />-->
-                                    <!--<option title="#ffce93" value="ffce93" />-->
-                                    <!--<option title="#fffc9e" value="fffc9e" />-->
-                                    <!--<option title="#ffffc7" value="ffffc7" />-->
-                                    <!--<option title="#9aff99" value="9aff99" />-->
-                                    <!--<option title="#96fffb" value="96fffb" />-->
-                                    <!--<option title="#cdffff" value="cdffff" />-->
-                                    <!--<option title="#cbcefb" value="cbcefb" />-->
-                                    <!--<option title="#cfcfcf" value="cfcfcf" />-->
-                                    <!--<option title="#fd6864" value="fd6864" />-->
-                                    <!--<option title="#fe996b" value="fe996b" />-->
-                                    <!--<option title="#fffe65" value="fffe65" />-->
-                                    <!--<option title="#fcff2f" value="fcff2f" />-->
-                                    <!--<option title="#67fd9a" value="67fd9a" />-->
-                                    <!--<option title="#38fff8" value="38fff8" />-->
-                                    <!--<option title="#68fdff" value="68fdff" />-->
-                                    <!--<option title="#9698ed" value="9698ed" />-->
-                                    <!--<option title="#c0c0c0" value="c0c0c0" />-->
-                                    <!--<option title="#fe0000" value="fe0000" />-->
-                                    <!--<option title="#f8a102" value="f8a102" />-->
-                                    <!--<option title="#ffcc67" value="ffcc67" />-->
-                                    <!--<option title="#f8ff00" value="f8ff00" />-->
-                                    <!--<option title="#34ff34" value="34ff34" />-->
-                                    <!--<option title="#68cbd0" value="68cbd0" />-->
-                                    <!--<option title="#34cdf9" value="34cdf9" />-->
-                                    <!--<option title="#6665cd" value="6665cd" />-->
-                                    <!--<option title="#9b9b9b" value="9b9b9b" />-->
-                                    <!--<option title="#cb0000" value="cb0000" />-->
-                                    <!--<option title="#f56b00" value="f56b00" />-->
-                                    <!--<option title="#ffcb2f" value="ffcb2f" />-->
-                                    <!--<option title="#ffc702" value="ffc702" />-->
-                                    <!--<option title="#32cb00" value="32cb00" />-->
-                                    <!--<option title="#00d2cb" value="00d2cb" />-->
-                                    <!--<option title="#3166ff" value="3166ff" />-->
-                                    <!--<option title="#6434fc" value="6434fc" />-->
-                                    <!--<option title="#656565" value="656565" />-->
-                                    <!--<option title="#9a0000" value="9a0000" />-->
-                                    <!--<option title="#ce6301" value="ce6301" />-->
-                                    <!--<option title="#cd9934" value="cd9934" />-->
-                                    <!--<option title="#999903" value="999903" />-->
-                                    <!--<option title="#009901" value="009901" />-->
-                                    <!--<option title="#329a9d" value="329a9d" />-->
-                                    <!--<option title="#3531ff" value="3531ff" />-->
-                                    <!--<option title="#6200c9" value="6200c9" />-->
-                                    <!--<option title="#343434" value="343434" />-->
-                                    <!--<option title="#680100" value="680100" />-->
-                                    <!--<option title="#963400" value="963400" />-->
-                                    <!--<option title="#986536" value="986536" />-->
-                                    <!--<option title="#646809" value="646809" />-->
-                                    <!--<option title="#036400" value="036400" />-->
-                                    <!--<option title="#34696d" value="34696d" />-->
-                                    <!--<option title="#303498" value="303498" />-->
-                                    <!--<option title="#000000" value="000000" selected="selected" />-->
-                                    <!--<option title="#330001" value="330001" />-->
-                                    <!--<option title="#643403" value="643403" />-->
-                                    <!--<option title="#663234" value="663234" />-->
-                                    <!--<option title="#343300" value="343300" />-->
-                                    <!--<option title="#013300" value="013300" />-->
-                                    <!--<option title="#003532" value="003532" />-->
-                                    <!--<option title="#010066" value="010066" />-->
-                                    <!--<option title="#340096" value="340096" />-->
-                                <!--</select>-->
-                            <!--</td>-->
-                        <!--</tr>-->
-                    <!--</table>-->
+        <div class="panelBox">
+            <div class="panel x4">
+                <div class="panelContent">
+                    <h4>Logging</h4>
 
-                    <!--<div class="smallDescription">Select a color to display when BrightSign is idle</div>-->
+                    <table>
+                        <tr>
+                            <td><input type="checkbox" id="checkBoxEnablePlaybackLogging">Enable Playback Logging</td>
+                        </tr>
+                        <tr>
+                            <td><input type="checkbox" id="checkBoxEnableEventLogging">Enable Event Logging</td>
+                        </tr>
+                        <tr>
+                            <td><input type="checkbox" id="checkBoxEnableStateLogging">Enable State Logging</td>
+                        </tr>
+                        <tr>
+                            <td><input type="checkbox" id="checkBoxEnableDiagnosticLogging">Enable Diagnostic Logging</td>
+                        </tr>
+                    </table>
 
-                <!--</div>-->
-            <!--</div>-->
-        <!--</div>-->
+                    <div class="panelCaption">Upload Logs:</div>
+
+                    <table class="level2">
+                        <tr>
+                            <input type="checkbox" id="checkBoxUploadLogsOnStartup">On Startup
+                        </tr>
+                        <tr>
+                            <input type="checkbox" id="checkBoxUploadLogsAtSpecifiedTimeEachDay">On Startup
+                        </tr>
+                    </table>
+
+                    <table class="level3">
+                        <tr>
+                            <td>Upload Time:</td>
+                        </tr>
+                    </table>
+                </div>
+            </div>
+        </div>
 
         <!--<div class="panelBox">-->
-            <!--<div class="panel x4">-->
-                <!--<div class="panelContent">-->
-                    <!--<h4>Logging</h4>-->
-                    <!--<table>-->
-                        <!--<tr>-->
-                            <!--<td><asp:CheckBox runat="server" ID="CheckBoxEnablePlaybackLogging" Text="Enable Playback Logging" /></td>-->
-                        <!--</tr>-->
-                        <!--<tr>-->
-                            <!--<td><asp:CheckBox runat="server" ID="CheckBoxEnableEventLogging" Text="Enable Event Logging" /></td>-->
-                        <!--</tr>-->
-                        <!--<tr>-->
-                            <!--<td><asp:CheckBox runat="server" ID="CheckBoxEnableStateLogging" Text="Enable State Logging" /></td>-->
-                        <!--</tr>-->
-                        <!--<tr>-->
-                            <!--<td><asp:CheckBox runat="server" ID="CheckBoxEnableDiagnosticLogging" Text="Enable Diagnostic Logging" /></td>-->
-                        <!--</tr>-->
-                    <!--</table>-->
-
-                    <!--<div class="panelCaption">Upload Logs:</div>-->
-                    <!--<table class="level2">-->
-                        <!--<tr>-->
-                            <!--<td><asp:CheckBox runat="server" ID="CheckBoxUploadLogsOnStartup" Text="On Startup" /></td>-->
-                        <!--</tr>-->
-                        <!--<tr>-->
-                            <!--<td><asp:CheckBox runat="server" ID="CheckBoxAtSpecifiedTimeEachDay" Text="At Specified Time Each Day" /></td>-->
-                        <!--</tr>-->
-                    <!--</table>-->
-                    <!--<table class="level3">-->
-                        <!--<tr>-->
-                            <!--<td><hextm:TimeSelector runat="server" ID="TimeSelectorUploadTime" ClientInstanceName="TimeSelectorUploadTime" Title="Upload Time" /></td>-->
-                        <!--</tr>-->
-                    <!--</table>-->
-                <!--</div>-->
-            <!--</div>-->
-
             <!--<div class="panel x4 firmwaresBox">-->
                 <!--<div class="panelContent">-->
                     <!--<h4>Firmware Update</h4>-->
@@ -411,66 +324,41 @@
                     <!--<table class="level2 firmwareUpdate">-->
                         <!--<tr>-->
                             <!--<td>-->
-                                <!--<asp:DropDownList runat="server" ID="DropDownListDeviceModel"-->
-                                                  <!--EnableViewState="false">-->
-                                    <!--<asp:ListItem Text="HD210" />-->
-                                    <!--<asp:ListItem Text="HD1010" />-->
-                                    <!--<asp:ListItem Text="HD220" />-->
-                                    <!--<asp:ListItem Text="HD1020" />-->
-                                    <!--<asp:ListItem Text="HD222" />-->
-                                    <!--<asp:ListItem Text="HD1022" />-->
-                                    <!--<asp:ListItem Text="XD230" />-->
-                                    <!--<asp:ListItem Text="XD1030" />-->
-                                    <!--<asp:ListItem Text="XD1230" />-->
-                                    <!--<asp:ListItem Text="XD232" />-->
-                                    <!--<asp:ListItem Text="XD1032" />-->
-                                    <!--<asp:ListItem Text="XD1132" />-->
-                                    <!--<asp:ListItem Text="4K242" />-->
-                                    <!--<asp:ListItem Text="4K1042" />-->
-                                    <!--<asp:ListItem Text="4K1142" />-->
-                                    <!--<asp:ListItem Text="LS322" />-->
-                                    <!--<asp:ListItem Text="LS422" />-->
-                                    <!--<asp:ListItem Text="TD1012" />-->
-                                    <!--<asp:ListItem Text="AU320" />-->
-                                <!--</asp:DropDownList>-->
-                            <!--</td>-->
-                            <!--<td>-->
-                                <!--<select id="dropDownListFirmwares" name="dropDownListFirmwares"></select>-->
+                                <!--<select>-->
+                                    <!--<option value="HD210">HD210</option>-->
+                                    <!--<option value="HD1010">HD1010</option>-->
+                                    <!--<option value="HD220">HD220</option>-->
+                                    <!--<option value="HD1020">HD1020</option>-->
+                                    <!--<option value="HD222">HD222</option>-->
+                                    <!--<option value="HD1022">HD1022</option>-->
+                                    <!--<option value="XD230">XD230</option>-->
+                                    <!--<option value="XD1030">XD1030</option>-->
+                                    <!--<option value="XD1230">XD1230</option>-->
+                                    <!--<option value="XD232">XD232</option>-->
+                                    <!--<option value="XD1032">XD1032</option>-->
+                                    <!--<option value="XD1132">XD1132</option>-->
+                                    <!--<option value="4K242">4K242</option>-->
+                                    <!--<option value="4K1042">4K1042</option>-->
+                                    <!--<option value="4K1142">4K1142</option>-->
+                                    <!--<option value="LS322">LS322</option>-->
+                                    <!--<option value="LS422">LS422</option>-->
+                                    <!--<option value="AU320">AU320</option>-->
+                                <!--</select>-->
                             <!--</td>-->
                         <!--</tr>-->
                     <!--</table>-->
 
                     <!--<div class="smallDescription">Once selected, download the firmware update and save the .bsfw (or .rok) file to the root of the SD card.</div>-->
 
-                    <!--<asp:ImageButton runat="server" ID="ImageButtonDownloadFirmware"-->
-                                     <!--ImageUrl="~/_images/button_download_firmware.png"-->
-                                     <!--OnClientClick="return setupDevice.DownloadFirmware()"-->
-                                     <!--CssClass="buttonDownloadFirmware" />-->
-
-                <!--</div>-->
-            <!--</div>-->
-
-            <!--<div class="panel x4 remoteSnapshotBox">-->
-                <!--<div class="panelContent">-->
-                    <!--<h4>Remote Snapshot</h4>-->
-
-                    <!--<asp:LinkButton runat="server" ID="LinkButtonEditSnapshotSettings"-->
-                                    <!--Text="Remote Snapshot Settings"-->
-                                    <!--CssClass="settings"-->
-                                    <!--OnClientClick="return RemoteSnapshotSettingsDialog.Show({ save: setupDevice.SaveRemoteSnapshotSettings })" />-->
-
-                    <!--<hexrm:RemoteSnapshotSettingsDialog runat="server" ID="RemoteSnapshotSettingsDialog"-->
-                                                        <!--ClientInstanceName="RemoteSnapshotSettingsDialog"-->
-                                                        <!--DeviceScreenShotsEnabled="False"-->
-                                                        <!--DeviceScreenShotsInterval="900"-->
-                                                        <!--DeviceScreenShotsCountLimit="5"-->
-                                                        <!--DeviceScreenShotsQuality="50"-->
-                                                        <!--DeviceScreenShotsScreenOrientation="Landscape" />-->
+                    <!--<button type="button">Download Firmware</button>-->
                 <!--</div>-->
             <!--</div>-->
         <!--</div>-->
     </div>
 
+    <div class="buttonBoxCreateSetupFiles createSetupFiles">
+        <button type="button">Create Setup Files</button>
+    </div>
 </div>
 </body>
 
