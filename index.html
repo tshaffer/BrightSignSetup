@@ -2,6 +2,8 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
+    <link rel="stylesheet" type="text/css" href="css/styles.css">
+    <link rel="stylesheet" type="text/css" href="css/styles.min.css">
     <title></title>
 </head>
 
@@ -89,7 +91,7 @@
                         <tr>
                             <td>Time Zone:</td>
                             <td>
-                                <select width="250px">
+                                <select style="width: 250px;" >
                                     <option value="EST">EST: US Eastern Time</option>
                                     <option value="CST">CST: US Central Time</option>
                                     <option value="MST">MST: US Mountain Time</option>
@@ -170,66 +172,105 @@
             </div>
         </div>
 
+        <div class="panelBox">
+            <div class="panel x4">
+
+                <div class="panelContent unitConfigurationBox">
+                    <h4>Unit Configuration</h4>
+                    <input type="checkbox" id="checkBoxEnableDWS" checked>Enable Diagnostic Web Server
+                    <br>
+                    <table class="level2">
+                        <tr>
+                            <td colspan="2">
+                                <div class="panelCaption">
+                                    Diagnostic Server Authentication (optional)
+                                </div>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>User Name:</td>
+                            <td>
+                                <input type="text" name="txtBoxDWSUserName" value="admin" disabled>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>Password:</td>
+                            <td>
+                                <input type="password" name="txtBoxDWSPassword" value="">
+                            </td>
+                        </tr>
+                    </table>
+
+                    <input type="checkbox" id="checkBoxEnableLWS" checked>Enable Local Web Server
+                    <br>
+                    <table class="level2">
+                        <tr>
+                            <td colspan="2">
+                                <div class="panelCaption">
+                                    Local Web Server Authentication (optional)
+                                </div>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>User Name:</td>
+                            <td>
+                                <input type="text" name="txtBoxLWSUserName" value="">
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>Password:</td>
+                            <td>
+                                <input type="password" name="txtBoxLWSPassword" value="">
+                            </td>
+                        </tr>
+                    </table>
+
+                    <div class="panelCaption">BrightSign Network Options:</div>
+                    <table class="level2">
+                    <tr>
+                        <td>Group:
+                            <select width="250px">
+                                <option value="default">Default</option>
+                                <option value="test">Test</option>
+                            </select>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <label width="170px">Content Check Frequency:</label>
+                            <select width="136px">
+                                <option value="300">Every 5 minutes</option>
+                                <option value="1800">Every 30 minutes</option>
+                                <option value="3600">Every 1 hour</option>
+                                <option value="21600">Every 6 hours</option>
+                                <option value="43200">Every 12 hours</option>
+                                <option value="86400">Every 24 hours</option>
+                            </select>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <label width="170px">Update Health Frequency:</label>
+                            <select width="136px">
+                                <option value="300">Every 5 minutes</option>
+                                <option value="900">Every 15 minutes</option>
+                                <option value="1800">Every 30 minutes</option>
+                                <option value="3600">Every 1 hour</option>
+                                <option value="21600">Every 6 hours</option>
+                                <option value="43200">Every 12 hours</option>
+                                <option value="86400">Every 24 hours</option>
+                            </select>
+                        </td>
+                    </tr>
+                </table>
+                </div>
+            </div>
+        </div>
         <!--<div class="panelBox">-->
             <!--<div class="panel x4">-->
                 <!--<div class="panelContent unitConfigurationBox">-->
-                    <!--<h4>Unit Configuration</h4>-->
-                    <!--<asp:CheckBox runat="server" ID="CheckBoxEnableDWS" Text="Enable Diagnostic Web Server" Checked="true" />-->
-                    <!--<table class="level2">-->
-                        <!--<tr>-->
-                            <!--<td colspan="2"><div class="panelCaption">Diagnostic Server Authentication (optional)</div></td>-->
-                        <!--</tr>-->
-                        <!--<tr>-->
-                            <!--<td>User Name:</td>-->
-                            <!--<td><asp:TextBox runat="server" ID="TextBoxDWSUserName" Enabled="false" Text="admin" /></td>-->
-                        <!--</tr>-->
-                        <!--<tr>-->
-                            <!--<td>Password:</td>-->
-                            <!--<td><asp:TextBox runat="server" ID="TextBoxDWSPassword" TextMode="Password" /></td>-->
-                        <!--</tr>-->
-                    <!--</table>-->
 
-                    <!--<asp:CheckBox runat="server" ID="CheckBoxEnableLWS" Text="Enable Local Web Server" />-->
                     <!--<table class="level2">-->
-                        <!--<tr>-->
-                            <!--<td colspan="2"><div class="panelCaption">Local Web Server Authentication (optional)</div></td>-->
-                        <!--</tr>-->
-                        <!--<tr>-->
-                            <!--<td>User Name:</td>-->
-                            <!--<td><asp:TextBox runat="server" ID="TextBoxLWSUserName" /></td>-->
-                        <!--</tr>-->
-                        <!--<tr>-->
-                            <!--<td>Password:</td>-->
-                            <!--<td><asp:TextBox runat="server" ID="TextBoxLWSPassword" TextMode="Password" /></td>-->
-                        <!--</tr>-->
-                        <!--<tr>-->
-                            <!--<td colspan="2"><asp:CheckBox runat="server" ID="CheckBoxLWSEnableUpdateNotifications" Text="Enable Update Notifications" /></td>-->
-                        <!--</tr>-->
-                    <!--</table>-->
-
-                    <!--<div class="panelCaption">BrightSign Network Options:</div>-->
-                    <!--<table class="level2">-->
-                        <!--<tr>-->
-                            <!--<td>Group:-->
-                                <!--<asp:DropDownList runat="server" ID="DropDownListGroups" DataSourceID="SimpleDataSourceGroups" DataTextField="Name" DataValueField="Name" Width="262" />-->
-                                <!--<hexds:SimpleDataSource runat="server" ID="SimpleDataSourceGroups"-->
-                                                        <!--EnableViewState="false"-->
-                                                        <!--DataObjectTypeName="BNM.BusinessLayer.Domains.DTO.Group" />-->
-                            <!--</td>-->
-                        <!--</tr>-->
-                        <!--<tr>-->
-                            <!--<td>-->
-                                <!--<asp:Label runat="server" Text="Content Check Frequency:" Width="170" />-->
-                                <!--<asp:DropDownList runat="server" ID="DropDownListContentCheckFrequency" Width="136">-->
-                                    <!--<asp:ListItem Text="Every 5 minutes" Value="300" Selected="True" />-->
-                                    <!--<asp:ListItem Text="Every 30 minutes" Value="1800" />-->
-                                    <!--<asp:ListItem Text="Every 1 hour" Value="3600" />-->
-                                    <!--<asp:ListItem Text="Every 6 hours" Value="21600" />-->
-                                    <!--<asp:ListItem Text="Every 12 hours" Value="43200" />-->
-                                    <!--<asp:ListItem Text="Every 24 hours" Value="86400" />-->
-                                <!--</asp:DropDownList>-->
-                            <!--</td>-->
-                        <!--</tr>-->
                         <!--<tr>-->
                             <!--<td>-->
                                 <!--<asp:Label runat="server" Text="Update Health Frequency:" Width="170" />-->
