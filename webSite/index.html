@@ -1,0 +1,460 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="">
+    <meta name="author" content="">
+
+    <title>BrightSign Setup</title>
+
+    <link rel="stylesheet" type="text/css" href="./css/styles.css">
+    <link rel="stylesheet" type="text/css" href="./css/styles.min.css">
+    <script src="./js/jquery-2.1.1.min.js"></script>
+    <script src="./js/brightSignSetup.js"></script>
+</head>
+
+<body>
+<div class="wrapper">
+    <div class="pageHeader">
+        <h1>Device Setup</h1>
+    </div>
+
+    <div class="deviceSetupPanelsBox clear">
+        <div class="panelBox">
+            <div class="panel x4 nameSpecification">
+                <div class="panelContent">
+                    <h4>Name Specification</h4>
+                    <table>
+                        <tr>
+                            <td>Name:</td>
+                            <td>
+                                <input id="txtBoxUnitName" type="text" name="txtBoxUnitName" value=""><br>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>Description:</td>
+                            <td>
+                                <input id="txtBoxUnitDescription" type="text" name="txtBoxUnitDescription" value=""><br>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>Customization:</td>
+                            <td>
+                                <input type='radio' name='customization' value='useNameOnly' checked>Use Name Only
+                            </td>
+                        </tr>
+                        <tr>
+                            <td></td>
+                            <td>
+                                <input type='radio' name='customization' value='appendUnitID'>Append Unit ID
+                            </td>
+                        </tr>
+                    </table>
+                </div>
+            </div>
+
+            <div class="panel x4 networkProperties">
+                <div class="panelContent">
+                    <h4>Network Properties</h4>
+                    <input type="checkbox" id="checkBoxEnableWireless">Enable Wireless
+                    <table class="level2">
+                        <tr>
+                            <td>SSID:</td>
+                            <td>
+                                <input id="txtBoxSSID" type="text" name="txtBoxSSID" value="" disabled><br>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>Security Key:</td>
+                            <td>
+                                <input id="txtBoxSecurityKey" type="password" name="txtBoxSecurityKey" value="" disabled><br>
+                            </td>
+                        </tr>
+                    </table>
+
+                    <div class="panelCaption">Network Connection Priority:</div>
+                    <table class="level2">
+                        <tr>
+                            <td>
+                                <input type='radio' name='networkConnectionPriority' value='wired' checked>Wired
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <input type='radio' name='networkConnectionPriority' value='wireless'>Wireless
+                            </td>
+                        </tr>
+                    </table>
+
+                    <div class="advancedNetworkSetupButtonBox">
+                        <button type="button">Advanced Network Setup</button>
+                        <!--<asp:ImageButton runat="server" ID="ImageButtonAdvancedNetworkSetup"-->
+                                         <!--ImageUrl="~/_images/button_adv_network_setup.png"-->
+                                         <!--AlternateText="Advanced Network Setup" />-->
+                    </div>
+
+                    <table class="level1">
+                        <tr>
+                            <td>Time Zone:</td>
+                            <td>
+                                <select id="selectTimeZone" style="width: 250px;" >
+                                    <option value="EST">EST: US Eastern Time</option>
+                                    <option value="CST">CST: US Central Time</option>
+                                    <option value="MST">MST: US Mountain Time</option>
+                                    <option value="PST">PST: US Pacific Time</option>
+                                    <option value="GMTBST">GMTBST: London\Dublin Time</option>
+                                    <option value="WET">WET: Western European Time</option>
+                                    <option value="CET">CET: Central European Time</option>
+                                    <option value="EET">EET: Eastern European Time</option>
+                                    <option value="MSK">MSK: Moscow Time</option>
+                                    <option value="AWST">AWST: Australian Western Time</option>
+                                    <option value="AWST1">AWST1: Australian Western Time without Daylight Saving Time</option>
+                                    <option value="ACST">ACST: Australian Central Standard Time (CST) with Daylight Saving Time</option>
+                                    <option value="ACST1">ACST1: Darwin, Australia/Darwin, and Australian Central Standard Time (CST) without Daylight Saving Time</option>
+                                    <option value="AEST">AEST: Australian Eastern Time</option>
+                                    <option value="AEST1">AEST1: Australian Eastern Time without Daylight Saving Time(Brisbane)</option>
+                                    <option value="NFT">NFT: Norfolk(Island) Time(Australia)</option>
+                                    <option value="NZST">NZST: New Zealand Time(Auckland)</option>
+                                    <option value="GMT">GMT: Greenwich Mean Time</option>
+                                    <option value="AKST">AKST: Alaska Time</option>
+                                    <option value="HST">HST: Hawaii Time with no Daylight Saving</option>
+                                    <option value="HST1">HST1: Hawaii - Aleutian Time with Daylight Saving</option>
+                                    <option value="MST1">MST1: US MT without Daylight Saving Time(Arizona)</option>
+                                    <option value="EST1">EST1: US ET without Daylight Saving Time(East Indiana)</option>
+                                    <option value="AST">AST: Atlantic Time</option>
+                                    <option value="CSTS">CST2: Mexico(Mexico City)</option>
+                                    <option value="MST2">MST2: Mexico(Chihuahua)</option>
+                                    <option value="PST2">PST2: Mexico(Tijuana)</option>
+                                    <option value="BST">BRT: Brazil Time(Sao Paulo)</option>
+                                    <option value="NST">NST: Newfoundland Time</option>
+                                    <option value="AZOT">AZOT: Azores Time</option>
+                                    <option value="SAMT">SAMT: Delta Time Zone(Samara)</option>
+                                    <option value="YEKT">YEKT: Echo Time Zone(Yekaterinburg)</option>
+                                    <option value="IST">IST: Indian Standart Time</option>
+                                    <option value="NPT">NPT: Nepal Time</option>
+                                    <option value="OMST">OMST: Foxtrot Time Zome(Omsk)</option>
+                                    <option value="JST">JST: Japanese Standart Time</option>
+                                    <option value="CXT">CXT: Christmas Island Time(Australia)</option>
+                                    <option value="GMT-1">GMT-1: 1 hour ahead of Greenwich Mean Time</option>
+                                    <option value="GMT-2">GMT-2: 2 hours ahead of Greenwich Mean Time</option>
+                                    <option value="GMT-3">GMT-3: 3 hours ahead of Greenwich Mean Time</option>
+                                    <option value="GMT-4">GMT-4: 4 hours ahead of Greenwich Mean Time</option>
+                                    <option value="GMT-5">GMT-5: 5 hours ahead of Greenwich Mean Time</option>
+                                    <option value="GMT-6">GMT-6: 6 hours ahead of Greenwich Mean Time</option>
+                                    <option value="GMT-7">GMT-7: 7 hours ahead of Greenwich Mean Time</option>
+                                    <option value="GMT-8">GMT-8: 8 hours ahead of Greenwich Mean Time</option>
+                                    <option value="GMT-9">GMT-9: 9 hours ahead of Greenwich Mean Time</option>
+                                    <option value="GMT-10">GMT-10: 10 hours ahead of Greenwich Mean Time</option>
+                                    <option value="GMT-11">GMT-11: 11 hours ahead of Greenwich Mean Time</option>
+                                    <option value="GMT-12">GMT-12: 12 hours ahead of Greenwich Mean Time</option>
+                                    <option value="GMT-13">GMT-13: 13 hours ahead of Greenwich Mean Time</option>
+                                    <option value="GMT-14">GMT-14: 14 hours ahead of Greenwich Mean Time</option>
+                                    <option value="GMT+1">GMT+1: 1 hour ahead of Greenwich Mean Time</option>
+                                    <option value="GMT+2">GMT+2: 2 hours ahead of Greenwich Mean Time</option>
+                                    <option value="GMT+3">GMT+3: 3 hours ahead of Greenwich Mean Time</option>
+                                    <option value="GMT+4">GMT+4: 4 hours ahead of Greenwich Mean Time</option>
+                                    <option value="GMT+5">GMT+5: 5 hours ahead of Greenwich Mean Time</option>
+                                    <option value="GMT+6">GMT+6: 6 hours ahead of Greenwich Mean Time</option>
+                                    <option value="GMT+7">GMT+7: 7 hours ahead of Greenwich Mean Time</option>
+                                    <option value="GMT+8">GMT+8: 8 hours ahead of Greenwich Mean Time</option>
+                                    <option value="GMT+9">GMT+9: 9 hours ahead of Greenwich Mean Time</option>
+                                    <option value="GMT+9:30">GMT+9:30: 9.5 hours ahead of Greenwich Mean Time</option>
+                                    <option value="GMT+10">GMT+10: 10 hours ahead of Greenwich Mean Time</option>
+                                    <option value="GMT+11">GMT+11: 11 hours ahead of Greenwich Mean Time</option>
+                                    <option value="GMT+12">GMT+12: 12 hours ahead of Greenwich Mean Time</option>
+                                    <option value="GMT+13">GMT+13: 13 hours ahead of Greenwich Mean Time</option>
+                                    <option value="GMT+14">GMT+14: 14 hours ahead of Greenwich Mean Time</option>
+                                </select>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>Time Server:</td>
+                            <td>
+                                <input id="txtBoxTimeServer" type="text" name="txtBoxTimeServer" value="http://time.brightsignnetwork.com" style="width: 245px;"><br>
+                            </td>
+                        </tr>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <div class="panelBox">
+            <div class="panel x4">
+
+                <div class="panelContent unitConfigurationBox">
+                    <h4>Unit Configuration</h4>
+                    <input type="checkbox" id="checkBoxEnableDWS" checked>Enable Diagnostic Web Server
+                    <br>
+                    <table class="level2">
+                        <tr>
+                            <td colspan="2">
+                                <div class="panelCaption">
+                                    Diagnostic Server Authentication (optional)
+                                </div>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>User Name:</td>
+                            <td>
+                                <input type="text" name="txtBoxDWSUserName" value="admin" disabled>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>Password:</td>
+                            <td>
+                                <input id="txtBoxDWSPassword" type="password" name="txtBoxDWSPassword" value="">
+                            </td>
+                        </tr>
+                    </table>
+
+                    <input type="checkbox" id="checkBoxEnableLWS" checked>Enable Local Web Server
+                    <br>
+                    <table class="level2">
+                        <tr>
+                            <td colspan="2">
+                                <div class="panelCaption">
+                                    Local Web Server Authentication (optional)
+                                </div>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>User Name:</td>
+                            <td>
+                                <input id="txtBoxLWSUserName" type="text" name="txtBoxLWSUserName" value="">
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>Password:</td>
+                            <td>
+                                <input id="txtBoxLWSPassword" type="password" name="txtBoxLWSPassword" value="">
+                            </td>
+                        </tr>
+                    </table>
+
+                    <table class="level1">
+                        <tr>
+                            <td>
+                                <input type='radio' name='setupType' value='standalone' checked>Standalone
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <input type='radio' name='setupType' value='lfn'>Networked with Local File Networking
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <input type='radio' id="bsnSetupType" name='setupType' value='bsn'>Networked with the BrightSign Network
+                            </td>
+                        </tr>
+                        <tr id="bsnSetup" style="display:none;">
+                            <td>
+                                <table class="level2">
+                                <tr>
+                                    <td>Group:
+                                        <select id="selectBSNGroup"  style="width: 250px;">
+                                            <option value="Default">Default</option>
+                                            <option value="test">test</option>
+                                        </select>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        <label>Content Check Frequency:</label>
+                                        <select id="selectContentCheckFrequency" style="width: 135px;">
+                                            <option value="300">Every 5 minutes</option>
+                                            <option value="1800">Every 30 minutes</option>
+                                            <option value="3600">Every 1 hour</option>
+                                            <option value="21600">Every 6 hours</option>
+                                            <option value="43200">Every 12 hours</option>
+                                            <option value="86400">Every 24 hours</option>
+                                        </select>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        <label>Update Health Frequency:</label>
+                                        <select id="selectUpdateHealthFrequency" style="width: 135px;">
+                                            <option value="300">Every 5 minutes</option>
+                                            <option value="900">Every 15 minutes</option>
+                                            <option value="1800">Every 30 minutes</option>
+                                            <option value="3600">Every 1 hour</option>
+                                            <option value="21600">Every 6 hours</option>
+                                            <option value="43200">Every 12 hours</option>
+                                            <option value="86400">Every 24 hours</option>
+                                        </select>
+                                    </td>
+                                </tr>
+                            </table>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <input type='radio' id="sfnSetupType" name='setupType' value='sfn'>Networked with Simple File Networking
+                            </td>
+                        </tr>
+                        <tr id="sfnSetup" style="display: none;">
+                            <td>
+                                <table class="level2">
+
+                                    <tr>
+                                        <td colspan="2">
+                                            <div class="panelCaption">
+                                                URL for web folder: (e.g. http://www.brightsign.biz/files/)
+                                            </div>
+                                        </td>
+                                    </tr>
+
+                                    <tr>
+                                        <td colspan="2">
+                                            <input id="txtBoxSFNWebFolder" type="text" name="txtBoxSFNWebFolder" value="">
+                                        </td>
+                                    </tr>
+
+                                    <tr>
+                                        <td colspan="2">
+                                            <label>Content Check Frequency:</label>
+                                            <select id="selectSFNContentCheckFrequency" style="width: 135px;">
+                                                <option value="300">Every 5 minutes</option>
+                                                <option value="1800">Every 30 minutes</option>
+                                                <option value="3600">Every 1 hour</option>
+                                                <option value="21600">Every 6 hours</option>
+                                                <option value="43200">Every 12 hours</option>
+                                                <option value="86400">Every 24 hours</option>
+                                            </select>
+                                        </td>
+                                    </tr>
+
+                                        <tr>
+                                            <td colspan="2">
+                                                <div class="panelCaption">
+                                                    Simple File Networking Authentication (optional)
+                                                </div>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td>User Name:</td>
+                                            <td>
+                                                <input id="txtBoxSFNUserName" type="text" name="txtBoxSFNUserName" value="">
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td>Password:</td>
+                                            <td>
+                                                <input id="txtBoxSFNPassword" type="password" name="txtBoxSFNPassword" value="">
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td colspan="2">
+                                                <input type="checkbox" id="checkBoxEnableSFNBasicAuthentication">Enable basic authentication
+                                            </td>
+                                        </tr>
+
+
+                                </table>
+                            </td>
+                        </tr>
+                    </table>
+
+                </div>
+            </div>
+        </div>
+
+        <div class="panelBox">
+            <div class="panel x4">
+                <div class="panelContent">
+                    <h4>Logging</h4>
+
+                    <table>
+                        <tr>
+                            <td><input type="checkbox" id="checkBoxEnablePlaybackLogging">Enable Playback Logging</td>
+                        </tr>
+                        <tr>
+                            <td><input type="checkbox" id="checkBoxEnableEventLogging">Enable Event Logging</td>
+                        </tr>
+                        <tr>
+                            <td><input type="checkbox" id="checkBoxEnableStateLogging">Enable State Logging</td>
+                        </tr>
+                        <tr>
+                            <td><input type="checkbox" id="checkBoxEnableDiagnosticLogging">Enable Diagnostic Logging</td>
+                        </tr>
+                    </table>
+
+                    <div class="panelCaption">Upload Logs:</div>
+
+                    <table class="level2">
+                        <tr>
+                            <td>
+                                <input type="checkbox" id="checkBoxUploadLogsOnStartup">On startup
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <input type="checkbox" id="checkBoxUploadLogsAtSpecificTimeEachDay">At specific time each day
+                            </td>
+                        </tr>
+                    </table>
+
+                    <table class="level3">
+                        <tr>
+                            <td>
+                                Upload Time:
+                                <select id="selectUploadTimeHour" style="width: 36px;">
+                                    <option value="0">00</option>
+                                    <option value="1">01</option>
+                                    <option value="2">02</option>
+                                    <option value="3">03</option>
+                                    <option value="4">04</option>
+                                    <option value="5">05</option>
+                                    <option value="6">06</option>
+                                    <option value="7">07</option>
+                                    <option value="8">08</option>
+                                    <option value="9">09</option>
+                                    <option value="10">10</option>
+                                    <option value="11">11</option>
+                                    <option value="12">12</option>
+                                    <option value="13">13</option>
+                                    <option value="14">14</option>
+                                    <option value="15">15</option>
+                                    <option value="16">16</option>
+                                    <option value="17">17</option>
+                                    <option value="18">18</option>
+                                    <option value="19">19</option>
+                                    <option value="20">20</option>
+                                    <option value="21">21</option>
+                                    <option value="22">22</option>
+                                    <option value="23">23</option>
+                                </select>
+                                :
+                                <select id="selectUploadTimeMinutes" style="width: 36px;">
+                                    <option value="0">00</option>
+                                    <option value="5">05</option>
+                                    <option value="10">10</option>
+                                    <option value="15">15</option>
+                                    <option value="20">20</option>
+                                    <option value="25">25</option>
+                                    <option value="30">30</option>
+                                    <option value="35">35</option>
+                                    <option value="40">40</option>
+                                    <option value="45">45</option>
+                                    <option value="50">50</option>
+                                    <option value="55">55</option>
+                                </select>
+                            </td>
+                        </tr>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <div class="buttonBoxCreateSetupFiles createSetupFiles">
+        <button type="button" onclick="createSetupFiles()">Create Setup Files</button>
+    </div>
+</div>
+</body>
+
+</html>
