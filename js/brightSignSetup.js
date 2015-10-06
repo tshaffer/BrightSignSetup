@@ -43,22 +43,32 @@ $(document).ready(function () {
 
     // add handlers
 
-    $("#checkBoxEnableWireless").change(function() {
+    $("#checkBoxEnableWireless").change(function () {
         var enableWireless = $("#checkBoxEnableWireless").is(':checked');
         $("#txtBoxSSID").prop("disabled", !enableWireless);
         $("#txtBoxSecurityKey").prop("disabled", !enableWireless);
     });
 
-    $("#checkBoxEnableDWS").change(function() {
+    $("#checkBoxEnableDWS").change(function () {
         var enableDWS = $("#checkBoxEnableDWS").is(':checked');
         $("#txtBoxDWSPassword").prop("disabled", !enableDWS);
     });
 
-    $("#checkBoxEnableLWS").change(function() {
+    $("#checkBoxEnableLWS").change(function () {
         var enableLWS = $("#checkBoxEnableLWS").is(':checked');
         $("#txtBoxLWSUserName").prop("disabled", !enableLWS);
         $("#txtBoxLWSPassword").prop("disabled", !enableLWS);
     });
 
+    setupTypeRadioButtons = $('input[name="setupType"]');
+    setupTypeRadioButtons.change(function () {
 
+        var enableBSN = $("#bsnSetupType").is(':checked');
+        if (enableBSN) {
+            $("#bsnSetup").attr("style", "display: block;");
+        }
+        else {
+            $("#bsnSetup").attr("style", "display: none;");
+        }
+    });
 });
