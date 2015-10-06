@@ -233,44 +233,121 @@
                         </tr>
                     </table>
 
-                    <div class="panelCaption">BrightSign Network Options:</div>
-                    <table class="level2">
-                    <tr>
-                        <td>Group:
-                            <select id="selectBSNGroup" width="250px">
-                                <option value="Default">Default</option>
-                                <option value="test">test</option>
-                            </select>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td>
-                            <label width="170px">Content Check Frequency:</label>
-                            <select id="selectContentCheckFrequency" width="136px">
-                                <option value="300">Every 5 minutes</option>
-                                <option value="1800">Every 30 minutes</option>
-                                <option value="3600">Every 1 hour</option>
-                                <option value="21600">Every 6 hours</option>
-                                <option value="43200">Every 12 hours</option>
-                                <option value="86400">Every 24 hours</option>
-                            </select>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td>
-                            <label width="170px">Update Health Frequency:</label>
-                            <select id="selectUpdateHealthFrequency" width="136px">
-                                <option value="300">Every 5 minutes</option>
-                                <option value="900">Every 15 minutes</option>
-                                <option value="1800">Every 30 minutes</option>
-                                <option value="3600">Every 1 hour</option>
-                                <option value="21600">Every 6 hours</option>
-                                <option value="43200">Every 12 hours</option>
-                                <option value="86400">Every 24 hours</option>
-                            </select>
-                        </td>
-                    </tr>
-                </table>
+
+
+
+
+                    <!--<table class="level2">-->
+                        <!--<tr>-->
+                            <!--<td>Group:-->
+                                <!--<select id="selectBSNGroup" width="250px">-->
+                                    <!--<option value="Default">Default</option>-->
+                                    <!--<option value="test">test</option>-->
+                                <!--</select>-->
+                            <!--</td>-->
+                        <!--</tr>-->
+                        <!--<tr>-->
+                            <!--<td>-->
+                                <!--<label width="170px">Content Check Frequency:</label>-->
+                                <!--<select id="selectContentCheckFrequency" width="136px">-->
+                                    <!--<option value="300">Every 5 minutes</option>-->
+                                    <!--<option value="1800">Every 30 minutes</option>-->
+                                    <!--<option value="3600">Every 1 hour</option>-->
+                                    <!--<option value="21600">Every 6 hours</option>-->
+                                    <!--<option value="43200">Every 12 hours</option>-->
+                                    <!--<option value="86400">Every 24 hours</option>-->
+                                <!--</select>-->
+                            <!--</td>-->
+                        <!--</tr>-->
+                        <!--<tr>-->
+                            <!--<td>-->
+                                <!--<label width="170px">Update Health Frequency:</label>-->
+                                <!--<select id="selectUpdateHealthFrequency" width="136px">-->
+                                    <!--<option value="300">Every 5 minutes</option>-->
+                                    <!--<option value="900">Every 15 minutes</option>-->
+                                    <!--<option value="1800">Every 30 minutes</option>-->
+                                    <!--<option value="3600">Every 1 hour</option>-->
+                                    <!--<option value="21600">Every 6 hours</option>-->
+                                    <!--<option value="43200">Every 12 hours</option>-->
+                                    <!--<option value="86400">Every 24 hours</option>-->
+                                <!--</select>-->
+                            <!--</td>-->
+                        <!--</tr>-->
+                    <!--</table>-->
+
+
+
+
+
+
+
+
+
+
+
+
+                    <table class="level1">
+                        <tr>
+                            <td>
+                                <input type='radio' name='setupType' value='standalone' checked>Standalone
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <input type='radio' name='setupType' value='lfn'>Networked with Local File Networking
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <input type='radio' name='setupType' value='bsn'>Networked with the BrightSign Network
+                            </td>
+                        </tr>
+                        <tr>
+                            <table class="level2">
+                                <tr>
+                                    <td>Group:
+                                        <select id="selectBSNGroup" width="250px">
+                                            <option value="Default">Default</option>
+                                            <option value="test">test</option>
+                                        </select>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        <label width="170px">Content Check Frequency:</label>
+                                        <select id="selectContentCheckFrequency" width="136px">
+                                            <option value="300">Every 5 minutes</option>
+                                            <option value="1800">Every 30 minutes</option>
+                                            <option value="3600">Every 1 hour</option>
+                                            <option value="21600">Every 6 hours</option>
+                                            <option value="43200">Every 12 hours</option>
+                                            <option value="86400">Every 24 hours</option>
+                                        </select>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        <label width="170px">Update Health Frequency:</label>
+                                        <select id="selectUpdateHealthFrequency" width="136px">
+                                            <option value="300">Every 5 minutes</option>
+                                            <option value="900">Every 15 minutes</option>
+                                            <option value="1800">Every 30 minutes</option>
+                                            <option value="3600">Every 1 hour</option>
+                                            <option value="21600">Every 6 hours</option>
+                                            <option value="43200">Every 12 hours</option>
+                                            <option value="86400">Every 24 hours</option>
+                                        </select>
+                                    </td>
+                                </tr>
+                            </table>
+                        </tr>
+                        <tr>
+                            <td>
+                                <input type='radio' name='setupType' value='bsn'>Networked with Simple File Networking
+                            </td>
+                        </tr>
+                    </table>
+
                 </div>
             </div>
         </div>
