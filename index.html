@@ -63,13 +63,13 @@
                         <tr>
                             <td>SSID:</td>
                             <td>
-                                <input type="text" name="txtBoxSSID" value=""><br>
+                                <input id="txtBoxSSID" type="text" name="txtBoxSSID" value="" disabled><br>
                             </td>
                         </tr>
                         <tr>
                             <td>Security Key:</td>
                             <td>
-                                <input type="text" name="txtBoxSecurityKey" value=""><br>
+                                <input id="txtBoxSecurityKey" type="password" name="txtBoxSecurityKey" value="" disabled><br>
                             </td>
                         </tr>
                     </table>
@@ -99,7 +99,7 @@
                         <tr>
                             <td>Time Zone:</td>
                             <td>
-                                <select style="width: 250px;" >
+                                <select id="selectTimeZone" style="width: 250px;" >
                                     <option value="EST">EST: US Eastern Time</option>
                                     <option value="CST">CST: US Central Time</option>
                                     <option value="MST">MST: US Mountain Time</option>
@@ -172,7 +172,7 @@
                         <tr>
                             <td>Time Server:</td>
                             <td>
-                                <input type="text" name="txtBoxTimeServer" value="http://time.brightsignnetwork.com" width="245px"><br>
+                                <input id="txtBoxTimeServer" type="text" name="txtBoxTimeServer" value="http://time.brightsignnetwork.com" style="width: 245px;"><br>
                             </td>
                         </tr>
                     </table>
@@ -204,7 +204,7 @@
                         <tr>
                             <td>Password:</td>
                             <td>
-                                <input type="password" name="txtBoxDWSPassword" value="">
+                                <input id="txtBoxDWSPassword" type="password" name="txtBoxDWSPassword" value="">
                             </td>
                         </tr>
                     </table>
@@ -222,13 +222,13 @@
                         <tr>
                             <td>User Name:</td>
                             <td>
-                                <input type="text" name="txtBoxLWSUserName" value="">
+                                <input id="txtBoxLWSUserName" type="text" name="txtBoxLWSUserName" value="">
                             </td>
                         </tr>
                         <tr>
                             <td>Password:</td>
                             <td>
-                                <input type="password" name="txtBoxLWSPassword" value="">
+                                <input id="txtBoxLWSPassword" type="password" name="txtBoxLWSPassword" value="">
                             </td>
                         </tr>
                     </table>
@@ -237,16 +237,16 @@
                     <table class="level2">
                     <tr>
                         <td>Group:
-                            <select width="250px">
-                                <option value="default">Default</option>
-                                <option value="test">Test</option>
+                            <select id="selectBSNGroup" width="250px">
+                                <option value="Default">Default</option>
+                                <option value="test">test</option>
                             </select>
                         </td>
                     </tr>
                     <tr>
                         <td>
                             <label width="170px">Content Check Frequency:</label>
-                            <select width="136px">
+                            <select id="selectContentCheckFrequency" width="136px">
                                 <option value="300">Every 5 minutes</option>
                                 <option value="1800">Every 30 minutes</option>
                                 <option value="3600">Every 1 hour</option>
@@ -259,7 +259,7 @@
                     <tr>
                         <td>
                             <label width="170px">Update Health Frequency:</label>
-                            <select width="136px">
+                            <select id="selectUpdateHealthFrequency" width="136px">
                                 <option value="300">Every 5 minutes</option>
                                 <option value="900">Every 15 minutes</option>
                                 <option value="1800">Every 30 minutes</option>
@@ -299,10 +299,14 @@
 
                     <table class="level2">
                         <tr>
-                            <input type="checkbox" id="checkBoxUploadLogsOnStartup">On Startup
+                            <td>
+                                <input type="checkbox" id="checkBoxUploadLogsOnStartup">On startup
+                            </td>
                         </tr>
                         <tr>
-                            <input type="checkbox" id="checkBoxUploadLogsAtSpecifiedTimeEachDay">On Startup
+                            <td>
+                                <input type="checkbox" id="checkBoxUploadLogsAtSpecificTimeEachDay">At specific time each day
+                            </td>
                         </tr>
                     </table>
 
