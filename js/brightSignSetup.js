@@ -70,5 +70,13 @@ $(document).ready(function () {
         else {
             $("#bsnSetup").attr("style", "display: none;");
         }
+
+        var enableSFN = $("#sfnSetupType").is(':checked');
+        if (enableSFN) {
+            $("#sfnSetup").attr("style", "display: block;");
+        }
+        else {
+            $("#sfnSetup").attr("style", "display: none;");
+        }
     });
 });
