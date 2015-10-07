@@ -69,6 +69,8 @@ function createSetupFiles() {
     var lwsUserName = $("#txtBoxLWSUserName").val();
     var lwsPassword = $("#txtBoxLWSPassword").val();
 
+    var setupType = $("input[name=setupType]:checked").val();
+
     var bsnGroup = $("#selectBSNGroup").val();
     var contentCheckInterval = $("#selectContentCheckFrequency").val();
     var updateHealthInterval = $("#selectUpdateHealthFrequency").val();
@@ -89,6 +91,7 @@ function createSetupFiles() {
 
     var setupParams =
     {
+        "setupType": setupType,
         "account": "ted",
         "user": "teduser",
         "password": "tedpwd",

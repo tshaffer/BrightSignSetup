@@ -250,71 +250,54 @@ Function SetNetworkConfiguration(setupParams As Object, registrySection As Objec
 End Function
 
 
-Function SetLogging(spec As Object, registrySection As Object) As Object
+Function SetLogging(setupParams As Object, registrySection As Object) As Object
 
-	logging = { } 
+	enabled = GetBooleanEntry(setupParams,  "playbackLoggingEnabled")
+    playbackLoggingEnabled$ = "no"
+    if enabled then playbackLoggingEnabled$ = "yes"
 
-    logging.diagnosticLoggingEnabled = false
-    logging.variableLoggingEnabled = false
-    logging.uploadLogFilesAtBoot = false
-    logging.uploadLogFilesAtSpecificTime = false
-    logging.uploadLogFilesTime% = 0
+	enabled = GetBooleanEntry(setupParams,  "eventLoggingEnabled")
+    eventLoggingEnabled$ = "no"
+    if enabled then eventLoggingEnabled$ = "yes"
 
-    b$ = LCase(GetEntry(spec, "playbackLoggingEnabled"))
-    logging.playbackLoggingEnabled$ = "no"
-    if b$ = "yes" then logging.playbackLoggingEnabled$ = "yes"
+	enabled = GetBooleanEntry(setupParams,  "stateLoggingEnabled")
+    stateLoggingEnabled$ = "no"
+    if enabled then stateLoggingEnabled$ = "yes"
 
-    b$ = LCase(GetEntry(spec, "eventLoggingEnabled"))
-    logging.eventLoggingEnabled$ = "no"
-    if b$ = "yes" then logging.eventLoggingEnabled$ = "yes"
+	enabled = GetBooleanEntry(setupParams,  "diagnosticLoggingEnabled")
+    diagnosticLoggingEnabled$ = "no"
+    if enabled then diagnosticLoggingEnabled$ = "yes"
 
-    b$ = LCase(GetEntry(spec, "stateLoggingEnabled"))
-    logging.stateLoggingEnabled$ = "no"
-    if b$ = "yes" then logging.stateLoggingEnabled$ = "yes"
+	enabled = GetBooleanEntry(setupParams,  "diagnosticLoggingEnabled")
+    diagnosticLoggingEnabled$ = "no"
+    if enabled then diagnosticLoggingEnabled$ = "yes"
 
-    b$ = LCase(GetEntry(spec, "diagnosticLoggingEnabled"))
-    logging.diagnosticLoggingEnabled$ = "no"
-    if b$ = "yes" then
-		logging.diagnosticLoggingEnabled$ = "yes"
-		logging.diagnosticLoggingEnabled = true
-	endif
+	enabled = GetBooleanEntry(setupParams,  "variableLoggingEnabled")
+    variableLoggingEnabled$ = "no"
+    if enabled then variableLoggingEnabled$ = "yes"
 
-    b$ = LCase(GetEntry(spec, "variableLoggingEnabled"))
-    logging.variableLoggingEnabled$ = "no"
-    if b$ = "yes" then
-		logging.variableLoggingEnabled$ = "yes"
-		logging.variableLoggingEnabled = true
-	endif
+	enabled = GetBooleanEntry(setupParams,  "uploadLogFilesAtBoot")
+    uploadLogFilesAtBoot$ = "no"
+    if enabled then uploadLogFilesAtBoot$ = "yes"
 
-    b$ = LCase(GetEntry(spec, "uploadLogFilesAtBoot"))
-    logging.uploadLogFilesAtBoot$ = "no"
-    if b$ = "yes" then
-		logging.uploadLogFilesAtBoot$ = "yes"
-        logging.uploadLogFilesAtBoot = true
-	endif
+	enabled = GetBooleanEntry(setupParams,  "uploadLogFilesAtSpecificTime")
+    uploadLogFilesAtSpecificTime$ = "no"
+    if enabled then uploadLogFilesAtSpecificTime$ = "yes"
 
-    b$ = LCase(GetEntry(spec, "uploadLogFilesAtSpecificTime"))
-    logging.uploadLogFilesAtSpecificTime$ = "no"
-    if b$ = "yes" then
-		logging.uploadLogFilesAtSpecificTime$ = "yes"
-		logging.uploadLogFilesAtSpecificTime = true
-	endif
-
-    logging.uploadLogFilesTime$ = GetEntry(spec, "uploadLogFilesTime")
-    if logging.uploadLogFilesTime$ <> "" then logging.uploadLogFilesTime% = int(val(logging.uploadLogFilesTime$))
+    uploadLogFilesTime$ = GetEntry(setupParams, "uploadLogFilesTime")
+    ' if uploadLogFilesTime$ <> "" then uploadLogFilesTime% = int(val(uploadLogFilesTime$))
+    ' uploadLogFilesTime% = 0
 
 	if type(registrySection) = "roRegistrySection" then
-		registrySection.Write("ple", logging.playbackLoggingEnabled$)
-		registrySection.Write("ele", logging.eventLoggingEnabled$)
-		registrySection.Write("sle", logging.stateLoggingEnabled$)
-		registrySection.Write("dle", logging.diagnosticLoggingEnabled$)
-		registrySection.Write("vle", logging.variableLoggingEnabled$)
-		registrySection.Write("uab", logging.uploadLogFilesAtBoot$)
-		registrySection.Write("uat", logging.uploadLogFilesAtSpecificTime$)
-		registrySection.Write("ut", logging.uploadLogFilesTime$)
+		registrySection.Write("ple", playbackLoggingEnabled$)
+		registrySection.Write("ele", eventLoggingEnabled$)
+		registrySection.Write("sle", stateLoggingEnabled$)
+		registrySection.Write("dle", diagnosticLoggingEnabled$)
+		registrySection.Write("vle", variableLoggingEnabled$)
+		registrySection.Write("uab", uploadLogFilesAtBoot$)
+		registrySection.Write("uat", uploadLogFilesAtSpecificTime$)
+		registrySection.Write("ut", uploadLogFilesTime$)
 	endif
-
-	return logging
 
 End Function
 
