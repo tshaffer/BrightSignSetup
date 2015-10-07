@@ -6607,7 +6607,7 @@ Function NewSetupServer() As Object
     localServer = CreateObject("roHttpServer", { port: 8080 })
     localServer.SetPort(msgPort)
 
-	runSetupAA =				{ HandleEvent: runSetup, mVar: m}
+	runSetupAA =				{ HandleEvent: runSetup, msgPort: msgPort }
 	localServer.AddGetFromEvent({ url_path: "/runSetup", user_data: runSetupAA })
 
 	serverDirectory$ = "webSite"
@@ -6745,7 +6745,60 @@ Function GetMimeTypeByExtension(ext as String) as String
 end Function
 
 
+Function GetSoapContentType() As String
+	return "text/xml; charset="+ chr(34) + "utf-8" + chr(34)
+End Function
+
+
 Sub runSetup(userData as Object, e as Object)
+
+
+	soapTransfer = CreateObject( "roUrlTransfer" )
+	soapTransfer.SetTimeout( 30000 )
+	soapTransfer.SetPort( userData.msgPort )
+	soapTransfer.SetUrl( "http://api.brightsignnetwork.com/BrightAuthor/Service/v201312/BNMServices.asmx" )
+
+	if not soapTransfer.addHeader("SOAPACTION", "http://tempuri.org/GetAccount") stop
+	if not soapTransfer.addHeader( "Content-Type", GetSoapContentType() ) stop
+
+    getAccountXML = ""
+' it appears as though this is not necessary
+'    getAccountXML = getAccountXML + "<?xml version=" + chr(34) + "1.0" + chr(34) + " encoding=" + chr(34) + "utf-8" + chr(34) + "?>"
+    getAccountXML = getAccountXML + "<soap:Envelope xmlns:soap=" + chr(34) + "http://schemas.xmlsoap.org/soap/envelope/" + chr(34) + " xmlns:xsi=" + chr(34) + "http://www.w3.org/2001/XMLSchema-instance" + chr(34) + " xmlns:xsd=" + chr(34) + "http://www.w3.org/2001/XMLSchema" + chr(34) + ">"
+    getAccountXML = getAccountXML + "<soap:Body>"
+    getAccountXML = getAccountXML + "<GetAccount xmlns=" + chr(34) + "http://tempuri.org/" + chr(34) + ">"
+    getAccountXML = getAccountXML + "<bnmCredentials>"
+    getAccountXML = getAccountXML + "<AccountName>ted</AccountName>"
+    getAccountXML = getAccountXML + "<UserName>ted" + chr(64) + "roku.com</UserName>"
+    getAccountXML = getAccountXML + "<Password>870FA8EE962D90AF50C7EAED792B075A</Password>"
+    getAccountXML = getAccountXML + "</bnmCredentials>"
+    getAccountXML = getAccountXML + "</GetAccount>"
+    getAccountXML = getAccountXML + "</soap:Body>"
+    getAccountXML = getAccountXML + "</soap:Envelope>"
+
+	aa = {}
+	aa.method = "POST"
+	aa.request_body_string = getAccountXML
+	aa.response_body_string = true
+
+'	if not soapTransfer.AsyncMethod( aa ) then
+stop
+	rv = soapTransfer.SyncMethod( aa )
+stop
+'		rv = soapTransfer.GetFailureReason()
+'		print "###  GetAccount AsyncMethod failure - reason: " + rv
+'		retryCheckBoxActivationTimer = stateMachine.LaunchRetryTimer( stateMachine.retryInterval% )
+'	endif
+
+
+
+
+
+
+
+
+
+return
 
     setupParams = e.GetRequestParams()
 
