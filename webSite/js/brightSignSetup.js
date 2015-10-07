@@ -191,11 +191,6 @@ function createSetupFiles() {
 
     };
 
-
-
-
-
-
     $.get(aUrl, setupParams)
         .done(function (result) {
             console.log("runSetup sent successfully");

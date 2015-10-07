@@ -6749,12 +6749,12 @@ Sub runSetup(userData as Object, e as Object)
 
     setupParams = e.GetRequestParams()
 
-    ExecuteSetup(setupParams)
-
     e.AddResponseHeader("Content-type", "text/plain")
     e.AddResponseHeader("Access-Control-Allow-Origin", "*")
     e.SetResponseBodyString("ok")
     e.SendResponse(200)
+
+    ExecuteSetup(setupParams)
 
 End Sub
 
