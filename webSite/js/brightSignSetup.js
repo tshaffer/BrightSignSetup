@@ -169,6 +169,7 @@ function createSetupFiles() {
         "BrightWallName": "",
         "BrightWallScreenNumber": "",
 
+        "base": "https://services.brightsignnetwork.com/",
         "recovery_handler": "/recovery/recovery.ashx",
         "recovery_setup": "/recovery/recovery_runsetup_ba.brs",
         "next": "/bs/checkforcontent.ashx",
@@ -181,6 +182,7 @@ function createSetupFiles() {
         "uploadusage": "/bs/uploadusage.ashx",
         "batteryCharger": "/bs/batteryCharger.ashx",
         "heartbeat": "/bs/heartbeat.ashx",
+        "uploadLogs": "/bs/uploadlogs.ashx",
 
         "networkDiagnosticsEnabled": "False",
         "testEthernetEnabled": "True",

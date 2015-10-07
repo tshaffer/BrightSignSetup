@@ -29,7 +29,7 @@ Sub ExecuteSetup(setupParams As Object)
 	registrySection.Write("ud", setupParams.unitDescription)
 
 	registrySection.Write("tbnc", setupParams.timeBetweenNetConnects)
-	contentDownloadsRestricted = setupParams.contentDownloadsRestricted)
+	contentDownloadsRestricted = setupParams.contentDownloadsRestricted
 	registrySection.Write("cdr", contentDownloadsRestricted)
 	if contentDownloadsRestricted = "yes" then
 		registrySection.Write("cdrs", setupParams.contentDownloadRangeStart)
@@ -37,7 +37,7 @@ Sub ExecuteSetup(setupParams As Object)
 	endif
 
 	registrySection.Write("tbh", setupParams.timeBetweenHeartbeats)
-	heartbeatsRestricted = setupParams.heartbeatsRestricted)
+	heartbeatsRestricted = setupParams.heartbeatsRestricted
 	registrySection.Write("hr", heartbeatsRestricted)
 	if heartbeatsRestricted = "yes" then
 		registrySection.Write("hrs", setupParams.heartbeatsRangeStart)
@@ -61,7 +61,7 @@ Sub ExecuteSetup(setupParams As Object)
 	SetWiredParameters(setupParams, registrySection, useWireless)
 
 ' Network configurations
-	if setupParams.useWireless) = "yes"
+	if setupParams.useWireless = "yes"
 		if modelSupportsWifi then
 			wifiNetworkingParameters = SetNetworkConfiguration(setupParams, registrySection, "", "")
 			ethernetNetworkingParameters = SetNetworkConfiguration(setupParams, registrySection, "_2", "2")
@@ -121,8 +121,8 @@ Sub ExecuteSetup(setupParams As Object)
 	registrySection.Write("brightWallScreenNumber", setupParams.BrightWallScreenNumber)
 
 ' handlers    
-	base$ = setupParams.base")
-	registrySection.Write("ub", base$)
+	base$ = setupParams.base
+	registrySection.Write("ub", setupParams.base)
 	registrySection.Write("ru", setupParams.recovery_handler)
 	registrySection.Write("rs", setupParams.recovery_setup)
 	registrySection.Write("nu", setupParams.next)
@@ -141,7 +141,7 @@ Sub ExecuteSetup(setupParams As Object)
 	wiredDataTransferEnabled = GetDataTransferEnabled(contentDataTypeEnabledWired$)
 
 	contentDataTypeEnabledWireless$ = setupParams.contentDataTypeEnabledWireless
-	wirelessDataTransferEnabled = GetDataTransferEnabled(contentDataTypeEnabledWireless
+	wirelessDataTransferEnabled = GetDataTransferEnabled(contentDataTypeEnabledWireless$)
 
 	binding% = GetBinding(wiredDataTransferEnabled, wirelessDataTransferEnabled)
 

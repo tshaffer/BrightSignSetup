@@ -6747,7 +6747,7 @@ end Function
 
 Sub runSetup(userData as Object, e as Object)
 
-    setupParams = e.GetRequestParams(e)
+    setupParams = e.GetRequestParams()
 
     ExecuteSetup(setupParams)
 
