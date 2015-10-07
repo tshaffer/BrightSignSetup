@@ -1,38 +1,16 @@
-Library "setupCommon.brs"
-Library "setupNetworkDiagnostics.brs"
 
-Sub Main()
-
-	' Script to read the relevant information from a sync spec and write it to the registry
-	version="3.8.0.1"
-	print "setup.brs version ";version;" started"
-
-	SetupCore()
-
-End Sub
-
-
-Sub SetupCore()
+Sub ExecuteSetup(setupParams As Object)
 
 	modelSupportsWifi = GetModelSupportsWifi()
 
 	CheckFirmwareVersion()
 
-'	CheckStorageDeviceIsWritable()
+	CheckStorageDeviceIsWritable()
 
 	registrySection = CreateObject("roRegistrySection", "networking")
 	if type(registrySection)<>"roRegistrySection" then print "Error: Unable to create roRegistrySection":stop
 
 	ClearRegistryKeys(registrySection)
-
-	' Load up the current sync specification
-	localToBSNSyncSpec = false
-	current_sync = CreateObject("roSyncSpec")
-	if not current_sync.ReadFromFile("current-sync.xml") then
-		print "### No current sync state available"
-		if not current_sync.ReadFromFile("localToBSN-sync.xml") stop
-		localToBSNSyncSpec = true
-	endif
 
 	' indicate to recovery_runsetup_ba.brs that this is a setup operation
 	registrySection.Write("su","yes")
@@ -41,71 +19,71 @@ Sub SetupCore()
 	registrySection.Write("v", "1")
 
 	' write identifying data to registry
-	registrySection.Write("a", current_sync.LookupMetadata("server", "account"))
-	registrySection.Write("u", current_sync.LookupMetadata("server", "user"))
-	registrySection.Write("p", current_sync.LookupMetadata("server", "password"))
-	registrySection.Write("g", current_sync.LookupMetadata("server", "group"))
-	registrySection.Write("tz", current_sync.LookupMetadata("client", "timezone"))
-	registrySection.Write("un", current_sync.LookupMetadata("client", "unitName"))
-	registrySection.Write("unm", current_sync.LookupMetadata("client", "unitNamingMethod"))
-	registrySection.Write("ud", current_sync.LookupMetadata("client", "unitDescription"))
+	registrySection.Write("a", setupParams.account)
+	registrySection.Write("u", setupParams.user)
+	registrySection.Write("p", setupParams.password)
+	registrySection.Write("g", setupParams.group)
+	registrySection.Write("tz", setupParams.timezone)
+	registrySection.Write("un", setupParams.unitName)
+	registrySection.Write("unm", setupParams.unitNamingMethod)
+	registrySection.Write("ud", setupParams.unitDescription)
 
-	registrySection.Write("tbnc", current_sync.LookupMetadata("client", "timeBetweenNetConnects"))
-	contentDownloadsRestricted = current_sync.LookupMetadata("client", "contentDownloadsRestricted")
+	registrySection.Write("tbnc", setupParams.timeBetweenNetConnects)
+	contentDownloadsRestricted = setupParams.contentDownloadsRestricted)
 	registrySection.Write("cdr", contentDownloadsRestricted)
 	if contentDownloadsRestricted = "yes" then
-		registrySection.Write("cdrs", current_sync.LookupMetadata("client", "contentDownloadRangeStart"))
-		registrySection.Write("cdrl", current_sync.LookupMetadata("client", "contentDownloadRangeLength"))
+		registrySection.Write("cdrs", setupParams.contentDownloadRangeStart)
+		registrySection.Write("cdrl", setupParams.contentDownloadRangeLength)
 	endif
 
-	registrySection.Write("tbh", current_sync.LookupMetadata("client", "timeBetweenHeartbeats"))
-	heartbeatsRestricted = current_sync.LookupMetadata("client", "heartbeatsRestricted")
+	registrySection.Write("tbh", setupParams.timeBetweenHeartbeats)
+	heartbeatsRestricted = setupParams.heartbeatsRestricted)
 	registrySection.Write("hr", heartbeatsRestricted)
 	if heartbeatsRestricted = "yes" then
-		registrySection.Write("hrs", current_sync.LookupMetadata("client", "heartbeatsRangeStart"))
-		registrySection.Write("hrl", current_sync.LookupMetadata("client", "heartbeatsRangeLength"))
+		registrySection.Write("hrs", setupParams.heartbeatsRangeStart)
+		registrySection.Write("hrl", setupParams.heartbeatsRangeLength)
 	endif
 
 	' network host parameters
-	proxySpec$ = GetProxy(current_sync, registrySection)
+	proxySpec$ = GetProxy(setupParams, registrySection)
 
-	timeServer$ = current_sync.LookupMetadata("client", "timeServer")
+	timeServer$ = setupParams.timeServer
 	registrySection.Write("ts", timeServer$)
 	print "time server in setup.brs = ";timeServer$
 
 ' Hostname
-	SetHostname(current_sync)
+	SetHostname(setupParams)
 
 ' Wireless parameters
-	useWireless = SetWirelessParameters(current_sync, registrySection, modelSupportsWifi)
+	useWireless = SetWirelessParameters(setupParams, registrySection, modelSupportsWifi)
 
 ' Wired parameters
-	SetWiredParameters(current_sync, registrySection, useWireless)
+	SetWiredParameters(setupParams, registrySection, useWireless)
 
 ' Network configurations
-	if current_sync.LookupMetadata("client", "useWireless") = "yes"
+	if setupParams.useWireless) = "yes"
 		if modelSupportsWifi then
-			wifiNetworkingParameters = SetNetworkConfiguration(current_sync, registrySection, "", "")
-			ethernetNetworkingParameters = SetNetworkConfiguration(current_sync, registrySection, "_2", "2")
+			wifiNetworkingParameters = SetNetworkConfiguration(setupParams, registrySection, "", "")
+			ethernetNetworkingParameters = SetNetworkConfiguration(setupParams, registrySection, "_2", "2")
 		else
 			' if the user specified wireless but the system doesn't support it, use the parameters specified for wired (the secondary parameters)
-			ethernetNetworkingParameters = SetNetworkConfiguration(current_sync, registrySection, "_2", "")
+			ethernetNetworkingParameters = SetNetworkConfiguration(setupParams, registrySection, "_2", "")
 		endif
 	else
-		ethernetNetworkingParameters = SetNetworkConfiguration(current_sync, registrySection, "", "")
+		ethernetNetworkingParameters = SetNetworkConfiguration(setupParams, registrySection, "", "")
 	endif
 
 ' Network connection priorities
-	networkConnectionPriorityWired$ = GetEntry(current_sync, "networkConnectionPriorityWired")
-	networkConnectionPriorityWireless$ = GetEntry(current_sync, "networkConnectionPriorityWireless")
+	networkConnectionPriorityWired$ = GetEntry(setupParams, "networkConnectionPriorityWired")
+	networkConnectionPriorityWireless$ = GetEntry(setupParams, "networkConnectionPriorityWireless")
 
 ' configure ethernet
 	ConfigureEthernet(ethernetNetworkingParameters, networkConnectionPriorityWired$, timeServer$, proxySpec$)
 
 ' configure wifi if specified and device supports wifi
 	if useWireless = "yes" then
-		ssid$ = GetEntry(current_sync, "ssid")
-		passphrase$ = GetEntry(current_sync, "passphrase")
+		ssid$ = GetEntry(setupParams, "ssid")
+		passphrase$ = GetEntry(setupParams, "passphrase")
 		ConfigureWifi(wifiNetworkingParameters, ssid$, passphrase$, networkConnectionPriorityWireless$, timeServer$, proxySpec$)
 	endif
 
@@ -115,63 +93,63 @@ Sub SetupCore()
 	endif
 
 ' diagnostic web server
-	SetDWS(current_sync, registrySection)
+	SetDWS(setupParams, registrySection)
 
 ' channel scanning data
 	SetupTunerData()
 
 ' local web server
-	SetLWS(current_sync, registrySection)
+	SetLWS(setupParams, registrySection)
 
 ' logging
-	SetLogging(current_sync, registrySection)
+	SetLogging(setupParams, registrySection)
 
 ' remote snapshot
-	SetRemoteSnapshot(current_sync, registrySection)
+	SetRemoteSnapshot(setupParams, registrySection)
 
 ' idle screen color
-	SetIdleColor(current_sync, registrySection)
+	SetIdleColor(setupParams, registrySection)
 
 ' retrieve and parse featureMinRevs.xml
 	featureMinRevs = ParseFeatureMinRevs()
 
 ' custom splash screen
-	SetCustomSplashScreen(current_sync, registrySection, featureMinRevs)
+	SetCustomSplashScreen(setupParams, registrySection, featureMinRevs)
 
 ' BrightWall
-	registrySection.Write("brightWallName", current_sync.LookupMetadata("client", "BrightWallName"))
-	registrySection.Write("brightWallScreenNumber", current_sync.LookupMetadata("client", "BrightWallScreenNumber"))
+	registrySection.Write("brightWallName", setupParams.BrightWallName)
+	registrySection.Write("brightWallScreenNumber", setupParams.BrightWallScreenNumber)
 
 ' handlers    
-	base$ = current_sync.LookupMetadata("client", "base")
+	base$ = setupParams.base")
 	registrySection.Write("ub", base$)
-	registrySection.Write("ru", current_sync.LookupMetadata("client", "recovery_handler"))
-	registrySection.Write("rs", current_sync.LookupMetadata("client", "recovery_setup"))
-	registrySection.Write("nu", current_sync.LookupMetadata("client", "next"))
-	registrySection.Write("vu", current_sync.LookupMetadata("client", "event"))
-	registrySection.Write("eu", current_sync.LookupMetadata("client", "error"))
-	registrySection.Write("de", current_sync.LookupMetadata("client", "deviceerror"))
-	registrySection.Write("dd", current_sync.LookupMetadata("client", "devicedownload"))
-	registrySection.Write("dp", current_sync.LookupMetadata("client", "devicedownloadprogress"))
-	registrySection.Write("td", current_sync.LookupMetadata("client", "trafficdownload"))
-	registrySection.Write("ul", current_sync.LookupMetadata("client", "uploadlogs"))
-	registrySection.Write("bs", current_sync.LookupMetadata("client", "batteryCharger"))
-	registrySection.Write("hh", current_sync.LookupMetadata("client", "heartbeat"))
+	registrySection.Write("ru", setupParams.recovery_handler)
+	registrySection.Write("rs", setupParams.recovery_setup)
+	registrySection.Write("nu", setupParams.next)
+	registrySection.Write("vu", setupParams.event)
+	registrySection.Write("eu", setupParams.error)
+	registrySection.Write("de", setupParams.deviceerror)
+	registrySection.Write("dd", setupParams.devicedownload)
+	registrySection.Write("dp", setupParams.devicedownloadprogress)
+	registrySection.Write("td", setupParams.trafficdownload)
+	registrySection.Write("ul", setupParams.uploadlogs)
+	registrySection.Write("bs", setupParams.batteryCharger)
+	registrySection.Write("hh", setupParams.heartbeat)
 	registrySection.Flush()
 
-	contentDataTypeEnabledWired$ = current_sync.LookupMetadata("client", "contentDataTypeEnabledWired")
+	contentDataTypeEnabledWired$ = setupParams.contentDataTypeEnabledWired
 	wiredDataTransferEnabled = GetDataTransferEnabled(contentDataTypeEnabledWired$)
 
-	contentDataTypeEnabledWireless$ = current_sync.LookupMetadata("client", "contentDataTypeEnabledWireless")
-	wirelessDataTransferEnabled = GetDataTransferEnabled(contentDataTypeEnabledWireless$)
+	contentDataTypeEnabledWireless$ = setupParams.contentDataTypeEnabledWireless
+	wirelessDataTransferEnabled = GetDataTransferEnabled(contentDataTypeEnabledWireless
 
 	binding% = GetBinding(wiredDataTransferEnabled, wirelessDataTransferEnabled)
 
 ' perform network diagnostics if enabled
-	networkDiagnosticsEnabled = GetBooleanSyncSpecEntry(current_sync, "networkDiagnosticsEnabled")
-	testEthernetEnabled = GetBooleanSyncSpecEntry(current_sync, "testEthernetEnabled")
-	testWirelessEnabled = GetBooleanSyncSpecEntry(current_sync, "testWirelessEnabled")
-	testInternetEnabled = GetBooleanSyncSpecEntry(current_sync, "testInternetEnabled")
+	networkDiagnosticsEnabled = GetBooleanEntry(setupParams, "networkDiagnosticsEnabled")
+	testEthernetEnabled = GetBooleanEntry(setupParams, "testEthernetEnabled")
+	testWirelessEnabled = GetBooleanEntry(setupParams, "testWirelessEnabled")
+	testInternetEnabled = GetBooleanEntry(setupParams, "testInternetEnabled")
 
 	if networkDiagnosticsEnabled then
 		PerformNetworkDiagnostics(testEthernetEnabled, testWirelessEnabled, testInternetEnabled)
@@ -184,7 +162,7 @@ Sub SetupCore()
 
 		' get bootup script from server
 		xfer = CreateObject("roUrlTransfer")
-		recoverySetup$ = current_sync.LookupMetadata("client", "recovery_setup")
+		recoverySetup$ = setupParams.recovery_setup
 		recurl = base$ + recoverySetup$
 		print "### Looking for file from "; recurl
 		xfer.BindToInterface(binding%)
@@ -212,9 +190,9 @@ Sub SetupCore()
 	end while
 
 	' if appropriate, play standalone content
-	if localToBSNSyncSpec then
-		MoveFile("pending-autorun.brs", "autorun.brs")
-	endif
+'	if localToBSNSyncSpec then
+'		MoveFile("pending-autorun.brs", "autorun.brs")
+'	endif
 
 	' reboot
 	a=RebootSystem()

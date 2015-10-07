@@ -82,10 +82,10 @@ function createSetupFiles() {
     var uploadLogsAtSpecificTimeEachDay = $("#checkBoxUploadLogsAtSpecificTimeEachDay").is(':checked');
 
 
-    //var baseURL = "http://10.10.212.44:8080/";
-    //var aUrl = baseURL + "runSetup";
+    var baseURL = "http://10.10.212.44:8080/";
+    var aUrl = baseURL + "runSetup";
 
-    var aUrl = "/runSetup";
+    //var aUrl = "/runSetup";
 
     var setupParams =
     {
@@ -147,7 +147,7 @@ function createSetupFiles() {
         "lwsPassword": "",
         "lwsEnableUpdateNotifications": "yes",
 
-        "playbackLoggingEnabled": enabledPlaybackLogging,
+        "playbackLoggingEnabled": enablePlaybackLogging,
         "eventLoggingEnabled": enableEventLogging,
         "stateLoggingEnabled": enableStateLogging,
         "diagnosticLoggingEnabled": enableDiagnosticLogging,

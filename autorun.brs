@@ -1,3 +1,7 @@
+Library "setupCommon.brs"
+Library "setupCore.brs"
+Library "setupNetworkDiagnostics.brs"
+
 REM
 REM autoplayer
 REM Mar 9, 2012
@@ -6743,7 +6747,9 @@ end Function
 
 Sub runSetup(userData as Object, e as Object)
 
-stop
+    setupParams = e.GetRequestParams(e)
+
+    ExecuteSetup(setupParams)
 
     e.AddResponseHeader("Content-type", "text/plain")
     e.AddResponseHeader("Access-Control-Allow-Origin", "*")

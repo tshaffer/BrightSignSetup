@@ -174,9 +174,9 @@ Sub ClearRegistryKeys(registrySection As Object)
 End Sub
 
 
-Function GetRateLimits(current_sync As Object, rateLimitModeKey$ As String, rateLimitRateKey$ As String)
+Function GetRateLimits(setupParams As Object, rateLimitModeKey$ As String, rateLimitRateKey$ As String)
 
-	rateLimitModeSpec$ = GetEntry(current_sync, rateLimitModeKey$)
+	rateLimitModeSpec$ = GetEntry(setupParams, rateLimitModeKey$)
 
 	rateLimitMode$ = "default"
 	rateLimitRate$ = "0"
@@ -187,7 +187,7 @@ Function GetRateLimits(current_sync As Object, rateLimitModeKey$ As String, rate
 		rateLimitRate% = 0
 	else if rateLimitModeSpec$ = "specified" then
 		rateLimitMode$ = "specified"
-		rateLimitRate$ = GetEntry(current_sync, rateLimitRateKey$)
+		rateLimitRate$ = GetEntry(setupParams, rateLimitRateKey$)
 		rateLimitRate% = int(val(rateLimitRate$))
 	endif
 
@@ -201,18 +201,18 @@ Function GetRateLimits(current_sync As Object, rateLimitModeKey$ As String, rate
 End Function
 
 
-Function SetNetworkConfiguration(current_sync As Object, registrySection As Object, keySuffix$ As String, registrySuffix$ As String)
+Function SetNetworkConfiguration(setupParams As Object, registrySection As Object, keySuffix$ As String, registrySuffix$ As String)
 
 	networkingParameters = { }
 
-	networkingParameters.useDHCP$ = GetEntry(current_sync, "useDHCP" + keySuffix$)
+	networkingParameters.useDHCP$ = GetEntry(setupParams, "useDHCP" + keySuffix$)
 	if networkingParameters.useDHCP$ = "no" then
-		networkingParameters.staticIPAddress$ = GetEntry(current_sync, "staticIPAddress" + keySuffix$)
-		networkingParameters.subnetMask$ = GetEntry(current_sync, "subnetMask" + keySuffix$)
-		networkingParameters.gateway$ = GetEntry(current_sync, "gateway" + keySuffix$)
-		networkingParameters.dns1$ = GetEntry(current_sync, "dns1" + keySuffix$)
-		networkingParameters.dns2$ = GetEntry(current_sync, "dns2" + keySuffix$)
-		networkingParameters.dns3$ = GetEntry(current_sync, "dns3" + keySuffix$)
+		networkingParameters.staticIPAddress$ = GetEntry(setupParams, "staticIPAddress" + keySuffix$)
+		networkingParameters.subnetMask$ = GetEntry(setupParams, "subnetMask" + keySuffix$)
+		networkingParameters.gateway$ = GetEntry(setupParams, "gateway" + keySuffix$)
+		networkingParameters.dns1$ = GetEntry(setupParams, "dns1" + keySuffix$)
+		networkingParameters.dns2$ = GetEntry(setupParams, "dns2" + keySuffix$)
+		networkingParameters.dns3$ = GetEntry(setupParams, "dns3" + keySuffix$)
 
 		registrySection.Write("dhcp" + registrySuffix$, "no")
 		registrySection.Write("sip" + registrySuffix$, networkingParameters.staticIPAddress$)
@@ -225,15 +225,15 @@ Function SetNetworkConfiguration(current_sync As Object, registrySection As Obje
 		registrySection.Write("dhcp" + registrySuffix$, "yes")
 	endif
 
-	rateLimits = GetRateLimits(current_sync, "rateLimitModeOutsideWindow" + keySuffix$, "rateLimitRateOutsideWindow" + keySuffix$)
+	rateLimits = GetRateLimits(setupParams, "rateLimitModeOutsideWindow" + keySuffix$, "rateLimitRateOutsideWindow" + keySuffix$)
 	rlmow$ = rateLimits.rateLimitMode$
 	rlrow$ = rateLimits.rateLimitRate$
 
-	rateLimits = GetRateLimits(current_sync, "rateLimitModeInWindow" + keySuffix$, "rateLimitRateInWindow" + keySuffix$)
+	rateLimits = GetRateLimits(setupParams, "rateLimitModeInWindow" + keySuffix$, "rateLimitRateInWindow" + keySuffix$)
 	rlmiw$ = rateLimits.rateLimitMode$
 	rlriw$ = rateLimits.rateLimitRate$
 
-	rateLimits = GetRateLimits(current_sync, "rateLimitModeInitialDownloads" + keySuffix$, "rateLimitRateInitialDownloads" + keySuffix$)
+	rateLimits = GetRateLimits(setupParams, "rateLimitModeInitialDownloads" + keySuffix$, "rateLimitRateInitialDownloads" + keySuffix$)
 	rlmid$ = rateLimits.rateLimitMode$
 	rlrid$ = rateLimits.rateLimitRate$
 	networkingParameters.rl% = rateLimits.rateLimitRate%
@@ -319,21 +319,13 @@ Function SetLogging(spec As Object, registrySection As Object) As Object
 End Function
 
 
-Function GetEntry(spec As Object, key$ As String) As String
+Function GetEntry(setupParams As Object, key$ As String) As String
 
-	if type(spec) = "roSyncSpec" then
-		return spec.LookupMetadata("client", key$)
-	else
-		ele = spec.GetNamedElements(key$)
-		if type(ele) <> "roXMLList" then
-			return ""
-		endif
-		if ele.Count() <> 1 then
-			return ""
-		endif
-    
-		return ele.GetText()    
+	if setupParams.DoesExist(key$) then
+		return setupParams.Lookup(key$)
 	endif
+
+	return ""
 
 End Function
 
@@ -622,15 +614,17 @@ Sub SetupTunerData()
 End Sub
 
 
-Function GetBooleanSyncSpecEntry(syncSpec As Object, metadataField$ As String) As Boolean
-	
-	metadata$ = syncSpec.LookupMetadata("client", metadataField$)
-	if lcase(metadata$) = "true" then
-		return true
-	else
-		return false
+Function GetBooleanEntry(setupParams As Object, metadataField$ As String) As Boolean
+
+	if setupParams.DoesExist(metadataField$) then
+		value$ = setupParams.Lookup(metadataField$)
+		if lcase(value$) = "true" or lcase(value$) = "yes" then
+			return true
+		endif
 	endif
 
+	return false
+	
 End Function
 
 
@@ -665,7 +659,7 @@ Sub SetCustomSplashScreen(spec As Object, registrySection As Object, featureMinR
 
 	customSplashScreenSupported = IsFeatureSupported("CustomSplashScreen", featureMinRevs)
 	if customSplashScreenSupported then
-		useCustomSplashScreen = GetBooleanSyncSpecEntry(spec, "useCustomSplashScreen")
+		useCustomSplashScreen = GetBooleanEntry(spec, "useCustomSplashScreen")
 
 		deviceCustomization = CreateObject("roDeviceCustomization")
 
