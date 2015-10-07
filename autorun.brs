@@ -6753,6 +6753,61 @@ End Function
 Sub runSetup(userData as Object, e as Object)
 
 
+' GetAllGroups
+	soapTransfer = CreateObject( "roUrlTransfer" )
+	soapTransfer.SetTimeout( 30000 )
+	soapTransfer.SetPort( userData.msgPort )
+	soapTransfer.SetUrl( "http://api.brightsignnetwork.com/BrightAuthor/Service/v201312/BNMServices.asmx" )
+
+	if not soapTransfer.addHeader("SOAPACTION", "http://tempuri.org/GetAllGroups") stop
+	if not soapTransfer.addHeader( "Content-Type", GetSoapContentType() ) stop
+
+'<soap:Envelope xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+'  <soap:Body>
+'    <GetAllGroups xmlns="http://tempuri.org/">
+'      <bnmCredentials>
+'        <AccountName>ted</AccountName>
+'        <UserName>ted@roku.com</UserName>
+'        <Password>870FA8EE962D90AF50C7EAED792B075A</Password>
+'      </bnmCredentials>
+'    </GetAllGroups>
+'  </soap:Body>
+'</soap:Envelope>
+    getAllGroupsXML = ""
+' it appears as though this is not necessary
+'    getAllGroupsXML = getAllGroupsXML + "<?xml version=" + chr(34) + "1.0" + chr(34) + " encoding=" + chr(34) + "utf-8" + chr(34) + "?>"
+    getAllGroupsXML = getAllGroupsXML + "<soap:Envelope xmlns:soap=" + chr(34) + "http://schemas.xmlsoap.org/soap/envelope/" + chr(34) + " xmlns:xsi=" + chr(34) + "http://www.w3.org/2001/XMLSchema-instance" + chr(34) + " xmlns:xsd=" + chr(34) + "http://www.w3.org/2001/XMLSchema" + chr(34) + ">"
+    getAllGroupsXML = getAllGroupsXML + "<soap:Body>"
+    getAllGroupsXML = getAllGroupsXML + "<GetAllGroups xmlns=" + chr(34) + "http://tempuri.org/" + chr(34) + ">"
+    getAllGroupsXML = getAllGroupsXML + "<bnmCredentials>"
+    getAllGroupsXML = getAllGroupsXML + "<AccountName>ted</AccountName>"
+    getAllGroupsXML = getAllGroupsXML + "<UserName>ted" + chr(64) + "roku.com</UserName>"
+    getAllGroupsXML = getAllGroupsXML + "<Password>870FA8EE962D90AF50C7EAED792B075A</Password>"
+    getAllGroupsXML = getAllGroupsXML + "</bnmCredentials>"
+    getAllGroupsXML = getAllGroupsXML + "</GetAllGroups>"
+    getAllGroupsXML = getAllGroupsXML + "</soap:Body>"
+    getAllGroupsXML = getAllGroupsXML + "</soap:Envelope>"
+
+	aa = {}
+	aa.method = "POST"
+	aa.request_body_string = getAllGroupsXML
+	aa.response_body_string = true
+
+'	if not soapTransfer.AsyncMethod( aa ) then
+stop
+	rv = soapTransfer.SyncMethod( aa )
+stop
+'		rv = soapTransfer.GetFailureReason()
+'		print "###  GetAccount AsyncMethod failure - reason: " + rv
+'		retryCheckBoxActivationTimer = stateMachine.LaunchRetryTimer( stateMachine.retryInterval% )
+'	endif
+return
+
+
+
+
+' GetAccount
+
 	soapTransfer = CreateObject( "roUrlTransfer" )
 	soapTransfer.SetTimeout( 30000 )
 	soapTransfer.SetPort( userData.msgPort )
