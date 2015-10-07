@@ -1,43 +1,6 @@
 /**
  * Created by Ted Shaffer on 10/5/2015.
  */
-function createSetupFiles() {
-    console.log("create setup files");
-
-    // retrieve settings
-    var unitName = $("#txtBoxUnitName").val();
-    var unitDescription = $("#txtBoxUnitDescription").val();
-    var customization = $("input[name=customization]:checked").val();
-
-    var enableWireless = $("#checkBoxEnableWireless").is(':checked');
-    var ssid = $("#txtBoxSSID").val();
-    var securityKey = $("#txtBoxSecurityKey").val();
-
-    var networkConnectionPriority = $("input[name=networkConnectionPriority]:checked").val();
-
-    var timeZone = $("#selectTimeZone").val();
-    var timeServer = $("#txtBoxTimeServer").val();
-
-    var enableDWS = $("#checkBoxEnableDWS").is(':checked');
-    var dwsPassword = $("#txtBoxDWSPassword").val();
-
-    var enableLWS = $("#checkBoxEnableLWS").is(':checked');
-    var lwsUserName = $("#txtBoxLWSUserName").val();
-    var lwsPassword = $("#txtBoxLWSPassword").val();
-
-    var bsnGroup = $("#selectBSNGroup").val();
-    var contentCheckInterval = $("#selectContentCheckFrequency").val();
-    var updateHealthInterval = $("#selectUpdateHealthFrequency").val();
-
-    var enablePlaybackLogging = $("#checkBoxEnablePlaybackLogging").is(':checked');
-    var enableEventLogging = $("#checkBoxEnableEventLogging").is(':checked');
-    var enableStateLogging = $("#checkBoxEnableStateLogging").is(':checked');
-    var enableDiagnosticLogging = $("#checkBoxEnableDiagnosticLogging").is(':checked');
-
-    var uploadLogsOnStartup = $("#checkBoxUploadLogsOnStartup").is(':checked');
-    var uploadLogsAtSpecificTimeEachDay = $("#checkBoxUploadLogsAtSpecificTimeEachDay").is(':checked');
-}
-
 $(document).ready(function () {
     console.log("hello world");
 
@@ -80,3 +43,63 @@ $(document).ready(function () {
         }
     });
 });
+
+
+function createSetupFiles() {
+    console.log("create setup files");
+
+    // retrieve settings
+    var unitName = $("#txtBoxUnitName").val();
+    var unitDescription = $("#txtBoxUnitDescription").val();
+    var customization = $("input[name=customization]:checked").val();
+
+    var enableWireless = $("#checkBoxEnableWireless").is(':checked');
+    var ssid = $("#txtBoxSSID").val();
+    var securityKey = $("#txtBoxSecurityKey").val();
+
+    var networkConnectionPriority = $("input[name=networkConnectionPriority]:checked").val();
+
+    var timeZone = $("#selectTimeZone").val();
+    var timeServer = $("#txtBoxTimeServer").val();
+
+    var enableDWS = $("#checkBoxEnableDWS").is(':checked');
+    var dwsPassword = $("#txtBoxDWSPassword").val();
+
+    var enableLWS = $("#checkBoxEnableLWS").is(':checked');
+    var lwsUserName = $("#txtBoxLWSUserName").val();
+    var lwsPassword = $("#txtBoxLWSPassword").val();
+
+    var bsnGroup = $("#selectBSNGroup").val();
+    var contentCheckInterval = $("#selectContentCheckFrequency").val();
+    var updateHealthInterval = $("#selectUpdateHealthFrequency").val();
+
+    var enablePlaybackLogging = $("#checkBoxEnablePlaybackLogging").is(':checked');
+    var enableEventLogging = $("#checkBoxEnableEventLogging").is(':checked');
+    var enableStateLogging = $("#checkBoxEnableStateLogging").is(':checked');
+    var enableDiagnosticLogging = $("#checkBoxEnableDiagnosticLogging").is(':checked');
+
+    var uploadLogsOnStartup = $("#checkBoxUploadLogsOnStartup").is(':checked');
+    var uploadLogsAtSpecificTimeEachDay = $("#checkBoxUploadLogsAtSpecificTimeEachDay").is(':checked');
+
+
+    //var baseURL = "http://10.10.212.44:8080/";
+    //var aUrl = baseURL + "runSetup";
+
+    var aUrl = "/runSetup";
+
+    var commandData = { "food": "pizza" };
+
+    $.get(aUrl, commandData)
+        .done(function (result) {
+            console.log("runSetup sent successfully");
+        })
+        .fail(function (jqXHR, textStatus, errorThrown) {
+            debugger;
+            console.log("runSetup failure");
+        })
+        .always(function () {
+            //alert("runSetup transmission finished");
+        });
+}
+
+

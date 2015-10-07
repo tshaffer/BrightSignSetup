@@ -6597,8 +6597,14 @@ Function NewSetupServer() As Object
 
     msgPort = CreateObject("roMessagePort")
 
+    gpioPort = CreateObject("roGpioControlPort")
+    gpioPort.SetPort(msgPort)
+
     localServer = CreateObject("roHttpServer", { port: 8080 })
     localServer.SetPort(msgPort)
+
+	runSetupAA =				{ HandleEvent: runSetup, mVar: m}
+	localServer.AddGetFromEvent({ url_path: "/runSetup", user_data: runSetupAA })
 
 	serverDirectory$ = "webSite"
 	listOfServerFiles = []
@@ -6610,9 +6616,18 @@ Function NewSetupServer() As Object
 
         print "msg received - type="; type(msg)
 
-'        if type(msg) = "roGpioButton" then
-'            if msg.GetInt() = 12 then stop
-'        endif
+        if type(msg) = "roHttpEvent" then
+
+            userdata = msg.GetUserData()
+            if type(userdata) = "roAssociativeArray" and type(userdata.HandleEvent) = "roFunction" then
+                userData.HandleEvent(userData, msg)
+            endif
+
+		endif
+
+        if type(msg) = "roGpioButton" then
+            if msg.GetInt() = 12 then stop
+        endif
 
     end while
 
@@ -6725,5 +6740,16 @@ Function GetMimeTypeByExtension(ext as String) as String
   return ""
 end Function
 
+
+Sub runSetup(userData as Object, e as Object)
+
+stop
+
+    e.AddResponseHeader("Content-type", "text/plain")
+    e.AddResponseHeader("Access-Control-Allow-Origin", "*")
+    e.SetResponseBodyString("ok")
+    e.SendResponse(200)
+
+End Sub
 
 
