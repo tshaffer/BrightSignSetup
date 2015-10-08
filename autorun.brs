@@ -6750,8 +6750,7 @@ Function GetSoapContentType() As String
 End Function
 
 
-Sub runSetup(userData as Object, e as Object)
-
+Sub GetAllGroups()
 
 ' GetAllGroups
 	soapTransfer = CreateObject( "roUrlTransfer" )
@@ -6801,10 +6800,11 @@ stop
 '		print "###  GetAccount AsyncMethod failure - reason: " + rv
 '		retryCheckBoxActivationTimer = stateMachine.LaunchRetryTimer( stateMachine.retryInterval% )
 '	endif
-return
+
+End Sub
 
 
-
+Sub GetAccount()
 
 ' GetAccount
 
@@ -6845,15 +6845,12 @@ stop
 '		retryCheckBoxActivationTimer = stateMachine.LaunchRetryTimer( stateMachine.retryInterval% )
 '	endif
 
-
-
-
-
-
-
-
-
 return
+
+End Sub
+
+
+Sub runSetup(userData as Object, e as Object)
 
     setupParams = e.GetRequestParams()
 
