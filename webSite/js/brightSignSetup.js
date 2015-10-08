@@ -28,12 +28,10 @@ $(document).ready(function () {
 
         var enableBSN = $("#bsnSetupType").is(':checked');
         if (enableBSN) {
-            $("#bsnLogin").attr("style", "display: block;");
-            //$("#bsnSetup").attr("style", "display: block;");
+            showBSNLoginUI();
         }
         else {
-            $("#bsnLogin").attr("style", "display: none;");
-            //$("#bsnSetup").attr("style", "display: none;");
+            hideBSNLoginUI();
         }
 
         var enableSFN = $("#sfnSetupType").is(':checked');
@@ -45,6 +43,38 @@ $(document).ready(function () {
         }
     });
 });
+
+
+function showBSNLoginUI() {
+    $("#bsnLogin").attr("style", "display: block;");
+}
+
+
+function hideBSNLoginUI() {
+    $("#bsnLogin").attr("style", "display: none;");
+}
+
+
+function showBSNSetupUI() {
+    $("#bsnSetup").attr("style", "display: block;");
+}
+
+
+function hideBSNSetupUI() {
+    $("#bsnSetup").attr("style", "display: none;");
+}
+
+
+function updateBSNGroups(groups) {
+    $("#selectBSNGroup").empty();
+
+    $.each(groups, function (index, groupName) {
+        $('#selectBSNGroup').append($('<option/>', {
+            value: groupName,
+            text : groupName
+        }));
+    });
+}
 
 
 function signInToBSN() {
@@ -71,6 +101,9 @@ function signInToBSN() {
                $.get(aUrl, bsnCredentials)
                 .done(function(allGroups) {
                     console.log("bsnGetAllGroups completed successfully");
+                    hideBSNLoginUI();
+                    showBSNSetupUI();
+                    updateBSNGroups(allGroups);
                 })
                 .fail(function (jqXHR, textStatus, errorThrown) {
                     debugger;
