@@ -6613,6 +6613,9 @@ Function NewSetupServer() As Object
     bsnSignInAA = { HandleEvent: bsnSignIn, msgPort: msgPort }
     localServer.AddGetFromEvent({ url_path: "/bsnSignIn", user_data: bsnSignInAA })
 
+    bsnGetAllGroupsAA = { HandleEvent: bsnGetAllGroups, msgPort: msgPort }
+    localServer.AddGetFromEvent({ url_path: "/bsnGetAllGroups", user_data: bsnGetAllGroupsAA })
+
 	serverDirectory$ = "webSite"
 	listOfServerFiles = []
 	ListFiles(serverDirectory$, listOfServerFiles)
@@ -6753,9 +6756,39 @@ Function GetSoapContentType() As String
 End Function
 
 
-Sub GetAllGroups()
+Function ParseGetAllGroupsXML(xml$ As String) As Object
+
+    groupNames = []
+
+	if xml$ <> "" then
+		getAllGroupsXMLDoc = CreateObject("roXMLElement")
+		getAllGroupsXMLDoc.Parse(xml$)
+		children = getAllGroupsXMLDoc.GetChildElements()
+		if children.Count() = 1 then
+			soapBody = children[0]
+			allGroupsResultXML = soapBody.GetAllGroupsResponse.GetAllGroupsResult
+			allGroupsResultXMLList = allGroupsResultXML.GetChildElements()
+
+			for each groupResultXML in allGroupsResultXMLList
+			    groupName$ = groupResultXML.Name.GetText()
+			    groupNames.push(groupName$)
+			next
+		endif
+	endif
+
+    return groupNames
+
+End Function
+
+
+Sub GetAllGroups(userData As Object, bsnCredentials) As Object
+
+    account$ = bsnCredentials.account
+    login$ = bsnCredentials.login
+    password$ = bsnCredentials.password
 
 ' GetAllGroups
+
 	soapTransfer = CreateObject( "roUrlTransfer" )
 	soapTransfer.SetTimeout( 30000 )
 	soapTransfer.SetPort( userData.msgPort )
@@ -6782,9 +6815,9 @@ Sub GetAllGroups()
     getAllGroupsXML = getAllGroupsXML + "<soap:Body>"
     getAllGroupsXML = getAllGroupsXML + "<GetAllGroups xmlns=" + chr(34) + "http://tempuri.org/" + chr(34) + ">"
     getAllGroupsXML = getAllGroupsXML + "<bnmCredentials>"
-    getAllGroupsXML = getAllGroupsXML + "<AccountName>ted</AccountName>"
-    getAllGroupsXML = getAllGroupsXML + "<UserName>ted" + chr(64) + "roku.com</UserName>"
-    getAllGroupsXML = getAllGroupsXML + "<Password>870FA8EE962D90AF50C7EAED792B075A</Password>"
+    getAllGroupsXML = getAllGroupsXML + "<AccountName>" + account$ + "</AccountName>"
+    getAllGroupsXML = getAllGroupsXML + "<UserName>" + login$ + "</UserName>"
+    getAllGroupsXML = getAllGroupsXML + "<Password>" + password$ + "</Password>"
     getAllGroupsXML = getAllGroupsXML + "</bnmCredentials>"
     getAllGroupsXML = getAllGroupsXML + "</GetAllGroups>"
     getAllGroupsXML = getAllGroupsXML + "</soap:Body>"
@@ -6796,13 +6829,15 @@ Sub GetAllGroups()
 	aa.response_body_string = true
 
 '	if not soapTransfer.AsyncMethod( aa ) then
-stop
 	rv = soapTransfer.SyncMethod( aa )
-stop
+
+	allGroups = ParseGetAllGroupsXML(rv)
 '		rv = soapTransfer.GetFailureReason()
 '		print "###  GetAccount AsyncMethod failure - reason: " + rv
 '		retryCheckBoxActivationTimer = stateMachine.LaunchRetryTimer( stateMachine.retryInterval% )
 '	endif
+
+    return allGroups
 
 End Sub
 
@@ -6872,7 +6907,6 @@ Function GetAccount(userData As Object, bsnCredentials As Object) As Object
 '	if not soapTransfer.AsyncMethod( aa ) then
 	rv = soapTransfer.SyncMethod( aa )
 	accountInfo = ParseGetAccountXML(rv)
-stop
 '		rv = soapTransfer.GetFailureReason()
 '		print "###  GetAccount AsyncMethod failure - reason: " + rv
 '		retryCheckBoxActivationTimer = stateMachine.LaunchRetryTimer( stateMachine.retryInterval% )
@@ -6904,6 +6938,22 @@ Sub bsnSignIn(userData as Object, e as Object)
     accountInfo = GetAccount(userData, bsnCredentials)
 
 	json = FormatJson(accountInfo, 0)
+
+    e.AddResponseHeader("Content-type", "text/json")
+    e.AddResponseHeader("Access-Control-Allow-Origin", "*")
+    e.SetResponseBodyString(json)
+    e.SendResponse(200)
+
+End Sub
+
+
+Sub bsnGetAllGroups(userData as Object, e as Object)
+
+    bsnCredentials = e.GetRequestParams()
+
+    allGroups = GetAllGroups(userData, bsnCredentials)
+
+	json = FormatJson(allGroups, 0)
 
     e.AddResponseHeader("Content-type", "text/json")
     e.AddResponseHeader("Access-Control-Allow-Origin", "*")

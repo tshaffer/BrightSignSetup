@@ -66,6 +66,16 @@ function signInToBSN() {
     $.get(aUrl, bsnCredentials)
         .done(function (result) {
             console.log("bsnSignIn completed successfully");
+
+            aUrl = baseURL + "bsnGetAllGroups";
+               $.get(aUrl, bsnCredentials)
+                .done(function(allGroups) {
+                    console.log("bsnGetAllGroups completed successfully");
+                })
+                .fail(function (jqXHR, textStatus, errorThrown) {
+                    debugger;
+                    console.log("bsnSignIn failure");
+                })
         })
         .fail(function (jqXHR, textStatus, errorThrown) {
             debugger;
@@ -74,7 +84,6 @@ function signInToBSN() {
         .always(function () {
             //alert("runSetup transmission finished");
         });
-
 }
 
 
