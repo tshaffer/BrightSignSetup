@@ -249,6 +249,42 @@
                                 <input type='radio' id="bsnSetupType" name='setupType' value='bsn'>Networked with the BrightSign Network
                             </td>
                         </tr>
+
+                        <tr id="bsnLogin" style="display:none;">
+                            <td>
+                                <table class="level2">
+                                    <tr>
+                                        <td colspan="2">
+                                            <div class="panelCaption">
+                                                BrightSign Network Sign In
+                                            </div>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td>Account:</td>
+                                        <td>
+                                            <input id="txtBoxBSNAccount" type="text" name="txtBoxBSNAccount" value="">
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td>Login:</td>
+                                        <td>
+                                            <input id="txtBoxBSNLogin" type="text" name="txtBoxBSNLogin " value="">
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td>Password:</td>
+                                        <td>
+                                            <input id="txtBoxBSNPassword" type="password" name="txtBoxBSNPassword" value="">
+                                        </td>
+                                    </tr>
+                                </table>
+                                <div class="bsnLoginButtonBox">
+                                    <button type="button" onclick="signInToBSN()">Sign In</button>
+                                </div>
+                            </td>
+                        </tr>
+
                         <tr id="bsnSetup" style="display:none;">
                             <td>
                                 <table class="level2">

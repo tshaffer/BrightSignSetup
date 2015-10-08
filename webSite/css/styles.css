@@ -46,4 +46,9 @@ div.panelContent div.smallDescription { color:Gray; font-size:smaller; }
 div.panelContent input.buttonDownloadFirmware { margin-left: 160px; margin-top: 10px; }
 
 div.buttonBoxCreateSetupFiles { clear: left; }
+div.advancedNetworkSetupButtonBox { clear: left; }
+div.bsnLoginButtonBox {
+    margin-left: 23px;
+
+}
 

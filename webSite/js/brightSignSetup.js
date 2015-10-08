@@ -28,10 +28,12 @@ $(document).ready(function () {
 
         var enableBSN = $("#bsnSetupType").is(':checked');
         if (enableBSN) {
-            $("#bsnSetup").attr("style", "display: block;");
+            $("#bsnLogin").attr("style", "display: block;");
+            //$("#bsnSetup").attr("style", "display: block;");
         }
         else {
-            $("#bsnSetup").attr("style", "display: none;");
+            $("#bsnLogin").attr("style", "display: none;");
+            //$("#bsnSetup").attr("style", "display: none;");
         }
 
         var enableSFN = $("#sfnSetupType").is(':checked');
@@ -43,6 +45,37 @@ $(document).ready(function () {
         }
     });
 });
+
+
+function signInToBSN() {
+
+    var bsnAccount = $("#txtBoxBSNAccount").val();
+    var bsnLogin = $("#txtBoxBSNLogin").val();
+    var bsnPassword = $("#txtBoxBSNPassword").val();
+    var bsnObfuscatedPassword = "870FA8EE962D90AF50C7EAED792B075A";
+
+    var bsnCredentials = {
+        "account": bsnAccount,
+        "login": bsnLogin,
+        "password": bsnObfuscatedPassword
+    };
+
+    var baseURL = "http://10.10.212.44:8080/";
+    var aUrl = baseURL + "bsnSignIn";
+
+    $.get(aUrl, bsnCredentials)
+        .done(function (result) {
+            console.log("bsnSignIn completed successfully");
+        })
+        .fail(function (jqXHR, textStatus, errorThrown) {
+            debugger;
+            console.log("bsnSignIn failure");
+        })
+        .always(function () {
+            //alert("runSetup transmission finished");
+        });
+
+}
 
 
 function createSetupFiles() {

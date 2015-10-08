@@ -6610,6 +6610,9 @@ Function NewSetupServer() As Object
 	runSetupAA =				{ HandleEvent: runSetup, msgPort: msgPort }
 	localServer.AddGetFromEvent({ url_path: "/runSetup", user_data: runSetupAA })
 
+    bsnSignInAA = { HandleEvent: bsnSignIn, msgPort: msgPort }
+    localServer.AddGetFromEvent({ url_path: "/bsnSignIn", user_data: bsnSignInAA })
+
 	serverDirectory$ = "webSite"
 	listOfServerFiles = []
 	ListFiles(serverDirectory$, listOfServerFiles)
@@ -6804,7 +6807,11 @@ stop
 End Sub
 
 
-Sub GetAccount()
+Sub GetAccount(userData As Object, bsnCredentials As Object)
+
+    account$ = bsnCredentials.account
+    login$ = bsnCredentials.login
+    password$ = bsnCredentials.password
 
 ' GetAccount
 
@@ -6823,9 +6830,9 @@ Sub GetAccount()
     getAccountXML = getAccountXML + "<soap:Body>"
     getAccountXML = getAccountXML + "<GetAccount xmlns=" + chr(34) + "http://tempuri.org/" + chr(34) + ">"
     getAccountXML = getAccountXML + "<bnmCredentials>"
-    getAccountXML = getAccountXML + "<AccountName>ted</AccountName>"
-    getAccountXML = getAccountXML + "<UserName>ted" + chr(64) + "roku.com</UserName>"
-    getAccountXML = getAccountXML + "<Password>870FA8EE962D90AF50C7EAED792B075A</Password>"
+    getAccountXML = getAccountXML + "<AccountName>" + account$ + "</AccountName>"
+    getAccountXML = getAccountXML + "<UserName>" + login$ + "</UserName>"
+    getAccountXML = getAccountXML + "<Password>" + password$ + "</Password>"
     getAccountXML = getAccountXML + "</bnmCredentials>"
     getAccountXML = getAccountXML + "</GetAccount>"
     getAccountXML = getAccountXML + "</soap:Body>"
@@ -6863,4 +6870,12 @@ Sub runSetup(userData as Object, e as Object)
 
 End Sub
 
+
+Sub bsnSignIn(userData as Object, e as Object)
+
+    bsnCredentials = e.GetRequestParams()
+
+    GetAccount(userData, bsnCredentials)
+
+End Sub
 
