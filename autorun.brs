@@ -6807,7 +6807,33 @@ stop
 End Sub
 
 
-Sub GetAccount(userData As Object, bsnCredentials As Object)
+Function ParseGetAccountXML(xml$ As String) As Object
+
+    accountInfo = {}
+
+	if xml$ <> "" then
+		getAccountXMLDoc = CreateObject("roXMLElement")
+		getAccountXMLDoc.Parse(xml$)
+		children = getAccountXMLDoc.GetChildElements()
+		if children.Count() = 1 then
+			soapBody = children[0]
+			accountInfoXMLList = soapBody.GetAccountResponse.GetAccountResult
+			if accountInfoXMLList.Count() = 1 then
+			    accountInfoXML = accountInfoXMLList[0]
+			    accountInfo.Id = accountInfoXML.Id.GetText()
+			    accountInfo.Name = accountInfoXML.Name.GetText()
+			    accountInfo.BSUserName = accountInfoXML.BSUserName.GetText()
+			    accountInfo.BSPassword = accountInfoXML.BSPassword.GetText()
+            endif
+		endif
+	endif
+
+    return accountInfo
+
+End Function
+
+
+Function GetAccount(userData As Object, bsnCredentials As Object) As Object
 
     account$ = bsnCredentials.account
     login$ = bsnCredentials.login
@@ -6844,17 +6870,17 @@ Sub GetAccount(userData As Object, bsnCredentials As Object)
 	aa.response_body_string = true
 
 '	if not soapTransfer.AsyncMethod( aa ) then
-stop
 	rv = soapTransfer.SyncMethod( aa )
+	accountInfo = ParseGetAccountXML(rv)
 stop
 '		rv = soapTransfer.GetFailureReason()
 '		print "###  GetAccount AsyncMethod failure - reason: " + rv
 '		retryCheckBoxActivationTimer = stateMachine.LaunchRetryTimer( stateMachine.retryInterval% )
 '	endif
 
-return
+    return accountInfo
 
-End Sub
+End Function
 
 
 Sub runSetup(userData as Object, e as Object)
@@ -6875,7 +6901,14 @@ Sub bsnSignIn(userData as Object, e as Object)
 
     bsnCredentials = e.GetRequestParams()
 
-    GetAccount(userData, bsnCredentials)
+    accountInfo = GetAccount(userData, bsnCredentials)
+
+	json = FormatJson(accountInfo, 0)
+
+    e.AddResponseHeader("Content-type", "text/json")
+    e.AddResponseHeader("Access-Control-Allow-Origin", "*")
+    e.SetResponseBodyString(json)
+    e.SendResponse(200)
 
 End Sub
 
