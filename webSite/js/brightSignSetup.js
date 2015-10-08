@@ -71,6 +71,14 @@ function createSetupFiles() {
 
     var setupType = $("input[name=setupType]:checked").val();
 
+    var lwsConfig = "none";
+    if (setupType == "lfn") {
+        lwsConfig = "content";
+    }
+    else if (enableLWS) {
+        lwsConfig = "status";
+    }
+
     var bsnGroup = $("#selectBSNGroup").val();
     var contentCheckInterval = $("#selectContentCheckFrequency").val();
     var updateHealthInterval = $("#selectUpdateHealthFrequency").val();
@@ -145,7 +153,7 @@ function createSetupFiles() {
         "dwsEnabled": enableDWS,
         "dwsPassword": dwsPassword,
 
-        "lwsConfig": "status",
+        "lwsConfig": lwsConfig,
         "lwsUserName": "",
         "lwsPassword": "",
         "lwsEnableUpdateNotifications": "yes",
