@@ -10,7 +10,11 @@ namespace transcoder
     class Program
     {
         // constants
-        private static string _bsIPAddress = "192.168.2.6:8080";
+        //private static string _bsIPAddress = "192.168.2.6:8080";
+        //private static string _bsIPAddress = "10.1.0.244:8080";
+        //private static string _bsIPAddress = "192.168.2.6:8080";
+        private static string _bsIPAddress = "192.168.2.9:8080";
+        //private static string _bsIPAddress = "10.10.212.44:8080";
         private static StreamWriter _writer = null;
 
         private static int _timeToDelayAfterConversion = 60000;
@@ -41,9 +45,9 @@ namespace transcoder
                             {
                                 // delete local files (downloaded file and converted file)
                                 LogMessage(GetTimeStamp() + " : Main: delete " + fileToTranscodePath);
-                                File.Delete(fileToTranscodePath);
+                                //File.Delete(fileToTranscodePath);
                                 LogMessage(GetTimeStamp() + " : Main: delete " + transcodedFilePath);
-                                File.Delete(transcodedFilePath);
+                                //File.Delete(transcodedFilePath);
 
                                 LogMessage(GetTimeStamp() + " : Main: transcode successfully completed");
                             }
@@ -187,6 +191,7 @@ namespace transcoder
 
             LogMessage(GetTimeStamp() + " : TranscodeFile " + sourcePath + " to " + targetPath);
 
+            // >ffmpeg -i GoodWife4.ts -bsf:a aac_adtstoasc -c copy GoodWife4.mp4
             string ffmpegArgs = String.Format("-i \"{0}\" -bsf:a aac_adtstoasc -c copy  \"{1}\"", sourcePath, targetPath);
 
             Process process = new Process();
