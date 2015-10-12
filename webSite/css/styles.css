@@ -1,3 +1,6 @@
+#btnSignoutFromBSN { float: right; }
+.rightAlignedElement { float: right; }
+
 div.wrapper { padding-left: 40px; padding-right: 40px; }
 
 div.pageHeader h1 { float: left; margin-bottom: 5px; }

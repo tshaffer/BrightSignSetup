@@ -288,42 +288,47 @@
                         <tr id="bsnSetup" style="display:none;">
                             <td>
                                 <table class="level2">
-                                <tr>
-                                    <td>Group:
-                                        <select id="selectBSNGroup"  style="width: 250px;">
-                                            <option value="Default">Default</option>
-                                            <option value="test">test</option>
-                                        </select>
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td>
-                                        <label>Content Check Frequency:</label>
-                                        <select id="selectContentCheckFrequency" style="width: 135px;">
-                                            <option value="300">Every 5 minutes</option>
-                                            <option value="1800">Every 30 minutes</option>
-                                            <option value="3600">Every 1 hour</option>
-                                            <option value="21600">Every 6 hours</option>
-                                            <option value="43200">Every 12 hours</option>
-                                            <option value="86400">Every 24 hours</option>
-                                        </select>
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td>
-                                        <label>Update Health Frequency:</label>
-                                        <select id="selectUpdateHealthFrequency" style="width: 135px;">
-                                            <option value="300">Every 5 minutes</option>
-                                            <option value="900">Every 15 minutes</option>
-                                            <option value="1800">Every 30 minutes</option>
-                                            <option value="3600">Every 1 hour</option>
-                                            <option value="21600">Every 6 hours</option>
-                                            <option value="43200">Every 12 hours</option>
-                                            <option value="86400">Every 24 hours</option>
-                                        </select>
-                                    </td>
-                                </tr>
-                            </table>
+                                    <tr>
+                                        <td>
+                                            <label>Signed in as:</label>
+                                            <label id="labelBSNAccountName"></label>
+                                            <button type="button" class="rightAlignedElement" onclick="signoutFromBSN()">Sign Out</button>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td>Group:
+                                            <select class="rightAlignedElement" id="selectBSNGroup"  style="width: 250px;">
+                                            </select>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td>
+                                            <label>Content Check Frequency:</label>
+                                            <select class="rightAlignedElement" id="selectContentCheckFrequency" style="width: 135px;">
+                                                <option value="300">Every 5 minutes</option>
+                                                <option value="1800">Every 30 minutes</option>
+                                                <option value="3600">Every 1 hour</option>
+                                                <option value="21600">Every 6 hours</option>
+                                                <option value="43200">Every 12 hours</option>
+                                                <option value="86400">Every 24 hours</option>
+                                            </select>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td>
+                                            <label>Update Health Frequency:</label>
+                                            <select class="rightAlignedElement" id="selectUpdateHealthFrequency" style="width: 135px;">
+                                                <option value="300">Every 5 minutes</option>
+                                                <option value="900">Every 15 minutes</option>
+                                                <option value="1800">Every 30 minutes</option>
+                                                <option value="3600">Every 1 hour</option>
+                                                <option value="21600">Every 6 hours</option>
+                                                <option value="43200">Every 12 hours</option>
+                                                <option value="86400">Every 24 hours</option>
+                                            </select>
+                                        </td>
+                                    </tr>
+                                </table>
                             </td>
                         </tr>
                         <tr>

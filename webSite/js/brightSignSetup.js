@@ -45,6 +45,13 @@ $(document).ready(function () {
 });
 
 
+function clearBSNLoginUI() {
+    $("#txtBoxBSNAccount")[0].value='';
+    $("#txtBoxBSNLogin")[0].value='';
+    $("#txtBoxBSNPassword")[0].value='';
+}
+
+
 function showBSNLoginUI() {
     $("#bsnLogin").attr("style", "display: block;");
 }
@@ -56,6 +63,7 @@ function hideBSNLoginUI() {
 
 
 function showBSNSetupUI() {
+    $("#labelBSNAccountName").text($("#txtBoxBSNAccount").val());
     $("#bsnSetup").attr("style", "display: block;");
 }
 
@@ -117,6 +125,13 @@ function signInToBSN() {
         .always(function () {
             //alert("runSetup transmission finished");
         });
+}
+
+
+function signoutFromBSN() {
+    hideBSNSetupUI();
+    clearBSNLoginUI();
+    showBSNLoginUI();
 }
 
 
