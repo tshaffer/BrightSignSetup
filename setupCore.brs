@@ -44,6 +44,8 @@ Sub ExecuteSetup(setupParams As Object)
             registrySection.Write("hrs", setupParams.heartbeatsRangeStart)
             registrySection.Write("hrl", setupParams.heartbeatsRangeLength)
         endif
+    else if setupType$ = "sfn" then
+    	ClearRegistryKeys(registrySection)
     endif
 
     ' name specification, etc.
@@ -101,10 +103,9 @@ Sub ExecuteSetup(setupParams As Object)
 	endif
 
 ' set the time zone
+    m.systemTime = CreateObject("roSystemTime")
     if setupParams.timezone <> "" then
-        systemTime = CreateObject("roSystemTime")
-        systemTime.SetTimeZone(setupParams.timezone)
-        systemTime = invalid
+        m.systemTime.SetTimeZone(setupParams.timezone)
     endif
 
 ' diagnostic web server
@@ -138,9 +139,9 @@ Sub ExecuteSetup(setupParams As Object)
 	registrySection.Write("brightWallName", setupParams.BrightWallName)
 	registrySection.Write("brightWallScreenNumber", setupParams.BrightWallScreenNumber)
 
+' Handlers for bnm, sfn
     if setupType$ = "bnm" then
-        ' handlers
-        base$ = setupParams.base
+        m.baseUrl$ = setupParams.baseUrl
         registrySection.Write("ub", setupParams.base)
         registrySection.Write("ru", setupParams.recovery_handler)
         registrySection.Write("rs", setupParams.recovery_setup)
@@ -154,6 +155,22 @@ Sub ExecuteSetup(setupParams As Object)
         registrySection.Write("ul", setupParams.uploadlogs)
         registrySection.Write("bs", setupParams.batteryCharger)
         registrySection.Write("hh", setupParams.heartbeat)
+    else if setupType$ = "sfn" then
+        m.baseUrl$ = setupParams.baseUrl
+        m.nextUrl$ = setupParams.nextUrl
+        m.user$ = setupParams.user
+        m.password$ = setupParams.password
+        if m.user$ <> "" or m.password$ <> "" then
+            m.setUserAndPassword = true
+        else
+            m.setUserAndPassword = false
+        endif
+
+        if lcase(setupParams.enableBasicAuthentication) = "true" then
+            m.enableUnsafeAuthentication = true
+        else
+            m.enableUnsafeAuthentication = false
+        endif
     else
         ' clear uploadlogs handler
         registrySection.Write("ul", "")
@@ -161,15 +178,17 @@ Sub ExecuteSetup(setupParams As Object)
 
     registrySection.Flush()
 
-    if setupType$ = "bnm" then
+    if setupType$ = "bnm" or setupType$ = "sfn" then
         contentDataTypeEnabledWired$ = setupParams.contentDataTypeEnabledWired
         wiredDataTransferEnabled = GetDataTransferEnabled(contentDataTypeEnabledWired$)
 
         contentDataTypeEnabledWireless$ = setupParams.contentDataTypeEnabledWireless
         wirelessDataTransferEnabled = GetDataTransferEnabled(contentDataTypeEnabledWireless$)
 
-        binding% = GetBinding(wiredDataTransferEnabled, wirelessDataTransferEnabled)
+        m.binding% = GetBinding(wiredDataTransferEnabled, wirelessDataTransferEnabled)
+
     endif
+
 
 ' perform network diagnostics if enabled
 	networkDiagnosticsEnabled = GetBooleanEntry(setupParams, "networkDiagnosticsEnabled")
@@ -190,9 +209,9 @@ Sub ExecuteSetup(setupParams As Object)
             ' get bootup script from server
             xfer = CreateObject("roUrlTransfer")
             recoverySetup$ = setupParams.recovery_setup
-            recurl = base$ + recoverySetup$
+            recurl = m.baseUrl$ + recoverySetup$
             print "### Looking for file from "; recurl
-            xfer.BindToInterface(binding%)
+            xfer.BindToInterface(m.binding%)
             xfer.SetUrl(recurl)
 
             response_code = xfer.GetToFile("autorun.tmp")
@@ -225,6 +244,13 @@ Sub ExecuteSetup(setupParams As Object)
         a=RebootSystem()
         stop
 
+    else if setupType$= "sfn" then
+        ' Check for updates every minute
+        m.checkForContentTimer = CreateObject("roTimer")
+        m.checkForContentTimer.SetPort(m.msgPort)
+        m.checkForContentTimer.SetDate(-1, -1, -1)
+        m.checkForContentTimer.SetTime(-1, -1, 0, 0)
+        if not m.checkForContentTimer.Start() then stop
     else
 
         videoMode = CreateObject("roVideoMode")
@@ -285,3 +311,226 @@ Sub ExecuteSetup(setupParams As Object)
     endif
 
 End Sub
+
+
+Sub StartSetupSync()
+
+    print "### start_sync"
+
+	if type(m.syncPool) = "roSyncPool" then
+' This should be improved in the future to work out
+' whether the sync spec we're currently satisfying
+' matches the one that we're currently downloading or
+' not.
+'        m.diagnostics.PrintDebug("### sync already active so we'll let it continue")
+'        m.logging.WriteDiagnosticLogEntry(m.diagnosticCodes.EVENT_SYNC_ALREADY_ACTIVE, "")
+        print "### sync already active so we'll let it continue"
+		return
+	endif
+
+	m.xfer = CreateObject("roUrlTransfer")
+	m.xfer.SetPort(m.msgPort)
+
+    ' get the next sync spec
+	' m.diagnostics.PrintDebug("### Looking for new sync list from " + m.nextURL$)
+	print "### Looking for new sync list from " + m.nextURL$
+	nextUrl$ = m.baseUrl$ + m.nextUrl$
+	m.xfer.SetUrl(nextUrl$)
+
+    if m.user$<>"" and m.password$<>"" then
+        m.xfer.SetUserAndPassword(m.user$, m.password$)
+	    m.xfer.EnableUnsafeAuthentication(m.enableUnsafeAuthentication)
+    endif
+
+	' m.xfer.SetHeaders(m.currentSync.GetMetadata("server"))
+
+	du = CreateObject("roStorageInfo", "./")
+    cardSizeInMB = du.GetSizeInMegabytes()
+    du = invalid
+
+    systemTime = CreateObject("roSystemTime")
+    timezone = systemTime.GetTimeZone()
+    systemTime = invalid
+
+' Add device unique identifier, timezone
+    m.xfer.AddHeader("DeviceID", m.deviceUniqueID$)
+    m.xfer.AddHeader("DeviceFWVersion", m.firmwareVersion$)
+    m.xfer.AddHeader("DeviceSWVersion", "autorun-setup.brs " + m.autorunVersion$)
+    m.xfer.AddHeader("timezone", timeZone)
+
+' Add card size
+	m.xfer.AddHeader("storage-size", str(cardSizeInMB))
+
+'    m.logging.WriteDiagnosticLogEntry(m.diagnosticCodes.EVENT_CHECK_CONTENT, m.nextURL$)
+
+	print "&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&& binding for StartSetupSync is ";m.binding%
+	ok = m.xfer.BindToInterface(m.binding%)
+	if not ok then stop
+
+	if not m.xfer.AsyncGetToFile("tmp:new-sync.xml") then stop
+
+End Sub
+
+
+Sub SetupURLEvent(msg)
+
+'    m.diagnostics.PrintTimestamp()
+'    m.diagnostics.PrintDebug("### url_event")
+    print "### url_event"
+
+	if type (m.xfer) <> "roUrlTransfer" then return
+	if msg.GetSourceIdentity() = m.xfer.GetIdentity() then
+	    if msg.GetInt() = m.URL_EVENT_COMPLETE then
+		    xferInUse = false
+		    if msg.GetResponseCode() = 200 then
+			    m.newSync = CreateObject("roSyncSpec")
+			    if m.newSync.ReadFromFile("tmp:new-sync.xml") then
+'                    m.logging.WriteDiagnosticLogEntry(m.diagnosticCodes.EVENT_SYNCSPEC_RECEIVED, "YES")
+'                    m.diagnostics.PrintDebug("### Server gave us spec: " + m.newSync.GetName())
+                    print "### Server gave us spec: " + m.newSync.GetName()
+'				    readySync = CreateObject("roSyncSpec")
+'				    if readySync.ReadFromFile("ready-sync.xml") then
+'					    if m.newSync.EqualTo(readySync) then
+'                            m.diagnostics.PrintDebug("### Server has given us a spec that matches ready-sync. Nothing more to do.")
+'						    DeleteFile("tmp:new-sync.xml")
+'						    readySync = 0
+'						    m.newSync = 0
+'						    return
+'					    endif
+'				    endif
+' Anything the server has given us supersedes ready-sync.xml so we'd better delete it and cancel its alarm
+'				    DeleteFile("ready-sync.xml")
+
+' Log the start of sync list download
+'                    m.logging.WriteDiagnosticLogEntry( m.diagnosticCodes.EVENT_DOWNLOAD_START, "")
+'                    m.SendEvent("StartSyncListDownload", m.newSync.GetName(), "")
+
+'					m.SetPoolSizes( m.newSync )
+
+				    m.syncPool = CreateObject("roSyncPool", "pool")
+				    m.syncPool.SetPort(m.msgPort)
+                    m.syncPool.SetMinimumTransferRate(1000,900)
+                    m.syncPool.SetFileProgressIntervalSeconds(15)
+                    if m.setUserAndPassword then m.syncPool.SetUserAndPassword(m.user$, m.password$)
+					m.syncPool.EnableUnsafeAuthentication(m.enableUnsafeAuthentication)
+                    m.syncPool.SetHeaders(m.newSync.GetMetadata("server"))
+                    m.syncPool.AddHeader("DeviceID", m.deviceUniqueID$)
+
+' fix me
+                    m.contentXfersBinding% = m.binding%
+
+					print "&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&& binding for syncPool is ";m.contentXfersBinding%
+					ok = m.syncPool.BindToInterface(m.contentXfersBinding%)
+					if not ok then stop
+
+' implies dodgy XML, or something is already running. could happen if server sends down bad xml.
+				    if not m.syncPool.AsyncDownload(m.newSync) then
+'                       m.logging.WriteDiagnosticLogEntry(m.diagnosticCodes.EVENT_SYNCSPEC_DOWNLOAD_IMMEDIATE_FAILURE, m.syncPool.GetFailureReason())
+'				        m.diagnostics.PrintTimestamp()
+'                       m.diagnostics.PrintDebug("### AsyncDownload failed: " + m.syncPool.GetFailureReason())
+stop
+					    m.newSync = invalid
+'					    m.SendError("AsyncDownloadFailure", m.syncPool.GetFailureReason(), "", m.newSync.GetName())
+				    endif
+' implies dodgy XML, or something is already running. could happen if server sends down bad xml.
+			    else
+'			        m.diagnostics.PrintDebug("### Failed to read new-sync.xml")
+'			        m.SendError("Failed to read new-sync.xml", "", "", m.newSync.GetName())
+stop
+				    m.newSync = invalid
+			    endif
+		    else if msg.GetResponseCode() = 404 then
+'                m.logging.WriteDiagnosticLogEntry(m.diagnosticCodes.EVENT_NO_SYNCSPEC_AVAILABLE, "404")
+print "### Server has no sync list for us: " + str(msg.GetResponseCode())
+'                m.diagnostics.PrintDebug("### Server has no sync list for us: " + str(msg.GetResponseCode()))
+' The server has no new sync for us. That means if we have one lined up then we should destroy it.
+'			    DeleteFile("ready-sync.xml")
+		    else
+    ' retry - server returned something other than a 200 or 404
+'                m.logging.WriteDiagnosticLogEntry(m.diagnosticCodes.EVENT_RETRIEVE_SYNCSPEC_FAILURE, str(msg.GetResponseCode()))
+'                m.diagnostics.PrintDebug("### Failed to download sync list.")
+'                m.SendError("Failed to download sync list", "", str(msg.GetResponseCode()), "")
+print "### Failed to download sync list."
+		    endif
+        endif
+    endif
+End Sub
+
+
+Sub SetupPoolEvent(msg)
+
+'    m.diagnostics.PrintTimestamp()
+'    m.diagnostics.PrintDebug("### pool_event")
+print "### pool_event"
+	if type(m.syncPool) <> "roSyncPool" then
+'        m.diagnostics.PrintDebug("### pool_event but we have no object")
+print "### pool_event but we have no object"
+'		return
+	endif
+	if msg.GetSourceIdentity() = m.syncPool.GetIdentity() then
+		if (msg.GetEvent() = m.POOL_EVENT_FILE_DOWNLOADED) then
+'            m.logging.WriteDiagnosticLogEntry(m.diagnosticCodes.EVENT_FILE_DOWNLOAD_COMPLETE, msg.GetName())
+'            m.diagnostics.PrintDebug("### File downloaded " + msg.GetName())
+print "### File downloaded " + msg.GetName()
+		elseif (msg.GetEvent() = m.POOL_EVENT_FILE_FAILED) then
+'            m.logging.WriteDiagnosticLogEntry(m.diagnosticCodes.EVENT_FILE_DOWNLOAD_FAILURE, msg.GetName() + chr(9) + msg.GetFailureReason())
+'            m.diagnostics.PrintDebug("### File failed " + msg.GetName() + ": " + msg.GetFailureReason())
+print "### File failed " + msg.GetName() + ": " + msg.GetFailureReason()
+'            m.SendError("FileDownloadFailure", msg.GetFailureReason(), str(msg.GetResponseCode()), msg.GetName())
+		elseif (msg.GetEvent() = m.POOL_EVENT_ALL_DOWNLOADED) then
+'            m.logging.WriteDiagnosticLogEntry(m.diagnosticCodes.EVENT_DOWNLOAD_COMPLETE, "")
+'            m.diagnostics.PrintDebug("### All downloaded for " + m.newSync.GetName())
+print "### All downloaded for " + m.newSync.GetName()
+
+' Log the end of sync list download
+'            m.SendEvent("EndSyncListDownload", m.newSync.GetName(), str(msg.GetResponseCode()))
+
+' Save to current-sync.xml then do cleanup
+		    if not m.newSync.WriteToFile("current-sync.xml") then stop
+            timezone = m.newSync.LookupMetadata("client", "timezone")
+            if timezone <> "" then
+                m.systemTime.SetTimeZone(timezone)
+            endif
+
+'            m.diagnostics.PrintDebug("### DOWNLOAD COMPLETE")
+print "### DOWNLOAD COMPLETE"
+
+            m.spf = CreateObject("roSyncPoolFiles", "pool", m.newSync)
+
+			newSyncSpecScriptsOnly  = m.newSync.FilterFiles("download", { group: "script" } )
+			event = m.syncPool.Realize(newSyncSpecScriptsOnly, "/")
+			if event.GetEvent() <> m.POOL_EVENT_REALIZE_SUCCESS then
+'		        m.logging.WriteDiagnosticLogEntry(m.diagnosticCodes.EVENT_REALIZE_FAILURE, stri(event.GetEvent()) + chr(9) + event.GetName() + chr(9) + event.GetFailureReason())
+'				m.diagnostics.PrintDebug("### Realize failed " + stri(event.GetEvent()) + chr(9) + event.GetName() + chr(9) + event.GetFailureReason() )
+print "### Realize failed " + stri(event.GetEvent()) + chr(9) + event.GetName() + chr(9) + event.GetFailureReason()
+'				m.SendError("RealizeFailure", event.GetName(), event.GetFailureReason(), str(event.GetEvent()))
+			else
+'	            m.SendEventThenReboot("DownloadComplete", m.newSync.GetName(), "")
+                a=RebootSystem()
+                stop
+			endif
+
+			DeleteFile("tmp:new-sync.xml")
+			m.newSync = invalid
+			m.syncPool = invalid
+		elseif (msg.GetEvent() = m.POOL_EVENT_ALL_FAILED) then
+'            m.logging.WriteDiagnosticLogEntry(m.diagnosticCodes.EVENT_SYNCSPEC_DOWNLOAD_FAILURE, msg.GetFailureReason())
+'            m.diagnostics.PrintDebug("### Sync failed: " + msg.GetFailureReason())
+print "### Sync failed: " + msg.GetFailureReason()
+'            m.SendError("SyncFailure", msg.GetFailureReason(), str(msg.GetResponseCode()), "")
+			m.newSync = invalid
+			m.syncPool = invalid
+		endif
+	else
+'        m.diagnostics.PrintDebug("### pool_event from beyond this world: " + str(msg.GetSourceIdentity()))
+        print "### pool_event from beyond this world: " + str(msg.GetSourceIdentity())
+	endif
+End Sub
+
+
+Sub SetupSyncPoolProgressEvent(msg)
+'    m.diagnostics.PrintDebug("### File download progress " + msg.GetFileName() + str(msg.GetCurrentFilePercentage()))
+print "### File download progress " + msg.GetFileName() + str(msg.GetCurrentFilePercentage())
+'    m.logging.WriteDiagnosticLogEntry(m.diagnosticCodes.EVENT_FILE_DOWNLOAD_PROGRESS, msg.GetFileName() + chr(9) + str(msg.GetCurrentFilePercentage()))
+End Sub
+

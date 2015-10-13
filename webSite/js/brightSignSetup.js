@@ -98,7 +98,8 @@ function signInToBSN() {
         "password": bsnObfuscatedPassword
     };
 
-    var baseURL = "http://10.10.212.44:8080/";
+    //var baseURL = "http://10.10.212.44:8080/";
+    var baseURL= "http://10.1.0.241:8080/"
     var aUrl = baseURL + "bsnSignIn";
 
     $.get(aUrl, bsnCredentials)
@@ -169,8 +170,34 @@ function createSetupFiles() {
         lwsConfig = "status";
     }
 
-    var bsnGroup = $("#selectBSNGroup").val();
-    var contentCheckInterval = $("#selectContentCheckFrequency").val();
+
+    var account = "";
+    var user = "";
+    var password = "";
+    var group = "";
+    var baseUrl = "";
+    var nextUrl = "";
+    var contentCheckFrequency = "";
+    var enableBasicAuthentication = false;
+
+    if (setupType == "bnm") {
+        account = "ted";
+        user = "teduser";
+        password = "tedpwd";
+        baseUrl = "https://services.brightsignnetwork.com/";
+        nextUrl = "/bs/checkforcontent.ashx";
+        group = $("#selectBSNGroup").val();
+        contentCheckInterval = $("#selectContentCheckFrequency").val();
+    }
+    else if (setupType == "sfn") {
+        user = $("#txtBoxSFNUserName").val();
+        password = $("#txtBoxSFNPassword").val();
+        enableBasicAuthentication = $("#checkBoxEnableSFNBasicAuthentication").is(':checked');
+        baseUrl = $("#txtBoxSFNWebFolder").val();
+        nextUrl = "/current-sync.xml";
+        contentCheckInterval = $("#selectSFNContentCheckFrequency").val();
+    }
+
     var updateHealthInterval = $("#selectUpdateHealthFrequency").val();
 
     var enablePlaybackLogging = $("#checkBoxEnablePlaybackLogging").is(':checked');
@@ -182,7 +209,8 @@ function createSetupFiles() {
     var uploadLogsAtSpecificTimeEachDay = $("#checkBoxUploadLogsAtSpecificTimeEachDay").is(':checked');
 
 
-    var baseURL = "http://10.10.212.44:8080/";
+    //var baseURL = "http://10.10.212.44:8080/";
+    var baseURL= "http://10.1.0.241:8080/"
     var aUrl = baseURL + "runSetup";
 
     //var aUrl = "/runSetup";
@@ -190,10 +218,12 @@ function createSetupFiles() {
     var setupParams =
     {
         "setupType": setupType,
-        "account": "ted",
-        "user": "teduser",
-        "password": "tedpwd",
-        "group": bsnGroup,
+        "account": account,
+        "user": user,
+        "password": password,
+        "group": group,
+        "enableBasicAuthentication": enableBasicAuthentication,
+
         "timezone": timeZone,
         "unitName": unitName,
         "unitNamingMethod": customization,
@@ -270,10 +300,10 @@ function createSetupFiles() {
         "BrightWallName": "",
         "BrightWallScreenNumber": "",
 
-        "base": "https://services.brightsignnetwork.com/",
+        "baseUrl": baseUrl,
+        "nextUrl": nextUrl,
         "recovery_handler": "/recovery/recovery.ashx",
         "recovery_setup": "/recovery/recovery_runsetup_ba.brs",
-        "next": "/bs/checkforcontent.ashx",
         "event": "/bs/events.ashx",
         "error": "/bs/error.ashx",
         "deviceerror": "/bs/deviceerror.ashx",

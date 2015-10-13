@@ -50,20 +50,20 @@ Sub Main()
         
     endif 
         
-    if deviceWithContentFound then
-    
-        modelObject = CreateObject("roDeviceInfo")
-        sysInfo = CreateObject("roAssociativeArray")
-        sysInfo.autorunVersion$ = autorunVersion$
-        sysInfo.deviceUniqueID$ = modelObject.GetDeviceUniqueId()
-        sysInfo.deviceFWVersion$ = modelObject.GetVersion()
-        sysInfo.deviceModel$ = modelObject.GetModel()
-        sysInfo.htmlWidget% = htmlWidget
+    modelObject = CreateObject("roDeviceInfo")
+    sysInfo = CreateObject("roAssociativeArray")
+    sysInfo.autorunVersion$ = autorunVersion$
+    sysInfo.deviceUniqueID$ = modelObject.GetDeviceUniqueId()
+    sysInfo.deviceFWVersion$ = modelObject.GetVersion()
+    sysInfo.deviceModel$ = modelObject.GetModel()
+    sysInfo.htmlWidget% = htmlWidget
 
-	v = CreateObject("roVideoMode")
-	sysInfo.videoWidth = str(v.GetResX())
-	sysInfo.videoHeight = str(v.GetResY())
-	v = invalid
+    if deviceWithContentFound then
+
+	    v = CreateObject("roVideoMode")
+	    sysInfo.videoWidth = str(v.GetResX())
+	    sysInfo.videoHeight = str(v.GetResY())
+	    v = invalid
 
         while true
 
@@ -86,7 +86,7 @@ Sub Main()
     splash=CreateObject("roBrightSignSplash")
     splash.Show()
 
-    setupServer = NewSetupServer()
+    setupServer = NewSetupServer(sysInfo)
 
 End Sub
 
@@ -6597,24 +6597,49 @@ Function RunHTML(htmlFile As String, debugOn As Boolean, loggingOn As Boolean, m
 End Function
 
 
-Function NewSetupServer() As Object
+Function NewSetupServer(sysInfo) As Object
 
-    msgPort = CreateObject("roMessagePort")
+    ' create pool directory
+    ok = CreateDirectory("pool")
+
+    SetupServer = {}
+
+    SetupServer.msgPort = CreateObject("roMessagePort")
 
     gpioPort = CreateObject("roGpioControlPort")
-    gpioPort.SetPort(msgPort)
+    gpioPort.SetPort(SetupServer.msgPort)
 
     localServer = CreateObject("roHttpServer", { port: 8080 })
-    localServer.SetPort(msgPort)
+    localServer.SetPort(SetupServer.msgPort)
 
-	runSetupAA =				{ HandleEvent: runSetup, msgPort: msgPort }
+	runSetupAA =				{ HandleEvent: runSetup, mVar: SetupServer }
 	localServer.AddGetFromEvent({ url_path: "/runSetup", user_data: runSetupAA })
 
-    bsnSignInAA = { HandleEvent: bsnSignIn, msgPort: msgPort }
+    bsnSignInAA = { HandleEvent: bsnSignIn, mVar: SetupServer }
     localServer.AddGetFromEvent({ url_path: "/bsnSignIn", user_data: bsnSignInAA })
 
-    bsnGetAllGroupsAA = { HandleEvent: bsnGetAllGroups, msgPort: msgPort }
+    bsnGetAllGroupsAA = { HandleEvent: bsnGetAllGroups, mVar: SetupServer }
     localServer.AddGetFromEvent({ url_path: "/bsnGetAllGroups", user_data: bsnGetAllGroupsAA })
+
+    SetupServer.ExecuteSetup = ExecuteSetup
+    SetupServer.GetAccount = GetAccount
+    SetupServer.GetAllGroups = GetAllGroups
+    SetupServer.StartSetupSync = StartSetupSync
+    SetupServer.SetSystemInfo = SetSystemInfo
+    SetupServer.SetupURLEvent = SetupURLEvent
+    SetupServer.SetupPoolEvent = SetupPoolEvent
+	SetupServer.SetupSyncPoolProgressEvent = SetupSyncPoolProgressEvent
+
+    SetupServer.URL_EVENT_COMPLETE = 1
+
+    SetupServer.POOL_EVENT_FILE_DOWNLOADED = 1
+    SetupServer.POOL_EVENT_FILE_FAILED = -1
+    SetupServer.POOL_EVENT_ALL_DOWNLOADED = 2
+    SetupServer.POOL_EVENT_ALL_FAILED = -2
+
+    SetupServer.POOL_EVENT_REALIZE_SUCCESS = 101
+
+    setupServer.SetSystemInfo(sysInfo)
 
 	serverDirectory$ = "webSite"
 	listOfServerFiles = []
@@ -6622,21 +6647,25 @@ Function NewSetupServer() As Object
 	AddHandlers(localServer, serverDirectory$, listOfServerFiles)
 
     while true
-        msg = wait(0, msgPort)
+        msg = wait(0, SetupServer.msgPort)
 
         print "msg received - type="; type(msg)
 
         if type(msg) = "roHttpEvent" then
-
             userdata = msg.GetUserData()
             if type(userdata) = "roAssociativeArray" and type(userdata.HandleEvent) = "roFunction" then
                 userData.HandleEvent(userData, msg)
             endif
-
-		endif
-
-        if type(msg) = "roGpioButton" then
+        else if type(msg) = "roTimerEvent" and type(SetupServer.checkForContentTimer) = "roTimer" and stri(msg.GetSourceIdentity()) = stri(SetupServer.checkForContentTimer.GetIdentity()) then
+            SetupServer.StartSetupSync()
+        else if type(msg) = "roGpioButton" then
             if msg.GetInt() = 12 then stop
+        else if type(msg) = "roUrlEvent" then
+            SetupServer.SetupURLEvent(msg)
+        else if type(msg) = "roSyncPoolEvent" then
+            SetupServer.SetupPoolEvent(msg)
+	    elseif (type(msg) = "roSyncPoolProgressEvent") then
+	        SetupServer.SetupSyncPoolProgressEvent(msg)
         endif
 
     end while
@@ -6919,6 +6948,8 @@ End Function
 
 Sub runSetup(userData as Object, e as Object)
 
+    mVar = userData.mVar
+
     setupParams = e.GetRequestParams()
 
     e.AddResponseHeader("Content-type", "text/plain")
@@ -6926,16 +6957,18 @@ Sub runSetup(userData as Object, e as Object)
     e.SetResponseBodyString("ok")
     e.SendResponse(200)
 
-    ExecuteSetup(setupParams)
+    mVar.ExecuteSetup(setupParams)
 
 End Sub
 
 
 Sub bsnSignIn(userData as Object, e as Object)
 
+    mVar = userData.mVar
+
     bsnCredentials = e.GetRequestParams()
 
-    accountInfo = GetAccount(userData, bsnCredentials)
+    accountInfo = mVar.GetAccount(userData, bsnCredentials)
 
 	json = FormatJson(accountInfo, 0)
 
@@ -6949,9 +6982,11 @@ End Sub
 
 Sub bsnGetAllGroups(userData as Object, e as Object)
 
+    mVar = userData.mVar
+
     bsnCredentials = e.GetRequestParams()
 
-    allGroups = GetAllGroups(userData, bsnCredentials)
+    allGroups = mVar.GetAllGroups(userData, bsnCredentials)
 
 	json = FormatJson(allGroups, 0)
 
@@ -6961,4 +6996,5 @@ Sub bsnGetAllGroups(userData as Object, e as Object)
     e.SendResponse(200)
 
 End Sub
+
 
