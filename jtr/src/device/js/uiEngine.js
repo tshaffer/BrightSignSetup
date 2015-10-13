@@ -589,14 +589,14 @@ uiEngineStateMachine.prototype.STRecordedShowsEventHandler = function (event, st
 }
 
 
-// home page
-var mainMenuIds = [
-    ['recordedShows', 'liveVideo'],
-    ['recordNow', 'channelGuide'],
-    ['manualRecord', 'toDoList'],
-    ['', 'settings']
-];
-
+//// home page
+//var mainMenuIds = [
+//    ['recordedShows', 'liveVideo'],
+//    ['recordNow', 'channelGuide'],
+//    ['manualRecord', 'toDoList'],
+//    ['', 'settings']
+//];
+//
 uiEngineStateMachine.prototype.navigateHomePage = function (navigationCommand$) {
 
     var rowIndex = -1;
