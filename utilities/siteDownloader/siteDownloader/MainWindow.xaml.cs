@@ -20,9 +20,9 @@ namespace siteDownloader
 
             txtBoxSiteFolder.Text = "C:\\Users\\Ted Shaffer\\Documents\\Miscellaneous\\Personal\\jtr\\jtr\\app";
             txtBoxSiteFolder.Text = "C:\\Users\\Ted Shaffer\\Documents\\Visual Studio 2012\\Projects\\jtr\\jtr";
+            txtBoxSiteFolder.Text = "C:\\Users\\Ted Shaffer\\Documents\\Webstorm\\jtr\\jtr\\staging";
 
-
-            txtBoxIPAddress.Text = "192.168.2.6:8080";
+            txtBoxIPAddress.Text = "10.1.0.241:8080";
             //txtBoxIPAddress.Text = "192.168.2.12:8080";
             //txtBoxIPAddress.Text = "10.1.0.90:8080";
         }
@@ -30,7 +30,7 @@ namespace siteDownloader
         private void btnBrowse_Click(object sender, RoutedEventArgs e)
         {
             System.Windows.Forms.FolderBrowserDialog browseDialog = new System.Windows.Forms.FolderBrowserDialog();
-            browseDialog.SelectedPath = "C:\\Users\\Ted Shaffer\\Documents\\Miscellaneous\\Personal\\jtr\\jtr\\app";
+            browseDialog.SelectedPath = "C:\\Users\\Ted Shaffer\\Documents\\Webstorm\\jtr\\jtr\\staging";
 
             browseDialog.Description = "Select Site Folder";
 
