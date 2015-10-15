@@ -177,7 +177,7 @@ function createSetupFiles() {
     var group = "";
     var baseUrl = "";
     var nextUrl = "";
-    var contentCheckFrequency = "";
+    var contentCheckInterval = "";
     var enableBasicAuthentication = false;
 
     if (setupType == "bnm") {

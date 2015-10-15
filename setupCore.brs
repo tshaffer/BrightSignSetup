@@ -260,28 +260,34 @@ Sub ExecuteSetup(setupParams As Object)
 
         if setupType$ = "lfn" then
 
-            MoveFile("pending-autorun.brs", "autorun.brs")
+            service = { name: "BrightSign Web Service", type: "_http._tcp", port: 8080, _functionality: "content", _serialNumber: m.sysInfo.deviceUniqueID$, _unitName: setupParams.unitName, _unitNamingMethod: setupParams.unitNamingMethod, _unitDescription: setupParams.unitDescription }
+            m.advert = CreateObject("roNetworkAdvertisement", service)
+            if m.advert = invalid then
+                stop
+            end if
 
-            r=CreateObject("roRectangle",0,resY/2-resY/32,resX,resY/32)
-            twParams = CreateObject("roAssociativeArray")
-            twParams.LineCount = 1
-            twParams.TextMode = 2
-            twParams.Rotation = 0
-            twParams.Alignment = 1
-            tw=CreateObject("roTextWidget",r,1,2,twParams)
-            tw.PushString("Local File Networking Setup is complete")
-            tw.Show()
+'            MoveFile("pending-autorun.brs", "autorun.brs")
 
-            r2=CreateObject("roRectangle",0,resY/2,resX,resY/32)
-            tw2=CreateObject("roTextWidget",r2,1,2,twParams)
-            tw2.PushString("The device will be ready for content downloads after it completes rebooting")
-            tw2.Show()
+'            r=CreateObject("roRectangle",0,resY/2-resY/32,resX,resY/32)
+'            twParams = CreateObject("roAssociativeArray")
+'            twParams.LineCount = 1
+'            twParams.TextMode = 2
+'            twParams.Rotation = 0
+'            twParams.Alignment = 1
+'            tw=CreateObject("roTextWidget",r,1,2,twParams)
+'            tw.PushString("Local File Networking Setup is complete")
+'            tw.Show()
 
-            Sleep(30000)
+'            r2=CreateObject("roRectangle",0,resY/2,resX,resY/32)
+'            tw2=CreateObject("roTextWidget",r2,1,2,twParams)
+'            tw2.PushString("The device will be ready for content downloads after it completes rebooting")
+'            tw2.Show()
+
+'            Sleep(30000)
 
             ' reboot
-            a=RebootSystem()
-            stop
+'            a=RebootSystem()
+'            stop
 
 '        else if localToStandaloneSyncSpec then
 

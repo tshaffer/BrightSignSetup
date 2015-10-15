@@ -55,8 +55,10 @@ Sub Main()
     sysInfo.autorunVersion$ = autorunVersion$
     sysInfo.deviceUniqueID$ = modelObject.GetDeviceUniqueId()
     sysInfo.deviceFWVersion$ = modelObject.GetVersion()
+	sysInfo.deviceFWVersionNumber% = modelObject.GetVersionNumber()
     sysInfo.deviceModel$ = modelObject.GetModel()
     sysInfo.htmlWidget% = htmlWidget
+    sysInfo.deviceFamily$ = modelObject.GetFamily()
 
     if deviceWithContentFound then
 
@@ -6534,6 +6536,7 @@ Sub SetSystemInfo(sysInfo As Object)
     m.deviceModel$ = sysInfo.deviceModel$
     m.videoWidth = sysInfo.videoWidth
     m.videoHeight = sysInfo.videoHeight
+    m.deviceFamily$ = sysInfo.deviceFamily$
 
     return
 
@@ -6621,6 +6624,31 @@ Function NewSetupServer(sysInfo) As Object
     bsnGetAllGroupsAA = { HandleEvent: bsnGetAllGroups, mVar: SetupServer }
     localServer.AddGetFromEvent({ url_path: "/bsnGetAllGroups", user_data: bsnGetAllGroupsAA })
 
+' TODO - only add for LFN/lws?
+    getCurrentStatusAA =		{ HandleEvent: GetCurrentStatus, mVar: SetupServer }
+	localServer.AddGetFromEvent({ url_path: "/GetCurrentStatus", user_data: getCurrentStatusAA })
+'	localServer.AddGetFromEvent({ url_path: "/GetCurrentStatus", user_data: getCurrentStatusAA, passwords: lwsCredentials })
+
+    specifyCardSizeLimitsAA =	{ HandleEvent: SpecifyCardSizeLimits, mVar: SetupServer }
+	localServer.AddGetFromEvent({ url_path: "/SpecifyCardSizeLimits", user_data: specifyCardSizeLimitsAA })
+'	localServer.AddGetFromEvent({ url_path: "/SpecifyCardSizeLimits", user_data: specifyCardSizeLimitsAA, passwords: lwsCredentials})
+
+    prepareForTransferAA =		{ HandleEvent: PrepareForTransfer, mVar: SetupServer }
+	localServer.AddPostToFile({ url_path: "/PrepareForTransfer", destination_directory: GetDefaultDrive(), user_data: prepareForTransferAA })
+'	localServer.AddPostToFile({ url_path: "/PrepareForTransfer", destination_directory: GetDefaultDrive(), user_data: prepareForTransferAA, passwords: lwsCredentials })
+
+    filePostedAA =	    		{ HandleEvent: FilePosted, mVar: SetupServer }
+	localServer.AddPostToFile({ url_path: "/UploadFile", destination_directory: GetDefaultDrive(), user_data: filePostedAA })
+'	localServer.AddPostToFile({ url_path: "/UploadFile", destination_directory: GetDefaultDrive(), user_data: filePostedAA, passwords: lwsCredentials })
+
+    syncSpecPostedAA =			{ HandleEvent: SyncSpecPosted, mVar: SetupServer }
+    localServer.AddPostToFile({ url_path: "/UploadSyncSpec", destination_directory: GetDefaultDrive(), user_data: syncSpecPostedAA })
+'    localServer.AddPostToFile({ url_path: "/UploadSyncSpec", destination_directory: GetDefaultDrive(), user_data: syncSpecPostedAA, passwords: lwsCredentials })
+
+	getSnapshotAA =				{ HandleEvent: GetSnapshot, mVar: SetupServer }
+    localServer.AddGetFromEvent({ url_path: "/GetSnapshot", user_data: getSnapshotAA })
+'    localServer.AddGetFromEvent({ url_path: "/GetSnapshot", user_data: getSnapshotAA, passwords: lwsCredentials})
+
     SetupServer.ExecuteSetup = ExecuteSetup
     SetupServer.GetAccount = GetAccount
     SetupServer.GetAllGroups = GetAllGroups
@@ -6629,6 +6657,8 @@ Function NewSetupServer(sysInfo) As Object
     SetupServer.SetupURLEvent = SetupURLEvent
     SetupServer.SetupPoolEvent = SetupPoolEvent
 	SetupServer.SetupSyncPoolProgressEvent = SetupSyncPoolProgressEvent
+
+    SetupServer.FreeSpaceOnDrive = FreeSpaceOnDrive
 
     SetupServer.URL_EVENT_COMPLETE = 1
 
@@ -6639,7 +6669,11 @@ Function NewSetupServer(sysInfo) As Object
 
     SetupServer.POOL_EVENT_REALIZE_SUCCESS = 101
 
-    setupServer.SetSystemInfo(sysInfo)
+    SetupServer.SetSystemInfo(sysInfo)
+    SetupServer.sysInfo = sysInfo
+
+' initialize data variables
+    SetupServer.limitStorageSpace = false
 
 	serverDirectory$ = "webSite"
 	listOfServerFiles = []
@@ -6996,5 +7030,506 @@ Sub bsnGetAllGroups(userData as Object, e as Object)
     e.SendResponse(200)
 
 End Sub
+
+
+Sub GetCurrentStatus(userData as Object, e as Object)
+
+    mVar = userData.mVar
+
+    print "respond to GetCurrentStatus request"
+
+    root = CreateObject("roXMLElement")
+    root.SetName("BrightSignStatus")
+
+    autorunVersion$ = mVar.sysInfo.autorunVersion$
+
+    registrySection = CreateObject("roRegistrySection", "networking")
+    if type(registrySection)<>"roRegistrySection" then print "Error: Unable to create roRegistrySection":stop
+
+    unitName$ = registrySection.Read("un")
+    unitNamingMethod$ = registrySection.Read("unm")
+    unitDescription$ = registrySection.Read("ud")
+
+    elem = root.AddElement("unitName")
+    elem.AddAttribute("label", "Unit Name")
+    elem.SetBody(unitName$)
+
+    elem = root.AddElement("unitNamingMethod")
+    elem.AddAttribute("label", "Unit Naming Method")
+    elem.SetBody(unitNamingMethod$)
+
+    elem = root.AddElement("unitDescription")
+    elem.AddAttribute("label", "Unit Description")
+    elem.SetBody(unitDescription$)
+
+    modelObject = CreateObject("roDeviceInfo")
+
+    elem = root.AddElement("model")
+    elem.AddAttribute("label", "Model")
+    elem.SetBody(modelObject.GetModel())
+
+    elem = root.AddElement("firmware")
+    elem.AddAttribute("label", "Firmware")
+    elem.SetBody(modelObject.GetVersion())
+
+    elem = root.AddElement("autorun")
+    elem.AddAttribute("label", "Autorun")
+    elem.SetBody(mVar.sysInfo.autorunVersion$)
+
+    elem = root.AddElement("serialNumber")
+    elem.AddAttribute("label", "Serial Number")
+    elem.SetBody(modelObject.GetDeviceUniqueId())
+
+    elem = root.AddElement("functionality")
+    elem.AddAttribute("label", "Functionality")
+' TODO - not correct if the handler runs at times other than when LFN is selected
+    elem.SetBody("content")
+
+' 86400 seconds per day
+    deviceUptime% = modelObject.GetDeviceUptime()
+    numDays% = deviceUptime% / 86400
+    numHours% = (deviceUptime% - (numDays% * 86400)) / 3600
+    numMinutes% = (deviceUptime% - (numDays% * 86400) - (numHours% * 3600)) / 60
+    numSeconds% = deviceUptime% - (numDays% * 86400) - (numHours% * 3600) - (numMinutes% * 60)
+    deviceUptime$ = ""
+    if numDays% > 0 then deviceUptime$ = stri(numDays%) + " days "
+    if numHours% > 0 then deviceUptime$ = deviceUptime$ + stri(numHours%) + " hours "
+    if numMinutes% > 0 then deviceUptime$ = deviceUptime$ + stri(numMinutes%) + " minutes "
+    if numSeconds% > 0 then deviceUptime$ = deviceUptime$ + stri(numSeconds%) + " seconds"
+
+    elem = root.AddElement("deviceUptime")
+    elem.AddAttribute("label", "Device Uptime")
+    elem.SetBody(deviceUptime$)
+
+    elem = root.AddElement("activePresentation")
+    elem.AddAttribute("label", "Active Presentation")
+    elem.SetBody("")
+
+'	if mVar.globalAA.enableRemoteSnapshot then
+'		numSnapshots% = mVar.globalAA.listOfSnapshotFiles.Count()
+'		if numSnapshots% > 0 then
+'			latestSnapshot = mVar.globalAA.listOfSnapshotFiles[numSnapshots%-1]
+'			index% = instr(1, latestSnapshot, ".jpg")
+'			if index% > 0 then
+'				id$ = mid(latestSnapshot, 1, index% - 1)
+'				elem = root.AddElement("snapshotId")
+'				elem.AddAttribute("label", "Snapshot ID")
+'				elem.SetBody(id$)
+'
+'				elem = root.AddElement("snapshotDisplayPortrait")
+'				elem.AddAttribute("label", "Snapshot Display Portrait")
+'				if mVar.globalAA.remoteSnapshotDisplayPortrait then
+'					elem.SetBody("true")
+'				else
+'					elem.SetBody("false")
+'				endif
+'			endif
+'		endif
+'	endif
+
+'    xml = root.GenXML({ indent: " ", newline: chr(10), header: true })
+    xml = root.GenXML({ header: true })
+
+    e.AddResponseHeader("Content-type", "text/xml")
+    e.SetResponseBodyString(xml)
+    e.SendResponse(200)
+
+End Sub
+
+
+' TODO - none of these values are used yet
+Sub SpecifyCardSizeLimits(userData as Object, e as Object)
+
+	mVar = userData.mVar
+
+	limitStorageSpace = lcase(e.GetRequestParam("limitStorageSpace"))
+	if limitStorageSpace = "true" then
+		mVar.limitStorageSpace = true
+		mVar.spaceLimitedByAbsoluteSize = lcase(e.GetRequestParam("spaceLimitedByAbsoluteSize"))
+		mVar.publishedDataSizeLimitMB = ConvertToInt(e.GetRequestParam("publishedDataSizeLimitMB"))
+		mVar.publishedDataSizeLimitPercentage = ConvertToInt(e.GetRequestParam("publishedDataSizeLimitPercentage"))
+		mVar.dynamicDataSizeLimitMB = ConvertToInt(e.GetRequestParam("dynamicDataSizeLimitMB"))
+		mVar.dynamicDataSizeLimitPercentage = ConvertToInt(e.GetRequestParam("dynamicDataSizeLimitPercentage"))
+		mVar.htmlDataSizeLimitPercentage = ConvertToInt(e.GetRequestParam("htmlDataSizeLimitPercentage"))
+		mVar.htmlDataSizeLimitMB = ConvertToInt(e.GetRequestParam("htmlDataSizeLimitMB"))
+		mVar.htmlLocalStorageSizeLimitPercentage = 0
+		mVar.htmlLocalStorageSizeLimitMB = 0
+		if e.GetRequestParam("htmlDataSizeLimitPercentage") <> "" then
+			mVar.htmlLocalStorageSizeLimitPercentage = ConvertToInt(e.GetRequestParam("htmlLocalStorageSizeLimitPercentage"))
+			mVar.htmlLocalStorageSizeLimitMB = ConvertToInt(e.GetRequestParam("htmlLocalStorageSizeLimitMB"))
+		endif
+	else
+		mVar.limitStorageSpace = false
+	endif
+
+	e.SetResponseBodyString("")
+	if not e.SendResponse(200) then stop
+
+End Sub
+
+
+Function ConvertToInt(str As string) As Integer
+
+	if str = "" then
+		return 0
+	endif
+
+	return int(val(str))
+
+End Function
+
+
+Sub PrepareForTransfer(userData as Object, e as Object)
+
+    mVar = userData.mVar
+
+    print "respond to PrepareForTransfer request"
+
+    MoveFile(e.GetRequestBodyFile(), "filesToPublish.xml")
+
+    filesToCopy = mVar.FreeSpaceOnDrive()
+    if type(filesToCopy) = "roAssociativeArray" then
+
+        root = CreateObject("roXMLElement")
+
+        root.SetName("filesToCopy")
+
+		root.AddAttribute("Family", mVar.sysInfo.deviceFamily$)
+		root.AddAttribute("Model", mVar.sysInfo.deviceModel$)
+		root.AddAttribute("FWVersion", mVar.sysInfo.deviceFWVersion$)
+		root.AddAttribute("FWVersionNumber", StripLeadingSpaces(stri(mVar.sysInfo.deviceFWVersionNumber%)))
+
+        for each key in filesToCopy
+
+            fileItem = filesToCopy[key]
+
+            item = root.AddBodyElement()
+            item.SetName("file")
+
+            elem = item.AddElement("fileName")
+            elem.SetBody(fileItem.fileName$)
+
+            elem = item.AddElement("filePath")
+            elem.SetBody(fileItem.filePath$)
+
+            elem = item.AddElement("hashValue")
+            elem.SetBody(fileItem.hashValue$)
+
+            elem = item.AddElement("fileSize")
+            elem.SetBody(fileItem.fileSize$)
+
+        next
+
+        xml = root.GenXML({ header: true })
+
+		e.SetResponseBodyString(xml)
+		e.SendResponse(200)
+
+    else
+' the following call is ignored on a post
+'		e.SetResponseBodyString("413")
+		e.SendResponse(413)
+    endif
+
+End Sub
+
+
+Function FreeSpaceOnDrive() As Object
+
+    filesToPublish$ = ReadAsciiFile("filesToPublish.xml")
+    if filesToPublish$ = "" then stop
+
+' files that need to be copied by BrightAuthor
+    filesToCopy = CreateObject("roAssociativeArray")
+
+' files that can be deleted to make room for more content
+    deletionCandidates = CreateObject("roAssociativeArray")
+    oldLocationDeletionCandidates = CreateObject("roAssociativeArray")
+
+' create list of files already on the card
+    listOfOldPoolFiles = MatchFiles("/pool", "*")
+    for each file in listOfOldPoolFiles
+        oldLocationDeletionCandidates.AddReplace(file, file)
+    next
+
+    listOfPoolFiles = GetContentFiles("/pool/")
+    for each file in listOfPoolFiles
+        deletionCandidates.AddReplace(file, listOfPoolFiles.Lookup(file))
+    next
+
+' create the list of files that need to be copied. this is the list of files in filesToPublish that are not in listOfPoolFiles
+    filesToPublish = CreateObject("roXMLElement")
+    filesToPublish.Parse(filesToPublish$)
+
+' determine total space required
+    totalSpaceRequired! = 0
+    for each fileXML in filesToPublish.file
+        fullFileName$ = fileXML.fullFileName.GetText()
+        o = deletionCandidates.Lookup(fullFileName$)
+        if not IsString(o) then		' file is not already on the card
+
+            fileItem = CreateObject("roAssociativeArray")
+            fileItem.fileName$ = fileXML.fileName.GetText()
+            fileItem.filePath$ = fileXML.filePath.GetText()
+            fileItem.hashValue$ = fileXML.hashValue.GetText()
+            fileItem.fileSize$ = fileXML.fileSize.GetText()
+
+            filesToCopy.AddReplace(fullFileName$, fileItem)		' files that need to be copied to the card
+
+            fileSize% = val(fileItem.fileSize$)
+            totalSpaceRequired! = totalSpaceRequired! + fileSize%
+
+        endif
+    next
+    filesToPublish = invalid
+
+' determine if additional space is required
+	du = CreateObject("roStorageInfo", "./")
+    freeInMegabytes! = du.GetFreeInMegabytes()
+    totalFreeSpace! = freeInMegabytes! * 1048576
+
+' print "totalFreeSpace = "; totalFreeSpace!;", totalSpaceRequired = ";totalSpaceRequired!
+
+	if m.limitStorageSpace then
+
+		budgetedMaximumPoolSize = 0
+
+		if m.spaceLimitedByAbsoluteSize = "true" then
+			budgetedMaximumPoolSize = m.publishedDataSizeLimitMB * (1024.0 * 1024.0)
+		else
+			totalCardSize = du.GetSizeInMegabytes() * (1024.0 * 1024.0)
+			publishedDataSizeLimitPercentage% = m.publishedDataSizeLimitPercentage
+			budgetedMaximumPoolSize = publishedDataSizeLimitPercentage% * totalCardSize / 100.0
+		endif
+
+		' calculate the space that will be used after the files are copied over (size of existing pool + size of files that are getting copied over)
+		' totalSpaceRequired! = size of files that are getting copied over
+		totalSizeOfPoolAfterCopy! = totalSpaceRequired!		' units are bytes
+	    for each file in listOfPoolFiles
+			relativePath$ = listOfPoolFiles.Lookup(file)
+			fullPath$ = relativePath$ + file
+			' get size of file
+			size% = GetFileSize( fullPath$ )
+			totalSizeOfPoolAfterCopy! = totalSizeOfPoolAfterCopy! + size%
+		next
+
+	endif
+
+	deleteUnneededFiles = false
+	if totalFreeSpace! < totalSpaceRequired! then
+		deleteUnneededFiles = true
+	endif
+	if m.limitStorageSpace then
+		if totalSizeOfPoolAfterCopy! > budgetedMaximumPoolSize then
+			deleteUnneededFiles = true
+		endif
+	endif
+
+	if deleteUnneededFiles then
+
+' parse local-sync.xml - remove its files from deletionCandidates
+        localSync$ = ReadAsciiFile("local-sync.xml")
+        if localSync$ <> "" then
+            localSync = CreateObject("roXMLElement")
+            localSync.Parse(localSync$)
+
+            for each fileXML in localSync.files.download
+                hashValue$ = fileXML.hash.GetText()
+                hashMethod$ = fileXML.hash@method
+                fileName$ = hashMethod$ + "-" + hashValue$
+                fileExisted = deletionCandidates.Delete(fileName$)
+				if not fileExisted then
+	                fileExisted = oldLocationDeletionCandidates.Delete(fileName$)
+				endif
+	        next
+        endif
+
+' parse filesToPublish.xml - remove its files from deletionCandidates
+
+        filesToPublish = CreateObject("roXMLElement")
+        filesToPublish.Parse(filesToPublish$)
+
+        for each fileXML in filesToPublish.file
+            fullFileName$ = fileXML.fullFileName.GetText()
+            fileExisted = deletionCandidates.Delete(fullFileName$)
+        next
+
+' delete all files that used the old style pool strategy that aren't currently in use
+		for each fileToDelete in oldLocationDeletionCandidates
+            pathOnCard$ = "/pool/" + fileToDelete
+            oldLocationDeletionCandidates.Delete(fileToDelete)
+            ok = DeleteFile(pathOnCard$)
+		next
+
+' delete files from deletionCandidates until totalFreeSpace! > totalSpaceRequired!
+' if the user has limited storage space for pool files, delete content until that limitation is reached
+
+        for each fileToDelete in deletionCandidates
+
+			path$ = deletionCandidates.Lookup(fileToDelete)
+            pathOnCard$ = path$ + fileToDelete
+
+			if m.limitStorageSpace then
+				size% = GetFileSize( pathOnCard$ )
+				totalSizeOfPoolAfterCopy! = totalSizeOfPoolAfterCopy! - size%
+			endif
+
+            deletionCandidates.Delete(fileToDelete)
+            DeleteFile(pathOnCard$)
+
+			continueDeleting = false
+
+			if m.limitStorageSpace then
+
+				if totalSizeOfPoolAfterCopy! > budgetedMaximumPoolSize then
+					continueDeleting = true
+				endif
+
+			else
+
+				du = invalid
+				du = CreateObject("roStorageInfo", "./")
+				freeInMegabytes! = du.GetFreeInMegabytes()
+				totalFreeSpace! = freeInMegabytes! * 1048576
+				if totalFreeSpace! <= totalSpaceRequired! then
+					continueDeleting = true
+				endif
+
+			endif
+
+			if not continueDeleting then
+				return filesToCopy
+			endif
+
+        next
+
+		' the way this code is currently written, this method will return 'fail' if we can't delete enough files to get to the budgeted amount
+        return "fail"
+
+    endif
+
+    return filesToCopy
+
+End Function
+
+
+Function GetContentFiles(topDir$ As String) As Object
+
+	allFiles = { }
+
+	firstLevelDirs = MatchFiles(topDir$, "*")
+	for each firstLevelDir in firstLevelDirs
+		firstLevelDirSpec$ = topDir$ + firstLevelDir + "/"
+		secondLevelDirs = MatchFiles(firstLevelDirSpec$, "*")
+		for each secondLevelDir in secondLevelDirs
+			secondLevelDirSpec$ = firstLevelDirSpec$ + secondLevelDir + "/"
+			files = MatchFiles(secondLevelDirSpec$, "*")
+			for each file in files
+				allFiles.AddReplace(file, secondLevelDirSpec$)
+			next
+		next
+	next
+
+	return allFiles
+
+End Function
+
+
+Function GetFileSize( filePath$ As String ) As Integer
+
+	size = 0
+	checkFile = CreateObject("roReadFile", filePath$)
+	if (checkFile <> invalid) then
+		checkFile.SeekToEnd()
+		size = checkFile.CurrentPosition()
+		checkFile = invalid
+	endif
+
+	return size
+
+End Function
+
+
+Sub FilePosted(userData as Object, e as Object)
+
+'    print "respond to FilePosted request"
+
+	destinationFilename = e.GetRequestHeader("Destination-Filename")
+
+	currentDir$ = "pool/"
+	poolDepth% = 2
+	while poolDepth% > 0
+		newDir$ = Left(Right(destinationFilename, poolDepth%), 1)
+		currentDir$ = currentDir$ + newDir$ + "/"
+		CreateDirectory(currentDir$)
+		poolDepth% = poolDepth% - 1
+	end while
+
+	regex = CreateObject("roRegEx","/","i")
+	fileParts = regex.Split(destinationFilename)
+
+	fullFilePath$ = currentDir$ + fileParts[1]
+
+	MoveFile(e.GetRequestBodyFile(), fullFilePath$)
+
+	e.SetResponseBodyString("RECEIVED")
+    e.SendResponse(200)
+
+End Sub
+
+
+Sub SyncSpecPosted(userData as Object, e as Object)
+
+    EVENT_REALIZE_SUCCESS = 101
+
+    mVar = userData.mVar
+
+'    print "respond to SyncSpecPosted request"
+
+    MoveFile(e.GetRequestBodyFile(), "new-sync.xml")
+    e.SetResponseBodyString("RECEIVED")
+    e.SendResponse(200)
+
+	newSync = CreateObject("roSyncSpec")
+	ok = newSync.ReadFromFile("new-sync.xml")
+    if not ok then stop
+
+	newSyncSpecScriptsOnly  = newSync.FilterFiles("download", { group: "script" } )
+
+'    mVar.diagnostics.PrintTimestamp()
+'    mVar.diagnostics.PrintDebug("### LWS DOWNLOAD COMPLETE")
+print "### LWS DOWNLOAD COMPLETE"
+
+	mVar.assetPool = CreateObject("roAssetPool", "pool")
+	realizer = CreateObject("roAssetRealizer", mVar.assetPool, "/")
+	event = realizer.Realize(newSyncSpecScriptsOnly)
+	if event.GetEvent() <> EVENT_REALIZE_SUCCESS then
+'	        mVar.logging.WriteDiagnosticLogEntry(mVar.diagnosticCodes.EVENT_REALIZE_FAILURE, stri(event.GetEvent()) + chr(9) + event.GetName() + chr(9) + event.GetFailureReason())
+'			mVar.diagnostics.PrintDebug("### Realize failed " + stri(event.GetEvent()) + chr(9) + event.GetName() + chr(9) + event.GetFailureReason() )
+stop
+		DeleteFile("new-sync.xml")
+		newSync = invalid
+		return
+    endif
+
+	if not newSync.WriteToFile("local-sync.xml") then stop
+
+	' cause fsync
+	CreateObject("roReadFile", "local-sync.xml")
+
+    RebootSystem()
+'        mVar.diagnostics.PrintDebug("### new script or upgrade found - reboot")
+print "### new script or upgrade found - reboot"
+
+End Sub
+
+
+Function GetSnapshot(userData as Object, e as Object) As Object
+
+	e.AddResponseHeader("Content-type", "text/plain; charset=utf-8")
+    e.SetResponseBodyString("Snapshots not available during setup")
+	e.SendResponse(404)
+
+End Function
 
 
