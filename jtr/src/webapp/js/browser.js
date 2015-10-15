@@ -317,9 +317,6 @@ function navigateForwardOneDay() {
 
 $(document).ready(function () {
 
-    var recordingDuration;
-    var recordingTitle;
-
     console.log("JTR javascript .ready invoked");
     console.log("User Agent: " + navigator.userAgent);
 
@@ -339,17 +336,11 @@ $(document).ready(function () {
         browserTypeIsSafari = false;
     }
 
-    if (clientType != "BrightSign") {
-        baseURL = document.baseURI.replace("?", "");
-        baseIP = document.baseURI.substr(0, document.baseURI.lastIndexOf(":"));
+    baseURL = document.baseURI.replace("?", "");
+    baseIP = document.baseURI.substr(0, document.baseURI.lastIndexOf(":"));
 
-        baseURL = "http://10.1.0.241:8080/";
-        //baseURL = "http://192.168.2.9:8080/";
+    baseURL = "http://10.1.0.241:8080/";
+    //baseURL = "http://192.168.2.9:8080/";
 
-        console.log("baseURL from document.baseURI is: " + baseURL + ", baseIP is: " + baseIP);
-    }
-    else {
-        initializeBrightSign();
-    }
-
+    console.log("baseURL from document.baseURI is: " + baseURL + ", baseIP is: " + baseIP);
 });
