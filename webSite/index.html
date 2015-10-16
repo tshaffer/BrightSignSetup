@@ -9,13 +9,34 @@
 
     <title>BrightSign Setup</title>
 
+    <link href="./bootstrap/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" type="text/css" href="./css/styles.css">
     <link rel="stylesheet" type="text/css" href="./css/styles.min.css">
     <script src="./js/jquery-2.1.1.min.js"></script>
+    <script src="./bootstrap/js/bootstrap.js"></script>
     <script src="./js/brightSignSetup.js"></script>
 </head>
 
 <body>
+
+<div class="modal fade" id="deleteShowDlg" tabindex="-1" role="dialog" aria-labelledby="deleteShowDlg" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                <h4 class="modal-title" id="deleteShowDlgTitle">Delete show confirmation</h4>
+            </div>
+            <div class="modal-body">
+                <h3 id="deleteShowDlgShowTitle"></h3>
+            </div>
+            <div class="modal-footer">
+                <button type="button" id="deleteShowDlgClose" class="btn btn-default btn-secondary" data-dismiss="modal">Close</button>
+                <button type="button" id="deleteShowDlgDelete" class="btn btn-primary">Delete</button>
+            </div>
+        </div>
+    </div>
+</div>
+
 <div class="wrapper">
     <div class="pageHeader">
         <h1>Device Setup</h1>
@@ -89,7 +110,8 @@
                     </table>
 
                     <div class="advancedNetworkSetupButtonBox">
-                        <button type="button">Advanced Network Setup</button>
+                        <button type="button" onclick="displayDeleteShowDlg('Pizza rocks!', 69)">Advanced Network Setup</button>
+
                         <!--<asp:ImageButton runat="server" ID="ImageButtonAdvancedNetworkSetup"-->
                                          <!--ImageUrl="~/_images/button_adv_network_setup.png"-->
                                          <!--AlternateText="Advanced Network Setup" />-->

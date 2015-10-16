@@ -335,4 +335,32 @@ function createSetupFiles() {
         });
 }
 
+var modalDialogDisplayed = false;
+function displayDeleteShowDlg(showTitle, showRecordingId) {
 
+    console.log("displayDeleteShowDlg() invoked, showTitle=" + showTitle + ", showRecordingId=" + showRecordingId);
+
+    var options = {
+        "backdrop": "true"
+    }
+    $('#deleteShowDlg').modal(options);
+    $('#deleteShowDlgShowTitle').html("Delete '" + showTitle + "'?");
+
+    modalDialogDisplayed = true;
+    selectedDeleteShowDlgElement = "#deleteShowDlgDelete";
+    unselectedDeleteShowDlgElement = "#deleteShowDlgClose";
+
+    // when dialog is displayed, highlight Delete, unhighlight Close
+    $(selectedDeleteShowDlgElement).removeClass("btn-secondary");
+    $(selectedDeleteShowDlgElement).addClass("btn-primary");
+
+    $(unselectedDeleteShowDlgElement).removeClass("btn-primary");
+    $(unselectedDeleteShowDlgElement).addClass("btn-secondary");
+}
+
+
+function deleteShowDlgCloseInvoked() {
+    console.log("deleteShowDlgCloseInvoked");
+    $('#deleteShowDlg').modal('hide');
+    modalDialogDisplayed = false;
+}
