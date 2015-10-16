@@ -182,7 +182,6 @@
 
         <div class="panelBox">
             <div class="panel x4">
-
                 <div class="panelContent unitConfigurationBox">
                     <h4>Unit Configuration</h4>
                     <input type="checkbox" id="checkBoxEnableDWS" checked>Enable Diagnostic Web Server
@@ -488,8 +487,44 @@
                     </table>
                 </div>
             </div>
-        </div>
 
+            <div class="panel x4">
+                <div class="panelContent">
+                    <h4>Remote Snapshot (4Kx42, XDx32, XDx30, HDX22 only)</h4>
+
+                    <input type="checkbox" id="checkBoxEnableRemoteSnapshot" checked>Enable remote snapshot
+                    <br>
+                    <table class="level2">
+                        <tr>
+                            <td>
+                                Remote snapshot every
+                                <input id="txtBoxRemoteSnapshotInterval" type="text" name="txtBoxRemoteSnapshotInterval" value="1" style="width: 30px;">
+                                minutes.
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                Save up to
+                                <input id="txtBoxNumSnapshots" type="text" name="txtBoxNumSnapshots" value="10" style="width: 30px;">
+                                images (1 - 100) on local storage.
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                JPEG quality level
+                                <input id="txtBoxJPEGQualityLevel" type="text" name="txtBoxJPEGQualityLevel" value="50" style="width: 30px;">
+                                (0 - 100).
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <input type="checkbox" id="checkBoxDisplaySnapshotsPortraitMode" checked>Display snapshots in portrait mode
+                            </td>
+                        </tr>
+                    </table>
+                </div>
+            </div>
+        </div>
     </div>
 
     <div class="buttonBoxCreateSetupFiles createSetupFiles">
