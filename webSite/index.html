@@ -145,6 +145,74 @@
                         </table>
                     </div>
                     <div role="tabpanel" class="tab-pane fade in active" id="wireless" aria-labelledby="home-tab">
+                        <table>
+                            <tr>
+                                <td>
+                                    <h4>Data Types Enabled</h4>
+                                    <input type="checkbox" id="cbDataTypeEnabledContentWireless">Content (video, images, audio)<br/>
+                                    <input type="checkbox" id="cbDataTypeEnabledTextFeedsWireless">Text Feeds (tickers, live text)<br/>
+                                    <input type="checkbox" id="cbDataTypeEnabledMediaFeedsWireless">Media Feeds (media, RSS, dynamic playlists)<br/>
+                                    <input type="checkbox" id="cbDataTypeEnabledHealthWireless">Health<br/>
+                                    <input type="checkbox" id="cbDataTypeEnabledLogUploadsWireless">Log Uploads<br/>
+                                </td>
+                                <td>
+                                    <h4>Connection Settings</h4>
+                                    <input type='radio' id = 'rbUseDHCPWireless' name='dhcpStaticWireless' value='dhcp' checked>Obtain an IP address automatically<br>
+                                    <input type='radio' id = 'rbUseStaticWireless' name='dhcpStaticWireless' value='static'>Use the following IP address:<br>
+                                    <table>
+                                        <tr>
+                                            <td>
+                                                IP Address:
+                                            </td>
+                                            <td>
+                                                <input type="text" id="txtBoxIPAddressWireless" disabled>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td>
+                                                Subnet mask:
+                                            </td>
+                                            <td>
+                                                <input type="text" id="txtBoxSubnetMaskWireless" disabled>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td>
+                                                Default gateway:
+                                            </td>
+                                            <td>
+                                                <input type="text" id="txtBoxDefaultGatewayWireless" disabled>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td>
+                                                DNS 1:
+                                            </td>
+                                            <td>
+                                                <input type="text" id="txtBoxDNS1Wireless" disabled>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td>
+                                                DNS 2:
+                                            </td>
+                                            <td>
+                                                <input type="text" id="txtBoxDNS2Wireless" disabled>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td>
+                                                DNS 3:
+                                            </td>
+                                            <td>
+                                                <input type="text" id="txtBoxDNS3Wireless" disabled>
+                                            </td>
+                                        </tr>
+                                    </table>
+                                </td>
+                            </tr>
+
+                        </table>
                     </div>
                     <div role="tabpanel" class="tab-pane fade" id="diagnostics" aria-labelledby="profile-tab">
                     </div>

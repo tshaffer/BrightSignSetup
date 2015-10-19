@@ -59,22 +59,31 @@ $(document).ready(function () {
 
     //Wired
     $("#rbUseDHCP").change(function () {
-        updateConnectionSettingsUI();
+        updateConnectionSettingsUI("");
     });
     $("#rbUseStatic").change(function () {
-        updateConnectionSettingsUI();
+        updateConnectionSettingsUI("");
     });
+
+    //Wireless
+    $("#rbUseDHCPWireless").change(function () {
+        updateConnectionSettingsUI("Wireless");
+    });
+    $("#rbUseStaticWireless").change(function () {
+        updateConnectionSettingsUI("Wireless");
+    });
+
 });
 
 
-function updateConnectionSettingsUI() {
-    var useStaticNetworkSettings = $("#rbUseStatic").is(':checked');
-    $("#txtBoxIPAddress").prop("disabled", !useStaticNetworkSettings);
-    $("#txtBoxSubnetMask").prop("disabled", !useStaticNetworkSettings);
-    $("#txtBoxDefaultGateway").prop("disabled", !useStaticNetworkSettings);
-    $("#txtBoxDNS1").prop("disabled", !useStaticNetworkSettings);
-    $("#txtBoxDNS2").prop("disabled", !useStaticNetworkSettings);
-    $("#txtBoxDNS3").prop("disabled", !useStaticNetworkSettings);
+function updateConnectionSettingsUI(suffix) {
+    var useStaticNetworkSettings = $("#rbUseStatic" + suffix).is(':checked');
+    $("#txtBoxIPAddress" + suffix).prop("disabled", !useStaticNetworkSettings);
+    $("#txtBoxSubnetMask" + suffix).prop("disabled", !useStaticNetworkSettings);
+    $("#txtBoxDefaultGateway" + suffix).prop("disabled", !useStaticNetworkSettings);
+    $("#txtBoxDNS1" + suffix).prop("disabled", !useStaticNetworkSettings);
+    $("#txtBoxDNS2" + suffix).prop("disabled", !useStaticNetworkSettings);
+    $("#txtBoxDNS3" + suffix).prop("disabled", !useStaticNetworkSettings);
 }
 
 function clearBSNLoginUI() {
