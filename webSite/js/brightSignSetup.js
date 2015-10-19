@@ -336,31 +336,29 @@ function createSetupFiles() {
 }
 
 var modalDialogDisplayed = false;
-function displayDeleteShowDlg(showTitle, showRecordingId) {
-
-    console.log("displayDeleteShowDlg() invoked, showTitle=" + showTitle + ", showRecordingId=" + showRecordingId);
+function displayAdvancedNetworkDlg() {
 
     var options = {
         "backdrop": "true"
     }
-    $('#deleteShowDlg').modal(options);
-    $('#deleteShowDlgShowTitle').html("Delete '" + showTitle + "'?");
+    $('#advancedNetworkDlg').modal(options);
+    $('#advancedNetworkDlgTitle').html('Advanced Network Setup');
 
     modalDialogDisplayed = true;
-    selectedDeleteShowDlgElement = "#deleteShowDlgDelete";
-    unselectedDeleteShowDlgElement = "#deleteShowDlgClose";
+    selectedAdvancedNetworkDlgElement = "#advancedNetworkDlgDelete";
+    unselectedAdvancedNetworkDlgElement = "#advancedNetworkDlgClose";
 
     // when dialog is displayed, highlight Delete, unhighlight Close
-    $(selectedDeleteShowDlgElement).removeClass("btn-secondary");
-    $(selectedDeleteShowDlgElement).addClass("btn-primary");
+    $(selectedAdvancedNetworkDlgElement).removeClass("btn-secondary");
+    $(selectedAdvancedNetworkDlgElement).addClass("btn-primary");
 
-    $(unselectedDeleteShowDlgElement).removeClass("btn-primary");
-    $(unselectedDeleteShowDlgElement).addClass("btn-secondary");
+    $(unselectedAdvancedNetworkDlgElement).removeClass("btn-primary");
+    $(unselectedAdvancedNetworkDlgElement).addClass("btn-secondary");
 }
 
 
-function deleteShowDlgCloseInvoked() {
-    console.log("deleteShowDlgCloseInvoked");
-    $('#deleteShowDlg').modal('hide');
+function advancedNetworkDlgCloseInvoked() {
+    console.log("advancedNetworkDlgCloseInvoked");
+    $('#advancedNetworkDlg').modal('hide');
     modalDialogDisplayed = false;
 }

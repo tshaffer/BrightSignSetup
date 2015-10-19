@@ -19,12 +19,12 @@
 
 <body>
 
-<div class="modal fade" id="deleteShowDlg" tabindex="-1" role="dialog" aria-labelledby="deleteShowDlg" aria-hidden="true">
+<div class="modal fade" id="advancedNetworkDlg" tabindex="-1" role="dialog" aria-labelledby="advancedNetworkDlg" aria-hidden="true">
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
                 <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
-                <h2 class="modal-title" id="deleteShowDlgTitle">Advanced Network Setup</h2>
+                <h2 class="modal-title" id="advancedNetworkDlgTitle">Advanced Network Setup</h2>
             </div>
 
             <div class="modal-body">
@@ -53,30 +53,12 @@
             </div>
 
             <div class="modal-footer">
-                <button type="button" id="deleteShowDlgDelete" class="btn btn-primary">OK</button>
-                <button type="button" id="deleteShowDlgClose" class="btn btn-default btn-secondary" data-dismiss="modal">Cancel</button>
+                <button type="button" id="advancedNetworkDlgDelete" class="btn btn-primary">OK</button>
+                <button type="button" id="advancedNetworkDlgClose" class="btn btn-default btn-secondary" data-dismiss="modal">Cancel</button>
             </div>
         </div>
     </div>
 </div>
-
-<!--<div class="modal fade" id="deleteShowDlg" tabindex="-1" role="dialog" aria-labelledby="deleteShowDlg" aria-hidden="true">-->
-    <!--<div class="modal-dialog">-->
-        <!--<div class="modal-content">-->
-            <!--<div class="modal-header">-->
-                <!--<button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>-->
-                <!--<h4 class="modal-title" id="deleteShowDlgTitle">Delete show confirmation</h4>-->
-            <!--</div>-->
-            <!--<div class="modal-body">-->
-                <!--<h3 id="deleteShowDlgShowTitle"></h3>-->
-            <!--</div>-->
-            <!--<div class="modal-footer">-->
-                <!--<button type="button" id="deleteShowDlgClose" class="btn btn-default btn-secondary" data-dismiss="modal">Close</button>-->
-                <!--<button type="button" id="deleteShowDlgDelete" class="btn btn-primary">Delete</button>-->
-            <!--</div>-->
-        <!--</div>-->
-    <!--</div>-->
-<!--</div>-->
 
 <div class="wrapper">
     <div class="pageHeader">
@@ -151,7 +133,7 @@
                     </table>
 
                     <div class="advancedNetworkSetupButtonBox">
-                        <button type="button" onclick="displayDeleteShowDlg('Pizza rocks!', 69)">Advanced Network Setup</button>
+                        <button type="button" onclick="displayAdvancedNetworkDlg()">Advanced Network Setup</button>
 
                         <!--<asp:ImageButton runat="server" ID="ImageButtonAdvancedNetworkSetup"-->
                                          <!--ImageUrl="~/_images/button_adv_network_setup.png"-->
