@@ -37,16 +37,116 @@
 
                 <div id="myTabContent" class="tab-content">
                     <div role="tabpanel" class="tab-pane fade in active" id="unitConfiguration" aria-labelledby="home-tab">
-                        <p>Raw denim you probably haven't heard of them jean shorts Austin. Nesciunt tofu stumptown aliqua, retro synth master cleanse. Mustache cliche tempor, williamsburg carles vegan helvetica. Reprehenderit butcher retro keffiyeh dreamcatcher synth. Cosby sweater eu banh mi, qui irure terry richardson ex squid. Aliquip placeat salvia cillum iphone. Seitan aliquip quis cardigan american apparel, butcher voluptate nisi qui.</p>
+                        <table>
+                            <tr>
+                                <td>
+                                    <input type="checkbox" id="cbSpecifyHostname">Specify hostname
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    Hostname:
+                                </td>
+                                <td>
+                                    <input type="text" id="txtBoxHostname" disabled>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    <input type="checkbox" id="cbUseProxy">Use proxy
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    Address:
+                                </td>
+                                <td>
+                                    <input type="text" id="txtBoxProxyAddress" disabled>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    Port:
+                                </td>
+                                <td>
+                                    <input type="text" id="txtBoxProxyPort" disabled>
+                                </td>
+                            </tr>
+                        </table>
                     </div>
                     <div role="tabpanel" class="tab-pane fade" id="wired" aria-labelledby="profile-tab">
-                        <p>Food truck fixie locavore, accusamus mcsweeney's marfa nulla single-origin coffee squid. Exercitation +1 labore velit, blog sartorial PBR leggings next level wes anderson artisan four loko farm-to-table craft beer twee. Qui photo booth letterpress, commodo enim craft beer mlkshk aliquip jean shorts ullamco ad vinyl cillum PBR. Homo nostrud organic, assumenda labore aesthetic magna delectus mollit. Keytar helvetica VHS salvia yr, vero magna velit sapiente labore stumptown. Vegan fanny pack odio cillum wes anderson 8-bit, sustainable jean shorts beard ut DIY ethical culpa terry richardson biodiesel. Art party scenester stumptown, tumblr butcher vero sint qui sapiente accusamus tattooed echo park.</p>
+                        <table>
+                            <tr>
+                                <td>
+                                    <h4>Data Types Enabled</h4>
+                                    <input type="checkbox" id="cbDataTypeEnabledContent">Content (video, images, audio)<br/>
+                                    <input type="checkbox" id="cbDataTypeEnabledTextFeeds">Text Feeds (tickers, live text)<br/>
+                                    <input type="checkbox" id="cbDataTypeEnabledMediaFeeds">Media Feeds (media, RSS, dynamic playlists)<br/>
+                                    <input type="checkbox" id="cbDataTypeEnabledHealth">Health<br/>
+                                    <input type="checkbox" id="cbDataTypeEnabledLogUploads">Log Uploads<br/>
+                                </td>
+                                <td>
+                                    <h4>Connection Settings</h4>
+                                    <input type='radio' id = 'rbUseDHCP' name='dhcpStatic' value='dhcp' checked>Obtain an IP address automatically<br>
+                                    <input type='radio' id = 'rbUseStatic' name='dhcpStatic' value='static'>Use the following IP address:<br>
+                                    <table>
+                                        <tr>
+                                            <td>
+                                                IP Address:
+                                            </td>
+                                            <td>
+                                                <input type="text" id="txtBoxIPAddress" disabled>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td>
+                                                Subnet mask:
+                                            </td>
+                                            <td>
+                                                <input type="text" id="txtBoxSubnetMask" disabled>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td>
+                                                Default gateway:
+                                            </td>
+                                            <td>
+                                                <input type="text" id="txtBoxDefaultGateway" disabled>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td>
+                                                DNS 1:
+                                            </td>
+                                            <td>
+                                                <input type="text" id="txtBoxDNS1" disabled>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td>
+                                                DNS 2:
+                                            </td>
+                                            <td>
+                                                <input type="text" id="txtBoxDNS2" disabled>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td>
+                                                DNS 3:
+                                            </td>
+                                            <td>
+                                                <input type="text" id="txtBoxDNS3" disabled>
+                                            </td>
+                                        </tr>
+                                    </table>
+                                </td>
+                            </tr>
+
+                        </table>
                     </div>
                     <div role="tabpanel" class="tab-pane fade in active" id="wireless" aria-labelledby="home-tab">
-                        <p>Raw denim you probably haven't heard of them jean shorts Austin. Nesciunt tofu stumptown aliqua, retro synth master cleanse. Mustache cliche tempor, williamsburg carles vegan helvetica. Reprehenderit butcher retro keffiyeh dreamcatcher synth. Cosby sweater eu banh mi, qui irure terry richardson ex squid. Aliquip placeat salvia cillum iphone. Seitan aliquip quis cardigan american apparel, butcher voluptate nisi qui.</p>
                     </div>
                     <div role="tabpanel" class="tab-pane fade" id="diagnostics" aria-labelledby="profile-tab">
-                        <p>Food truck fixie locavore, accusamus mcsweeney's marfa nulla single-origin coffee squid. Exercitation +1 labore velit, blog sartorial PBR leggings next level wes anderson artisan four loko farm-to-table craft beer twee. Qui photo booth letterpress, commodo enim craft beer mlkshk aliquip jean shorts ullamco ad vinyl cillum PBR. Homo nostrud organic, assumenda labore aesthetic magna delectus mollit. Keytar helvetica VHS salvia yr, vero magna velit sapiente labore stumptown. Vegan fanny pack odio cillum wes anderson 8-bit, sustainable jean shorts beard ut DIY ethical culpa terry richardson biodiesel. Art party scenester stumptown, tumblr butcher vero sint qui sapiente accusamus tattooed echo park.</p>
                     </div>
                 </div>
 

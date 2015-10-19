@@ -42,8 +42,40 @@ $(document).ready(function () {
             $("#sfnSetup").attr("style", "display: none;");
         }
     });
+
+// advanced network setup
+
+    // Unit Configuration
+    $("#cbSpecifyHostname").change(function () {
+        var enableSpecifyHostname = $("#cbSpecifyHostname").is(':checked');
+        $("#txtBoxHostname").prop("disabled", !enableSpecifyHostname);
+    });
+
+    $("#cbUseProxy").change(function () {
+        var enableUseProxy = $("#cbUseProxy").is(':checked');
+        $("#txtBoxProxyAddress").prop("disabled", !enableUseProxy);
+        $("#txtBoxProxyPort").prop("disabled", !enableUseProxy);
+    });
+
+    //Wired
+    $("#rbUseDHCP").change(function () {
+        updateConnectionSettingsUI();
+    });
+    $("#rbUseStatic").change(function () {
+        updateConnectionSettingsUI();
+    });
 });
 
+
+function updateConnectionSettingsUI() {
+    var useStaticNetworkSettings = $("#rbUseStatic").is(':checked');
+    $("#txtBoxIPAddress").prop("disabled", !useStaticNetworkSettings);
+    $("#txtBoxSubnetMask").prop("disabled", !useStaticNetworkSettings);
+    $("#txtBoxDefaultGateway").prop("disabled", !useStaticNetworkSettings);
+    $("#txtBoxDNS1").prop("disabled", !useStaticNetworkSettings);
+    $("#txtBoxDNS2").prop("disabled", !useStaticNetworkSettings);
+    $("#txtBoxDNS3").prop("disabled", !useStaticNetworkSettings);
+}
 
 function clearBSNLoginUI() {
     $("#txtBoxBSNAccount")[0].value='';
