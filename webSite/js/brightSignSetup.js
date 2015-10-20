@@ -65,6 +65,13 @@ $(document).ready(function () {
         updateLogsSettingsUI();
     });
 
+    $("#cbEnableRemoteSnapshot").change(function () {
+        var enableRemoteSnapshots = $("#cbEnableRemoteSnapshot").is(':checked');
+        $("#txtBoxRemoteSnapshotInterval").prop("disabled", !enableRemoteSnapshots);
+        $("#txtBoxNumSnapshots").prop("disabled", !enableRemoteSnapshots);
+        $("#txtBoxJPEGQualityLevel").prop("disabled", !enableRemoteSnapshots);
+        $("#cbDisplaySnapshotsPortraitMode").prop("disabled", !enableRemoteSnapshots);
+    });
 
 // advanced network setup
 
@@ -288,8 +295,8 @@ function createSetupFiles() {
     var enableStateLogging = $("#cbEnableStateLogging").is(':checked');
     var enableDiagnosticLogging = $("#cbEnableDiagnosticLogging").is(':checked');
 
-    var uploadLogsOnStartup = $("#checkBoxUploadLogsOnStartup").is(':checked');
-    var uploadLogsAtSpecificTimeEachDay = $("#checkBoxUploadLogsAtSpecificTimeEachDay").is(':checked');
+    var uploadLogsOnStartup = $("#cbUploadLogsOnStartup").is(':checked');
+    var uploadLogsAtSpecificTimeEachDay = $("#cbUploadLogsAtSpecificTimeEachDay").is(':checked');
 
 
     //var baseURL = "http://10.10.212.44:8080/";
