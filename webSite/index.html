@@ -27,7 +27,7 @@
                 <h2 class="modal-title" id="advancedNetworkDlgTitle">Advanced Network Setup</h2>
             </div>
 
-            <div class="modal-body">
+            <div class="modal-body deviceSetupPanelsBox">
                 <ul id="advancedNetworkTabs" class="nav nav-tabs" role="tablist">
                     <li role="presentation" class="active"><a href="#unitConfiguration" id="unitConfiguration-tab" role="tab" data-toggle="tab" aria-controls="home" aria-expanded="true">Unit Configuration</a></li>
                     <li role="presentation"><a href="#wired" role="tab" id="wired-tab" data-toggle="tab" aria-controls="profile">Wired</a></li>
@@ -215,6 +215,26 @@
                         </table>
                     </div>
                     <div role="tabpanel" class="tab-pane fade" id="diagnostics" aria-labelledby="profile-tab">
+                        <div class="panel">
+                            <input type="checkbox" id="cbEnableNetworkDiagnostics">Enable network diagnostics<br/>
+                            <table class="level2">
+                                <tr>
+                                    <td>
+                                        <input type="checkbox" id="cbTestEthernet" disabled>Test Ethernet<br/>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        <input type="checkbox" id="cbTestWireless" disabled>Test Wireless<br/>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        <input type="checkbox" id="cbTestInternet" disabled>Test Internet Connection<br/>
+                                    </td>
+                                </tr>
+                            </table>
+                        </div>
                     </div>
                 </div>
 
@@ -622,16 +642,16 @@
 
                     <table>
                         <tr>
-                            <td><input type="checkbox" id="checkBoxEnablePlaybackLogging">Enable Playback Logging</td>
+                            <td><input type="checkbox" id="cbEnablePlaybackLogging">Enable Playback Logging</td>
                         </tr>
                         <tr>
-                            <td><input type="checkbox" id="checkBoxEnableEventLogging">Enable Event Logging</td>
+                            <td><input type="checkbox" id="cbEnableEventLogging">Enable Event Logging</td>
                         </tr>
                         <tr>
-                            <td><input type="checkbox" id="checkBoxEnableStateLogging">Enable State Logging</td>
+                            <td><input type="checkbox" id="cbEnableStateLogging">Enable State Logging</td>
                         </tr>
                         <tr>
-                            <td><input type="checkbox" id="checkBoxEnableDiagnosticLogging">Enable Diagnostic Logging</td>
+                            <td><input type="checkbox" id="cbEnableDiagnosticLogging">Enable Diagnostic Logging</td>
                         </tr>
                     </table>
 
@@ -640,12 +660,12 @@
                     <table class="level2">
                         <tr>
                             <td>
-                                <input type="checkbox" id="checkBoxUploadLogsOnStartup">On startup
+                                <input type="checkbox" id="cbUploadLogsOnStartup" disabled>On startup
                             </td>
                         </tr>
                         <tr>
                             <td>
-                                <input type="checkbox" id="checkBoxUploadLogsAtSpecificTimeEachDay">At specific time each day
+                                <input type="checkbox" id="cbUploadLogsAtSpecificTimeEachDay" disabled>At specific time each day
                             </td>
                         </tr>
                     </table>
@@ -654,7 +674,7 @@
                         <tr>
                             <td>
                                 Upload Time:
-                                <select id="selectUploadTimeHour" style="width: 36px;">
+                                <select id="selectUploadTimeHour" style="width: 36px;" disabled>
                                     <option value="0">00</option>
                                     <option value="1">01</option>
                                     <option value="2">02</option>
@@ -681,7 +701,7 @@
                                     <option value="23">23</option>
                                 </select>
                                 :
-                                <select id="selectUploadTimeMinutes" style="width: 36px;">
+                                <select id="selectUploadTimeMinutes" style="width: 36px;" disabled>
                                     <option value="0">00</option>
                                     <option value="5">05</option>
                                     <option value="10">10</option>

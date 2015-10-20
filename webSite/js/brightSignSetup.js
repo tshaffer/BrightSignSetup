@@ -41,7 +41,30 @@ $(document).ready(function () {
         else {
             $("#sfnSetup").attr("style", "display: none;");
         }
+
+        updateLogsSettingsUI();
     });
+
+    $("#cbEnablePlaybackLogging").change(function () {
+        updateLogsSettingsUI();
+    });
+
+    $("#cbEnableEventLogging").change(function () {
+        updateLogsSettingsUI();
+    });
+
+    $("#cbEnableStateLogging").change(function () {
+        updateLogsSettingsUI();
+    });
+
+    $("#cbEnableDiagnosticLogging").change(function () {
+        updateLogsSettingsUI();
+    });
+
+    $("#cbUploadLogsAtSpecificTimeEachDay").change(function () {
+        updateLogsSettingsUI();
+    });
+
 
 // advanced network setup
 
@@ -73,7 +96,26 @@ $(document).ready(function () {
         updateConnectionSettingsUI("Wireless");
     });
 
+    // Diagnostics
+    $("#cbEnableNetworkDiagnostics").change(function () {
+        var enableNetworkDiagnostics = $("#cbEnableNetworkDiagnostics").is(':checked');
+        $("#cbTestEthernet").prop("disabled", !enableNetworkDiagnostics);
+        $("#cbTestWireless").prop("disabled", !enableNetworkDiagnostics);
+        $("#cbTestInternet").prop("disabled", !enableNetworkDiagnostics);
+    });
 });
+
+
+function updateLogsSettingsUI() {
+
+    var enableUploadLogs = ($("#bsnSetupType").is(':checked') || $("#sfnSetupType").is(':checked')) && ($("#cbEnablePlaybackLogging").is(':checked') || $("#cbEnableEventLogging").is(':checked') || $("#cbEnableStateLogging").is(':checked') || $("#cbEnableDiagnosticLogging").is(':checked'));
+    $("#cbUploadLogsOnStartup").prop("disabled", !enableUploadLogs);
+    $("#cbUploadLogsAtSpecificTimeEachDay").prop("disabled", !enableUploadLogs);
+
+    var enableUploadTime = enableUploadLogs && $("#cbUploadLogsAtSpecificTimeEachDay").is(':checked');
+    $("#selectUploadTimeHour").prop("disabled", !enableUploadTime);
+    $("#selectUploadTimeMinutes").prop("disabled", !enableUploadTime);
+}
 
 
 function updateConnectionSettingsUI(suffix) {
@@ -241,10 +283,10 @@ function createSetupFiles() {
 
     var updateHealthInterval = $("#selectUpdateHealthFrequency").val();
 
-    var enablePlaybackLogging = $("#checkBoxEnablePlaybackLogging").is(':checked');
-    var enableEventLogging = $("#checkBoxEnableEventLogging").is(':checked');
-    var enableStateLogging = $("#checkBoxEnableStateLogging").is(':checked');
-    var enableDiagnosticLogging = $("#checkBoxEnableDiagnosticLogging").is(':checked');
+    var enablePlaybackLogging = $("#cbEnablePlaybackLogging").is(':checked');
+    var enableEventLogging = $("#cbEnableEventLogging").is(':checked');
+    var enableStateLogging = $("#cbEnableStateLogging").is(':checked');
+    var enableDiagnosticLogging = $("#cbEnableDiagnosticLogging").is(':checked');
 
     var uploadLogsOnStartup = $("#checkBoxUploadLogsOnStartup").is(':checked');
     var uploadLogsAtSpecificTimeEachDay = $("#checkBoxUploadLogsAtSpecificTimeEachDay").is(':checked');
