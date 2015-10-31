@@ -21,9 +21,9 @@ define(function () {
         //save: function(attributes, options) {
         //    debugger;
         //}
-        sync: function (method, model, options) {
-            debugger;
-        }
+        //sync: function (method, model, options) {
+        //    //debugger;
+        //}
 
     //GET  /books/ .... collection.fetch();
     //POST /books/ .... collection.create();

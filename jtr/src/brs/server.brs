@@ -3,6 +3,9 @@ Sub InitializeServer()
     m.localServer = CreateObject("roHttpServer", { port: 8080 })
     m.localServer.SetPort(m.msgPort)
 
+	m.manualRecordPostedAA =	{ HandleEvent: setManualRecording, mVar: m }
+	m.localServer.AddPostToString({ url_path: "/manualRecording", user_data: m.manualRecordPostedAA  })
+
 	' commands sent from the browser or another app; commands get routed to device js for injection into the HSM framework
 	m.browserCommandAA =				{ HandleEvent: browserCommand, mVar: m}
 	m.localServer.AddGetFromEvent({ url_path: "/browserCommand", user_data: m.browserCommandAA })
@@ -193,6 +196,56 @@ Sub cssFetcher(userData, e as Object)
     e.SetResponseBodyString(css)
     e.SendResponse(200)
 	
+End Sub
+
+
+Sub setManualRecording(userData as Object, e as Object)
+stop
+
+	print "setManualRecording endpoint invoked - post message to javascript"
+
+    mVar = userData.mVar
+
+	requestParams = ParseJson(e.GetRequestBodyString())
+
+	title$ = requestParams["title"]
+	channel$ = requestParams["channel"]
+	dateTime = requestParams["dateTime"]
+	duration% = int(val(requestParams["duration"]))
+	inputSource$ = requestParams["inputSource"]
+
+	addManualRecordMessage = CreateObject("roAssociativeArray")
+	addManualRecordMessage["EventType"] = "ADD_RECORD"
+	addManualRecordMessage["DateTime"] = dateTime
+	addManualRecordMessage["Title"] = title$
+	addManualRecordMessage["Duration"] = duration%
+	addManualRecordMessage["InputSource"] = inputSource$
+	addManualRecordMessage["Channel"] = channel$
+	addManualRecordMessage["RecordingBitRate"] = 6
+	addManualRecordMessage["SegmentRecording"] = 0
+	addManualRecordMessage["ScheduledSeriesRecordingId"] = -1
+	addManualRecordMessage["StartTimeOffset"] = 0
+	addManualRecordMessage["StopTimeOffset"] = 0
+	mVar.msgPort.PostMessage(addManualRecordMessage)
+
+'                event["EventType"] = "ADD_RECORD";
+'                event["DateTime"] = message.dateTime;
+'                event["Title"] = message.title;
+'                event["Duration"] = message.duration;
+'                event["InputSource"] = message.inputSource;
+'                event["Channel"] = message.channel;
+'                event["RecordingBitRate"] = message.recordingBitRate;
+'                event["SegmentRecording"] = message.segmentRecording;
+'                event["ScheduledSeriesRecordingId"] = -1;
+'                event["StartTimeOffset"] = 0;
+'                event["StopTimeOffset"] = 0;
+'                postMessage(event);
+
+    e.AddResponseHeader("Content-type", "text/plain")
+    e.AddResponseHeader("Access-Control-Allow-Origin", "*")
+    e.SetResponseBodyString("herro Joel")
+    e.SendResponse(200)
+
 End Sub
 
 
