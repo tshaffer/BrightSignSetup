@@ -1,0 +1,101 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="">
+    <meta name="author" content="">
+
+    <title>JTR</title>
+
+    <link href="./bootstrap/css/bootstrap.min.css" rel="stylesheet">
+    <link href="./css/main.css" rel="stylesheet">
+    <link href="./css/styles.css" rel="stylesheet">
+    <script src="./js/jquery-2.1.1.min.js"></script>
+    <script src="./js/underscore-min.js"></script>
+    <script src="./js/backbone-min.js"></script>
+    <script src="./bootstrap/js/bootstrap.js"></script>
+    <script src="./js/date.js"></script>
+    <script data-main="js/main" src="js/require.js"></script>
+
+    <script type="text/template" id="manualRecordTemplate">
+        <h3>Create a Manual Recording</h3>
+        <form class="form-horizontal">
+            <div class="form-group form-group-sm">
+                <label for="manualRecordTitle" class="col-sm-4 control-label">Title (optional)</label>
+                <div class="col-sm-4">
+                    <input type="text" class="form-control input-sm" id="manualRecordTitle" placeholder="">
+                </div>
+            </div>
+            <div class="form-group">
+                <label for="manualRecordDuration" class="col-sm-4 control-label">Duration (mins)</label>
+                <div class="col-sm-4">
+                    <input type="text" class="form-control input-sm" id="manualRecordDuration" placeholder="">
+                </div>
+            </div>
+            <div class="form-group">
+                <label for="manualRecordDateId" class="col-sm-4 control-label">Date</label>
+                <div class="col-sm-4" id="manualRecordDateDiv">
+                    <input type="date" class="form-control input-sm" id="manualRecordDate"  value="">
+                </div>
+            </div>
+            <div class="form-group">
+                <label for="manualRecordTimeId" class="col-sm-4 control-label">Time</label>
+                <div class="col-sm-4" id="manualRecordTimeDiv">
+                    <input type="time" class="form-control input-sm" id="manualRecordTime" value="">
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="col-sm-4 control-label">Input source</label>
+                <div class="col-sm-4 btn-group">
+                    <label class="radio-inline"><input type="radio" id="rbManualRecordTuner" name="manualRecordInputSource" value="tuner" checked>Tuner</label>
+                    <label class="radio-inline"><input type="radio" id="rbManualRecordRoku" name="manualRecordInputSource" value="roku">Roku</label>
+                    <label class="radio-inline"><input type="radio" id="rbManualRecordTivo" name="manualRecordInputSource" value="tivo">Tivo</label>
+                </div>
+            </div>
+            <div id="manualRecordChannelDiv" class="form-group">
+                <label for="manualRecordChannel" class="col-sm-4 control-label">Channel</label>
+                <div class="col-sm-4">
+                    <input type="text" class="form-control input-sm" id="manualRecordChannel" value="5">
+                </div>
+            </div>
+            <div class="form-group">
+                <div class="col-sm-offset-4 col-sm-4">
+                    <button id="btnSetManualRecord" type="submit" class="btn btn-default">Set Manual Record</button>
+                </div>
+            </div>
+        </form>
+    </script>
+
+</head>
+
+<body>
+
+<div id="cont" class="container">
+
+    <div id="homePage" class="row">
+        <div class="col-lg-6">
+            <button id="recordedShows" class="btn btn-primary tv-words" autofocus>Recorded Shows</button><br><br>
+            <button id="recordNow" class="btn btn-secondary tv-words">Record Now</button><br><br>
+            <button id="manualRecord" class="btn btn-secondary tv-words">Manual Record</button><br><br>
+        </div>
+
+        <div class="col-lg-6">
+            <button id="liveVideo" class="btn btn-secondary tv-words">Live Video</button><br><br>
+            <button id="channelGuideId" class="btn btn-secondary tv-words">Channel Guide</button><br><br>
+            <button id="toDoList" class="btn btn-secondary tv-words">To Do List</button><br><br>
+            <button id="settings" class="btn btn-secondary tv-words">Settings</button><br><br>
+        </div>
+    </div>
+
+    <div id="manualRecordPage" style="display:none">
+
+    </div>
+
+
+    </div>
+
+</body>
+</html>
