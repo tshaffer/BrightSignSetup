@@ -200,7 +200,6 @@ End Sub
 
 
 Sub setManualRecording(userData as Object, e as Object)
-stop
 
 	print "setManualRecording endpoint invoked - post message to javascript"
 
@@ -215,31 +214,21 @@ stop
 	inputSource$ = requestParams["inputSource"]
 
 	addManualRecordMessage = CreateObject("roAssociativeArray")
-	addManualRecordMessage["EventType"] = "ADD_RECORD"
-	addManualRecordMessage["DateTime"] = dateTime
-	addManualRecordMessage["Title"] = title$
-	addManualRecordMessage["Duration"] = duration%
-	addManualRecordMessage["InputSource"] = inputSource$
-	addManualRecordMessage["Channel"] = channel$
-	addManualRecordMessage["RecordingBitRate"] = 6
-	addManualRecordMessage["SegmentRecording"] = 0
-	addManualRecordMessage["ScheduledSeriesRecordingId"] = -1
-	addManualRecordMessage["StartTimeOffset"] = 0
-	addManualRecordMessage["StopTimeOffset"] = 0
-	mVar.msgPort.PostMessage(addManualRecordMessage)
-
-'                event["EventType"] = "ADD_RECORD";
-'                event["DateTime"] = message.dateTime;
-'                event["Title"] = message.title;
-'                event["Duration"] = message.duration;
-'                event["InputSource"] = message.inputSource;
-'                event["Channel"] = message.channel;
-'                event["RecordingBitRate"] = message.recordingBitRate;
-'                event["SegmentRecording"] = message.segmentRecording;
-'                event["ScheduledSeriesRecordingId"] = -1;
-'                event["StartTimeOffset"] = 0;
-'                event["StopTimeOffset"] = 0;
-'                postMessage(event);
+	addManualRecordMessage["command"] = "addRecord"
+	addManualRecordMessage["dateTime"] = dateTime
+	addManualRecordMessage["title"] = title$
+	addManualRecordMessage["duration"] = duration%
+	addManualRecordMessage["inputSource"] = inputSource$
+	addManualRecordMessage["channel"] = channel$
+	addManualRecordMessage["recordingBitRate"] = 6
+	addManualRecordMessage["segmentRecording"] = 0
+	addManualRecordMessage["scheduledSeriesRecordingId"] = -1
+	addManualRecordMessage["startTimeOffset"] = 0
+	addManualRecordMessage["stopTimeOffset"] = 0
+	ok = mVar.htmlWidget.PostJSMessage(addManualRecordMessage)
+	if not ok then
+		stop
+	endif
 
     e.AddResponseHeader("Content-type", "text/plain")
     e.AddResponseHeader("Access-Control-Allow-Origin", "*")
