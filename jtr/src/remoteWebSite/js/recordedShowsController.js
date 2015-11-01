@@ -16,7 +16,8 @@ define(['recordedShowsModel','recordedShowsView'], function (RecordedShowsModel,
             });
 
             this.recordedShowsView = new RecordedShowsView({
-                el: $("#recordedShowsPage")
+                el: $("#recordedShowsPage"),
+                model: this.recordedShowsModel
             });
 
             _.extend(this, Backbone.Events);
@@ -33,12 +34,12 @@ define(['recordedShowsModel','recordedShowsView'], function (RecordedShowsModel,
                 success: function () {
                     console.log("JSON file load was successful", self.recordedShowsModel);
                     console.log("number of recorded shows = " + self.recordedShowsModel.models.length.toString());
+                    self.recordedShowsView.show();
                 },
                 error: function () {
                     console.log('There was some error in loading and processing the JSON file');
                 }
             });
-            //this.recordedShowsView.show();
         }
     };
 

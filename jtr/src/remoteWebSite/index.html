@@ -69,6 +69,12 @@
         </form>
     </script>
 
+    <!--<script type="text/template" id="recordedShowTemplate">-->
+        <!--<td><%= manufacturer %></td>-->
+        <!--<td><%= model %></td>-->
+        <!--<td><%= stock %></td>-->
+    <!--</script>-->
+
 </head>
 
 <body>
@@ -94,7 +100,25 @@
 
     </div>
 
-    <div id="recordedShowsPage" class="table-responsive" style="display: none;">
+    <div id="recordedShowsPage" style="display: none;">
+        <table class="table">
+            <thead>
+            <tr>
+                <!--<th class="play"></th>-->
+                <!--<th class="delete"></th>-->
+                <!--<th class="repeat"></th>-->
+                <!--<th class="stream"></th>-->
+                <!--<th class="download"></th>-->
+                <th class="replayGuideTitle">Title</th>
+                <th class="recorded">Recorded</th>
+                <!--<th class="showInfo">Info</th>-->
+                <!--<th class="position">Position</th>-->
+            </tr>
+            </thead>
+            <tbody id="recordedShowsTableBody"></tbody>
+        </table>
+
+    </div>
 
 </div>
 

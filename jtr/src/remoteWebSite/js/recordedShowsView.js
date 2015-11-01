@@ -1,7 +1,7 @@
 /**
  * Created by tedshaffer on 10/31/15.
  */
-define(function () {
+define(['recordedShowView'], function (RecordedShowView) {
 
     var recordedShowsView = Backbone.View.extend({
 
@@ -16,6 +16,24 @@ define(function () {
 
         render: function() {
             this.$el.html('');
+
+            var self = this;
+            this.model.each(function(recordedShowModel) {
+                console.log(recordedShowModel);
+                var recordedShowView = new RecordedShowView( {
+                    model: recordedShowModel
+                });
+                //self.$el.append(recordedShowView.render().el);
+            });
+
+            //Surfboards.each(function(model) {
+            //    var surfboard = new SurfboardView({
+            //        model: model
+            //    });
+            //
+            //    this.$el.append(surfboard.render().el);
+            //}.bind(this));
+
 
             return this;
         }
