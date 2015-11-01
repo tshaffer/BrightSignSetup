@@ -23,7 +23,7 @@ define(['recordedShowView'], function (RecordedShowView) {
                 var recordedShowView = new RecordedShowView( {
                     model: recordedShowModel
                 });
-                //self.$el.append(recordedShowView.render().el);
+                self.$el.append(recordedShowView.render().el);
             });
 
             //Surfboards.each(function(model) {
@@ -34,6 +34,7 @@ define(['recordedShowView'], function (RecordedShowView) {
             //    this.$el.append(surfboard.render().el);
             //}.bind(this));
 
+            $("#recordedShowsPage").css("display", "block");
 
             return this;
         }

@@ -16,7 +16,7 @@ define(['recordedShowsModel','recordedShowsView'], function (RecordedShowsModel,
             });
 
             this.recordedShowsView = new RecordedShowsView({
-                el: $("#recordedShowsPage"),
+                el: $("#recordedShowsTableBody"),
                 model: this.recordedShowsModel
             });
 
