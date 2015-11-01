@@ -10,11 +10,16 @@ define(function () {
         initialize: function () {
         },
 
+        show: function() {
+            this.render();
+        },
+
         render: function() {
             this.$el.html('');
 
             return this;
         }
+
 
     });
 

@@ -52,6 +52,9 @@ Sub InitializeServer()
 	m.getRecordingsAA =					{ HandleEvent: getRecordings, mVar: m }
 	m.localServer.AddGetFromEvent({ url_path: "/getRecordings", user_data: m.getRecordingsAA })
 
+	m.recordedShowsAA =					{ HandleEvent: getRecordedShows, mVar: m }
+	m.localServer.AddGetFromEvent({ url_path: "/recordedShows", user_data: m.recordedShowsAA })
+
 	' play a specific recording
 	m.playRecordingAA =					{ HandleEvent: playRecording, mVar: m }
 	m.localServer.AddGetFromEvent({ url_path: "/recording", user_data: m.playRecordingAA })
@@ -567,6 +570,43 @@ Sub getPrograms(userData as Object, e as Object)
     e.AddResponseHeader("Access-Control-Allow-Origin", "*")
     e.SetResponseBodyString(json)
     e.SendResponse(200)
+
+End Sub
+
+
+Sub getRecordedShows(userData as Object, e as Object)
+
+	mVar = userData.mvar
+
+	print "getRecordings endpoint invoked"
+
+	response = {}
+
+	' get remaining space on card
+'	storageInfo = CreateObject("roStorageInfo", "SD:")
+'	freeSpace = StripLeadingSpaces(stri(storageInfo.GetFreeInMegabytes()))
+'	response.freeSpace = freeSpace
+
+	PopulateRecordings(mVar, response)
+
+'	json = FormatJson(response, 0)
+	json = FormatJson(response.recordings, 0)
+
+
+    e.AddResponseHeader("Content-type", "text/json")
+    e.AddResponseHeader("Access-Control-Allow-Origin", "*")
+    e.SetResponseBodyString(json)
+    e.SendResponse(200)
+
+	' send data directly to js (for the case where the request came from the browser or an external app)
+
+'	aa = {}
+'	aa.AddReplace("command", "recordings")
+'	aa.AddReplace("value", json)
+
+'	ok = mVar.htmlWidget.PostJSMessage(aa)
+'	if not ok stop
+
 
 End Sub
 
