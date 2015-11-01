@@ -35,7 +35,6 @@ define(['manualRecordModel','manualRecordView'], function (ManualRecordModel, Ma
 
         show: function() {
             console.log("manualRecordController:show() invoked");
-            //this.manualRecordView.render();
             this.manualRecordView.show();
         },
 

@@ -14,6 +14,7 @@
     <link href="./css/main.css" rel="stylesheet">
     <link href="./css/styles.css" rel="stylesheet">
     <script src="./js/jquery-2.1.1.min.js"></script>
+    <script src="./js/handlebars-v4.0.4.js"></script>
     <script src="./js/underscore-min.js"></script>
     <script src="./js/backbone-min.js"></script>
     <script src="./bootstrap/js/bootstrap.js"></script>
@@ -69,11 +70,24 @@
         </form>
     </script>
 
-    <script type="text/template" id="recordedShowTemplate">
-        <td><%= Title %></td>
-        <td><%= StartDateTime %></td>
-    </script>
+    <script id="recordedShowTemplate" type="text/x-handlebars-template">
 
+        <!-- recordedShow is looked up on the global context, the one we pass to the compiled template -->
+
+        {{#each recordedShows}}
+
+        <!-- Here the context is each recordedShow. So we can access its properties directly: -->
+        <tr>
+            <!--<td><button type='button' class='btn btn-default recorded-shows-icon' id='recording" + jtrRecording.RecordingId.toString() + "' aria-label='Left Align'><span class='glyphicon glyphicon-play' aria-hidden='true'></span></button></td>-->
+            <td><button type='button' class='btn btn-default recorded-shows-icon' id='{{Id}}' aria-label='Left Align'><span class='glyphicon glyphicon-play' aria-hidden='true'></span></button></td>
+            <td>{{Title}}</td>
+            <td>{{StartDateTime}}</td>
+            <td>{{Position}}</td>
+        </tr>
+
+        {{/each}}
+
+    </script>
 </head>
 
 <body>
@@ -103,7 +117,7 @@
         <table class="table">
             <thead>
             <tr>
-                <!--<th class="play"></th>-->
+                <th class="play"></th>
                 <!--<th class="delete"></th>-->
                 <!--<th class="repeat"></th>-->
                 <!--<th class="stream"></th>-->
@@ -111,7 +125,7 @@
                 <th class="replayGuideTitle">Title</th>
                 <th class="recorded">Recorded</th>
                 <!--<th class="showInfo">Info</th>-->
-                <!--<th class="position">Position</th>-->
+                <th class="position">Position</th>
             </tr>
             </thead>
             <tbody id="recordedShowsTableBody"></tbody>
