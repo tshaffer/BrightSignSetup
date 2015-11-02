@@ -23,7 +23,7 @@ define(function () {
             // Compile the template
             var theTemplate = Handlebars.compile(theTemplateScript);
 
-            // Create the context
+            // Create the context for recorded shows
             var recordedShowsAttributes = [];
             this.model.each(function(recordedShowModel) {
 
