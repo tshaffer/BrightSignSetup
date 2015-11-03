@@ -2,6 +2,7 @@
  * Created by Ted Shaffer on 10/5/2015.
  */
 $(document).ready(function () {
+
     console.log("hello world");
 
     // add handlers
@@ -180,12 +181,12 @@ function signInToBSN() {
     var bsnAccount = $("#txtBoxBSNAccount").val();
     var bsnLogin = $("#txtBoxBSNLogin").val();
     var bsnPassword = $("#txtBoxBSNPassword").val();
-    var bsnObfuscatedPassword = "870FA8EE962D90AF50C7EAED792B075A";
+    var md5OfBSNPassword = md5(bsnPassword).toUpperCase();
 
     var bsnCredentials = {
         "account": bsnAccount,
         "login": bsnLogin,
-        "password": bsnObfuscatedPassword
+        "password": md5OfBSNPassword
     };
 
     //var baseURL = "http://10.10.212.44:8080/";
@@ -195,6 +196,9 @@ function signInToBSN() {
     $.get(aUrl, bsnCredentials)
         .done(function (result) {
             console.log("bsnSignIn completed successfully");
+
+            bsUserName = result.bsusername;
+            bsPassword = result.bspassword;
 
             aUrl = baseURL + "bsnGetAllGroups";
                $.get(aUrl, bsnCredentials)
@@ -260,7 +264,6 @@ function createSetupFiles() {
         lwsConfig = "status";
     }
 
-
     var account = "";
     var user = "";
     var password = "";
@@ -270,10 +273,14 @@ function createSetupFiles() {
     var contentCheckInterval = "";
     var enableBasicAuthentication = false;
 
-    if (setupType == "bnm") {
-        account = "ted";
-        user = "teduser";
-        password = "tedpwd";
+    if (setupType == "bsn") {
+
+        // TODO - ensure that the user has signed in to BSN
+        account = $("#txtBoxBSNAccount").val();
+        user = bsUserName;
+        password = bsPassword;
+
+        // TODO - how does the script get the base URL for BSN?
         baseUrl = "https://services.brightsignnetwork.com/";
         nextUrl = "/bs/checkforcontent.ashx";
         group = $("#selectBSNGroup").val();
@@ -298,7 +305,15 @@ function createSetupFiles() {
     var uploadLogsOnStartup = $("#cbUploadLogsOnStartup").is(':checked');
     var uploadLogsAtSpecificTimeEachDay = $("#cbUploadLogsAtSpecificTimeEachDay").is(':checked');
 
+    var enablePlaybackLogging = $("#cbEnablePlaybackLogging").is(':checked');
 
+    var enableRemoteSnapshot = $("#cbEnableRemoteSnapshot").is(':checked');
+    var deviceScreenShotsInterval = $("#txtBoxRemoteSnapshotInterval").val();
+    var deviceScreenShotsCountLimit = $("#txtBoxNumSnapshots").val();
+    var deviceScreenShotsQuality = $("#txtBoxJPEGQualityLevel").val();
+    var deviceScreenShotsDisplayPortrait = $("#cbDisplaySnapshotsPortraitMode").is(':checked');
+
+    // TODO - how does the script get the URL for the device? / is this the right way to communicate with the BrightScript?
     //var baseURL = "http://10.10.212.44:8080/";
     var baseURL= "http://10.1.0.241:8080/"
     var aUrl = baseURL + "runSetup";
@@ -377,11 +392,11 @@ function createSetupFiles() {
         "uploadLogFilesAtSpecificTime": uploadLogsAtSpecificTimeEachDay,
         "uploadLogFilesTime": "",
 
-        "deviceScreenShotsEnabled": "yes",
-        "deviceScreenShotsInterval": "60",
-        "deviceScreenShotsCountLimit": "25",
-        "deviceScreenShotsQuality": "100",
-        "deviceScreenShotsDisplayPortrait": "False",
+        "deviceScreenShotsEnabled": enableRemoteSnapshot,
+        "deviceScreenShotsInterval": deviceScreenShotsInterval,
+        "deviceScreenShotsCountLimit": deviceScreenShotsCountLimit,
+        "deviceScreenShotsQuality": deviceScreenShotsQuality,
+        "deviceScreenShotsDisplayPortrait": deviceScreenShotsDisplayPortrait,
 
         "idleScreenColor": "FF000000",
 
@@ -409,6 +424,7 @@ function createSetupFiles() {
         "testEthernetEnabled": "True",
         "testWirelessEnabled": "False",
         "testInternetEnabled": "True",
+
 
     };
 
