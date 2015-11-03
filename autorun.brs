@@ -4734,7 +4734,7 @@ Sub InitializeTouchScreen()
         m.touchScreen.SetPort(m.msgPort)
         REM Puts up a cursor if a mouse is attached
         REM The cursor must be a 32 x 32 BMP
-        REM The x,y position is the “hot spot” point
+        REM The x,y position is the ï¿½hot spotï¿½ point
         m.touchScreen.SetCursorBitmap("cursor.bmp", 16, 16)
         m.touchScreen.SetResolution(1024, 768)
         m.touchScreen.SetCursorPosition(512, 512)
@@ -6624,7 +6624,7 @@ Function NewSetupServer(sysInfo) As Object
     bsnGetAllGroupsAA = { HandleEvent: bsnGetAllGroups, mVar: SetupServer }
     localServer.AddGetFromEvent({ url_path: "/bsnGetAllGroups", user_data: bsnGetAllGroupsAA })
 
-' TODO - only add for LFN/lws?
+' TODO - only add these handlers after user selects LFN?
     getCurrentStatusAA =		{ HandleEvent: GetCurrentStatus, mVar: SetupServer }
 	localServer.AddGetFromEvent({ url_path: "/GetCurrentStatus", user_data: getCurrentStatusAA })
 '	localServer.AddGetFromEvent({ url_path: "/GetCurrentStatus", user_data: getCurrentStatusAA, passwords: lwsCredentials })
