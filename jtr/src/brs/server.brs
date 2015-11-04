@@ -129,7 +129,7 @@ Sub InitializeServer()
 '    service = { name: "JTR Web Service", type: "_http._tcp", port: 8080, _functionality: BSP.lwsConfig$, _serialNumber: sysInfo.deviceUniqueID$, _unitName: unitName$, _unitNamingMethod: unitNamingMethod$,  }
 '    JTR.advert = CreateObject("roNetworkAdvertisement", service)
 
-	serverDirectory$ = "webSite"
+	serverDirectory$ = "remoteWebSite"
 	listOfServerFiles = []
 	ListFiles(serverDirectory$, listOfServerFiles)
 	m.AddHandlers(serverDirectory$, listOfServerFiles)
