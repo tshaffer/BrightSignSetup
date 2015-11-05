@@ -12,6 +12,12 @@ define(['recordedShowModel'], function (RecordedShowModel) {
         //set: function(models, options) {
         //    console.log("recordedShowsModel.set invoked");
         //},
+
+        sync: function(method, model, options) {
+            options = options || {};
+            options.url = "http://10.1.0.241:8080/recordedShows";
+            Backbone.sync(method, model, options);
+        }
     });
 
     return recordedShowsModel;

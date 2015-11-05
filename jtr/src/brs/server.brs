@@ -52,6 +52,7 @@ Sub InitializeServer()
 	m.getRecordingsAA =					{ HandleEvent: getRecordings, mVar: m }
 	m.localServer.AddGetFromEvent({ url_path: "/getRecordings", user_data: m.getRecordingsAA })
 
+	' backbone handler
 	m.recordedShowsAA =					{ HandleEvent: getRecordedShows, mVar: m }
 	m.localServer.AddGetFromEvent({ url_path: "/recordedShows", user_data: m.recordedShowsAA })
 
@@ -600,12 +601,13 @@ Sub getRecordedShows(userData as Object, e as Object)
 
 	' send data directly to js (for the case where the request came from the browser or an external app)
 
-'	aa = {}
-'	aa.AddReplace("command", "recordings")
-'	aa.AddReplace("value", json)
+	json = FormatJson(response, 0)
+	aa = {}
+	aa.AddReplace("command", "recordings")
+	aa.AddReplace("value", json)
 
-'	ok = mVar.htmlWidget.PostJSMessage(aa)
-'	if not ok stop
+	ok = mVar.htmlWidget.PostJSMessage(aa)
+	if not ok stop
 
 
 End Sub

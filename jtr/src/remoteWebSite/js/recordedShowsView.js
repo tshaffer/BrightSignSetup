@@ -25,6 +25,7 @@ define(function () {
 
             // Create the context for recorded shows
             var recordedShowsAttributes = [];
+            var recordingIds = [];
             this.model.each(function(recordedShowModel) {
 
                 // TITLE
@@ -56,16 +57,20 @@ define(function () {
                 var lastViewedPositionInMinutes = Math.floor(recordedShowModel.attributes.LastViewedPosition / 60);
                 var position = lastViewedPositionInMinutes.toString() + " of " + recordedShowModel.attributes.Duration.toString() + " minutes";
 
-                // ID
-                var id = "recording" + recordedShowModel.attributes.RecordingId.toString();
+                // IDs
+                var playRecordingId = "recording" + recordedShowModel.attributes.RecordingId.toString();
+                var deleteRecordingId = "delete" + recordedShowModel.attributes.RecordingId.toString();
 
                 var recordedShowAttributes = {};
-                recordedShowAttributes.Id = id;
+                recordedShowAttributes.PlayRecordingId = playRecordingId;
+                recordedShowAttributes.DeleteRecordingId = deleteRecordingId;
                 recordedShowAttributes.Title = title;
                 recordedShowAttributes.StartDateTime = formattedDayDate;
                 recordedShowAttributes.Position = position;
 
                 recordedShowsAttributes.push(recordedShowAttributes);
+
+                recordingIds.push(recordedShowModel.attributes.RecordingId);
             });
             var context = {
                 recordedShows : recordedShowsAttributes
@@ -77,10 +82,28 @@ define(function () {
             // Add the compiled html to the page
             $("#recordedShowsTableBody").append(theCompiledHtml);
 
+            var self = this;
+            $.each(recordingIds, function (index, recordingId) {
+                var btnIdPlayRecording = "#recording" + recordingId;
+                $(btnIdPlayRecording).click({ recordingId: recordingId }, function (event) {
+                    //self.playSelectedShowCallback(event);
+                    self.trigger("playSelectedShow", event.data.recordingId);
+                });
+
+                var btnIdDeleteRecording = "#delete" + recordingId;
+                $(btnIdDeleteRecording).click({ recordingId: recordingId }, function (event) {
+                    self.trigger("deleteSelectedShow", event.data.recordingId);
+                });
+            });
+
             $("#recordedShowsPage").css("display", "block");
 
             return this;
-        }
+        },
+
+        //playSelectedShowCallback: function(event) {
+        //    console.log("playback recording with id = " + event.data.recordingId);
+        //}
 
 
     });

@@ -22,6 +22,56 @@ define(['recordedShowsModel','recordedShowsView'], function (RecordedShowsModel,
 
             _.extend(this, Backbone.Events);
 
+            var self = this;
+
+            this.listenTo(this.recordedShowsView, "playSelectedShow", function(recordingId) {
+                console.log("RecordedShowsController:: playSelectedShow event received, id = " + recordingId);
+
+                baseURL = "http://192.168.2.14:8080/";
+                //baseURL = "http://10.1.0.241:8080/";
+                var aUrl = baseURL + "browserCommand";
+                var commandData = { "command": "playRecordedShow", "recordingId": recordingId };
+                console.log(commandData);
+
+                $.get(aUrl, commandData)
+                    .done( function (result) {
+                        console.log("browserCommand successfully sent");
+                    })
+                    .fail( function (jqXHR, textStatus, errorThrown) {
+                        debugger;
+                        console.log("browserCommand failure");
+                    })
+                    .always( function () {
+                        //alert("recording transmission finished");
+                    });
+
+                return false;
+            });
+
+            this.listenTo(this.recordedShowsView, "deleteSelectedShow", function(recordingId) {
+                console.log("RecordedShowsController:: deleteSelectedShow event received, id = " + recordingId);
+
+                baseURL = "http://192.168.2.14:8080/";
+                //baseURL = "http://10.1.0.241:8080/";
+                var aUrl = baseURL + "browserCommand";
+                var commandData = { "command": "deleteRecordedShow", "recordingId": recordingId };
+                console.log(commandData);
+
+                $.get(aUrl, commandData)
+                    .done( function (result) {
+                        console.log("browserCommand successfully sent");
+                        self.show();
+                    })
+                    .fail( function (jqXHR, textStatus, errorThrown) {
+                        debugger;
+                        console.log("browserCommand failure");
+                    })
+                    .always( function () {
+                        //alert("recording transmission finished");
+                    });
+
+                return false;
+            });
 
         },
 
