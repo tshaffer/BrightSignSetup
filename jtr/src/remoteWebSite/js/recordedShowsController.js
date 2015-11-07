@@ -27,7 +27,7 @@ define(['recordedShowsModel','recordedShowsView'], function (RecordedShowsModel,
             this.listenTo(this.recordedShowsView, "playSelectedShow", function(recordingId) {
                 console.log("RecordedShowsController:: playSelectedShow event received, id = " + recordingId);
 
-                baseURL = "http://192.168.2.14:8080/";
+                baseURL = "http://192.168.2.8:8080/";
                 //baseURL = "http://10.1.0.241:8080/";
                 var aUrl = baseURL + "browserCommand";
                 var commandData = { "command": "playRecordedShow", "recordingId": recordingId };
@@ -51,7 +51,7 @@ define(['recordedShowsModel','recordedShowsView'], function (RecordedShowsModel,
             this.listenTo(this.recordedShowsView, "deleteSelectedShow", function(recordingId) {
                 console.log("RecordedShowsController:: deleteSelectedShow event received, id = " + recordingId);
 
-                baseURL = "http://192.168.2.14:8080/";
+                baseURL = "http://192.168.2.8:8080/";
                 //baseURL = "http://10.1.0.241:8080/";
                 var aUrl = baseURL + "browserCommand";
                 var commandData = { "command": "deleteRecordedShow", "recordingId": recordingId };

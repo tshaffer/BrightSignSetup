@@ -1,7 +1,7 @@
 /**
  * Created by tedshaffer on 10/27/15.
  */
-define(['mainMenuView','manualRecordController', 'recordedShowsController'], function (MainMenuView, ManualRecordController, RecordedShowsController) {
+define(['mainMenuView','manualRecordController', 'recordedShowsController', 'channelGuideController'], function (MainMenuView, ManualRecordController, RecordedShowsController, ChannelGuideController) {
 
     var mainMenuController = {
         p1: 69,
@@ -26,6 +26,14 @@ define(['mainMenuView','manualRecordController', 'recordedShowsController'], fun
                 // note - do not invoke new on ManualRecordController
                 var manualRecordController = ManualRecordController;
                 manualRecordController.show();
+            });
+
+            this.listenTo(mainMenuView, "invokeChannelGuide", function () {
+                console.log("MainMenuController:: invokeChannelGuide event received");
+                $(mainMenuView.el).hide();
+
+                var channelGuideController = ChannelGuideController;
+                channelGuideController.show();
             });
         }
     };

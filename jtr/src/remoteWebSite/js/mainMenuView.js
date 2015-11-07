@@ -5,31 +5,37 @@ define(function () {
 
     var mainMenuView = Backbone.View.extend({
 
-            initialize: function () {
-                console.log("mainMenuView::initialize");
+        initialize: function () {
+            console.log("mainMenuView::initialize");
 
-                // JTRTODO - load template here. add render function. possibly call it here or later.
-            },
+            // JTRTODO - load template here. add render function. possibly call it here or later.
+        },
 
-            events: {
-                "click #recordedShows": "recordedShowsHandler",
-                "click #manualRecord": "manualRecordHandler"
-            },
+        events: {
+            "click #recordedShows": "recordedShowsHandler",
+            "click #manualRecord": "manualRecordHandler",
+            "click #channelGuideId": "channelGuideHandler"
+        },
 
-            recordedShowsHandler: function (event) {
-                // Button clicked, you can access the element that was clicked with event.currentTarget
-                console.log("recordedShowsHandler, trigger invokeRecordedShows");
-                // broadcast event - only goes to those objects specifically listening to mainMenuView
-                this.trigger("invokeRecordedShows");
-            },
+        recordedShowsHandler: function (event) {
+            // Button clicked, you can access the element that was clicked with event.currentTarget
+            console.log("recordedShowsHandler, trigger invokeRecordedShows");
+            // broadcast event - only goes to those objects specifically listening to mainMenuView
+            this.trigger("invokeRecordedShows");
+        },
 
-            manualRecordHandler: function (event) {
-                console.log("manualRecordHandler, trigger invokeManualRecord");
-                this.trigger("invokeManualRecord");
-            },
+        manualRecordHandler: function (event) {
+            console.log("manualRecordHandler, trigger invokeManualRecord");
+            this.trigger("invokeManualRecord");
+        },
 
-            pizzaTest: "pizza"
-        });
+        channelGuideHandler: function (event) {
+            console.log("channelGuideHandler, trigger invokeChannelGuide");
+            this.trigger("invokeChannelGuide");
+        },
+
+        pizzaTest: "pizza"
+    });
 
 
     // at this point, mainMenuView.pizzaTest is undefined
