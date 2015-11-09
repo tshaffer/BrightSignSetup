@@ -1,18 +1,15 @@
 /**
  * Created by tedshaffer on 11/6/15.
  */
-define(function () {
+define([], function () {
 
     var channelGuideView = Backbone.View.extend({
 
-        msecToMinutes: function(msec) {
-            return msec / 60000;
-        },
+        ServerInterface: null,
 
-        minutesToMsec: function (minutes) {
-            return minutes * 60000;
+        setServerInterface: function(serverInterface) {
+            this.ServerInterface = serverInterface;
         },
-
 
         channelGuideDisplayStartDateTime: null,
         channelGuideDisplayEndDateTime: null,
@@ -115,7 +112,7 @@ define(function () {
             var channelGuideDataStructureStartDateTime = this.model.epgProgramScheduleStartDateTime;
 
             // time difference between start of channel guide display and start of channel guide data
-            var timeDiffInMinutes = this.msecToMinutes(this.channelGuideDisplayStartDateTime - channelGuideDataStructureStartDateTime);
+            var timeDiffInMinutes = msecToMinutes(this.channelGuideDisplayStartDateTime - channelGuideDataStructureStartDateTime);
 
             // index into the data structure (time slots) that contains the first show to display in the channel guide based on the time offset into channel guide data
             var currentChannelGuideOffsetIndex = parseInt(timeDiffInMinutes / 30);
@@ -147,7 +144,7 @@ define(function () {
 
                 // calculate the time delta between the time of the channel guide display start and the start of the first show to display
                 // reduce the duration of the first show by this amount (time the show would have already been airing as of this time)
-                timeDiffInMinutes = self.msecToMinutes(self.channelGuideDisplayStartDateTime - new Date(showToDisplay.date));
+                timeDiffInMinutes = msecToMinutes(self.channelGuideDisplayStartDateTime - new Date(showToDisplay.date));
 
                 programStationData.programUIElementIndices = [];
 
@@ -218,7 +215,7 @@ define(function () {
                 var timeLineTime = self.timeOfDay(timeLineCurrentValue);
 
                 toAppend += "<button class='thirtyMinuteTime'>" + timeLineTime + "</button>";
-                timeLineCurrentValue = new Date(timeLineCurrentValue.getTime() + self.minutesToMsec(30));
+                timeLineCurrentValue = new Date(timeLineCurrentValue.getTime() + minutesToMsec(30));
                 minutesDisplayed += 30;
             }
             this.channelGuideDisplayEndDateTime = timeLineCurrentValue;
@@ -251,37 +248,24 @@ define(function () {
                 }
             });
 
-            // temporary - until code below is included
-            this._currentStationIndex = 0;
-
-
-            this.baseURL = "http://192.168.2.8:8080/";
-            var url = this.baseURL + "lastTunedChannel";
-
             var self = this;
-            $.get(url)
-                .done(function (result) {
-                    console.log("lastTunedChannel successfully retrieved");
-                    var stationNumber = result;
-                    var stationIndex = self.getStationIndexFromName(stationNumber)
-                    var stationRow = $("#cgData").children()[stationIndex + 1];
-                    self._currentSelectedProgramButton = $(stationRow).children()[0];
-                    self.selectProgram(null, self._currentSelectedProgramButton, 0);
-                    self._currentStationIndex = stationIndex;
-                })
-                .fail(function (jqXHR, textStatus, errorThrown) {
-                    debugger;
-                    console.log("lastTunedChannel failure");
-                })
-                .always(function () {
-                    //alert("recording transmission finished");
-                });
+
+            var promise = this.ServerInterface.retrieveLastTunedChannel();
+            promise.then(function() {
+                console.log("channelGuideView:: lastTunedChannel promise fulfilled");
+                var stationNumber = self.ServerInterface.getLastTunedChannel();
+                var stationIndex = self.getStationIndexFromName(stationNumber)
+                var stationRow = $("#cgData").children()[stationIndex + 1];
+                self._currentSelectedProgramButton = $(stationRow).children()[0];
+                self.selectProgram(null, self._currentSelectedProgramButton, 0);
+                self._currentStationIndex = stationIndex;
+            })
         },
 
         getSlotIndex: function (dateTime) {
 
             // compute the time difference between the new time and where the channel guide data begins (and could be displayed)
-            var timeDiffInMinutes = this.msecToMinutes(dateTime.getTime() - this.channelGuideDisplayStartDateTime.getTime());
+            var timeDiffInMinutes = msecToMinutes(dateTime.getTime() - this.channelGuideDisplayStartDateTime.getTime());
 
             // compute number of 30 minute slots to scroll
             var slotIndex = parseInt(timeDiffInMinutes / 30);

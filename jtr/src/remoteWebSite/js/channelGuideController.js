@@ -8,6 +8,12 @@ define(['stationsModel', 'channelGuideModel','channelGuideView'], function (Stat
         channelGuideModel: null,
         channelGuideView: null,
 
+        setServerInterface: function(serverInterface) {
+            this.channelGuideModel.setServerInterface(serverInterface);
+            this.channelGuideView.setServerInterface(serverInterface);
+            this.stationsModel.setServerInterface(serverInterface);
+        },
+
         init: function() {
 
             this.stationsModel = new StationsModel({});
@@ -23,16 +29,18 @@ define(['stationsModel', 'channelGuideModel','channelGuideView'], function (Stat
                 //stationsModel: this.stationsModel - why didn't this work?
             });
             this.channelGuideView.stationsModel = this.stationsModel;
-            this.channelGuideView.stations = this.stationsModel.stations;
 
             _.extend(this, Backbone.Events);
+        },
 
+        retrieveData: function() {
             // retrieve epg data and stations
-            // promise should be retrieved; continue on after promise is resolved
-            this.stationsModel.retrieveStations();
-
-            // promise should be retrieved; continue on after promise is resolved
-            this.channelGuideModel.retrieveEpgData();
+            var self = this;
+            var promise = this.stationsModel.retrieveStations();
+            promise.then(function() {
+                self.channelGuideView.stations = self.stationsModel.getStations();
+                var channelGuideModelPromise = self.channelGuideModel.retrieveEpgData();
+            })
         },
 
         show: function() {

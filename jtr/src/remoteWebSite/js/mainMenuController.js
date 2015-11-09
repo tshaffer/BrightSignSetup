@@ -1,12 +1,20 @@
 /**
  * Created by tedshaffer on 10/27/15.
  */
-define(['mainMenuView','manualRecordController', 'recordedShowsController', 'channelGuideController'], function (MainMenuView, ManualRecordController, RecordedShowsController, ChannelGuideController) {
+define(['serverInterface', 'mainMenuView','manualRecordController', 'recordedShowsController', 'channelGuideController'], function (ServerInterface, MainMenuView, ManualRecordController, RecordedShowsController, ChannelGuideController) {
 
     var mainMenuController = {
         p1: 69,
 
         init: function() {
+
+            ChannelGuideController.setServerInterface(ServerInterface);
+            ManualRecordController.setServerInterface(ServerInterface);
+            RecordedShowsController.setServerInterface(ServerInterface);
+
+            // maybe put me somewhere else
+            ChannelGuideController.retrieveData();
+
             var mainMenuView = new MainMenuView({el: $("#homePage")});
 
             _.extend(this, Backbone.Events);

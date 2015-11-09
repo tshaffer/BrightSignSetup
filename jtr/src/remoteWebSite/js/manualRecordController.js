@@ -8,6 +8,11 @@ define(['manualRecordModel','manualRecordView'], function (ManualRecordModel, Ma
         manualRecordModel: null,
         manualRecordView: null,
 
+        setServerInterface: function(serverInterface) {
+            this.manualRecordModel.setServerInterface(serverInterface);
+            //this.manualRecordView.setServerInterface(serverInterface);
+        },
+
         init: function() {
 
             this.manualRecordModel = new ManualRecordModel({

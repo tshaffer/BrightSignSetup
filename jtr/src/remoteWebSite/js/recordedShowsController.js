@@ -9,6 +9,13 @@ define(['recordedShowsModel','recordedShowsView'], function (RecordedShowsModel,
         recordedShowsModel: null,
         recordedShowsView: null,
 
+        ServerInterface: null,
+
+        setServerInterface: function(serverInterface) {
+            this.ServerInterface = serverInterface;
+            this.recordedShowsModel.setServerInterface(serverInterface);
+        },
+
         init: function() {
 
             this.recordedShowsModel = new RecordedShowsModel({
@@ -27,23 +34,11 @@ define(['recordedShowsModel','recordedShowsView'], function (RecordedShowsModel,
             this.listenTo(this.recordedShowsView, "playSelectedShow", function(recordingId) {
                 console.log("RecordedShowsController:: playSelectedShow event received, id = " + recordingId);
 
-                baseURL = "http://192.168.2.8:8080/";
-                //baseURL = "http://10.1.0.241:8080/";
-                var aUrl = baseURL + "browserCommand";
                 var commandData = { "command": "playRecordedShow", "recordingId": recordingId };
-                console.log(commandData);
-
-                $.get(aUrl, commandData)
-                    .done( function (result) {
-                        console.log("browserCommand successfully sent");
-                    })
-                    .fail( function (jqXHR, textStatus, errorThrown) {
-                        debugger;
-                        console.log("browserCommand failure");
-                    })
-                    .always( function () {
-                        //alert("recording transmission finished");
-                    });
+                var promise = this.ServerInterface.browserCommand(commandData);
+                promise.then(function() {
+                    console.log("browserCommand successfully sent");
+                })
 
                 return false;
             });
@@ -51,24 +46,12 @@ define(['recordedShowsModel','recordedShowsView'], function (RecordedShowsModel,
             this.listenTo(this.recordedShowsView, "deleteSelectedShow", function(recordingId) {
                 console.log("RecordedShowsController:: deleteSelectedShow event received, id = " + recordingId);
 
-                baseURL = "http://192.168.2.8:8080/";
-                //baseURL = "http://10.1.0.241:8080/";
-                var aUrl = baseURL + "browserCommand";
                 var commandData = { "command": "deleteRecordedShow", "recordingId": recordingId };
-                console.log(commandData);
-
-                $.get(aUrl, commandData)
-                    .done( function (result) {
-                        console.log("browserCommand successfully sent");
-                        self.show();
-                    })
-                    .fail( function (jqXHR, textStatus, errorThrown) {
-                        debugger;
-                        console.log("browserCommand failure");
-                    })
-                    .always( function () {
-                        //alert("recording transmission finished");
-                    });
+                var promise = this.ServerInterface.browserCommand(commandData);
+                promise.then(function() {
+                    console.log("browserCommand successfully sent");
+                    self.show();
+                })
 
                 return false;
             });
