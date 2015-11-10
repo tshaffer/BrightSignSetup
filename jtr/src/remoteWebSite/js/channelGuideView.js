@@ -109,7 +109,7 @@ define([], function () {
         renderChannelGuideAtDateTime: function () {
 
             // start date/time of data structure containing channel guide data
-            var channelGuideDataStructureStartDateTime = this.model.epgProgramScheduleStartDateTime;
+            var channelGuideDataStructureStartDateTime = this.model.getProgramScheduleStartDateTime();
 
             // time difference between start of channel guide display and start of channel guide data
             var timeDiffInMinutes = msecToMinutes(this.channelGuideDisplayStartDateTime - channelGuideDataStructureStartDateTime);
@@ -124,12 +124,10 @@ define([], function () {
 
             $.each(this.stations, function (stationIndex, station) {
 
-                // channel guide data for this station
-                var programStationData = self.model.epgProgramSchedule[station.StationId]
-
                 // iterate through initialShowsByTimeSlot to get programs to display
-                var programSlotIndices = programStationData.initialShowsByTimeSlot;
-                var programList = programStationData.programList;
+                var programSlotIndices = self.model.getProgramSlotIndices(station.StationId);
+
+                var programList = self.model.getProgramList(station.StationId);
 
                 var indexIntoProgramList = programSlotIndices[currentChannelGuideOffsetIndex];
 
@@ -146,7 +144,7 @@ define([], function () {
                 // reduce the duration of the first show by this amount (time the show would have already been airing as of this time)
                 timeDiffInMinutes = msecToMinutes(self.channelGuideDisplayStartDateTime - new Date(showToDisplay.date));
 
-                programStationData.programUIElementIndices = [];
+                self.programUIElementIndices = [];
 
                 var slotIndex = 0;
                 var uiElementCount = 0;
@@ -186,7 +184,7 @@ define([], function () {
                     var programEndTime = minutesAlreadyDisplayed + durationInMinutes;   // offset in minutes
                     var slotTime = slotIndex * 30;
                     while (programStartTime <= slotTime && slotTime < programEndTime) {
-                        programStationData.programUIElementIndices[slotIndex] = uiElementCount;
+                        self.programUIElementIndices[slotIndex] = uiElementCount;
                         slotIndex++;
                         slotTime = slotIndex * 30;
                     }
@@ -212,7 +210,7 @@ define([], function () {
             var minutesDisplayed = 0;
             while (minutesDisplayed < maxMinutesToDisplay) {
 
-                var timeLineTime = self.timeOfDay(timeLineCurrentValue);
+                var timeLineTime = timeOfDay(timeLineCurrentValue);
 
                 toAppend += "<button class='thirtyMinuteTime'>" + timeLineTime + "</button>";
                 timeLineCurrentValue = new Date(timeLineCurrentValue.getTime() + minutesToMsec(30));
@@ -228,8 +226,7 @@ define([], function () {
                 if (event.target.id != "") {
                     // presence of an id means that it's not a timeline button
                     var programInfo = self.parseProgramId($(event.target)[0]);
-                    var programStationData = self.model.epgProgramSchedule[programInfo.stationId];
-                    var programList = programStationData.programList;
+                    var programList = self.model.getProgramList(programInfo.stationId);
                     self.selectProgramTime = programList[programInfo.programIndex].date;
 
                     // JTRTODO - linear search
@@ -294,9 +291,8 @@ define([], function () {
 
             var station = this.stations[stationIndex];
             var stationId = station.StationId;
-            var programStationData = this.model.epgProgramSchedule[stationId]
 
-            var buttonIndex = programStationData.programUIElementIndices[slotIndex];
+            var buttonIndex = this.programUIElementIndices[slotIndex];
 
             // get the array of program buttons for this station
             var cgProgramsInStationRowElement = "#cgStation" + stationIndex.toString() + "Data";
@@ -356,24 +352,23 @@ define([], function () {
 
             var programInfo = this.parseProgramId($(programUIElement)[0]);
 
-            var programStationData = this.model.epgProgramSchedule[programInfo.stationId];
-            var programList = programStationData.programList;
+            var programList = this.model.getProgramList(programInfo.stationId);
             var selectedProgram = programList[programInfo.programIndex];
 
             // display title (prominently)
             $("#cgProgramName").text(selectedProgram.title);
 
             // display day/date of selected program in upper left of channel guide
-            var programDayDate = this.dayDate(selectedProgram.date);
+            var programDayDate = dayDate(selectedProgram.date);
             $("#cgDayDate").text(programDayDate);
 
             $("#programInfo").empty();
 
             // day, date, and time
-            var startTime = this.timeOfDay(selectedProgram.date);
+            var startTime = timeOfDay(selectedProgram.date);
 
             var endDate = new Date(selectedProgram.date.getTime()).addMinutes(selectedProgram.duration);
-            var endTime = this.timeOfDay(endDate);
+            var endTime = timeOfDay(endDate);
 
             var dateTimeInfo = programDayDate + " " + startTime + " - " + endTime;
 
@@ -425,24 +420,6 @@ define([], function () {
             this.updateProgramInfo(newActiveProgramUIElement)
 
         },
-
-
-        dayDate: function (dateTime)
-        {
-            return dateTime.toString("ddd M/d");
-        },
-
-        timeOfDay: function (dateTime) {
-            //return dateTime.toString("h:mmtt").toLowerCase();
-
-            // hack to work around apparent date.js bug where hour shows up as 0 inappropriately
-            var hour = dateTime.toString("h");
-            if (hour == "0") {
-                hour = "12";
-            }
-            return hour + dateTime.toString(":mmtt").toLowerCase();
-        },
-
 
         navigateBackwardOneScreen: function () {
 
@@ -503,8 +480,7 @@ define([], function () {
 
             var programInfo = this.parseProgramId($(element)[0]);
 
-            var programStationData = this.model.epgProgramSchedule[programInfo.stationId];
-            var programList = programStationData.programList;
+            var programList = this.model.getProgramList(programInfo.stationId);
             var selectedProgram = programList[programInfo.programIndex];
             return selectedProgram;
         },
@@ -630,8 +606,7 @@ define([], function () {
                         if (programStartIsVisible) {
                             var programInfo = this.parseProgramId(this._currentSelectedProgramButton);
 
-                            var programStationData = this.model.epgProgramSchedule[programInfo.stationId];
-                            var programList = programStationData.programList;
+                            var programList = this.model.getProgramList(programInfo.stationId);
                             selectProgramTime = programList[programInfo.programIndex].date;
                         }
                         else {

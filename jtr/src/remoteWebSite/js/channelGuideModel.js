@@ -11,6 +11,22 @@ define(function () {
             this.ServerInterface = serverInterface;
         },
 
+        // accessors
+        getProgramScheduleStartDateTime: function() {
+            return this.epgProgramScheduleStartDateTime;
+        },
+
+        getProgramSlotIndices: function(stationId) {
+            var programStationData = this.epgProgramSchedule[stationId];
+            var programSlotIndices = programStationData.initialShowsByTimeSlot;
+            return programSlotIndices;
+        },
+
+        getProgramList: function(stationId) {
+            var programStationData = this.epgProgramSchedule[stationId];
+            return programStationData.programList;
+        },
+
         numDaysEpgData: 3,
         epgProgramSchedule: null,
         epgProgramScheduleStartDateTime: null,
