@@ -25,13 +25,15 @@ define(function () {
             stopTimeOffset: 0
         },
 
-        sync: function(method, model, options) {
-            options = options || {};
-            //options.url = "http://10.1.0.241:8080/getEpg";
-            //options.url = "http://192.168.2.8:8080/getEpg";
-            options.url = this.ServerInterface.getBaseUrl() + "manualRecording";
-            Backbone.sync(method, model, options);
-        },
+        // doesn't work - error message is:
+        // XMLHttpRequest cannot load http://192.168.2.8:8080/manualRecording. Response to preflight request doesn't pass access control check: No 'Access-Control-Allow-Origin' header is present on the requested resource. Origin 'http://localhost:63342' is therefore not allowed access. The response had HTTP status code 404.
+        //sync: function(method, model, options) {
+        //    options = options || {};
+        //    //options.url = "http://10.1.0.241:8080/getEpg";
+        //    //options.url = "http://192.168.2.8:8080/getEpg";
+        //    options.url = this.ServerInterface.getBaseUrl() + "manualRecording";
+        //    Backbone.sync(method, model, options);
+        //},
 
         //save: function(attributes, options) {
         //    debugger;
