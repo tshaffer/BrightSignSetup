@@ -1,16 +1,18 @@
 /**
  * Created by tedshaffer on 11/6/15.
  */
-define(['stationsModel', 'channelGuideModel','channelGuideView'], function (StationsModel, ChannelGuideModel, ChannelGuideView) {
+define(['stationsModel', 'channelGuideModel','channelGuideView','cgPopupView'], function (StationsModel, ChannelGuideModel, ChannelGuideView, CGPopUpView) {
 
     var channelGuideController = {
 
         channelGuideModel: null,
         channelGuideView: null,
+        cgPopupView: null,
 
         setServerInterface: function(serverInterface) {
             this.channelGuideModel.setServerInterface(serverInterface);
             this.channelGuideView.setServerInterface(serverInterface);
+            this.cgPopupView.setServerInterface(serverInterface);
             this.stationsModel.setServerInterface(serverInterface);
         },
 
@@ -30,7 +32,21 @@ define(['stationsModel', 'channelGuideModel','channelGuideView'], function (Stat
             });
             this.channelGuideView.stationsModel = this.stationsModel;
 
+            this.cgPopupView = new CGPopUpView({
+                model: this.channelGuideModel,
+            });
+            this.cgPopupView.stationsModel = this.stationsModel;
+
             _.extend(this, Backbone.Events);
+
+            var self = this;
+
+            this.listenTo(this.channelGuideView, "displayCGPopup", function(programData) {
+                console.log("ChannelGuideController:: displayCGPopup event received");
+                self.cgPopupView.show(programData);
+                return false;
+            });
+
         },
 
         retrieveData: function() {
@@ -39,6 +55,7 @@ define(['stationsModel', 'channelGuideModel','channelGuideView'], function (Stat
             var promise = this.stationsModel.retrieveStations();
             promise.then(function() {
                 self.channelGuideView.stations = self.stationsModel.getStations();
+                self.cgPopupView.stations = self.stationsModel.getStations();
                 var channelGuideModelPromise = self.channelGuideModel.retrieveEpgData();
             })
         },

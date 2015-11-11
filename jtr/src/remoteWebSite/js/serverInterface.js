@@ -61,8 +61,120 @@ define(function () {
             })
         },
 
+
         getLastTunedChannel: function() {
             return this.lastTunedChannelResult;
+        },
+
+        retrieveScheduledRecordings: function () {
+
+            var self = this;
+            var aUrl = this.baseURL + "getScheduledRecordings";
+
+            return new Promise(function (resolve, reject) {
+
+                var currentDateTimeIso = new Date().toISOString();
+                var currentDateTime = {"currentDateTime": currentDateTimeIso};
+
+                $.get(aUrl, currentDateTime)
+                    .done(function (scheduledRecordings) {
+                        console.log("retrieveScheduledRecordings: getScheduledRecordings processing complete");
+                        self.scheduledRecordings = [];
+                        $.each(scheduledRecordings, function (index, scheduledRecording) {
+                            self.scheduledRecordings.push(scheduledRecording);
+                        });
+                        resolve();
+                    })
+                    .fail(function (jqXHR, textStatus, errorThrown) {
+                        reject();
+                        debugger;
+                        console.log("getScheduledRecordings failure");
+                    })
+                    .always(function () {
+                        //alert("recording transmission finished");
+                    });
+            });
+        },
+
+        getScheduledRecordings: function() {
+            return this.scheduledRecordings;
+        },
+
+        deleteScheduledRecording: function (scheduledRecordingId) {
+
+            var aUrl = baseURL + "deleteScheduledRecording";
+            var commandData = { "scheduledRecordingId": scheduledRecordingId };
+
+            return new Promise(function(resolve, reject) {
+
+                $.get(aUrl, commandData)
+                    .done( function (result) {
+                        console.log("deleteScheduledRecording success");
+                        resolve();
+                    })
+                    .fail( function (jqXHR, textStatus, errorThrown) {
+                        debugger;
+                        reject();
+                        console.log("browserCommand failure");
+                    })
+                    .always( function () {
+                        //alert("recording transmission finished");
+                    });
+            })
+        },
+
+        deleteScheduledSeries: function (scheduledSeriesRecordingId) {
+
+            var aUrl = baseURL + "deleteScheduledSeries";
+            var commandData = {"scheduledSeriesRecordingId": scheduledSeriesRecordingId};
+
+            return new Promise(function(resolve, reject) {
+
+                $.get(aUrl, commandData)
+                    .done(function (result) {
+                        console.log("deleteScheduledSeries success");
+                        resolve();
+                    })
+                    .fail(function (jqXHR, textStatus, errorThrown) {
+                        reject();
+                        debugger;
+                        console.log("deleteScheduledSeries failure");
+                    })
+                    .always(function () {
+                        //alert("recording transmission finished");
+                    });
+            });
+        },
+
+        retrieveSettings: function () {
+
+            var aUrl = this.baseURL + "getSettings";
+
+            var self = this;
+
+            return new Promise(function(resolve, reject) {
+
+                // get settings from db
+                $.get(aUrl, {})
+                    .done(function (result) {
+                        console.log("XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX retrieveSettings success ************************************");
+                        self._settingsRetrieved = true;
+                        self._settings.recordingBitRate = result.RecordingBitRate;
+                        self._settings.segmentRecordings = result.SegmentRecordings;
+                        resolve();
+                    })
+                    .fail(function (jqXHR, textStatus, errorThrown) {
+                        reject();
+                        debugger;
+                        console.log("getSettings failure");
+                    })
+                    .always(function () {
+                    });
+            })
+        },
+
+        getSettings: function() {
+            return this._settings;
         }
     };
 

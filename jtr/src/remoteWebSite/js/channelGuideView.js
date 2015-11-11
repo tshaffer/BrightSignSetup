@@ -53,11 +53,23 @@ define([], function () {
                     return false;
                 }
                 else if (keyIdentifier == "Enter") {
-                    //self.displayCGPopUp();
+                    var programData = self.getSelectedStationAndProgram();
+                    self.trigger("displayCGPopup", programData);
                     return false;
                 }
             });
 
+        },
+
+        getSelectedStationAndProgram: function () {
+
+            var programInfo = this.parseProgramId(this._currentSelectedProgramButton);
+            var programList = this.model.getProgramList(programInfo.stationId);
+
+            var programData = {};
+            programData.stationId = programInfo.stationId;
+            programData.program = programList[programInfo.programIndex];
+            return programData;
         },
 
         show: function() {
@@ -234,10 +246,10 @@ define([], function () {
                     $.each(self.stations, function (stationIndex, station) {
                         if (station.StationId == programInfo.stationId) {
 
-                            this._currentStationIndex = stationIndex;
-                            //self.selectProgram(self._currentSelectedProgramButton, event.target);
-                            //
-                            //self.common.displayCGPopUp();
+                            self._currentStationIndex = stationIndex;
+                            self.selectProgram(self._currentSelectedProgramButton, event.target);
+                            var programData = self.getSelectedStationAndProgram();
+                            self.trigger("displayCGPopup", programData);
 
                             return false;
                         }

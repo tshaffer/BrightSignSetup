@@ -14,7 +14,11 @@ define(function() {
                 RecordedShowsController.setServerInterface(ServerInterface);
 
                 // maybe put me somewhere else
+                // instead of doing the following, just invoke the ServerInterface method to get a promise. then wait for all promises to finish
                 ChannelGuideController.retrieveData();
+                var retrieveScheduledRecordingsPromise = ServerInterface.retrieveScheduledRecordings();
+                // wait until all data is retrieved??
+
             });
     });
 });

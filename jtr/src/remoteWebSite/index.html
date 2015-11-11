@@ -146,52 +146,137 @@
 
 <body>
 
-<div id="cont" class="container">
-
-    <div id="homePage" class="row">
-        <div class="col-lg-6">
-            <button id="recordedShows" class="btn btn-primary tv-words" autofocus>Recorded Shows</button><br><br>
-            <button id="recordNow" class="btn btn-secondary tv-words">Record Now</button><br><br>
-            <button id="manualRecord" class="btn btn-secondary tv-words">Manual Record</button><br><br>
-        </div>
-
-        <div class="col-lg-6">
-            <button id="liveVideo" class="btn btn-secondary tv-words">Live Video</button><br><br>
-            <button id="channelGuideId" class="btn btn-secondary tv-words">Channel Guide</button><br><br>
-            <button id="toDoList" class="btn btn-secondary tv-words">To Do List</button><br><br>
-            <button id="settings" class="btn btn-secondary tv-words">Settings</button><br><br>
+    <div class="modal fade" id="cgProgramDlg" tabindex="-1" role="dialog" aria-labelledby="cgProgramDlg" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-body">
+                    <h3 id="cgProgramDlgShowTitle">Pizza for Everyone!!</h3>
+                    <button type="button" class="btn btn-primary modalButton" id="cgProgramRecord">Record</button><br/>
+                    <button type="button" class="btn btn-default btn-secondary modalButton" id="cgProgramRecordSetOptions">Record, set options</button> <br />
+                    <button type="button" class="btn btn-default btn-secondary modalButton" id="cgProgramViewUpcomingEpisodes">View upcoming episodes</button> <br />
+                    <button type="button" class="btn btn-default btn-secondary modalButton" id="cgProgramTune">Tune</button> <br />
+                    <button type="button" class="btn btn-default btn-secondary modalButton" id="cgProgramClose">Close</button> <br />
+                </div>
+            </div>
         </div>
     </div>
 
-    <div id="manualRecordPage" style="display:none">
-
+    <div class="modal fade" id="cgScheduledRecordingDlg" tabindex="-1" role="dialog" aria-labelledby="cgScheduledRecordingDlg" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-body">
+                    <h3 id="cgProgramScheduledDlgShowTitle">Pizza for Everyone!!</h3>
+                    <button type="button" class="btn btn-primary modalButton" id="cgCancelScheduledRecording">Cancel recording</button><br/>
+                    <button type="button" class="btn btn-default btn-secondary modalButton" id="cgScheduledRecordChangeOptions">Change options</button> <br />
+                    <button type="button" class="btn btn-default btn-secondary modalButton" id="cgScheduledRecordingViewUpcomingEpisodes">View Upcoming Episodes</button> <br />
+                    <button type="button" class="btn btn-default btn-secondary modalButton" id="cgScheduledRecordingTune">Tune</button> <br />
+                    <button type="button" class="btn btn-default btn-secondary modalButton" id="cgScheduledRecordingClose">Close</button> <br />
+                </div>
+            </div>
+        </div>
     </div>
 
-    <div id="channelGuidePage" style="display:none">
+    <div class="modal fade" id="cgRecordingOptionsDlg" tabindex="-1" role="dialog" aria-labelledby="cgRecordingOptionsDlg" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-body">
+                    <h3 id="cgRecordingOptionsTitle">Recording Options</h3>
 
+                    <span class="modalButton">Start Time:</span>
+                    <button type='button' class='btn btn-default modalLeftArrow modalButton' id="btnCGRecordOptionsNextEarlyStartTime" aria-label='Left Align'><span class='glyphicon glyphicon-arrow-left modalButton' aria-hidden='true'></span></button>
+                    <span id="cgRecordOptionsStartTimeLabel" class="modalButton cgOptionsSpan">On Time</span>
+                    <button type='button' class='btn btn-default modalRightArrow modalButton' id="btnCGRecordOptionsNextLateStartTime" aria-label='Left Align'><span class='glyphicon glyphicon-arrow-right' aria-hidden='true'></span></button>
+                    <br/>
+
+                    <span class="modalButton">Stop Time:</span>
+                    <button type='button' class='btn btn-default modalLeftArrow modalButton' id="btnCGRecordOptionsNextEarlyStopTime" aria-label='Left Align'><span class='glyphicon glyphicon-arrow-left' aria-hidden='true'></span></button>
+                    <span id="cgRecordOptionsStopTimeLabel" class="modalButton cgOptionsSpan">On Time</span>
+                    <button type='button' class='btn btn-default modalRightArrow modalButton' id="btnCGRecordOptionsNextLateStopTime" aria-label='Left Align'><span class='glyphicon glyphicon-arrow-right' aria-hidden='true'></span></button>
+                    <br/>
+
+                    <button type="button" class="btn btn-default btn-secondary modalButton" id="cgRecordOptionsSave">Record with these options</button> <br />
+                    <button type="button" class="btn btn-default btn-secondary modalButton" id="cgRecordOptionsCancel">Cancel</button> <br />
+                </div>
+            </div>
+        </div>
     </div>
 
-    <div id="recordedShowsPage" style="display: none;">
-        <table class="table">
-            <thead>
-            <tr>
-                <th class="play"></th>
-                <th class="delete"></th>
-                <!--<th class="repeat"></th>-->
-                <!--<th class="stream"></th>-->
-                <!--<th class="download"></th>-->
-                <th class="replayGuideTitle">Title</th>
-                <th class="recorded">Recorded</th>
-                <!--<th class="showInfo">Info</th>-->
-                <th class="position">Position</th>
-            </tr>
-            </thead>
-            <tbody id="recordedShowsTableBody"></tbody>
-        </table>
-
+    <div class="modal fade" id="cgSeriesDlg" tabindex="-1" role="dialog" aria-labelledby="cgSeriesDlg" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-body">
+                    <h3 id="cgSeriesDlgShowTitle">Pizza for Everyone!!</h3>
+                    <button type="button" class="btn btn-primary modalButton" id="cgEpisodeRecord">Record episode</button> <br />
+                    <button type="button" class="btn btn-default btn-secondary modalButton" id="cgSeriesRecordSetProgramOptions">Record episode, set options</button> <br />
+                    <button type="button" class="btn btn-default btn-secondary modalButton" id="cgSeriesRecord">Record series</button> <br />
+                    <button type="button" class="btn btn-default btn-secondary modalButton" id="cgSeriesTune">Tune</button> <br />
+                    <button type="button" class="btn btn-default btn-secondary modalButton" id="cgSeriesClose">Close</button> <br />
+                </div>
+            </div>
+        </div>
     </div>
 
-</div>
+    <div class="modal fade" id="cgScheduledSeriesDlg" tabindex="-1" role="dialog" aria-labelledby="cgScheduledSeriesDlg" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-body">
+                    <h3 id="cgScheduledSeriesTitle">Pizza for Everyone!!</h3>
+                    <button type="button" class="btn btn-primary modalButton" id="cgSeriesCancelEpisode">Cancel episode</button> <br />
+                    <button type="button" class="btn btn-default btn-secondary modalButton" id="cgSeriesCancelSeries">Cancel series</button> <br />
+                    <button type="button" class="btn btn-default btn-secondary modalButton" id="cgSeriesViewUpcoming">View upcoming episodes</button> <br />
+                    <button type="button" class="btn btn-default btn-secondary modalButton" id="cgSeriesRecordingTune">Tune</button> <br />
+                    <button type="button" class="btn btn-default btn-secondary modalButton" id="cgSeriesRecordingClose">Close</button> <br />
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="cont" class="container">
+
+        <div id="homePage" class="row">
+            <div class="col-lg-6">
+                <button id="recordedShows" class="btn btn-primary tv-words" autofocus>Recorded Shows</button><br><br>
+                <button id="recordNow" class="btn btn-secondary tv-words">Record Now</button><br><br>
+                <button id="manualRecord" class="btn btn-secondary tv-words">Manual Record</button><br><br>
+            </div>
+
+            <div class="col-lg-6">
+                <button id="liveVideo" class="btn btn-secondary tv-words">Live Video</button><br><br>
+                <button id="channelGuideId" class="btn btn-secondary tv-words">Channel Guide</button><br><br>
+                <button id="toDoList" class="btn btn-secondary tv-words">To Do List</button><br><br>
+                <button id="settings" class="btn btn-secondary tv-words">Settings</button><br><br>
+            </div>
+        </div>
+
+        <div id="manualRecordPage" style="display:none">
+
+        </div>
+
+        <div id="channelGuidePage" style="display:none">
+
+        </div>
+
+        <div id="recordedShowsPage" style="display: none;">
+            <table class="table">
+                <thead>
+                <tr>
+                    <th class="play"></th>
+                    <th class="delete"></th>
+                    <!--<th class="repeat"></th>-->
+                    <!--<th class="stream"></th>-->
+                    <!--<th class="download"></th>-->
+                    <th class="replayGuideTitle">Title</th>
+                    <th class="recorded">Recorded</th>
+                    <!--<th class="showInfo">Info</th>-->
+                    <th class="position">Position</th>
+                </tr>
+                </thead>
+                <tbody id="recordedShowsTableBody"></tbody>
+            </table>
+
+        </div>
+
+    </div>
 
 </body>
 </html>
