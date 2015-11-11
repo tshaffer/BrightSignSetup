@@ -6,6 +6,7 @@ define(function () {
     var serverInterface = {
 
         baseURL : "http://192.168.2.8:8080/",
+        //baseURL : "http://10.1.0.241:8080/",
 
         lastTunedChannelResult: null,
 
