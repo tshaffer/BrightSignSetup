@@ -12,9 +12,6 @@ define(['serverInterface', 'mainMenuView','manualRecordController', 'recordedSho
             ManualRecordController.setServerInterface(ServerInterface);
             RecordedShowsController.setServerInterface(ServerInterface);
 
-            // maybe put me somewhere else
-            ChannelGuideController.retrieveData();
-
             var mainMenuView = new MainMenuView({el: $("#homePage")});
 
             _.extend(this, Backbone.Events);
