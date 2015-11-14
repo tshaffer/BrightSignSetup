@@ -51,6 +51,12 @@ define(['stationsModel', 'channelGuideModel','channelGuideView','cgPopupView'], 
                 return false;
             });
 
+            this.listenTo(this.cgPopupView, "cgPopupViewExit", function() {
+                console.log("cgPopupView:: cgPopupViewExit event received");
+                self.channelGuideView.reselectProgram();
+                return false;
+            });
+
         },
 
         retrieveData: function() {

@@ -433,6 +433,14 @@ define([], function () {
 
         },
 
+        reselectProgram: function () {
+
+            this.updateActiveProgramUIElement(null, this._currentSelectedProgramButton);
+
+            this.updateProgramInfo(this._currentSelectedProgramButton)
+
+        },
+
         navigateBackwardOneScreen: function () {
 
             newScrollToTime = new Date(this.channelGuideDisplayCurrentDateTime).addHours(-this.channelGuideHoursDisplayed);
