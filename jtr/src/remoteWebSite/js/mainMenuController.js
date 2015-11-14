@@ -1,16 +1,17 @@
 /**
  * Created by tedshaffer on 10/27/15.
  */
-define(['serverInterface', 'mainMenuView','manualRecordController', 'recordedShowsController', 'channelGuideController'], function (ServerInterface, MainMenuView, ManualRecordController, RecordedShowsController, ChannelGuideController) {
+define(['serverInterface', 'mainMenuView','manualRecordController', 'recordedShowsController', 'channelGuideController','scheduledRecordingsController'],
+    function (ServerInterface, MainMenuView, ManualRecordController, RecordedShowsController, ChannelGuideController,ScheduledRecordingsController) {
 
     var mainMenuController = {
         p1: 69,
 
         init: function() {
 
-            ChannelGuideController.setServerInterface(ServerInterface);
-            ManualRecordController.setServerInterface(ServerInterface);
-            RecordedShowsController.setServerInterface(ServerInterface);
+            //ChannelGuideController.setServerInterface(ServerInterface);
+            //ManualRecordController.setServerInterface(ServerInterface);
+            //RecordedShowsController.setServerInterface(ServerInterface);
 
             var mainMenuView = new MainMenuView({el: $("#homePage")});
 
@@ -39,6 +40,14 @@ define(['serverInterface', 'mainMenuView','manualRecordController', 'recordedSho
 
                 var channelGuideController = ChannelGuideController;
                 channelGuideController.show();
+            });
+
+            this.listenTo(mainMenuView, "invokeScheduledRecordings", function () {
+                console.log("MainMenuController:: invokeScheduledRecordings event received");
+                $(mainMenuView.el).hide();
+
+                var scheduledRecordingsController = ScheduledRecordingsController;
+                scheduledRecordingsController.show();
             });
         }
     };

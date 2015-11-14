@@ -44,6 +44,9 @@ Sub InitializeServer()
 	m.getScheduledRecordingsAA =		{ HandleEvent: getScheduledRecordings, mVar: m }
 	m.localServer.AddGetFromEvent({ url_path: "/getScheduledRecordings", user_data: m.getScheduledRecordingsAA })
 
+	m.scheduledRecordingsAA =		{ HandleEvent: getScheduledRecordings, mVar: m }
+	m.localServer.AddGetFromEvent({ url_path: "/scheduledRecordings", user_data: m.scheduledRecordingsAA })
+
 	' get scheduled series recordings
 	m.getScheduledSeriesRecordingsAA =		{ HandleEvent: getScheduledSeriesRecordings, mVar: m }
 	m.localServer.AddGetFromEvent({ url_path: "/getScheduledSeriesRecordings", user_data: m.getScheduledSeriesRecordingsAA })

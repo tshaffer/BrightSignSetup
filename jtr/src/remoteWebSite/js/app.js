@@ -3,8 +3,8 @@
  */
 define(function() {
     $(document).ready(function () {
-        require(['serverInterface','settingsController','channelGuideController','mainMenuController','manualRecordController','recordedShowsController'],
-            function(ServerInterface,SettingsController,ChannelGuideController,MainMenuController,ManualRecordController,RecordedShowsController) {
+        require(['serverInterface','settingsController','channelGuideController','mainMenuController','manualRecordController','recordedShowsController','scheduledRecordingsController'],
+            function(ServerInterface,SettingsController,ChannelGuideController,MainMenuController,ManualRecordController,RecordedShowsController,ScheduledRecordingsController) {
 
                 console.log("all controllers loaded");
 
@@ -13,6 +13,7 @@ define(function() {
                 ChannelGuideController.setServerInterface(ServerInterface);
                 ManualRecordController.setServerInterface(ServerInterface);
                 RecordedShowsController.setServerInterface(ServerInterface);
+                ScheduledRecordingsController.setServerInterface(ServerInterface);
 
                 // maybe put me somewhere else
                 // instead of doing the following, just invoke the ServerInterface method to get a promise. then wait for all promises to finish
@@ -24,6 +25,9 @@ define(function() {
                 this.settingsModel = SettingsController.getSettingsModel();
 
                 ChannelGuideController.setSettingsModel(this.settingsModel);
+
+                this.stationsModel = ChannelGuideController.getStationsModel();
+                ScheduledRecordingsController.setStationsModel(this.stationsModel);
             });
     });
 });

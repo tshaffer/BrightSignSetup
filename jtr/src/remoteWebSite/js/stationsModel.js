@@ -47,7 +47,21 @@ define(function () {
 
         getStations: function() {
             return this.stations;
-        }
+        },
+
+        getStationFromAtsc: function (atscMajor, atscMinor) {
+            var foundStation = null;
+
+            $.each(this.stations, function (stationIndex, station) {
+                if (station.AtscMajor == atscMajor && station.AtscMinor == atscMinor) {
+                    foundStation = station;
+                    return;
+                }
+            });
+
+            return foundStation;
+        },
+
 
     });
     return stationsModel;

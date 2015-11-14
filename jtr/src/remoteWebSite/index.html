@@ -142,6 +142,28 @@
         </div>
     </script>
 
+    <script id="scheduledRecordingTemplate" type="text/x-handlebars-template">
+
+        <!-- scheduledRecording is looked up on the global context, the one we pass to the compiled template -->
+
+        {{#each scheduledRecordings}}
+
+        <!-- Here the context is each scheduledRecording. So we can access its properties directly: -->
+        <tr>
+            <td><button type='button' class='btn btn-default recorded-shows-icon' id='{{Id}}' aria-label='Left Align'><span class='glyphicon glyphicon-remove' aria-hidden='true'></span></button></td>
+            <td>{{DayOfWeek}}</td>
+            <td>{{MonthDay}}</td>
+            <td>{{TimeOfDay}}</td>
+            <td>{{Channel}}</td>
+            <td>{{StationName}}</td>
+            <td>{{Title}}</td>
+        </tr>
+
+        {{/each}}
+
+    </script>
+
+
 </head>
 
 <body>
@@ -273,7 +295,15 @@
                 </thead>
                 <tbody id="recordedShowsTableBody"></tbody>
             </table>
+        </div>
 
+        <div id="scheduledRecordingsPage" class="table-responsive" style="display: none;">
+            <p class="alignleft" id="scheduledRecordingsTitle">Scheduled Recordings</p>
+            <div style="clear: both;"></div>
+            <table class="table table-striped">
+                <tbody id="scheduledRecordingsTableBody">
+                </tbody>
+            </table><br><br>
         </div>
 
     </div>

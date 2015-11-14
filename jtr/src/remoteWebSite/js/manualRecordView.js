@@ -45,10 +45,10 @@ define(function () {
 
             var date = this.model.get('dateTime');
 
-            var dateVal = date.getFullYear() + "-" + this.twoDigitFormat((date.getMonth() + 1)) + "-" + this.twoDigitFormat(date.getDate());
+            var dateVal = date.getFullYear() + "-" + twoDigitFormat((date.getMonth() + 1)) + "-" + twoDigitFormat(date.getDate());
             $("#manualRecordDate").val(dateVal);
 
-            var timeVal = this.twoDigitFormat(date.getHours()) + ":" + this.twoDigitFormat(date.getMinutes());
+            var timeVal = twoDigitFormat(date.getHours()) + ":" + twoDigitFormat(date.getMinutes());
             $("#manualRecordTime").val(timeVal);
 
             var channel = this.model.get('channel');
@@ -85,14 +85,6 @@ define(function () {
             else {
                 $(divId).hide();
             }
-        },
-
-        twoDigitFormat: function (val) {
-            val = '' + val;
-            if (val.length === 1) {
-                val = '0' + val.slice(-2);
-            }
-            return val;
         },
 
         // either of the two approaches below work

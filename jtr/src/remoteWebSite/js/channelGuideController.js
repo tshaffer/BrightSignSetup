@@ -8,6 +8,7 @@ define(['stationsModel', 'channelGuideModel','channelGuideView','cgPopupView'], 
         channelGuideModel: null,
         channelGuideView: null,
         cgPopupView: null,
+        stationsModel: null,
 
         setServerInterface: function(serverInterface) {
             this.channelGuideModel.setServerInterface(serverInterface);
@@ -85,6 +86,10 @@ define(['stationsModel', 'channelGuideModel','channelGuideView','cgPopupView'], 
             // after the line above is really done
              self.channelGuideView.show();
 
+        },
+
+        getStationsModel: function() {
+            return this.stationsModel;
         },
 
         pizza: "pizza"

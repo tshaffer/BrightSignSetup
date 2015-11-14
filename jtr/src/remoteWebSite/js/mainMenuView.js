@@ -14,7 +14,8 @@ define(function () {
         events: {
             "click #recordedShows": "recordedShowsHandler",
             "click #manualRecord": "manualRecordHandler",
-            "click #channelGuideId": "channelGuideHandler"
+            "click #channelGuideId": "channelGuideHandler",
+            "click #scheduledRecordings": "scheduledRecordingsHandler"
         },
 
         recordedShowsHandler: function (event) {
@@ -32,6 +33,11 @@ define(function () {
         channelGuideHandler: function (event) {
             console.log("channelGuideHandler, trigger invokeChannelGuide");
             this.trigger("invokeChannelGuide");
+        },
+
+        scheduledRecordingsHandler: function (event) {
+            console.log("scheduledRecordingsHandler, trigger invokeScheduledRecordings");
+            this.trigger("invokeScheduledRecordings");
         },
 
         pizzaTest: "pizza"

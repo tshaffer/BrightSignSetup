@@ -1,6 +1,14 @@
 /**
  * Created by tedshaffer on 11/9/15.
  */
+function twoDigitFormat(val) {
+    val = '' + val;
+    if (val.length === 1) {
+        val = '0' + val.slice(-2);
+    }
+    return val;
+}
+
 function msecToMinutes(msec) {
     return msec / 60000;
 }

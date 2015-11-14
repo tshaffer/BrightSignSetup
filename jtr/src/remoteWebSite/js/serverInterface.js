@@ -5,8 +5,8 @@ define(function () {
 
     var serverInterface = {
 
-        //baseURL : "http://192.168.2.8:8080/",
-        baseURL : "http://10.1.0.241:8080/",
+        baseURL : "http://192.168.0.110:8080/",
+        //baseURL : "http://10.1.0.241:8080/",
 
         lastTunedChannelResult: null,
 
@@ -102,7 +102,7 @@ define(function () {
 
         deleteScheduledRecording: function (scheduledRecordingId) {
 
-            var aUrl = baseURL + "deleteScheduledRecording";
+            var aUrl = this.baseURL + "deleteScheduledRecording";
             var commandData = { "scheduledRecordingId": scheduledRecordingId };
 
             return new Promise(function(resolve, reject) {
@@ -115,13 +115,53 @@ define(function () {
                     .fail( function (jqXHR, textStatus, errorThrown) {
                         debugger;
                         reject();
-                        console.log("browserCommand failure");
+                        console.log("deleteScheduledRecording failure");
                     })
                     .always( function () {
                         //alert("recording transmission finished");
                     });
             })
         },
+
+        stopActiveRecording: function (scheduledRecordingId) {
+
+            var aUrl = this.baseURL + "stopRecording";
+            var commandData = { "scheduledRecordingId": scheduledRecordingId };
+
+            return new Promise(function(resolve, reject) {
+
+                $.get(aUrl, commandData)
+                    .done( function (result) {
+                        console.log("stopRecording success");
+                        resolve();
+                    })
+                    .fail( function (jqXHR, textStatus, errorThrown) {
+                        debugger;
+                        reject();
+                        console.log("stopRecording failure");
+                    })
+                    .always( function () {
+                        //alert("recording transmission finished");
+                    });
+            })
+
+            //var self = this;
+            //$.get(aUrl, params)
+            //    .done( function (result) {
+            //        console.log("stopRecording successful");
+            //        self.common.getToDoList();
+            //    })
+            //    .fail( function (jqXHR, textStatus, errorThrown) {
+            //        debugger;
+            //        console.log("stopRecording failure");
+            //    })
+            //    .always( function () {
+            //        //alert("recording transmission finished");
+            //    });
+
+        },
+
+
 
         deleteScheduledSeries: function (scheduledSeriesRecordingId) {
 
