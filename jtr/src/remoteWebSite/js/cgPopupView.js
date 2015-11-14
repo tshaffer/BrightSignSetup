@@ -32,7 +32,7 @@ define([], function () {
 
         cgPopupScheduledProgramElement: ["#cgCancelScheduledRecording", "#cgScheduledRecordChangeOptions", "#cgScheduledRecordingViewUpcomingEpisodes", "#cgScheduledRecordingTune", "#cgScheduledRecordingClose"],
 
-        cgPopupSeriesElements: ["#cgEpisodeRecord", "cgSeriesRecordSetProgramOptions", "#cgSeriesRecord", "#cgSeriesTune", "#cgSeriesClose"],
+        cgPopupSeriesElements: ["#cgEpisodeRecord", "#cgSeriesRecordSetProgramOptions", "#cgSeriesRecord", "#cgSeriesTune", "#cgSeriesClose"],
 
         cgPopupScheduledSeriesElements: ["cgSeriesCancelEpisode", "cgSeriesCancelSeries", "cgSeriesViewUpcoming", "cgSeriesRecordingTune", "cgSeriesRecordingClose"],
 
