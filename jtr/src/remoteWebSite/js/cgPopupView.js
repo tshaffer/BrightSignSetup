@@ -188,7 +188,7 @@ define([], function () {
 
                     var promise = self.cgRecordProgramFromClient(true);
                     promise.then(function() {
-                        var retrieveScheduledRecordingsPromise = this.ServerInterface.retrieveScheduledRecordings();
+                        var retrieveScheduledRecordingsPromise = self.ServerInterface.retrieveScheduledRecordings();
                     })
 
                     self.cgProgramDlgCloseInvoked();
@@ -372,8 +372,8 @@ define([], function () {
                     "duration": this.cgSelectedProgram.duration,
                     "inputSource": "tuner",
                     "channel": stationName,
-                    "recordingBitRate": this.settingsModel.recordingBitRate,
-                    "segmentRecording": this.settingsModel.segmentRecordings,
+                    "recordingBitRate": this.settingsModel.getRecordingBitRate(),
+                    "segmentRecording": this.settingsModel.getSegmentRecordings(),
                     "scheduledSeriesRecordingId": this.cgSelectedProgram.scheduledSeriesRecordingId,
                     "startTimeOffset": this.cgSelectedProgram.startTimeOffset,
                     "stopTimeOffset": this.cgSelectedProgram.stopTimeOffset
