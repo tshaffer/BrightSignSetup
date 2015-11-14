@@ -35,8 +35,6 @@ define(function () {
                 self.fetch({
                     success: function (model, response, options) {
                         console.log("settings load was successful");
-                        self.recordingBitRate = model.get("RecordingBitRate");
-                        self.segmentRecordings = model.get("SegmentRecordings");
                         resolve();
                     }
                 });
@@ -44,11 +42,11 @@ define(function () {
         },
 
         getRecordingBitRate: function() {
-            return this.recordingBitRate;
+            return this.get("RecordingBitRate");
         },
 
         getSegmentRecordings: function() {
-            return this.segmentRecordings;
+            return this.get("SegmentRecordings");
         }
     });
 
