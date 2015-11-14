@@ -7,6 +7,8 @@ define([], function () {
 
         ServerInterface: null,
 
+        settingsModel: null,
+
         cgPopupId: "",
         cgPopupTitle: "",
         cgPopupElements: null,
@@ -47,6 +49,10 @@ define([], function () {
 
         setServerInterface: function (serverInterface) {
             this.ServerInterface = serverInterface;
+        },
+
+        setSettingsModel: function(settingsModel) {
+            this.settingsModel = settingsModel;
         },
 
         initialize: function () {
@@ -360,7 +366,6 @@ define([], function () {
                 var stationName = this.getStationFromId(this.cgSelectedStationId);
                 stationName = stationName.replace(".", "-");
 
-                debugger; //following accesses this._settings
                 var commandData = {
                     "command": "addRecord",
                     "dateTime": this.cgSelectedProgram.date,
@@ -368,8 +373,8 @@ define([], function () {
                     "duration": this.cgSelectedProgram.duration,
                     "inputSource": "tuner",
                     "channel": stationName,
-                    "recordingBitRate": this._settings.recordingBitRate,
-                    "segmentRecording": this._settings.segmentRecordings,
+                    "recordingBitRate": this.settingsModel.recordingBitRate,
+                    "segmentRecording": this.settingsModel.segmentRecordings,
                     "scheduledSeriesRecordingId": this.cgSelectedProgram.scheduledSeriesRecordingId,
                     "startTimeOffset": this.cgSelectedProgram.startTimeOffset,
                     "stopTimeOffset": this.cgSelectedProgram.stopTimeOffset
@@ -392,14 +397,13 @@ define([], function () {
             var stationName = this.getStationFromId(self.cgSelectedStationId);
             stationName = stationName.replace(".", "-");
 
-            debugger; // _settings
             var commandData = {
                 "command": "addSeries",
                 "title": self.cgSelectedProgram.title,
                 "inputSource": "tuner",
                 "channel": stationName,
-                "recordingBitRate": this._settings.recordingBitRate,
-                "segmentRecording": this._settings.segmentRecordings
+                "recordingBitRate": this.settingsModel.recordingBitRate,
+                "segmentRecording": this.settingsModel.segmentRecordings
             };
 
             return this.ServerInterface.browserCommand(commandData);
@@ -665,8 +669,8 @@ define([], function () {
 
             event["Channel"] = stationName;
 
-            event["RecordingBitRate"] = this._settings.recordingBitRate;
-            event["SegmentRecording"] = this._settings.segmentRecordings;
+            event["RecordingBitRate"] = this.settingsModel.recordingBitRate;
+            event["SegmentRecording"] = this.settingsModel.segmentRecordings;
 
             // REQUIREDTODO
             debugger;

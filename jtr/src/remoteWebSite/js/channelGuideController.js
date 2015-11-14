@@ -16,6 +16,10 @@ define(['stationsModel', 'channelGuideModel','channelGuideView','cgPopupView'], 
             this.stationsModel.setServerInterface(serverInterface);
         },
 
+        setSettingsModel: function(settingsModel) {
+            this.cgPopupView.setSettingsModel(settingsModel);
+        },
+
         init: function() {
 
             this.stationsModel = new StationsModel({});
