@@ -54,12 +54,12 @@ define(function () {
                 }
 
                 // POSITION
-                var lastViewedPositionInMinutes = Math.floor(recordedShowModel.attributes.LastViewedPosition / 60);
-                var position = lastViewedPositionInMinutes.toString() + " of " + recordedShowModel.attributes.Duration.toString() + " minutes";
+                var lastViewedPositionInMinutes = Math.floor(recordedShowModel.get('LastViewedPosition') / 60);
+                var position = lastViewedPositionInMinutes.toString() + " of " + recordedShowModel.get('Duration').toString() + " minutes";
 
                 // IDs
-                var playRecordingId = "recording" + recordedShowModel.attributes.RecordingId.toString();
-                var deleteRecordingId = "delete" + recordedShowModel.attributes.RecordingId.toString();
+                var playRecordingId = "recording" + recordedShowModel.get('RecordingId').toString();
+                var deleteRecordingId = "delete" + recordedShowModel.get('RecordingId').toString();
 
                 var recordedShowAttributes = {};
                 recordedShowAttributes.PlayRecordingId = playRecordingId;
@@ -70,7 +70,7 @@ define(function () {
 
                 recordedShowsAttributes.push(recordedShowAttributes);
 
-                recordingIds.push(recordedShowModel.attributes.RecordingId);
+                recordingIds.push(recordedShowModel.get('RecordingId'));
             });
             var context = {
                 recordedShows : recordedShowsAttributes

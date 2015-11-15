@@ -75,31 +75,9 @@ define(function () {
                 self.fetch({
                     data: $.param({startDate: epgStartDate}),
                     success: function (model, response, options) {
-                        // JOEL-HELP! - self is window at this point - thank goodness model was in the callback!
-                        console.log("epg data load was successful");
-
-                        // self.channelGuideModel.attributes is an array of objects
-                        // each object includes the following attributes
-                        //      AirDateTime
-                        //      AtscMajor
-                        //      AtscMinor
-                        //      CastMembers
-                        //      Duration
-                        //      EndDateTime
-                        //      EpisodeTitle
-                        //      LongDescription
-                        //      Movie stuff
-                        //      NewShow
-                        //      OriginalAirDate
-                        //      ...
-                        //      StationId
-                        //      Title
-                        //      1033 entries in the array
-
                         console.log("XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX getEpg success ************************************");
 
                         // for each station, generate an ordered list (by airDateTime) of all shows in the current epg data
-                        self = model;
                         $.each(self.attributes, function (index, sdProgram) {
 
                             // convert to local time zone

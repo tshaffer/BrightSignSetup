@@ -35,7 +35,7 @@ define(function () {
                         var numStations = Object.keys(model.attributes).length;
                         for (var stationId in model.attributes) {
                             if (model.attributes.hasOwnProperty(stationId)) {
-                                model.stations[Number(stationId)] = model.attributes[stationId];
+                                model.stations[Number(stationId)] = model.get(stationId);
                             }
                         }
 

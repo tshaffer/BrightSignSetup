@@ -23,10 +23,6 @@ define(['settingsModel'], function (SettingsModel) {
             // retrieve settings
             var self = this;
             var promise = this.settingsModel.retrieveSettings();
-            // JOEL!! why isn't self correct in promise callback below?
-            //promise.then(function() {
-            //    debugger;
-            //})
             promise.then(function() {
                 var recordingBitRate = self.settingsModel.getRecordingBitRate();
                 var segmentRecordings = self.settingsModel.getSegmentRecordings();

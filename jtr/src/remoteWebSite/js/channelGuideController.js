@@ -29,13 +29,11 @@ define(['stationsModel', 'channelGuideModel','channelGuideView','cgPopupView'], 
             });
             this.channelGuideModel.init();
 
-            // JOEL-HELP!
             this.channelGuideView = new ChannelGuideView({
                 el: $("#channelGuidePage"),
                 model: this.channelGuideModel,
-                //stationsModel: this.stationsModel - why didn't this work?
+                stationsModel: this.stationsModel
             });
-            this.channelGuideView.stationsModel = this.stationsModel;
 
             this.cgPopupView = new CGPopUpView({
                 model: this.channelGuideModel,
