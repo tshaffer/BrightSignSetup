@@ -58,6 +58,10 @@ define(['stationsModel', 'channelGuideModel','channelGuideView','cgPopupView'], 
 
         },
 
+        // joelnotes
+        // show should have a .then on the channelGuideModelPromise before invoking show on channelGuideView
+
+
         retrieveData: function() {
             // retrieve epg data and stations
             var self = this;

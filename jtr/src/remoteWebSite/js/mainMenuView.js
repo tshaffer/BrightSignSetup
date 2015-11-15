@@ -8,7 +8,7 @@ define(function () {
         initialize: function () {
             console.log("mainMenuView::initialize");
 
-            // JTRTODO - load template here. add render function. possibly call it here or later.
+            this.template = _.template($('#homePageTemplate').html());
         },
 
         events: {
@@ -38,6 +38,19 @@ define(function () {
         scheduledRecordingsHandler: function (event) {
             console.log("scheduledRecordingsHandler, trigger invokeScheduledRecordings");
             this.trigger("invokeScheduledRecordings");
+        },
+
+        show: function() {
+            this.render();
+        },
+
+        render: function () {
+            console.log("MainMenuView::render");
+            this.$el.html(this.template()); // this.$el is a jQuery wrapped el var
+
+            $("#homePage").css("display", "block");
+
+            return this;
         },
 
         pizzaTest: "pizza"

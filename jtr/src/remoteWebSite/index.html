@@ -150,7 +150,7 @@
 
         <!-- Here the context is each scheduledRecording. So we can access its properties directly: -->
         <tr>
-            <td><button type='button' class='btn btn-default recorded-shows-icon' id='{{Id}}' aria-label='Left Align'><span class='glyphicon glyphicon-remove' aria-hidden='true'></span></button></td>
+            <td><button type='button' class='btn btn-default recorded-shows-icon' id='{{Id}}' aria-label='Left Align'><span class='glyphicon {{Icon}}' aria-hidden='true'></span></button></td>
             <td>{{DayOfWeek}}</td>
             <td>{{MonthDay}}</td>
             <td>{{TimeOfDay}}</td>
@@ -163,6 +163,46 @@
 
     </script>
 
+    <script id="homePageTemplate" type="text/x-handlebars-template">
+        <div class="col-lg-6">
+            <button id="recordedShows" class="btn btn-primary tv-words" autofocus>Recorded Shows</button><br><br>
+            <button id="recordNow" class="btn btn-secondary tv-words">Record Now</button><br><br>
+            <button id="manualRecord" class="btn btn-secondary tv-words">Manual Record</button><br><br>
+        </div>
+
+        <div class="col-lg-6">
+            <button id="liveVideo" class="btn btn-secondary tv-words">Live Video</button><br><br>
+            <button id="channelGuideId" class="btn btn-secondary tv-words">Channel Guide</button><br><br>
+            <button id="scheduledRecordings" class="btn btn-secondary tv-words">Scheduled Recordings</button><br><br>
+            <button id="settings" class="btn btn-secondary tv-words">Settings</button><br><br>
+        </div>
+    </script>
+
+    <script id="footerTemplate" type="text/x-handlebars-template">
+
+        <div id="footerArea">
+            <p id="homeButton" class="footerAlignLeft">
+                <button id="btnHome" class="btn btn-primary">Home</button><br><br>
+            </p>
+
+            <p id="trickModeKeys" class="footerAlignCenter">
+                <button id='btnRemoteRecord' type='button' class='btn btn-default' aria-label='Left Align'><span class='glyphicon glyphicon-record' aria-hidden='true'></span></button>
+                <button id='btnRemoteStop' type='button' class='btn btn-default' aria-label='Left Align'><span class='glyphicon glyphicon-stop' aria-hidden='true'></span></button>
+                <button id='btnRemoteRewind' type='button' class='btn btn-default' aria-label='Left Align'><span class='glyphicon glyphicon-backward' aria-hidden='true'></span></button>
+                <button id='btnRemoteInstantReplay' type='button' class='btn btn-default' aria-label='Left Align'><span class='glyphicon glyphicon-step-backward' aria-hidden='true'></span></button>
+                <button id='btnRemotePause' type='button' class='btn btn-default' aria-label='Left Align'><span class='glyphicon glyphicon-pause' aria-hidden='true'></span></button>
+                <button id='btnRemotePlay' type='button' class='btn btn-default' aria-label='Left Align'><span class='glyphicon glyphicon-play' aria-hidden='true'></span></button>
+                <button id='btnRemoteQuickSkip' type='button' class='btn btn-default' aria-label='Left Align'><span class='glyphicon glyphicon-step-forward' aria-hidden='true'></span></button>
+                <button id='btnRemoteFastForward' type='button' class='btn btn-default' aria-label='Left Align'><span class='glyphicon glyphicon-forward' aria-hidden='true'></span></button>
+            </p>
+
+            <p class="footerAlignRight" />
+
+        </div>
+
+        <div style="clear: both;"></div>​
+
+    </script>
 
 </head>
 
@@ -255,27 +295,13 @@
 
     <div id="cont" class="container">
 
-        <div id="homePage" class="row">
-            <div class="col-lg-6">
-                <button id="recordedShows" class="btn btn-primary tv-words" autofocus>Recorded Shows</button><br><br>
-                <button id="recordNow" class="btn btn-secondary tv-words">Record Now</button><br><br>
-                <button id="manualRecord" class="btn btn-secondary tv-words">Manual Record</button><br><br>
-            </div>
-
-            <div class="col-lg-6">
-                <button id="liveVideo" class="btn btn-secondary tv-words">Live Video</button><br><br>
-                <button id="channelGuideId" class="btn btn-secondary tv-words">Channel Guide</button><br><br>
-                <button id="toDoList" class="btn btn-secondary tv-words">To Do List</button><br><br>
-                <button id="settings" class="btn btn-secondary tv-words">Settings</button><br><br>
-            </div>
+        <div id="homePage" style="display:none">
         </div>
 
         <div id="manualRecordPage" style="display:none">
-
         </div>
 
         <div id="channelGuidePage" style="display:none">
-
         </div>
 
         <div id="recordedShowsPage" style="display: none;">
@@ -307,6 +333,32 @@
         </div>
 
     </div>
+
+    <footer id="footerContainer" class="footer container">
+
+        <!--<div id="footerArea">-->
+            <!--<p id="homeButton" class="footerAlignLeft">-->
+                <!--<button id="btnHome" class="btn btn-primary">Home</button><br><br>-->
+            <!--</p>-->
+
+            <!--<p id="trickModeKeys" class="footerAlignCenter">-->
+                <!--<button id='btnRemoteRecord' type='button' class='btn btn-default' aria-label='Left Align'><span class='glyphicon glyphicon-record' aria-hidden='true'></span></button>-->
+                <!--<button id='btnRemoteStop' type='button' class='btn btn-default' aria-label='Left Align'><span class='glyphicon glyphicon-stop' aria-hidden='true'></span></button>-->
+                <!--<button id='btnRemoteRewind' type='button' class='btn btn-default' aria-label='Left Align'><span class='glyphicon glyphicon-backward' aria-hidden='true'></span></button>-->
+                <!--<button id='btnRemoteInstantReplay' type='button' class='btn btn-default' aria-label='Left Align'><span class='glyphicon glyphicon-step-backward' aria-hidden='true'></span></button>-->
+                <!--<button id='btnRemotePause' type='button' class='btn btn-default' aria-label='Left Align'><span class='glyphicon glyphicon-pause' aria-hidden='true'></span></button>-->
+                <!--<button id='btnRemotePlay' type='button' class='btn btn-default' aria-label='Left Align'><span class='glyphicon glyphicon-play' aria-hidden='true'></span></button>-->
+                <!--<button id='btnRemoteQuickSkip' type='button' class='btn btn-default' aria-label='Left Align'><span class='glyphicon glyphicon-step-forward' aria-hidden='true'></span></button>-->
+                <!--<button id='btnRemoteFastForward' type='button' class='btn btn-default' aria-label='Left Align'><span class='glyphicon glyphicon-forward' aria-hidden='true'></span></button>-->
+            <!--</p>-->
+
+            <!--<p class="footerAlignRight" />-->
+
+        <!--</div>-->
+
+        <!--<div style="clear: both;"></div>​-->
+
+    </footer>
 
 </body>
 </html>
