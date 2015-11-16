@@ -3,6 +3,8 @@
  */
 define(function () {
 
+    console.log("creating mainMenuView module");
+
     var mainMenuView = Backbone.View.extend({
 
         initialize: function () {

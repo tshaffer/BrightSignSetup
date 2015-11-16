@@ -1,15 +1,13 @@
 /**
  * Created by tedshaffer on 11/13/15.
  */
-define(function () {
+define(['serverInterface'], function (ServerInterface) {
+
+    console.log("creating settingsModel module");
 
     var settingsModel = Backbone.Model.extend({
 
-        ServerInterface: null,
-
-        setServerInterface: function(serverInterface) {
-            this.ServerInterface = serverInterface;
-        },
+        ServerInterface: ServerInterface,
 
         urlRoot : '/getSettings',
 

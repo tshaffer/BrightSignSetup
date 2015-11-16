@@ -1,15 +1,13 @@
 /**
  * Created by tedshaffer on 10/27/15.
  */
-define(function () {
+define(['serverInterface'], function (ServerInterface) {
+
+    console.log("creating manualRecordModel module");
 
     var manualRecordModel = Backbone.Model.extend({
 
-        ServerInterface: null,
-
-        setServerInterface: function(serverInterface) {
-            this.ServerInterface = serverInterface;
-        },
+        ServerInterface: ServerInterface,
 
         urlRoot : '/manualRecording',
 

@@ -3,6 +3,8 @@
  */
 define(['footerView'], function (FooterView) {
 
+    console.log("creating footerController module");
+
     var footerController = {
 
         footerView: null,

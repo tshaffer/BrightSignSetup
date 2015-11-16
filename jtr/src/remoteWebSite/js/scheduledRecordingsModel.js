@@ -1,16 +1,13 @@
 /**
  * Created by tedshaffer on 11/14/15.
  */
-define(['scheduledRecordingModel'], function (scheduledRecordingModel) {
+define(['serverInterface', 'scheduledRecordingModel'], function (ServerInterface, scheduledRecordingModel) {
+
+    console.log("creating scheduledRecordingsModel module");
 
     var scheduledRecordingsModel = Backbone.Collection.extend({
 
-        ServerInterface: null,
-
-        setServerInterface: function(serverInterface) {
-            this.ServerInterface = serverInterface;
-            //this.model.setServerInterface(serverInterface);
-        },
+        ServerInterface: ServerInterface,
 
         urlRoot : '/scheduledRecordings',
         url : '/scheduledRecordings',

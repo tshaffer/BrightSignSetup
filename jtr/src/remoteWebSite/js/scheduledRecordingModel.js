@@ -1,15 +1,13 @@
 /**
  * Created by tedshaffer on 11/14/15.
  */
-define(function () {
+define(['serverInterface'], function (ServerInterface) {
+
+    console.log("creating scheduledRecordingModel module");
 
     var scheduledRecordingModel = Backbone.Model.extend({
 
-        ServerInterface: null,
-
-        setServerInterface: function(serverInterface) {
-            this.ServerInterface = serverInterface;
-        },
+        ServerInterface: ServerInterface,
 
         urlRoot : '/scheduledRecording',
 

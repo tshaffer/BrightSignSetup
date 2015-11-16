@@ -1,15 +1,13 @@
 /**
  * Created by tedshaffer on 11/6/15.
  */
-define(function () {
+define(['serverInterface'], function (ServerInterface) {
+
+    console.log("creating channelGuideModel module");
 
     var channelGuideModel = Backbone.Model.extend({
 
-        ServerInterface: null,
-
-        setServerInterface: function(serverInterface) {
-            this.ServerInterface = serverInterface;
-        },
+        ServerInterface: ServerInterface,
 
         // accessors
         getProgramScheduleStartDateTime: function() {

@@ -2,19 +2,16 @@
  * Created by tedshaffer on 10/31/15.
  */
 //define(['recordedShowController, recordedShowsModel','recordedShowsRecordView'], function (RecordedShowController, RecordedShowsModel, RecordedShowsRecordView) {
-define(['recordedShowsModel','recordedShowsView'], function (RecordedShowsModel, RecordedShowsView) {
+define(['serverInterface','recordedShowsModel','recordedShowsView'], function (ServerInterface, RecordedShowsModel, RecordedShowsView) {
+
+    console.log("creating recordedShowsController module");
 
     var recordedShowsController =
     {
         recordedShowsModel: null,
         recordedShowsView: null,
 
-        ServerInterface: null,
-
-        setServerInterface: function(serverInterface) {
-            this.ServerInterface = serverInterface;
-            this.recordedShowsModel.setServerInterface(serverInterface);
-        },
+        ServerInterface: ServerInterface,
 
         init: function() {
 

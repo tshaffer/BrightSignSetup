@@ -1,15 +1,13 @@
 /**
  * Created by tedshaffer on 11/7/15.
  */
-define(function () {
+define(['serverInterface'], function (ServerInterface) {
 
-    var stationsModel = Backbone.Model.extend({
+    console.log("creating stationsModel module");
 
-        ServerInterface: null,
+    var StationsModel = Backbone.Model.extend({
 
-        setServerInterface: function(serverInterface) {
-            this.ServerInterface = serverInterface;
-        },
+        ServerInterface: ServerInterface,
 
         urlRoot : '/getStations',
 
@@ -64,5 +62,18 @@ define(function () {
 
 
     });
-    return stationsModel;
+
+    return {
+        instance: null,
+
+        getInstance: function(){
+            // summary:
+            //      Gets an instance of the singleton. It is better to use
+            if(this.instance === null){
+                console.log("stationsModel instantiation");
+                this.instance = new StationsModel();
+            }
+            return this.instance;
+        }
+    };
 });

@@ -1,13 +1,15 @@
 /**
  * Created by tedshaffer on 11/11/15.
  */
-define([], function () {
+define(['serverInterface','settingsModel'], function (ServerInterface,SettingsModel) {
+
+    console.log("creating cgPopUpView module");
 
     var cgPopupView = Backbone.View.extend({
 
-        ServerInterface: null,
+        ServerInterface: ServerInterface,
 
-        settingsModel: null,
+        settingsModel: SettingsModel,
 
         cgPopupId: "",
         cgPopupTitle: "",
@@ -46,14 +48,6 @@ define([], function () {
         startTimeOnTimeIndex: 3,
         startTimeOffsets: [-15, -10, -5, 0, 5, 10, 15],
         startTimeIndex: null,
-
-        setServerInterface: function (serverInterface) {
-            this.ServerInterface = serverInterface;
-        },
-
-        setSettingsModel: function(settingsModel) {
-            this.settingsModel = settingsModel;
-        },
 
         initialize: function () {
             console.log("cgPopupView::initialize");
@@ -725,5 +719,5 @@ define([], function () {
     });
 
     return cgPopupView;
-});
+    });
 

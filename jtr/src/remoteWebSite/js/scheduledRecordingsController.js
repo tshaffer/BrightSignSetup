@@ -1,19 +1,16 @@
 /**
  * Created by tedshaffer on 11/14/15.
  */
-define(['scheduledRecordingsModel','scheduledRecordingsView'], function (ScheduledRecordingsModel, ScheduledRecordingsView) {
+define(['serverInterface', 'scheduledRecordingsModel','scheduledRecordingsView'], function (ServerInterface, ScheduledRecordingsModel, ScheduledRecordingsView) {
+
+    console.log("creating scheduledRecordingsController module");
 
     var scheduledRecordingsController =
     {
         scheduledRecordingsModel: null,
         scheduledRecordingsView: null,
 
-        ServerInterface: null,
-
-        setServerInterface: function(serverInterface) {
-            this.ServerInterface = serverInterface;
-            this.scheduledRecordingsModel.setServerInterface(serverInterface);
-        },
+        ServerInterface: ServerInterface,
 
         init: function() {
 
@@ -75,10 +72,6 @@ define(['scheduledRecordingsModel','scheduledRecordingsView'], function (Schedul
                 }
             });
         },
-
-        setStationsModel: function(stationsModel) {
-            this.scheduledRecordingsView.setStationsModel(stationsModel);
-        }
     };
 
     scheduledRecordingsController.init();

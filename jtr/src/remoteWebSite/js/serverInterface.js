@@ -3,6 +3,8 @@
  */
 define(function () {
 
+    console.log("creating serverInterface module");
+
     var serverInterface = {
 
         baseURL : "http://192.168.0.110:8080/",

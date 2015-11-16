@@ -1,8 +1,10 @@
 /**
  * Created by tedshaffer on 10/27/15.
  */
-define(['serverInterface', 'mainMenuView','manualRecordController', 'recordedShowsController', 'channelGuideController','scheduledRecordingsController'],
-    function (ServerInterface, MainMenuView, ManualRecordController, RecordedShowsController, ChannelGuideController,ScheduledRecordingsController) {
+define(['mainMenuView','manualRecordController', 'recordedShowsController', 'channelGuideController','scheduledRecordingsController'],
+    function (MainMenuView, ManualRecordController, RecordedShowsController, ChannelGuideController,ScheduledRecordingsController) {
+
+    console.log("creating mainMenuController module");
 
     var mainMenuController = {
         p1: 69,
@@ -10,10 +12,6 @@ define(['serverInterface', 'mainMenuView','manualRecordController', 'recordedSho
         mainMenuView: null,
 
         init: function() {
-
-            //ChannelGuideController.setServerInterface(ServerInterface);
-            //ManualRecordController.setServerInterface(ServerInterface);
-            //RecordedShowsController.setServerInterface(ServerInterface);
 
             this.mainMenuView = new MainMenuView({el: $("#homePage")});
 

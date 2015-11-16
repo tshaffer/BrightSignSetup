@@ -1,15 +1,13 @@
 /**
  * Created by tedshaffer on 11/6/15.
  */
-define([], function () {
+define(['serverInterface'], function (ServerInterface) {
+
+    console.log("creating channelGuideView module");
 
     var channelGuideView = Backbone.View.extend({
 
-        ServerInterface: null,
-
-        setServerInterface: function(serverInterface) {
-            this.ServerInterface = serverInterface;
-        },
+        ServerInterface: ServerInterface,
 
         channelGuideDisplayStartDateTime: null,
         channelGuideDisplayEndDateTime: null,

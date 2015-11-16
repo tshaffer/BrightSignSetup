@@ -3,6 +3,8 @@
  */
 define(function () {
 
+    console.log("creating manualRecordView module");
+
     var manualRecordView = Backbone.View.extend({
 
         initialize: function () {

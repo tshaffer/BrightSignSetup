@@ -3,15 +3,11 @@
  */
 define(['settingsModel'], function (SettingsModel) {
 
+    console.log("creating settingsController module");
+
     var settingsController = {
 
-        ServerInterface: null,
-
-        setServerInterface: function(serverInterface) {
-            this.settingsModel.setServerInterface(serverInterface);
-        },
-
-        settingsModel: null,
+        settingsModel: SettingsModel,
 
         init: function() {
 

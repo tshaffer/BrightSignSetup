@@ -3,6 +3,8 @@
  */
 define(['stationsModel', 'channelGuideModel','channelGuideView','cgPopupView'], function (StationsModel, ChannelGuideModel, ChannelGuideView, CGPopUpView) {
 
+    console.log("creating channelGuideController module");
+
     var channelGuideController = {
 
         channelGuideModel: null,
@@ -10,20 +12,10 @@ define(['stationsModel', 'channelGuideModel','channelGuideView','cgPopupView'], 
         cgPopupView: null,
         stationsModel: null,
 
-        setServerInterface: function(serverInterface) {
-            this.channelGuideModel.setServerInterface(serverInterface);
-            this.channelGuideView.setServerInterface(serverInterface);
-            this.cgPopupView.setServerInterface(serverInterface);
-            this.stationsModel.setServerInterface(serverInterface);
-        },
-
-        setSettingsModel: function(settingsModel) {
-            this.cgPopupView.setSettingsModel(settingsModel);
-        },
-
         init: function() {
 
-            this.stationsModel = new StationsModel({});
+            this.stationsModel = StationsModel.getInstance();
+            //this.stationsModel = new StationsModel({});
 
             this.channelGuideModel = new ChannelGuideModel({
             });

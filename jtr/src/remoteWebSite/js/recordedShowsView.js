@@ -3,6 +3,8 @@
  */
 define(function () {
 
+    console.log("creating recordedShowsView module");
+
     var recordedShowsView = Backbone.View.extend({
 
         el: '#recordedShowsPage',

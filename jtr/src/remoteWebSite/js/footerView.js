@@ -3,6 +3,8 @@
  */
 define(function () {
 
+    console.log("creating footerView module");
+
     var footerView = Backbone.View.extend({
 
         initialize: function () {
@@ -55,14 +57,6 @@ define(function () {
             "click #btnRemoteQuickSkip": "invokeRemoteHandler",
             "click #btnRemoteFastForward": "invokeRemoteHandler",
         },
-
-        //events: {
-        //    "click #btnHome": function (event) {
-        //        console.log("footerView::invokeHomHandler invoked");
-        //        this.trigger("invokeHome");
-        //        return false;
-        //    }
-        //}
 
         invokeHomeHandler: function(event) {
             console.log("footerView::invokeHomHandler invoked");

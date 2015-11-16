@@ -1,212 +1,208 @@
 /**
  * Created by tedshaffer on 11/14/15.
  */
-/**
- * Created by tedshaffer on 10/31/15.
- */
-define(function () {
+define(['stationsModel'], function (StationsModel) {
 
-    var scheduledRecordingsView = Backbone.View.extend({
+        console.log("creating scheduledRecordingsView module");
 
-        stationsModel: null,
+        var scheduledRecordingsView = Backbone.View.extend({
 
-        el: '#scheduledRecordingsPage',
+            stationsModel: StationsModel,
 
-        initialize: function () {
-        },
+            el: '#scheduledRecordingsPage',
 
-        show: function() {
-            this.render();
-        },
+            initialize: function () {
+            },
 
-        render: function() {
-            this.$el.html('');
+            show: function() {
+                this.render();
+            },
 
-            // Grab the template script
-            var theTemplateScript = $("#scheduledRecordingTemplate").html();
+            render: function() {
+                this.$el.html('');
 
-            // Compile the template
-            var theTemplate = Handlebars.compile(theTemplateScript);
+                // Grab the template script
+                var theTemplateScript = $("#scheduledRecordingTemplate").html();
 
-            // Create the context for scheduled recordings
-            var scheduledRecordingsAttributes = [];
-            var scheduledRecordingIds = [];
+                // Compile the template
+                var theTemplate = Handlebars.compile(theTemplateScript);
 
-            var self = this;
+                // Create the context for scheduled recordings
+                var scheduledRecordingsAttributes = [];
+                var scheduledRecordingIds = [];
 
-            this.model.each(function(scheduledRecordingModel) {
+                var self = this;
 
-                /*
-                 Delete / Stop icon
-                 DayOfWeek
-                 Date
-                 Time
-                 Channel
-                 Station Name
-                 Title
-                 */
+                this.model.each(function(scheduledRecordingModel) {
 
-                var weekday = new Array(7);
-                weekday[0] = "Sun";
-                weekday[1] = "Mon";
-                weekday[2] = "Tue";
-                weekday[3] = "Wed";
-                weekday[4] = "Thu";
-                weekday[5] = "Fri";
-                weekday[6] = "Sat";
+                    /*
+                     Delete / Stop icon
+                     DayOfWeek
+                     Date
+                     Time
+                     Channel
+                     Station Name
+                     Title
+                     */
 
-                var currentDateTime = new Date();
-                var date = new Date(scheduledRecordingModel.get('DateTime'));
-                var endDateTime = new Date(scheduledRecordingModel.get('EndDateTime'));
+                    var weekday = new Array(7);
+                    weekday[0] = "Sun";
+                    weekday[1] = "Mon";
+                    weekday[2] = "Tue";
+                    weekday[3] = "Wed";
+                    weekday[4] = "Thu";
+                    weekday[5] = "Fri";
+                    weekday[6] = "Sat";
 
-                var clickAction = "delete";
-                var icon = 'glyphicon-remove';
-                if (date <= currentDateTime && currentDateTime < endDateTime) {
-                    clickAction = "stop";
-                    icon = 'glyphicon-stop';
-                }
+                    var currentDateTime = new Date();
+                    var date = new Date(scheduledRecordingModel.get('DateTime'));
+                    var endDateTime = new Date(scheduledRecordingModel.get('EndDateTime'));
 
-                var dayOfWeek = weekday[date.getDay()];
+                    var clickAction = "delete";
+                    var icon = 'glyphicon-remove';
+                    if (date <= currentDateTime && currentDateTime < endDateTime) {
+                        clickAction = "stop";
+                        icon = 'glyphicon-stop';
+                    }
 
-                var monthDay = (date.getMonth() + 1).toString() + "/" + date.getDate().toString();
+                    var dayOfWeek = weekday[date.getDay()];
 
-                var amPM = "am";
+                    var monthDay = (date.getMonth() + 1).toString() + "/" + date.getDate().toString();
 
-                var numHours = date.getHours();
-                if (numHours == 0)
-                {
-                    numHours = 12;
-                }
-                else if (numHours > 12) {
-                    numHours -= 12;
-                    amPM = "pm";
-                }
-                else if (numHours == 12) {
-                    amPM = "pm";
-                }
-                var hoursLbl = numHours.toString();
+                    var amPM = "am";
 
-                // JTRTODO - Backbone - need to investigate
-                //if (hoursLbl.length == 1) hoursLbl = "&nbsp" + hoursLbl;
-                if (hoursLbl.length == 1) hoursLbl = hoursLbl;
+                    var numHours = date.getHours();
+                    if (numHours == 0)
+                    {
+                        numHours = 12;
+                    }
+                    else if (numHours > 12) {
+                        numHours -= 12;
+                        amPM = "pm";
+                    }
+                    else if (numHours == 12) {
+                        amPM = "pm";
+                    }
+                    var hoursLbl = numHours.toString();
 
-                var minutesLbl = twoDigitFormat(date.getMinutes().toString());
+                    // JTRTODO - Backbone - need to investigate
+                    //if (hoursLbl.length == 1) hoursLbl = "&nbsp" + hoursLbl;
+                    if (hoursLbl.length == 1) hoursLbl = hoursLbl;
 
-                var timeOfDay = hoursLbl + ":" + minutesLbl + amPM;
+                    var minutesLbl = twoDigitFormat(date.getMinutes().toString());
 
-                var channel = scheduledRecordingModel.get('Channel');
-                var channelParts = channel.split('-');
-                if (channelParts.length == 2 && channelParts[1] == "1") {
-                    channel = channelParts[0];
-                }
+                    var timeOfDay = hoursLbl + ":" + minutesLbl + amPM;
 
-                var stations = this.stationsModel.getStations();
-                var station = this.stationsModel.getStationFromAtsc(channelParts[0], channelParts[1]);
+                    var channel = scheduledRecordingModel.get('Channel');
+                    var channelParts = channel.split('-');
+                    if (channelParts.length == 2 && channelParts[1] == "1") {
+                        channel = channelParts[0];
+                    }
 
-                var stationName = "TBD";
-                if (station != null) {
-                    stationName = station.CommonName;
-                }
+                    self.stationsModel = StationsModel.getInstance();
+                    var stations = self.stationsModel.getStations();
+                    var station = self.stationsModel.getStationFromAtsc(channelParts[0], channelParts[1]);
 
-                var title = scheduledRecordingModel.get('Title');
+                    var stationName = "TBD";
+                    if (station != null) {
+                        stationName = station.CommonName;
+                    }
 
-                var id = scheduledRecordingModel.get('Id');
+                    var title = scheduledRecordingModel.get('Title');
 
-                var scheduledRecordingAttributes = {};
-                scheduledRecordingAttributes.DayOfWeek = dayOfWeek;
-                scheduledRecordingAttributes.MonthDay = monthDay;
-                scheduledRecordingAttributes.TimeOfDay = timeOfDay;
-                scheduledRecordingAttributes.Channel = channel;
-                scheduledRecordingAttributes.StationName = stationName;
-                scheduledRecordingAttributes.Title = title;
-                scheduledRecordingAttributes.Id = clickAction + id;
-                scheduledRecordingAttributes.Icon = icon;
+                    var id = scheduledRecordingModel.get('Id');
 
-                scheduledRecordingsAttributes.push(scheduledRecordingAttributes);
-                scheduledRecordingIds.push(id);
-            });
-            var context = {
-                scheduledRecordings : scheduledRecordingsAttributes
-            };
+                    var scheduledRecordingAttributes = {};
+                    scheduledRecordingAttributes.DayOfWeek = dayOfWeek;
+                    scheduledRecordingAttributes.MonthDay = monthDay;
+                    scheduledRecordingAttributes.TimeOfDay = timeOfDay;
+                    scheduledRecordingAttributes.Channel = channel;
+                    scheduledRecordingAttributes.StationName = stationName;
+                    scheduledRecordingAttributes.Title = title;
+                    scheduledRecordingAttributes.Id = clickAction + id;
+                    scheduledRecordingAttributes.Icon = icon;
 
-            // Pass our data to the template
-            var theCompiledHtml = theTemplate(context);
-
-            // Add the compiled html to the page
-            $("#scheduledRecordingsTableBody").append(theCompiledHtml);
-
-            //var self = this;
-            //$.each(recordingIds, function (index, recordingId) {
-            //
-            //    var btnIdDeleteRecording = "#delete" + recordingId;
-            //    $(btnIdDeleteRecording).click({ recordingId: recordingId }, function (event) {
-            //        self.trigger("deleteSelectedShow", event.data.recordingId);
-            //    });
-            //});
-
-            for (var i = 0; i < scheduledRecordingIds.length; i++) {
-
-                var scheduledRecordingId = scheduledRecordingIds[i].toString();
-
-                // only one of the next two handlers can be invoked - that is, either btnIdStop or btnIdDelete exists
-
-                // stop an active recording
-                var btnIdStop = "#stop" + scheduledRecordingId;
-                $(btnIdStop).click({ scheduledRecordingId: scheduledRecordingId }, function (event) {
-                    //self.browser.stopActiveRecording(event);
-                    self.trigger("stopActiveRecording", scheduledRecordingId);
+                    scheduledRecordingsAttributes.push(scheduledRecordingAttributes);
+                    scheduledRecordingIds.push(id);
                 });
+                var context = {
+                    scheduledRecordings : scheduledRecordingsAttributes
+                };
 
-                // delete a scheduled recording
-                var btnIdDelete = "#delete" + scheduledRecordingId;
-                $(btnIdDelete).click({ scheduledRecordingId: scheduledRecordingId }, function (event) {
-                    self.trigger("deleteScheduledRecording", scheduledRecordingId);
-                });
+                // Pass our data to the template
+                var theCompiledHtml = theTemplate(context);
 
-            }
+                // Add the compiled html to the page
+                $("#scheduledRecordingsTableBody").append(theCompiledHtml);
 
-            //self.scheduledRecordingIds.length = 0;
-            //
-            //// add button handlers for each recording - note, the handlers need to be added after the html has been added!!
-            //$.each(scheduledRecordings, function (index, scheduledRecording) {
-            //
-            //    var scheduledRecordingId = scheduledRecording.Id;
-            //
-            //    // only one of the next two handlers can be invoked - that is, either btnIdStop or btnIdDelete exists
-            //
-            //    // stop an active recording
-            //    var btnIdStop = "#stop" + scheduledRecordingId;
-            //    $(btnIdStop).click({ scheduledRecordingId: scheduledRecordingId }, function (event) {
-            //        self.browser.stopActiveRecording(event);
-            //    });
-            //
-            //    // delete a scheduled recording
-            //    var btnIdDelete = "#delete" + scheduledRecordingId;
-            //    $(btnIdDelete).click({ scheduledRecordingId: scheduledRecordingId }, function (event) {
-            //        self.browser.deleteScheduledRecordingHandler(event);
-            //    });
-            //
-            //    var scheduledRecordingRow = [];
-            //    scheduledRecordingRow.push(btnIdDelete);
-            //    self.scheduledRecordingIds.push(scheduledRecordingRow);
-            //});
+                //var self = this;
+                //$.each(recordingIds, function (index, recordingId) {
+                //
+                //    var btnIdDeleteRecording = "#delete" + recordingId;
+                //    $(btnIdDeleteRecording).click({ recordingId: recordingId }, function (event) {
+                //        self.trigger("deleteSelectedShow", event.data.recordingId);
+                //    });
+                //});
+
+                for (var i = 0; i < scheduledRecordingIds.length; i++) {
+
+                    var scheduledRecordingId = scheduledRecordingIds[i].toString();
+
+                    // only one of the next two handlers can be invoked - that is, either btnIdStop or btnIdDelete exists
+
+                    // stop an active recording
+                    var btnIdStop = "#stop" + scheduledRecordingId;
+                    $(btnIdStop).click({ scheduledRecordingId: scheduledRecordingId }, function (event) {
+                        //self.browser.stopActiveRecording(event);
+                        self.trigger("stopActiveRecording", scheduledRecordingId);
+                    });
+
+                    // delete a scheduled recording
+                    var btnIdDelete = "#delete" + scheduledRecordingId;
+                    $(btnIdDelete).click({ scheduledRecordingId: scheduledRecordingId }, function (event) {
+                        self.trigger("deleteScheduledRecording", scheduledRecordingId);
+                    });
+
+                }
+
+                //self.scheduledRecordingIds.length = 0;
+                //
+                //// add button handlers for each recording - note, the handlers need to be added after the html has been added!!
+                //$.each(scheduledRecordings, function (index, scheduledRecording) {
+                //
+                //    var scheduledRecordingId = scheduledRecording.Id;
+                //
+                //    // only one of the next two handlers can be invoked - that is, either btnIdStop or btnIdDelete exists
+                //
+                //    // stop an active recording
+                //    var btnIdStop = "#stop" + scheduledRecordingId;
+                //    $(btnIdStop).click({ scheduledRecordingId: scheduledRecordingId }, function (event) {
+                //        self.browser.stopActiveRecording(event);
+                //    });
+                //
+                //    // delete a scheduled recording
+                //    var btnIdDelete = "#delete" + scheduledRecordingId;
+                //    $(btnIdDelete).click({ scheduledRecordingId: scheduledRecordingId }, function (event) {
+                //        self.browser.deleteScheduledRecordingHandler(event);
+                //    });
+                //
+                //    var scheduledRecordingRow = [];
+                //    scheduledRecordingRow.push(btnIdDelete);
+                //    self.scheduledRecordingIds.push(scheduledRecordingRow);
+                //});
 
 
 
-            $("#scheduledRecordingsPage").css("display", "block");
+                $("#scheduledRecordingsPage").css("display", "block");
 
-            return this;
-        },
+                return this;
+            },
 
-        //playSelectedShowCallback: function(event) {
-        //    console.log("playback recording with id = " + event.data.recordingId);
-        //}
+            //playSelectedShowCallback: function(event) {
+            //    console.log("playback recording with id = " + event.data.recordingId);
+            //}
 
-        setStationsModel: function(stationsModel) {
-            this.stationsModel = stationsModel;
-        }
+        });
 
-    });
-
-    return scheduledRecordingsView;
+        return scheduledRecordingsView;
 });

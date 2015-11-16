@@ -3,15 +3,12 @@
  */
 define(['manualRecordModel','manualRecordView'], function (ManualRecordModel, ManualRecordView) {
 
+    console.log("creating manualRecordController module");
+
     var manualRecordController = {
 
         manualRecordModel: null,
         manualRecordView: null,
-
-        setServerInterface: function(serverInterface) {
-            this.manualRecordModel.setServerInterface(serverInterface);
-            //this.manualRecordView.setServerInterface(serverInterface);
-        },
 
         init: function() {
 
