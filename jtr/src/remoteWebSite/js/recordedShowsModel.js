@@ -7,8 +7,6 @@ define(['serverInterface','recordedShowModel'], function (serverInterface, Recor
 
     var RecordedShowsModel = Backbone.Collection.extend({
 
-        serverInterface: serverInterface,
-
         urlRoot : '/recordedShows',
         url : '/recordedShows',
         model: RecordedShowModel,
@@ -21,7 +19,7 @@ define(['serverInterface','recordedShowModel'], function (serverInterface, Recor
             options = options || {};
             //options.url = "http://10.1.0.241:8080/recordedShows";
             //options.url = "http://192.168.2.8:8080/recordedShows";
-            options.url = this.serverInterface.getBaseUrl() + "recordedShows";
+            options.url = serverInterface.getBaseUrl() + "recordedShows";
             Backbone.sync(method, model, options);
         }
     });

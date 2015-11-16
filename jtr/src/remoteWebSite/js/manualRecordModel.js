@@ -7,8 +7,6 @@ define(['serverInterface'], function (serverInterface) {
 
     var ManualRecordModel = Backbone.Model.extend({
 
-        serverInterface: serverInterface,
-
         urlRoot : '/manualRecording',
 
         defaults: {

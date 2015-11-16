@@ -7,8 +7,6 @@ define(['serverInterface'], function (serverInterface) {
 
     var ChannelGuideView = Backbone.View.extend({
 
-        serverInterface: serverInterface,
-
         channelGuideDisplayStartDateTime: null,
         channelGuideDisplayEndDateTime: null,
         channelGuideDisplayCurrentDateTime: null,
@@ -257,10 +255,10 @@ define(['serverInterface'], function (serverInterface) {
 
             var self = this;
 
-            var promise = this.serverInterface.retrieveLastTunedChannel();
+            var promise = serverInterface.retrieveLastTunedChannel();
             promise.then(function() {
                 console.log("ChannelGuideView:: lastTunedChannel promise fulfilled");
-                var stationNumber = self.serverInterface.getLastTunedChannel();
+                var stationNumber = serverInterface.getLastTunedChannel();
                 var stationIndex = self.getStationIndexFromName(stationNumber)
                 var stationRow = $("#cgData").children()[stationIndex + 1];
                 self._currentSelectedProgramButton = $(stationRow).children()[0];

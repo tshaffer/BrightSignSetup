@@ -7,7 +7,7 @@ define(['settingsModel'], function (SettingsModel) {
 
     var settingsController = {
 
-        settingsModel: SettingsModel,
+        settingsModel: null,
 
         init: function() {
 

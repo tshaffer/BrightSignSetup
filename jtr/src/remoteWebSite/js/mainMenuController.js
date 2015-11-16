@@ -55,8 +55,6 @@ define(['mainMenuView','manualRecordController', 'recordedShowsController', 'cha
             console.log("mainMenuController:show() invoked");
             this.mainMenuView.show();
         },
-
-
     };
 
     mainMenuController.init();

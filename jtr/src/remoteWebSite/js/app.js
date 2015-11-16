@@ -1,32 +1,17 @@
 /**
  * Created by tedshaffer on 10/25/15.
  */
-// joelnotes
-// lowercase for objects; uppercase for classes; applies to FileNames and Variables
-
 define(function() {
     $(document).ready(function () {
         require(['serverInterface','settingsController','channelGuideController','mainMenuController','footerController'],
             function(serverInterface,settingsController,channelGuideController,mainMenuController,footerController) {
 
-                // joelnotes - app.js depends on serverInterface. it and all controllers depend on serverAccessor.
-                // app.js invokes set on serverAccessor. controllers get from server accessor
-                // shouldn't there be some way of knowing that a module is loaded.
-                // how to implement singletons using AMD / require.js
-
-                // joelnotes - loading. load on startup or when user presses button. do it when user presses button if code is always
-                // going to want the latest data and the app is not getting notified when changes occur.
-
-                // joelnotes - don't render channel guide until data is loaded. uses promises to determine this. or put up a busy cursor while
-                // data is getting loaded.
-
                 console.log("all controllers loaded");
 
-                // instead of doing the following, just invoke the serverInterface method to get a promise. then wait for all promises to finish
+                // JTRTODO - instead of doing the following, just invoke the serverInterface method to get a promise. then wait for all promises to finish
                 settingsController.retrieveData();
                 channelGuideController.retrieveData();
                 var retrieveScheduledRecordingsPromise = serverInterface.retrieveScheduledRecordings();
-                // wait until all data is retrieved??
 
                 this.mainMenuController = mainMenuController;
                 this.footerController = footerController;

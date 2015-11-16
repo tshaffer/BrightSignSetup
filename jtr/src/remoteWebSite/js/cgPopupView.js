@@ -7,8 +7,6 @@ define(['serverInterface','settingsModel'], function (serverInterface, SettingsM
 
     var cgPopupView = Backbone.View.extend({
 
-        serverInterface: serverInterface,
-
         settingsModel: null,
 
         cgPopupId: "",
@@ -65,7 +63,7 @@ define(['serverInterface','settingsModel'], function (serverInterface, SettingsM
 
             var self = this;
 
-            this.scheduledRecordings = this.serverInterface.getScheduledRecordings();
+            this.scheduledRecordings = serverInterface.getScheduledRecordings();
 
             this.cgSelectedProgram = programData.program;
             this.cgSelectedStationId = programData.stationId;
@@ -184,7 +182,7 @@ define(['serverInterface','settingsModel'], function (serverInterface, SettingsM
 
                     var promise = self.cgRecordProgramFromClient(true);
                     promise.then(function() {
-                        var retrieveScheduledRecordingsPromise = self.serverInterface.retrieveScheduledRecordings();
+                        var retrieveScheduledRecordingsPromise = serverInterface.retrieveScheduledRecordings();
                     })
 
                     self.cgProgramDlgCloseInvoked();
@@ -196,7 +194,7 @@ define(['serverInterface','settingsModel'], function (serverInterface, SettingsM
                 $(this.cgRecordSeriesId).click(function (event) {
                     var promise = self.cgRecordSelectedSeriesFromClient();
                     promise.then(function() {
-                        this.serverInterface.retrieveScheduledRecordings();
+                        serverInterface.retrieveScheduledRecordings();
                     })
                     self.cgProgramDlgCloseInvoked();
                     self.reselectCurrentProgram();
@@ -220,7 +218,7 @@ define(['serverInterface','settingsModel'], function (serverInterface, SettingsM
 
                     var promise = self.cgCancelScheduledRecordingFromClient();
                     promise.then(function() {
-                        self.serverInterface.retrieveScheduledRecordings();
+                        serverInterface.retrieveScheduledRecordings();
                     })
 
                     self.cgProgramDlgCloseInvoked();
@@ -234,7 +232,7 @@ define(['serverInterface','settingsModel'], function (serverInterface, SettingsM
                     console.log("CancelSeriesRecording invoked");
                     var promise = self.cgCancelScheduledSeriesFromClient();
                     promise.then(function() {
-                        self.serverInterface.retrieveScheduledRecordings();
+                        serverInterface.retrieveScheduledRecordings();
                     })
                     self.cgProgramDlgCloseInvoked();
                     self.reselectCurrentProgram();
@@ -384,7 +382,7 @@ define(['serverInterface','settingsModel'], function (serverInterface, SettingsM
                 };
             }
 
-            return this.serverInterface.browserCommand(commandData);
+            return serverInterface.browserCommand(commandData);
         },
 
         cgRecordSelectedSeriesFromClient: function () {
@@ -401,7 +399,7 @@ define(['serverInterface','settingsModel'], function (serverInterface, SettingsM
                 "segmentRecording": this.settingsModel.segmentRecordings
             };
 
-            return this.serverInterface.browserCommand(commandData);
+            return serverInterface.browserCommand(commandData);
         },
 
         getStationFromId: function (stationId) {
@@ -434,18 +432,18 @@ define(['serverInterface','settingsModel'], function (serverInterface, SettingsM
 
             var commandData = { "command": "tuneLiveVideoChannel", "enteredChannel": stationName };
 
-            this.serverInterface.browserCommand(commandData);
+            serverInterface.browserCommand(commandData);
         },
 
         cgCancelScheduledRecordingFromClient: function () {
             console.log("cgCancelScheduledRecordingFromClient invoked");
 
-            return this.serverInterface.deleteScheduledRecording(this.cgSelectedProgram.scheduledRecordingId);
+            return serverInterface.deleteScheduledRecording(this.cgSelectedProgram.scheduledRecordingId);
         },
 
         cgCancelScheduledSeriesFromClient: function () {
             console.log("cgCancelScheduledSeriesFromClient invoked");
-            return this.serverInterface.deleteScheduledSeries(this.cgSelectedProgram.scheduledSeriesRecordingId);
+            return serverInterface.deleteScheduledSeries(this.cgSelectedProgram.scheduledSeriesRecordingId);
         },
 
         cgProgramDlgUp: function () {
@@ -569,7 +567,7 @@ define(['serverInterface','settingsModel'], function (serverInterface, SettingsM
 
                 var promise = self.cgRecordProgramFromClient(addRecordToDB);
                 promise.then(function() {
-                    self.serverInterface.retrieveScheduledRecordings();
+                    serverInterface.retrieveScheduledRecordings();
                 })
 
                 self.reselectCurrentProgram();

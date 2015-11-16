@@ -10,8 +10,6 @@ define(['serverInterface', 'scheduledRecordingsModel','scheduledRecordingsView']
         scheduledRecordingsModel: null,
         scheduledRecordingsView: null,
 
-        serverInterface: serverInterface,
-
         init: function() {
 
             this.scheduledRecordingsModel = new ScheduledRecordingsModel({
@@ -30,7 +28,7 @@ define(['serverInterface', 'scheduledRecordingsModel','scheduledRecordingsView']
             this.listenTo(this.scheduledRecordingsView, "deleteScheduledRecording", function(scheduledRecordingId) {
                 console.log("ScheduledRecordingsController:: deleteScheduledRecording event received, id = " + scheduledRecordingId);
 
-                var promise = self.serverInterface.deleteScheduledRecording(scheduledRecordingId);
+                var promise = serverInterface.deleteScheduledRecording(scheduledRecordingId);
                 promise.then(function() {
                     console.log("deleteScheduledRecording successfully sent");
                     self.show();
@@ -42,7 +40,7 @@ define(['serverInterface', 'scheduledRecordingsModel','scheduledRecordingsView']
             this.listenTo(this.scheduledRecordingsView, "stopActiveRecording", function(scheduledRecordingId) {
                 console.log("ScheduledRecordingsController:: stopActiveRecording event received, id = " + scheduledRecordingId);
 
-                var promise = self.serverInterface.stopActiveRecording(scheduledRecordingId);
+                var promise = serverInterface.stopActiveRecording(scheduledRecordingId);
                 promise.then(function() {
                     console.log("stopActiveRecording successfully sent");
                     self.show();

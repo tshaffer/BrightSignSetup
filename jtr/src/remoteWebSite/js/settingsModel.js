@@ -7,8 +7,6 @@ define(['serverInterface'], function (serverInterface) {
 
     var SettingsModel = Backbone.Model.extend({
 
-        serverInterface: serverInterface,
-
         urlRoot : '/getSettings',
 
         defaults: {
@@ -18,7 +16,7 @@ define(['serverInterface'], function (serverInterface) {
 
         sync: function(method, model, options) {
             options = options || {};
-            options.url = this.serverInterface.getBaseUrl() + "getSettings";
+            options.url = serverInterface.getBaseUrl() + "getSettings";
             Backbone.sync(method, model, options);
         },
 

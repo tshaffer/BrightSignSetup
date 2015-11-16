@@ -7,7 +7,7 @@ define(['stationsModel'], function (StationsModel) {
 
         var ScheduledRecordingsView = Backbone.View.extend({
 
-            stationsModel: StationsModel,
+            settingsModel: null,
 
             el: '#scheduledRecordingsPage',
 

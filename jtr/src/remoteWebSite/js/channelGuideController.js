@@ -11,6 +11,8 @@ define(['stationsModel', 'channelGuideModel','channelGuideView','cgPopupView'], 
         channelGuideView: null,
         cgPopupView: null,
         stationsModel: null,
+        retrieveStationsPromise: null,
+        channelGuideRetrieveEpgDataPromise: null,
 
         init: function() {
 
@@ -49,19 +51,12 @@ define(['stationsModel', 'channelGuideModel','channelGuideView','cgPopupView'], 
 
         },
 
-        // joelnotes
-        // show should have a .then on the channelGuideModelPromise before invoking show on channelGuideView
-
-
         retrieveData: function() {
             // retrieve epg data and stations
             var self = this;
-            var promise = this.stationsModel.retrieveStations();
-            promise.then(function() {
-                self.channelGuideView.stations = self.stationsModel.getStations();
-                self.cgPopupView.stations = self.stationsModel.getStations();
-                var channelGuideModelPromise = self.channelGuideModel.retrieveEpgData();
-            })
+
+            this.retrieveStationsPromise = this.stationsModel.retrieveStations();
+            this.channelGuideRetrieveEpgDataPromise = this.channelGuideModel.retrieveEpgData();
         },
 
         show: function() {
@@ -70,15 +65,13 @@ define(['stationsModel', 'channelGuideModel','channelGuideView','cgPopupView'], 
             // retrieve epg data from the server
             var self = this;
 
-            //// promise should be retrieved; continue on after promise is resolved
-            //this.stationsModel.retrieveStations();
-            //
-            //// promise should be retrieved; continue on after promise is resolved
-            //this.channelGuideModel.retrieveEpgData();
-
-            // after the line above is really done
-             self.channelGuideView.show();
-
+            if (this.channelGuideRetrieveEpgDataPromise != null && this.retrieveStationsPromise != null) {
+                Promise.all([this.retrieveStationsPromise, this.channelGuideRetrieveEpgDataPromise]).then(function() {
+                    self.channelGuideView.stations = self.stationsModel.getStations();
+                    self.cgPopupView.stations = self.stationsModel.getStations();
+                    self.channelGuideView.show();
+                });
+            }
         },
 
         getStationsModel: function() {

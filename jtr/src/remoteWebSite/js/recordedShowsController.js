@@ -11,8 +11,6 @@ define(['serverInterface','recordedShowsModel','recordedShowsView'], function (s
         recordedShowsModel: null,
         recordedShowsView: null,
 
-        serverInterface: serverInterface,
-
         init: function() {
 
             this.recordedShowsModel = new RecordedShowsModel({
@@ -32,7 +30,7 @@ define(['serverInterface','recordedShowsModel','recordedShowsView'], function (s
                 console.log("RecordedShowsController:: playSelectedShow event received, id = " + recordingId);
 
                 var commandData = { "command": "playRecordedShow", "recordingId": recordingId };
-                var promise = this.serverInterface.browserCommand(commandData);
+                var promise = serverInterface.browserCommand(commandData);
                 promise.then(function() {
                     console.log("browserCommand successfully sent");
                 })
@@ -44,7 +42,7 @@ define(['serverInterface','recordedShowsModel','recordedShowsView'], function (s
                 console.log("RecordedShowsController:: deleteSelectedShow event received, id = " + recordingId);
 
                 var commandData = { "command": "deleteRecordedShow", "recordingId": recordingId };
-                var promise = this.serverInterface.browserCommand(commandData);
+                var promise = serverInterface.browserCommand(commandData);
                 promise.then(function() {
                     console.log("browserCommand successfully sent");
                     self.show();
