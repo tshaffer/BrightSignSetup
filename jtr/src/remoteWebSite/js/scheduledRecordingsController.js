@@ -1,7 +1,7 @@
 /**
  * Created by tedshaffer on 11/14/15.
  */
-define(['serverInterface', 'scheduledRecordingsModel','scheduledRecordingsView'], function (ServerInterface, ScheduledRecordingsModel, ScheduledRecordingsView) {
+define(['serverInterface', 'scheduledRecordingsModel','scheduledRecordingsView'], function (serverInterface, ScheduledRecordingsModel, ScheduledRecordingsView) {
 
     console.log("creating scheduledRecordingsController module");
 
@@ -10,7 +10,7 @@ define(['serverInterface', 'scheduledRecordingsModel','scheduledRecordingsView']
         scheduledRecordingsModel: null,
         scheduledRecordingsView: null,
 
-        ServerInterface: ServerInterface,
+        serverInterface: serverInterface,
 
         init: function() {
 
@@ -30,7 +30,7 @@ define(['serverInterface', 'scheduledRecordingsModel','scheduledRecordingsView']
             this.listenTo(this.scheduledRecordingsView, "deleteScheduledRecording", function(scheduledRecordingId) {
                 console.log("ScheduledRecordingsController:: deleteScheduledRecording event received, id = " + scheduledRecordingId);
 
-                var promise = self.ServerInterface.deleteScheduledRecording(scheduledRecordingId);
+                var promise = self.serverInterface.deleteScheduledRecording(scheduledRecordingId);
                 promise.then(function() {
                     console.log("deleteScheduledRecording successfully sent");
                     self.show();
@@ -42,7 +42,7 @@ define(['serverInterface', 'scheduledRecordingsModel','scheduledRecordingsView']
             this.listenTo(this.scheduledRecordingsView, "stopActiveRecording", function(scheduledRecordingId) {
                 console.log("ScheduledRecordingsController:: stopActiveRecording event received, id = " + scheduledRecordingId);
 
-                var promise = self.ServerInterface.stopActiveRecording(scheduledRecordingId);
+                var promise = self.serverInterface.stopActiveRecording(scheduledRecordingId);
                 promise.then(function() {
                     console.log("stopActiveRecording successfully sent");
                     self.show();

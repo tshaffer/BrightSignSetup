@@ -1,13 +1,13 @@
 /**
  * Created by tedshaffer on 11/14/15.
  */
-define(['serverInterface'], function (ServerInterface) {
+define(['serverInterface'], function (serverInterface) {
 
-    console.log("creating scheduledRecordingModel module");
+    console.log("creating ScheduledRecordingModel module");
 
-    var scheduledRecordingModel = Backbone.Model.extend({
+    var ScheduledRecordingModel = Backbone.Model.extend({
 
-        ServerInterface: ServerInterface,
+        serverInterface: serverInterface,
 
         urlRoot : '/scheduledRecording',
 
@@ -30,9 +30,9 @@ define(['serverInterface'], function (ServerInterface) {
             options = options || {};
             //options.url = "http://10.1.0.241:8080/getEpg";
             //options.url = "http://192.168.2.8:8080/getEpg";
-            options.url = this.ServerInterface.getBaseUrl() + "scheduledRecording";
+            options.url = this.serverInterface.getBaseUrl() + "scheduledRecording";
             Backbone.sync(method, model, options);
         },
     });
-    return scheduledRecordingModel;
+    return ScheduledRecordingModel;
 });

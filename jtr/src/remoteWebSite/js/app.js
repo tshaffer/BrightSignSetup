@@ -7,7 +7,7 @@
 define(function() {
     $(document).ready(function () {
         require(['serverInterface','settingsController','channelGuideController','mainMenuController','footerController'],
-            function(ServerInterface,SettingsController,ChannelGuideController,MainMenuController,FooterController) {
+            function(serverInterface,settingsController,channelGuideController,mainMenuController,footerController) {
 
                 // joelnotes - app.js depends on serverInterface. it and all controllers depend on serverAccessor.
                 // app.js invokes set on serverAccessor. controllers get from server accessor
@@ -22,14 +22,14 @@ define(function() {
 
                 console.log("all controllers loaded");
 
-                // instead of doing the following, just invoke the ServerInterface method to get a promise. then wait for all promises to finish
-                SettingsController.retrieveData();
-                ChannelGuideController.retrieveData();
-                var retrieveScheduledRecordingsPromise = ServerInterface.retrieveScheduledRecordings();
+                // instead of doing the following, just invoke the serverInterface method to get a promise. then wait for all promises to finish
+                settingsController.retrieveData();
+                channelGuideController.retrieveData();
+                var retrieveScheduledRecordingsPromise = serverInterface.retrieveScheduledRecordings();
                 // wait until all data is retrieved??
 
-                this.mainMenuController = MainMenuController;
-                this.footerController = FooterController;
+                this.mainMenuController = mainMenuController;
+                this.footerController = footerController;
 
                 this.mainMenuController.show();
                 this.footerController.show();
@@ -50,7 +50,7 @@ define(function() {
                     return false;
                 });
 
-                this.serverInterface = ServerInterface;
+                this.serverInterface = serverInterface;
                 var self = this;
 
                 this.listenTo(this.footerController, "invokeRemote", function(id) {

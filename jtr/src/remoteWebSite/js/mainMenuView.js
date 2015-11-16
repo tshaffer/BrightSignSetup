@@ -3,12 +3,12 @@
  */
 define(function () {
 
-    console.log("creating mainMenuView module");
+    console.log("creating MainMenuView module");
 
-    var mainMenuView = Backbone.View.extend({
+    var MainMenuView = Backbone.View.extend({
 
         initialize: function () {
-            console.log("mainMenuView::initialize");
+            console.log("MainMenuView::initialize");
 
             this.template = _.template($('#homePageTemplate').html());
         },
@@ -23,7 +23,7 @@ define(function () {
         recordedShowsHandler: function (event) {
             // Button clicked, you can access the element that was clicked with event.currentTarget
             console.log("recordedShowsHandler, trigger invokeRecordedShows");
-            // broadcast event - only goes to those objects specifically listening to mainMenuView
+            // broadcast event - only goes to those objects specifically listening to MainMenuView
             this.trigger("invokeRecordedShows");
         },
 
@@ -58,11 +58,5 @@ define(function () {
         pizzaTest: "pizza"
     });
 
-
-    // at this point, mainMenuView.pizzaTest is undefined
-    //var foo = new mainMenuView();
-    // at this point, foo.pizzaTest is valid
-    // implication of this is that 'new' needs to be invoked on mainMenuView.
-
-    return mainMenuView;
+    return MainMenuView;
 });

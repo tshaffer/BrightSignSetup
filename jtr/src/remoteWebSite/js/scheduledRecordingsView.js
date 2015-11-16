@@ -3,9 +3,9 @@
  */
 define(['stationsModel'], function (StationsModel) {
 
-        console.log("creating scheduledRecordingsView module");
+        console.log("creating ScheduledRecordingsView module");
 
-        var scheduledRecordingsView = Backbone.View.extend({
+        var ScheduledRecordingsView = Backbone.View.extend({
 
             stationsModel: StationsModel,
 
@@ -204,5 +204,5 @@ define(['stationsModel'], function (StationsModel) {
 
         });
 
-        return scheduledRecordingsView;
+        return ScheduledRecordingsView;
 });

@@ -3,9 +3,9 @@
  */
 define(function () {
 
-    console.log("creating recordedShowsView module");
+    console.log("creating RecordedShowsView module");
 
-    var recordedShowsView = Backbone.View.extend({
+    var RecordedShowsView = Backbone.View.extend({
 
         el: '#recordedShowsPage',
 
@@ -110,5 +110,5 @@ define(function () {
 
     });
 
-    return recordedShowsView;
+    return RecordedShowsView;
 });

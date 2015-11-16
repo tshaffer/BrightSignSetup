@@ -1,30 +1,30 @@
 /**
  * Created by tedshaffer on 10/31/15.
  */
-define(['serverInterface','recordedShowModel'], function (ServerInterface, RecordedShowModel) {
+define(['serverInterface','recordedShowModel'], function (serverInterface, RecordedShowModel) {
 
-    console.log("creating recordedShowsModel module");
+    console.log("creating RecordedShowsModel module");
 
-    var recordedShowsModel = Backbone.Collection.extend({
+    var RecordedShowsModel = Backbone.Collection.extend({
 
-        ServerInterface: ServerInterface,
+        serverInterface: serverInterface,
 
         urlRoot : '/recordedShows',
         url : '/recordedShows',
         model: RecordedShowModel,
 
         //set: function(models, options) {
-        //    console.log("recordedShowsModel.set invoked");
+        //    console.log("RecordedShowsModel.set invoked");
         //},
 
         sync: function(method, model, options) {
             options = options || {};
             //options.url = "http://10.1.0.241:8080/recordedShows";
             //options.url = "http://192.168.2.8:8080/recordedShows";
-            options.url = this.ServerInterface.getBaseUrl() + "recordedShows";
+            options.url = this.serverInterface.getBaseUrl() + "recordedShows";
             Backbone.sync(method, model, options);
         }
     });
 
-    return recordedShowsModel;
+    return RecordedShowsModel;
 });

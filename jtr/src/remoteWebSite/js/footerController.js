@@ -7,11 +7,11 @@ define(['footerView'], function (FooterView) {
 
     var footerController = {
 
-        footerView: null,
+        FooterView: null,
 
         init: function() {
 
-            this.footerView = new FooterView({
+            this.FooterView = new FooterView({
                 el: $("#footerContainer"),
             });
 
@@ -19,13 +19,13 @@ define(['footerView'], function (FooterView) {
 
             var self = this;
 
-            this.listenTo(this.footerView, "invokeHome", function() {
+            this.listenTo(this.FooterView, "invokeHome", function() {
                 console.log("FooterController:: invokeHome event received");
                 self.trigger("invokeHome");
                 return false;
             });
 
-            this.listenTo(this.footerView, "invokeRemote", function(id) {
+            this.listenTo(this.FooterView, "invokeRemote", function(id) {
                 console.log("FooterController:: invokeRemote event received, id=" + id);
                 self.trigger("invokeRemote", id);
                 return false;
@@ -34,7 +34,7 @@ define(['footerView'], function (FooterView) {
 
         show: function() {
             console.log("footerController:show() invoked");
-            this.footerView.show();
+            this.FooterView.show();
         },
     };
 

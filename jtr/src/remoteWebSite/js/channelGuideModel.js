@@ -1,13 +1,13 @@
 /**
  * Created by tedshaffer on 11/6/15.
  */
-define(['serverInterface'], function (ServerInterface) {
+define(['serverInterface'], function (serverInterface) {
 
-    console.log("creating channelGuideModel module");
+    console.log("creating ChannelGuideModel module");
 
-    var channelGuideModel = Backbone.Model.extend({
+    var ChannelGuideModel = Backbone.Model.extend({
 
-        ServerInterface: ServerInterface,
+        serverInterface: serverInterface,
 
         // accessors
         getProgramScheduleStartDateTime: function() {
@@ -47,7 +47,7 @@ define(['serverInterface'], function (ServerInterface) {
             options = options || {};
             //options.url = "http://10.1.0.241:8080/getEpg";
             //options.url = "http://192.168.2.8:8080/getEpg";
-            options.url = this.ServerInterface.getBaseUrl() + "getEpg";
+            options.url = this.serverInterface.getBaseUrl() + "getEpg";
             Backbone.sync(method, model, options);
         },
 
@@ -218,5 +218,5 @@ define(['serverInterface'], function (ServerInterface) {
             });
         }
     });
-    return channelGuideModel;
+    return ChannelGuideModel;
 });

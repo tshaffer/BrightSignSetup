@@ -2,7 +2,7 @@
  * Created by tedshaffer on 10/31/15.
  */
 //define(['recordedShowController, recordedShowsModel','recordedShowsRecordView'], function (RecordedShowController, RecordedShowsModel, RecordedShowsRecordView) {
-define(['serverInterface','recordedShowsModel','recordedShowsView'], function (ServerInterface, RecordedShowsModel, RecordedShowsView) {
+define(['serverInterface','recordedShowsModel','recordedShowsView'], function (serverInterface, RecordedShowsModel, RecordedShowsView) {
 
     console.log("creating recordedShowsController module");
 
@@ -11,7 +11,7 @@ define(['serverInterface','recordedShowsModel','recordedShowsView'], function (S
         recordedShowsModel: null,
         recordedShowsView: null,
 
-        ServerInterface: ServerInterface,
+        serverInterface: serverInterface,
 
         init: function() {
 
@@ -32,7 +32,7 @@ define(['serverInterface','recordedShowsModel','recordedShowsView'], function (S
                 console.log("RecordedShowsController:: playSelectedShow event received, id = " + recordingId);
 
                 var commandData = { "command": "playRecordedShow", "recordingId": recordingId };
-                var promise = this.ServerInterface.browserCommand(commandData);
+                var promise = this.serverInterface.browserCommand(commandData);
                 promise.then(function() {
                     console.log("browserCommand successfully sent");
                 })
@@ -44,7 +44,7 @@ define(['serverInterface','recordedShowsModel','recordedShowsView'], function (S
                 console.log("RecordedShowsController:: deleteSelectedShow event received, id = " + recordingId);
 
                 var commandData = { "command": "deleteRecordedShow", "recordingId": recordingId };
-                var promise = this.ServerInterface.browserCommand(commandData);
+                var promise = this.serverInterface.browserCommand(commandData);
                 promise.then(function() {
                     console.log("browserCommand successfully sent");
                     self.show();

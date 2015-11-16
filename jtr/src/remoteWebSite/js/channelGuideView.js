@@ -1,13 +1,13 @@
 /**
  * Created by tedshaffer on 11/6/15.
  */
-define(['serverInterface'], function (ServerInterface) {
+define(['serverInterface'], function (serverInterface) {
 
-    console.log("creating channelGuideView module");
+    console.log("creating ChannelGuideView module");
 
-    var channelGuideView = Backbone.View.extend({
+    var ChannelGuideView = Backbone.View.extend({
 
-        ServerInterface: ServerInterface,
+        serverInterface: serverInterface,
 
         channelGuideDisplayStartDateTime: null,
         channelGuideDisplayEndDateTime: null,
@@ -257,10 +257,10 @@ define(['serverInterface'], function (ServerInterface) {
 
             var self = this;
 
-            var promise = this.ServerInterface.retrieveLastTunedChannel();
+            var promise = this.serverInterface.retrieveLastTunedChannel();
             promise.then(function() {
-                console.log("channelGuideView:: lastTunedChannel promise fulfilled");
-                var stationNumber = self.ServerInterface.getLastTunedChannel();
+                console.log("ChannelGuideView:: lastTunedChannel promise fulfilled");
+                var stationNumber = self.serverInterface.getLastTunedChannel();
                 var stationIndex = self.getStationIndexFromName(stationNumber)
                 var stationRow = $("#cgData").children()[stationIndex + 1];
                 self._currentSelectedProgramButton = $(stationRow).children()[0];
@@ -710,5 +710,5 @@ define(['serverInterface'], function (ServerInterface) {
 
     });
 
-    return channelGuideView;
+    return ChannelGuideView;
 });

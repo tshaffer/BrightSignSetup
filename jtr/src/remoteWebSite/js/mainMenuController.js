@@ -2,7 +2,7 @@
  * Created by tedshaffer on 10/27/15.
  */
 define(['mainMenuView','manualRecordController', 'recordedShowsController', 'channelGuideController','scheduledRecordingsController'],
-    function (MainMenuView, ManualRecordController, RecordedShowsController, ChannelGuideController,ScheduledRecordingsController) {
+    function (MainMenuView, manualRecordController, recordedShowsController, channelGuideController,scheduledRecordingsController) {
 
     console.log("creating mainMenuController module");
 
@@ -21,7 +21,7 @@ define(['mainMenuView','manualRecordController', 'recordedShowsController', 'cha
                 console.log("MainMenuController:: invokeRecordedShowsHandler event received");
                 $(this.mainMenuView.el).hide();
 
-                var recordedShowsController = RecordedShowsController;
+                //var recordedShowsController = recordedShowsController;
                 recordedShowsController.show();
             });
 
@@ -29,8 +29,8 @@ define(['mainMenuView','manualRecordController', 'recordedShowsController', 'cha
                 console.log("MainMenuController:: invokeManualRecord event received");
                 $(this.mainMenuView.el).hide();
 
-                // note - do not invoke new on ManualRecordController
-                var manualRecordController = ManualRecordController;
+                // note - do not invoke new on manualRecordController
+                //var manualRecordController = manualRecordController;
                 manualRecordController.show();
             });
 
@@ -38,7 +38,7 @@ define(['mainMenuView','manualRecordController', 'recordedShowsController', 'cha
                 console.log("MainMenuController:: invokeChannelGuide event received");
                 $(this.mainMenuView.el).hide();
 
-                var channelGuideController = ChannelGuideController;
+                //var channelGuideController = channelGuideController;
                 channelGuideController.show();
             });
 
@@ -46,7 +46,7 @@ define(['mainMenuView','manualRecordController', 'recordedShowsController', 'cha
                 console.log("MainMenuController:: invokeScheduledRecordings event received");
                 $(this.mainMenuView.el).hide();
 
-                var scheduledRecordingsController = ScheduledRecordingsController;
+                //var scheduledRecordingsController = scheduledRecordingsController;
                 scheduledRecordingsController.show();
             });
         },

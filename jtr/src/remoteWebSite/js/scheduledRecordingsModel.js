@@ -1,20 +1,20 @@
 /**
  * Created by tedshaffer on 11/14/15.
  */
-define(['serverInterface', 'scheduledRecordingModel'], function (ServerInterface, scheduledRecordingModel) {
+define(['serverInterface', 'scheduledRecordingModel'], function (ServerInterface, ScheduledRecordingModel) {
 
-    console.log("creating scheduledRecordingsModel module");
+    console.log("creating ScheduledRecordingsModel module");
 
-    var scheduledRecordingsModel = Backbone.Collection.extend({
+    var ScheduledRecordingsModel = Backbone.Collection.extend({
 
         ServerInterface: ServerInterface,
 
         urlRoot : '/scheduledRecordings',
         url : '/scheduledRecordings',
-        model: scheduledRecordingModel,
+        model: ScheduledRecordingModel,
 
         //set: function(models, options) {
-        //    console.log("scheduledRecordingsModel.set invoked");
+        //    console.log("ScheduledRecordingsModel.set invoked");
         //},
 
         sync: function(method, model, options) {
@@ -26,5 +26,5 @@ define(['serverInterface', 'scheduledRecordingModel'], function (ServerInterface
         }
     });
 
-    return scheduledRecordingsModel;
+    return ScheduledRecordingsModel;
 });

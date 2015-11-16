@@ -1,13 +1,13 @@
 /**
  * Created by tedshaffer on 10/27/15.
  */
-define(['serverInterface'], function (ServerInterface) {
+define(['serverInterface'], function (serverInterface) {
 
-    console.log("creating manualRecordModel module");
+    console.log("creating ManualRecordModel module");
 
-    var manualRecordModel = Backbone.Model.extend({
+    var ManualRecordModel = Backbone.Model.extend({
 
-        ServerInterface: ServerInterface,
+        serverInterface: serverInterface,
 
         urlRoot : '/manualRecording',
 
@@ -29,7 +29,7 @@ define(['serverInterface'], function (ServerInterface) {
         //    options = options || {};
         //    //options.url = "http://10.1.0.241:8080/getEpg";
         //    //options.url = "http://192.168.2.8:8080/getEpg";
-        //    options.url = this.ServerInterface.getBaseUrl() + "manualRecording";
+        //    options.url = this.serverInterface.getBaseUrl() + "manualRecording";
         //    Backbone.sync(method, model, options);
         //},
 
@@ -53,5 +53,5 @@ define(['serverInterface'], function (ServerInterface) {
     //delete → DELETE   /collection/id
 
     });
-    return manualRecordModel;
+    return ManualRecordModel;
 });

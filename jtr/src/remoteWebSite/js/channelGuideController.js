@@ -15,7 +15,6 @@ define(['stationsModel', 'channelGuideModel','channelGuideView','cgPopupView'], 
         init: function() {
 
             this.stationsModel = StationsModel.getInstance();
-            //this.stationsModel = new StationsModel({});
 
             this.channelGuideModel = new ChannelGuideModel({
             });

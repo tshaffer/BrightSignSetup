@@ -3,9 +3,9 @@
  */
 define(function () {
 
-    console.log("creating footerView module");
+    console.log("creating FooterView module");
 
-    var footerView = Backbone.View.extend({
+    var FooterView = Backbone.View.extend({
 
         initialize: function () {
             console.log("FooterView::initialize");
@@ -34,12 +34,12 @@ define(function () {
             //    self.setElementVisibility("#manualRecordChannelDiv", false);
             //});
 
-            $("#footerView").css("display", "block");
+            $("#FooterView").css("display", "block");
 
             var self = this;
 
             //$("#btnHome").click(function() {
-            //    console.log("footerView::btnHome clicked");
+            //    console.log("FooterView::btnHome clicked");
             //    self.trigger("invokeHome");
             //    return false;
             //})
@@ -59,7 +59,7 @@ define(function () {
         },
 
         invokeHomeHandler: function(event) {
-            console.log("footerView::invokeHomHandler invoked");
+            console.log("FooterView::invokeHomHandler invoked");
             this.trigger("invokeHome");
             return false;
         },
@@ -72,5 +72,5 @@ define(function () {
 
     });
 
-    return footerView;
+    return FooterView;
 });

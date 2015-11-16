@@ -3,9 +3,9 @@
  */
 define(function () {
 
-    console.log("creating manualRecordView module");
+    console.log("creating ManualRecordView module");
 
-    var manualRecordView = Backbone.View.extend({
+    var ManualRecordView = Backbone.View.extend({
 
         initialize: function () {
             console.log("ManualRecordView::initialize");
@@ -178,5 +178,5 @@ define(function () {
 
     });
 
-    return manualRecordView;
+    return ManualRecordView;
 });

@@ -1,13 +1,13 @@
 /**
  * Created by tedshaffer on 11/13/15.
  */
-define(['serverInterface'], function (ServerInterface) {
+define(['serverInterface'], function (serverInterface) {
 
-    console.log("creating settingsModel module");
+    console.log("creating SettingsModel module");
 
-    var settingsModel = Backbone.Model.extend({
+    var SettingsModel = Backbone.Model.extend({
 
-        ServerInterface: ServerInterface,
+        serverInterface: serverInterface,
 
         urlRoot : '/getSettings',
 
@@ -18,7 +18,7 @@ define(['serverInterface'], function (ServerInterface) {
 
         sync: function(method, model, options) {
             options = options || {};
-            options.url = this.ServerInterface.getBaseUrl() + "getSettings";
+            options.url = this.serverInterface.getBaseUrl() + "getSettings";
             Backbone.sync(method, model, options);
         },
 
@@ -48,5 +48,5 @@ define(['serverInterface'], function (ServerInterface) {
         }
     });
 
-    return settingsModel;
+    return SettingsModel;
 });

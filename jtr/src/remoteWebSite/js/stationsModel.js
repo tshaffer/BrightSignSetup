@@ -1,13 +1,13 @@
 /**
  * Created by tedshaffer on 11/7/15.
  */
-define(['serverInterface'], function (ServerInterface) {
+define(['serverInterface'], function (serverInterface) {
 
     console.log("creating stationsModel module");
 
     var StationsModel = Backbone.Model.extend({
 
-        ServerInterface: ServerInterface,
+        serverInterface: serverInterface,
 
         urlRoot : '/getStations',
 
@@ -17,7 +17,7 @@ define(['serverInterface'], function (ServerInterface) {
             options = options || {};
             //options.url = "http://10.1.0.241:8080/getStations";
             //options.url = "http://192.168.2.8:8080/getStations";
-            options.url = this.ServerInterface.getBaseUrl() + "getStations";
+            options.url = this.serverInterface.getBaseUrl() + "getStations";
             Backbone.sync(method, model, options);
         },
 
