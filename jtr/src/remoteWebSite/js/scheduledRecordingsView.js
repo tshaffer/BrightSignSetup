@@ -86,8 +86,8 @@ define(['stationsModel'], function (StationsModel) {
                     var hoursLbl = numHours.toString();
 
                     // JTRTODO - Backbone - need to investigate
-                    //if (hoursLbl.length == 1) hoursLbl = "&nbsp" + hoursLbl;
-                    if (hoursLbl.length == 1) hoursLbl = hoursLbl;
+                    if (hoursLbl.length == 1) hoursLbl = "&nbsp" + hoursLbl;
+                    //if (hoursLbl.length == 1) hoursLbl = hoursLbl;
 
                     var minutesLbl = twoDigitFormat(date.getMinutes().toString());
 
