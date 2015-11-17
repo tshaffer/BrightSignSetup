@@ -1,8 +1,8 @@
 /**
  * Created by tedshaffer on 10/27/15.
  */
-define(['mainMenuView','manualRecordController', 'recordedShowsController', 'channelGuideController','scheduledRecordingsController'],
-    function (MainMenuView, manualRecordController, recordedShowsController, channelGuideController,scheduledRecordingsController) {
+define(['mainMenuView','manualRecordController', 'recordedShowsController', 'channelGuideController','scheduledRecordingsController','settingsController'],
+    function (MainMenuView, manualRecordController, recordedShowsController, channelGuideController,scheduledRecordingsController,settingsController) {
 
     console.log("creating mainMenuController module");
 
@@ -49,6 +49,14 @@ define(['mainMenuView','manualRecordController', 'recordedShowsController', 'cha
                 //var scheduledRecordingsController = scheduledRecordingsController;
                 scheduledRecordingsController.show();
             });
+
+            this.listenTo(this.mainMenuView, "invokeSettings", function () {
+                console.log("MainMenuController:: invokeSettings event received");
+                $(this.mainMenuView.el).hide();
+
+                settingsController.show();
+            });
+
         },
 
         show: function() {

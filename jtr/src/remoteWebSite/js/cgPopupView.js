@@ -51,7 +51,7 @@ define(['serverInterface','settingsModel'], function (serverInterface, SettingsM
             console.log("cgPopupView::initialize");
             //this.template = _.template($('#channelGuideTemplate').html());
 
-            this.settingsModel = new SettingsModel();
+            this.settingsModel = SettingsModel.getInstance();
 
             this.cgPopupEpisodeHandlers = [this.cgRecordSelectedProgram, this.cgRecordProgramSetOptions, this.cgRecordProgramViewUpcomingEpisodes, this.cgTuneFromClient, this.cgModalClose];
             this.cgPopupScheduledProgramHandlers = [this.cgCancelScheduledRecording, this.cgChangeScheduledRecordingOptions, this.cgScheduledRecordingViewUpcomingEpisodes, this.cgScheduledRecordingTune, this.cgScheduledRecordingClose];
@@ -599,26 +599,6 @@ define(['serverInterface','settingsModel'], function (serverInterface, SettingsM
             console.log("cgScheduledRecordingClose invoked");
         },
 
-        //// TODO - don't think this will work on remoteWebSite - postMessage is a device method
-        //cgTune: function () {
-        //
-        //    // enter live video
-        //    var event = {};
-        //    event["EventType"] = "TUNE_LIVE_VIDEO";
-        //    debugger;
-        //    postMessage(event);
-        //
-        //    // tune to selected channel
-        //    var stationName = this.getStationFromId(this.cgSelectedStationId);
-        //    stationName = stationName.replace(".", "-");
-        //    event["EventType"] = "TUNE_LIVE_VIDEO_CHANNEL";
-        //    event["EnteredChannel"] = stationName;
-        //    debugger;
-        //    postMessage(event);
-        //
-        //    return "tune";
-        //},
-
         cgModalClose: function () {
             // don't need to do anything other than close the dialog
             return "close";
@@ -640,36 +620,6 @@ define(['serverInterface','settingsModel'], function (serverInterface, SettingsM
             //return this.cgRecordProgram();
             return this.cgRecordProgramFromClient(true);
         },
-
-        // EXTENDOMATIC TODO - do the work associated with extendomatic here
-        // TODO - don't think this will work on remoteWebSite - postMessage is a device method
-        //cgRecordProgram: function () {
-        //
-        //    var event = {};
-        //    event["EventType"] = "ADD_RECORD";
-        //    event["DateTime"] = this.cgSelectedProgram.date;
-        //    event["Title"] = this.cgSelectedProgram.title;
-        //    event["Duration"] = this.cgSelectedProgram.duration;
-        //    event["InputSource"] = "tuner";
-        //    event["ScheduledSeriesRecordingId"] = this.cgSelectedProgram.scheduledSeriesRecordingId;
-        //    event["StartTimeOffset"] = 0;
-        //    event["StopTimeOffset"] = 0;
-        //
-        //    var stationName = this.getStationFromId(this.cgSelectedStationId);
-        //
-        //    stationName = stationName.replace(".", "-");
-        //
-        //    event["Channel"] = stationName;
-        //
-        //    event["RecordingBitRate"] = this.settingsModel.recordingBitRate;
-        //    event["SegmentRecording"] = this.settingsModel.segmentRecordings;
-        //
-        //    // REQUIREDTODO
-        //    debugger;
-        //    postMessage(event);
-        //
-        //    return "record";
-        //},
 
         cgRecordOptionsNextEarlyStartTime: function () {
             console.log("cgRecordOptionsNextEarlyStartTime invoked");

@@ -104,9 +104,13 @@ Sub InitializeServer()
 	' settings
 	m.getSettingsAA =					{ HandleEvent: getSettings, mVar: m }
 	m.localServer.AddGetFromEvent({ url_path: "/getSettings", user_data: m.getSettingsAA })
+	m.localServer.AddGetFromEvent({ url_path: "/settings", user_data: m.getSettingsAA })
 	m.setSettingsAA =					{ HandleEvent: setSettings, mVar: m }
 	m.localServer.AddGetFromEvent({ url_path: "/setSettings", user_data: m.setSettingsAA })
-				
+
+	m.settingsPostedAA =	{ HandleEvent: settingsPosted, mVar: m }
+	m.localServer.AddPostToString({ url_path: "/settings", user_data: m.settingsPostedAA  })
+
 	' epg
 	m.getEpgAA =					{ HandleEvent: getEpg, mVar: m }
 	m.localServer.AddGetFromEvent({ url_path: "/getEpg", user_data: m.getEpgAA })
@@ -908,6 +912,20 @@ Sub getSettings(userData as Object, e as Object)
     e.AddResponseHeader("Access-Control-Allow-Origin", "*")
     e.SetResponseBodyString(json)
     e.SendResponse(200)
+
+End Sub
+
+
+Sub settingsPosted(userData as Object, e as Object)
+
+    mVar = userData.mVar
+
+	requestParams = ParseJson(e.GetRequestBodyString())
+
+	mVar.SetDBSettings(requestParams.RecordingBitRate, requestParams.SegmentRecordings)
+
+	e.SetResponseBodyString("OK")
+	e.SendResponse(200)
 
 End Sub
 

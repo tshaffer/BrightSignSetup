@@ -71,6 +71,7 @@
         </form>
     </script>
 
+
     <script id="recordedShowTemplate" type="text/x-handlebars-template">
 
         <!-- recordedShow is looked up on the global context, the one we pass to the compiled template -->
@@ -161,6 +162,26 @@
 
         {{/each}}
 
+    </script>
+
+    <script id="settingsTemplate" type="text/x-handlebars-template" >
+        <h3>Settings</h3>
+        <form class="form-horizontal">
+            <div class="form-group">
+                <label class="col-sm-4 control-label">Recording Quality</label>
+                <div class="col-sm-4 btn-group">
+                    <label class="radio-inline recordingQuality"><input type="radio" name="recordingQuality" value="4" id="recordingQualityLow" {{lowChecked}}>Low</label>
+                    <label class="radio-inline recordingQuality"><input type="radio" name="recordingQuality" value="6" id="recordingQualityMedium" {{mediumChecked}}>Medium</label>
+                    <label class="radio-inline recordingQuality"><input type="radio" name="recordingQuality" value="10" id="recordingQualityHigh" {{highChecked}}>High</label>
+                </div>
+            </div>
+            <div class="form-group">
+                <label for="segmentRecordingsCheckBox" class="col-sm-4 control-label">Segment Recordings</label>
+                <div class="col-sm-4">
+                    <input type="checkbox" id="segmentRecordingsCheckBox" {{segmentRecordings}} >
+                </div>
+            </div>
+        </form>
     </script>
 
     <script id="homePageTemplate" type="text/x-handlebars-template">
@@ -331,6 +352,10 @@
                 </tbody>
             </table><br><br>
         </div>
+
+        <div id="settingsPage" style="display: none;">
+        </div>
+
 
     </div>
 

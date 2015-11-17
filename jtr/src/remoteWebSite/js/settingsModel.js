@@ -6,8 +6,8 @@ define(['serverInterface'], function (serverInterface) {
     console.log("creating SettingsModel module");
 
     var SettingsModel = Backbone.Model.extend({
-
-        urlRoot : '/getSettings',
+        
+        urlRoot: '/settings',
 
         defaults: {
             RecordingBitRate: 6,
@@ -16,7 +16,7 @@ define(['serverInterface'], function (serverInterface) {
 
         sync: function(method, model, options) {
             options = options || {};
-            options.url = serverInterface.getBaseUrl() + "getSettings";
+            options.url = serverInterface.getBaseUrl() + "settings";
             Backbone.sync(method, model, options);
         },
 
@@ -41,10 +41,30 @@ define(['serverInterface'], function (serverInterface) {
             return this.get("RecordingBitRate");
         },
 
+        setRecordingBitRate: function(recordingBitRate) {
+            this.set('RecordingBitRate', recordingBitRate);
+            this.save();
+        },
+
         getSegmentRecordings: function() {
             return this.get("SegmentRecordings");
+        },
+
+        setSegmentRecordings: function(segmentRecordings) {
+            this.set('SegmentRecordings', segmentRecordings)
+            this.save();
         }
     });
 
-    return SettingsModel;
+    return {
+        instance: null,
+
+        getInstance: function(){
+            if(this.instance === null){
+                console.log("settingsModel instantiation");
+                this.instance = new SettingsModel();
+            }
+            return this.instance;
+        }
+    };
 });

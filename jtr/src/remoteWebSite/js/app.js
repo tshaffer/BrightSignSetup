@@ -29,6 +29,7 @@ define(function() {
                     $("#channelGuidePage").css("display", "none");
                     $("#recordedShowsPage").css("display", "none");
                     $("#scheduledRecordingsPage").css("display", "none");
+                    $("#settingsPage").css("display", "none");
 
                     this.mainMenuController.show();
 

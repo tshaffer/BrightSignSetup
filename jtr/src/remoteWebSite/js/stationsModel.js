@@ -65,8 +65,6 @@ define(['serverInterface'], function (serverInterface) {
         instance: null,
 
         getInstance: function(){
-            // summary:
-            //      Gets an instance of the singleton. It is better to use
             if(this.instance === null){
                 console.log("stationsModel instantiation");
                 this.instance = new StationsModel();

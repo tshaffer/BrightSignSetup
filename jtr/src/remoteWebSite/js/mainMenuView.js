@@ -17,7 +17,8 @@ define(function () {
             "click #recordedShows": "recordedShowsHandler",
             "click #manualRecord": "manualRecordHandler",
             "click #channelGuideId": "channelGuideHandler",
-            "click #scheduledRecordings": "scheduledRecordingsHandler"
+            "click #scheduledRecordings": "scheduledRecordingsHandler",
+            "click #settings": "settingsHandler"
         },
 
         recordedShowsHandler: function (event) {
@@ -40,6 +41,11 @@ define(function () {
         scheduledRecordingsHandler: function (event) {
             console.log("scheduledRecordingsHandler, trigger invokeScheduledRecordings");
             this.trigger("invokeScheduledRecordings");
+        },
+
+        settingsHandler: function (event) {
+            console.log("settingsHandler, trigger invokeSettings");
+            this.trigger("invokeSettings");
         },
 
         show: function() {
