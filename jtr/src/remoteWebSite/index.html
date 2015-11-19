@@ -71,6 +71,42 @@
         </form>
     </script>
 
+    <script id="recordNowTemplate" type="text/x-handlebars-template">
+        <h3>Record Now</h3>
+        <form class="form-horizontal">
+            <div class="form-group form-group-sm">
+                <label for="recordNowTitle" class="col-sm-4 control-label">Title (optional)</label>
+                <div class="col-sm-4">
+                    <input type="text" class="form-control input-sm" id="recordNowTitle" placeholder="">
+                </div>
+            </div>
+            <div class="form-group">
+                <label for="recordNowDuration" class="col-sm-4 control-label">Duration (mins)</label>
+                <div class="col-sm-4">
+                    <input type="text" class="form-control input-sm" id="recordNowDuration" placeholder="">
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="col-sm-4 control-label">Input source</label>
+                <div class="col-sm-4 btn-group">
+                    <label class="radio-inline"><input type="radio" id="rbRecordNowTuner" name="recordNowInputSource" value="tuner" checked>Tuner</label>
+                    <label class="radio-inline"><input type="radio" id="rbRecordNowRoku" name="recordNowInputSource" value="roku">Roku</label>
+                    <label class="radio-inline"><input type="radio" id="rbRecordNowTivo" name="recordNowInputSource" value="tivo">Tivo</label>
+                </div>
+            </div>
+            <div id="recordNowChannelDiv" class="form-group">
+                <label for="recordNowChannel" class="col-sm-4 control-label">Channel</label>
+                <div class="col-sm-4">
+                    <input type="text" class="form-control input-sm" id="recordNowChannel" value="5">
+                </div>
+            </div>
+            <div class="form-group">
+                <div class="col-sm-offset-4 col-sm-4">
+                    <button id="btnRecordNow" class="btn btn-default">Record Now</button>
+                </div>
+            </div>
+        </form>
+    </script>
 
     <script id="recordedShowTemplate" type="text/x-handlebars-template">
 
@@ -318,6 +354,8 @@
 
         <div id="homePage" style="display:none">
         </div>
+
+        <div id="recordNowPage" style="display:none"></div>
 
         <div id="manualRecordPage" style="display:none">
         </div>

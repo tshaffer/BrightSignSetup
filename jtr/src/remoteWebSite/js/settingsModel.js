@@ -6,7 +6,7 @@ define(['serverInterface'], function (serverInterface) {
     console.log("creating SettingsModel module");
 
     var SettingsModel = Backbone.Model.extend({
-        
+
         urlRoot: '/settings',
 
         defaults: {

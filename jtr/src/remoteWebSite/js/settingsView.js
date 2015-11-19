@@ -9,8 +9,6 @@ define(function () {
 
         initialize: function () {
             console.log("SettingsView::initialize");
-            this.template = _.template($('#settingsTemplate').html());
-            this.template = _.template($('#homePageTemplate').html());
         },
 
         show: function() {

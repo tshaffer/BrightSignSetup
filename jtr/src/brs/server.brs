@@ -6,6 +6,9 @@ Sub InitializeServer()
 	m.manualRecordPostedAA =	{ HandleEvent: setManualRecording, mVar: m }
 	m.localServer.AddPostToString({ url_path: "/manualRecording", user_data: m.manualRecordPostedAA  })
 
+	m.recordNowPostedAA =	{ HandleEvent: setRecordNow, mVar: m }
+	m.localServer.AddPostToString({ url_path: "/recordNow", user_data: m.recordNowPostedAA  })
+
 	' commands sent from the browser or another app; commands get routed to device js for injection into the HSM framework
 	m.browserCommandAA =				{ HandleEvent: browserCommand, mVar: m}
 	m.localServer.AddGetFromEvent({ url_path: "/browserCommand", user_data: m.browserCommandAA })
@@ -247,6 +250,44 @@ Sub setManualRecording(userData as Object, e as Object)
     e.SendResponse(200)
 
 End Sub
+
+
+Sub setRecordNow(userData as Object, e as Object)
+
+	print "setRecordNow endpoint invoked - post message to javascript"
+
+    mVar = userData.mVar
+
+	requestParams = ParseJson(e.GetRequestBodyString())
+
+	title$ = requestParams["title"]
+	duration% = int(val(requestParams["duration"]))
+	inputSource$ = requestParams["inputSource"]
+	channel$ = requestParams["channel"]
+
+	recordNowMessage = CreateObject("roAssociativeArray")
+	recordNowMessage["command"] = "recordNow"
+	recordNowMessage["title"] = title$
+	recordNowMessage["duration"] = duration%
+	recordNowMessage["inputSource"] = inputSource$
+	recordNowMessage["channel"] = channel$
+	recordNowMessage["recordingBitRate"] = 6
+	recordNowMessage["segmentRecording"] = 0
+	recordNowMessage["scheduledSeriesRecordingId"] = -1
+	recordNowMessage["startTimeOffset"] = 0
+	recordNowMessage["stopTimeOffset"] = 0
+	ok = mVar.htmlWidget.PostJSMessage(recordNowMessage)
+	if not ok then
+		stop
+	endif
+
+    e.AddResponseHeader("Content-type", "text/plain")
+    e.AddResponseHeader("Access-Control-Allow-Origin", "*")
+    e.SetResponseBodyString("herro Joel")
+    e.SendResponse(200)
+
+End Sub
+
 
 
 ' endpoint invoked when browserCommand is invoked from a browser or external app

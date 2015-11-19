@@ -15,6 +15,7 @@ define(function () {
 
         events: {
             "click #recordedShows": "recordedShowsHandler",
+            "click #recordNow": "recordNowHandler",
             "click #manualRecord": "manualRecordHandler",
             "click #channelGuideId": "channelGuideHandler",
             "click #scheduledRecordings": "scheduledRecordingsHandler",
@@ -26,6 +27,11 @@ define(function () {
             console.log("recordedShowsHandler, trigger invokeRecordedShows");
             // broadcast event - only goes to those objects specifically listening to MainMenuView
             this.trigger("invokeRecordedShows");
+        },
+
+        recordNowHandler: function (event) {
+            console.log("recordNowHandler, trigger invokeRecordNow");
+            this.trigger("invokeRecordNow");
         },
 
         manualRecordHandler: function (event) {

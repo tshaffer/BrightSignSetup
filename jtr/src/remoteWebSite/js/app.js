@@ -26,6 +26,7 @@ define(function() {
 
                     // erase all main div's
                     $("#manualRecordPage").css("display", "none");
+                    $("#recordNowPage").css("display", "none");
                     $("#channelGuidePage").css("display", "none");
                     $("#recordedShowsPage").css("display", "none");
                     $("#scheduledRecordingsPage").css("display", "none");
