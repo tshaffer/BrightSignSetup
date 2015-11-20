@@ -52,7 +52,9 @@ define(['serverInterface','settingsModel'], function (serverInterface, SettingsM
             //this.template = _.template($('#channelGuideTemplate').html());
 
             this.settingsModel = SettingsModel.getInstance();
-
+            this.listenTo(this.settingsModel, "settingsUpdated", function() {
+               console.log("settingsUpdated");
+            });
             this.cgPopupEpisodeHandlers = [this.cgRecordSelectedProgram, this.cgRecordProgramSetOptions, this.cgRecordProgramViewUpcomingEpisodes, this.cgTuneFromClient, this.cgModalClose];
             this.cgPopupScheduledProgramHandlers = [this.cgCancelScheduledRecording, this.cgChangeScheduledRecordingOptions, this.cgScheduledRecordingViewUpcomingEpisodes, this.cgScheduledRecordingTune, this.cgScheduledRecordingClose];
             this.cgPopupSeriesHandlers = [this.cgRecordSelectedProgram, this.cgRecordProgramSetOptions, this.cgRecordSelectedSeries, this.cgTuneFromClient, this.cgModalClose];

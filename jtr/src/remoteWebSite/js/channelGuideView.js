@@ -152,7 +152,8 @@ define(['serverInterface'], function (serverInterface) {
                 // reduce the duration of the first show by this amount (time the show would have already been airing as of this time)
                 timeDiffInMinutes = msecToMinutes(self.channelGuideDisplayStartDateTime - new Date(showToDisplay.date));
 
-                self.programUIElementIndices = [];
+                var programStationData = self.model.getProgramStationData(station.StationId);
+                programStationData.programUIElementIndices = [];
 
                 var slotIndex = 0;
                 var uiElementCount = 0;
@@ -192,7 +193,7 @@ define(['serverInterface'], function (serverInterface) {
                     var programEndTime = minutesAlreadyDisplayed + durationInMinutes;   // offset in minutes
                     var slotTime = slotIndex * 30;
                     while (programStartTime <= slotTime && slotTime < programEndTime) {
-                        self.programUIElementIndices[slotIndex] = uiElementCount;
+                        programStationData.programUIElementIndices[slotIndex] = uiElementCount;
                         slotIndex++;
                         slotTime = slotIndex * 30;
                     }
@@ -300,7 +301,8 @@ define(['serverInterface'], function (serverInterface) {
             var station = this.stations[stationIndex];
             var stationId = station.StationId;
 
-            var buttonIndex = this.programUIElementIndices[slotIndex];
+            var programStationData = this.model.getProgramStationData(stationId);
+            var buttonIndex = programStationData.programUIElementIndices[slotIndex];
 
             // get the array of program buttons for this station
             var cgProgramsInStationRowElement = "#cgStation" + stationIndex.toString() + "Data";

@@ -12,6 +12,10 @@ define(['serverInterface'], function (serverInterface) {
             return this.epgProgramScheduleStartDateTime;
         },
 
+        getProgramStationData: function(stationId) {
+            return this.epgProgramSchedule[stationId];
+        },
+
         getProgramSlotIndices: function(stationId) {
             var programStationData = this.epgProgramSchedule[stationId];
             var programSlotIndices = programStationData.initialShowsByTimeSlot;
@@ -43,8 +47,6 @@ define(['serverInterface'], function (serverInterface) {
 
         sync: function(method, model, options) {
             options = options || {};
-            //options.url = "http://10.1.0.241:8080/getEpg";
-            //options.url = "http://192.168.2.8:8080/getEpg";
             options.url = serverInterface.getBaseUrl() + "getEpg";
             Backbone.sync(method, model, options);
         },

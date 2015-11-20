@@ -139,7 +139,7 @@ define(function () {
 
             // check to see if recording is in the past
             //var dtEndOfRecording = addMinutes(dateObj, duration);
-            var dtEndOfRecording = dateObj.addMinutes(duration);
+            var dtEndOfRecording = new Date(dateObj).addMinutes(duration);
             var now = new Date();
 
             var millisecondsUntilEndOfRecording = dtEndOfRecording - now;

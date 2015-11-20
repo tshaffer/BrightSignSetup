@@ -48,6 +48,10 @@ define(['serverInterface'], function (serverInterface) {
         getStationFromAtsc: function (atscMajor, atscMinor) {
             var foundStation = null;
 
+            if (typeof atscMinor == 'undefined') {
+                atscMinor = '1';
+            }
+
             $.each(this.stations, function (stationIndex, station) {
                 if (station.AtscMajor == atscMajor && station.AtscMinor == atscMinor) {
                     foundStation = station;

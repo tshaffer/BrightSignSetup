@@ -7,8 +7,6 @@ define(['serverInterface'], function (serverInterface) {
 
     var RecordedShowModel = Backbone.Model.extend({
 
-        urlRoot : '/recordedShow',
-
         defaults: {
             recordingId: -1,
             title: '',
@@ -20,21 +18,6 @@ define(['serverInterface'], function (serverInterface) {
             hlsSegmentationComplete: 0,
             hlsUrl: ''
         },
-
-        sync: function(method, model, options) {
-            options = options || {};
-            //options.url = "http://10.1.0.241:8080/getEpg";
-            //options.url = "http://192.168.2.8:8080/getEpg";
-            options.url = serverInterface.getBaseUrl() + "recordedShow";
-            Backbone.sync(method, model, options);
-        },
-
-        //save: function(attributes, options) {
-        //    debugger;
-        //}
-        //sync: function (method, model, options) {
-        //    //debugger;
-        //}
 
         //GET  /books/ .... collection.fetch();
         //POST /books/ .... collection.create();

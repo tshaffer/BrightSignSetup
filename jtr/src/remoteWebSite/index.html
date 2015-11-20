@@ -25,7 +25,7 @@
     <script type="text/template" id="manualRecordTemplate">
         <h3>Create a Manual Recording</h3>
         <form class="form-horizontal">
-            <div class="form-group form-group-sm">
+            <div class="form-group">
                 <label for="manualRecordTitle" class="col-sm-4 control-label">Title (optional)</label>
                 <div class="col-sm-4">
                     <input type="text" class="form-control input-sm" id="manualRecordTitle" placeholder="">
@@ -74,7 +74,7 @@
     <script id="recordNowTemplate" type="text/x-handlebars-template">
         <h3>Record Now</h3>
         <form class="form-horizontal">
-            <div class="form-group form-group-sm">
+            <div class="form-group">
                 <label for="recordNowTitle" class="col-sm-4 control-label">Title (optional)</label>
                 <div class="col-sm-4">
                     <input type="text" class="form-control input-sm" id="recordNowTitle" placeholder="">
@@ -116,15 +116,15 @@
 
         <!-- Here the context is each recordedShow. So we can access its properties directly: -->
         <tr>
-            <!--<td><button type='button' class='btn btn-default recorded-shows-icon' id='recording" + jtrRecording.RecordingId.toString() + "' aria-label='Left Align'><span class='glyphicon glyphicon-play' aria-hidden='true'></span></button></td>-->
             <td><button type='button' class='btn btn-default recorded-shows-icon' id='{{PlayRecordingId}}' aria-label='Left Align'><span class='glyphicon glyphicon-play' aria-hidden='true'></span></button></td>
-            <td><button type='button' class='btn btn-default recorded-shows-icon' id='{{DeleteRecordingId}}' aria-label='Left Align'><span class='glyphicon glyphicon-remove' aria-hidden='true'></span></button></td> +
-            <!--"<td><button type='button' class='btn btn-default recorded-shows-icon' id='repeat" + jtrRecording.RecordingId.toString() + "' aria-label='Left Align'><span class='glyphicon glyphicon-repeat' aria-hidden='true'></span></button></td>" +-->
-            <!--"<td><button type='button' class='btn btn-default recorded-shows-icon streamIcon' id='stream" + jtrRecording.RecordingId.toString() + "' aria-label='Left Align'><span class='glyphicon glyphicon-random' aria-hidden='true'></span></button></td>" +-->
-            <!--"<td><a class='downloadIcon' id='download' href='" + jtrRecording.path + "' download='" + jtrRecording.Title + "'><span class='glyphicon glyphicon-cloud-download' aria-hidden='true'></span></a></td>" +-->
+            <td><button type='button' class='btn btn-default recorded-shows-icon' id='{{DeleteRecordingId}}' aria-label='Left Align'><span class='glyphicon glyphicon-remove' aria-hidden='true'></span></button></td>
+            <td><button type='button' class='btn btn-default recorded-shows-icon' id='{{RepeatRecordingId}}' aria-label='Left Align'><span class='glyphicon glyphicon-repeat' aria-hidden='true'></span></button></td>
+            <td><button type='button' class='btn btn-default recorded-shows-icon streamIcon' id='{{StreamRecordingId}}' aria-label='Left Align'><span class='glyphicon glyphicon-random' aria-hidden='true'></span></button></td>
+            <!--<td><a class='downloadIcon' id='download' href='" + jtrRecording.path + "' download='" + jtrRecording.Title + "'><span class='glyphicon glyphicon-cloud-download' aria-hidden='true'></span></a></td>" +-->
+            <td><a class='downloadIcon' id='download' href='{{RecordingPath}}' download='{{Title}}'><span class='glyphicon glyphicon-cloud-download' aria-hidden='true'></span></a></td>
             <td>{{Title}}</td>
             <td>{{StartDateTime}}</td>
-            <!--"<td><button type='button' class='btn btn-default recorded-shows-icon' id='info" + jtrRecording.RecordingId.toString() + "' aria-label='Left Align'><span class='glyphicon glyphicon-info-sign' aria-hidden='true'></span></button></td>" +-->
+            <td><button type='button' class='btn btn-default recorded-shows-icon' id='{{InfoRecordingId}}' aria-label='Left Align'><span class='glyphicon glyphicon-info-sign' aria-hidden='true'></span></button></td>
             <td>{{Position}}</td>
         </tr>
 
@@ -369,12 +369,12 @@
                 <tr>
                     <th class="play"></th>
                     <th class="delete"></th>
-                    <!--<th class="repeat"></th>-->
-                    <!--<th class="stream"></th>-->
-                    <!--<th class="download"></th>-->
+                    <th class="repeat"></th>
+                    <th class="stream"></th>
+                    <th class="download"></th>
                     <th class="replayGuideTitle">Title</th>
                     <th class="recorded">Recorded</th>
-                    <!--<th class="showInfo">Info</th>-->
+                    <th class="showInfo">Info</th>
                     <th class="position">Position</th>
                 </tr>
                 </thead>

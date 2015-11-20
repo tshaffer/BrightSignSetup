@@ -44,6 +44,7 @@ define(['serverInterface'], function (serverInterface) {
         setRecordingBitRate: function(recordingBitRate) {
             this.set('RecordingBitRate', recordingBitRate);
             this.save();
+            this.trigger("settingsUpdated")
         },
 
         getSegmentRecordings: function() {
@@ -53,6 +54,7 @@ define(['serverInterface'], function (serverInterface) {
         setSegmentRecordings: function(segmentRecordings) {
             this.set('SegmentRecordings', segmentRecordings)
             this.save();
+            this.trigger("settingsUpdated")
         }
     });
 

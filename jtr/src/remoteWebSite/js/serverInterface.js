@@ -7,8 +7,8 @@ define(function () {
 
     var serverInterface = {
 
-        //baseURL : "http://192.168.0.105:8080/",
-        baseURL : "http://10.1.0.241:8080/",
+        baseURL : "http://192.168.0.105:8080/",
+        //baseURL : "http://10.1.0.241:8080/",
 
         lastTunedChannelResult: null,
 
@@ -187,37 +187,6 @@ define(function () {
                     });
             });
         },
-
-        retrieveSettings: function () {
-
-            var aUrl = this.baseURL + "getSettings";
-
-            var self = this;
-
-            return new Promise(function(resolve, reject) {
-
-                // get settings from db
-                $.get(aUrl, {})
-                    .done(function (result) {
-                        console.log("XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX retrieveSettings success ************************************");
-                        self._settingsRetrieved = true;
-                        self._settings.recordingBitRate = result.RecordingBitRate;
-                        self._settings.segmentRecordings = result.SegmentRecordings;
-                        resolve();
-                    })
-                    .fail(function (jqXHR, textStatus, errorThrown) {
-                        reject();
-                        debugger;
-                        console.log("getSettings failure");
-                    })
-                    .always(function () {
-                    });
-            })
-        },
-
-        getSettings: function() {
-            return this._settings;
-        }
     };
 
     //serverInterface.init();

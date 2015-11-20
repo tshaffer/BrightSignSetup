@@ -63,23 +63,24 @@ define(function () {
             //
             //var inputSource = this.model.get('inputSource');
             //this.setElementVisibility("#manualRecordChannelDiv", inputSource == 'tuner');
-            //
-            //$("#manualRecordTitle").focus();
-            //
-            //// handlers
-            //var self = this;
-            //$("#rbManualRecordTuner").change(function () {
-            //    self.setElementVisibility("#manualRecordChannelDiv", true);
-            //});
-            //
-            //$("#rbManualRecordRoku").change(function () {
-            //    self.setElementVisibility("#manualRecordChannelDiv", false);
-            //});
-            //
-            //$("#rbManualRecordTivo").change(function () {
-            //    self.setElementVisibility("#manualRecordChannelDiv", false);
-            //});
 
+            $("#recordNowTItle").focus();
+
+            // handlers
+            var self = this;
+            $("#rbRecordNowTuner").change(function () {
+                self.setElementVisibility("#recordNowChannelDiv", true);
+            });
+
+            $("#rbRecordNowRoku").change(function () {
+                self.setElementVisibility("#recordNowChannelDiv", false);
+            });
+
+            $("#rbRecordNowTivo").change(function () {
+                self.setElementVisibility("#recordNowChannelDiv", false);
+            });
+
+            $("#recordNowPage").css("display", "block");
 
             return this;
         },

@@ -43,7 +43,7 @@ define(function () {
                 weekday[5] = "Fri";
                 weekday[6] = "Sat";
 
-                var dt = recordedShowModel.attributes.StartDateTime;
+                var dt = recordedShowModel.get('StartDateTime');
                 var n = dt.indexOf(".");
                 var formattedDayDate;
                 if (n >= 0) {
@@ -60,12 +60,21 @@ define(function () {
                 var position = lastViewedPositionInMinutes.toString() + " of " + recordedShowModel.get('Duration').toString() + " minutes";
 
                 // IDs
-                var playRecordingId = "recording" + recordedShowModel.get('RecordingId').toString();
-                var deleteRecordingId = "delete" + recordedShowModel.get('RecordingId').toString();
+                var recordingIdStr = recordedShowModel.get('RecordingId').toString();
+                var playRecordingId = "recording" + recordingIdStr;
+                var deleteRecordingId = "delete" + recordingIdStr;
+                var repeatRecordingId = "repeat" + recordingIdStr;
+                var streamRecordingId = "stream" + recordingIdStr;
+                var infoRecordingId = "info" + recordingIdStr;
+                var recordingPath = recordedShowModel.get('Path');
 
                 var recordedShowAttributes = {};
                 recordedShowAttributes.PlayRecordingId = playRecordingId;
                 recordedShowAttributes.DeleteRecordingId = deleteRecordingId;
+                recordedShowAttributes.RepeatRecordingId = repeatRecordingId;
+                recordedShowAttributes.StreamRecordingId = streamRecordingId;
+                recordedShowAttributes.InfoRecordingId = infoRecordingId;
+                recordedShowAttributes.RecordingPath = recordingPath;
                 recordedShowAttributes.Title = title;
                 recordedShowAttributes.StartDateTime = formattedDayDate;
                 recordedShowAttributes.Position = position;
