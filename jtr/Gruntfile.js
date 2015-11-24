@@ -18,7 +18,7 @@ module.exports = function(grunt) {
 
 
                 files: [
-                        {
+                    {
                       expand: true,                 // Enable dynamic expansion.
                       cwd: 'src/brs/',              // Src matches are relative to this path.
                       src: ['*.brs'],               // Actual pattern(s) to match.
@@ -100,37 +100,79 @@ module.exports = function(grunt) {
                         dest: 'staging/remoteWebSite/index.html'
                     },
 
-                    //{
-                        //  expand: true,                 // Enable dynamic expansion.
-                        //  cwd: 'src/device/js/',        // Src matches are relative to this path.
-                        //  src: ['*.js'],             // Actual pattern(s) to match.
-                        //  dest: 'staging/deviceWebSite/js',// Destination path prefix.
-                        //},
-                        //
-                        //
-                        //{src: 'src/common/index.html', dest: 'staging/deviceWebSite/index.html'},
-                        //
-                        //{
-                        //  expand: true,                 // Enable dynamic expansion.
-                        //  cwd: 'src/common/js/',        // Src matches are relative to this path.
-                        //  src: ['*.js'],             // Actual pattern(s) to match.
-                        //  dest: 'staging/deviceWebSite/js',      // Destination path prefix.
-                        //},
-                        //
-                        //{
-                        //  expand: true,                 // Enable dynamic expansion.
-                        //  cwd: 'src/common/css/',        // Src matches are relative to this path.
-                        //  src: ['*.css'],             // Actual pattern(s) to match.
-                        //  dest: 'staging/deviceWebSite/css',      // Destination path prefix.
-                        //},
-                        //
-                        //// Bootstrap - deviceWebSite
-                        //{
-                        //  expand: true,                 // Enable dynamic expansion.
-                        //  cwd: 'src/common/bootstrap/',        // Src matches are relative to this path.
-                        //  src: ['**/*.*'],             // Actual pattern(s) to match.
-                        //  dest: 'staging/deviceWebSite/bootstrap/',      // Destination path prefix.
-                        //},
+                    {
+                        expand: true,                 // Enable dynamic expansion.
+                        cwd: 'src/deviceWebSite/js/',        // Src matches are relative to this path.
+                        src: ['*.js'],             // Actual pattern(s) to match.
+                        dest: 'staging/deviceWebSite/js',      // Destination path prefix.
+                    },
+
+                    {
+                        expand: true,                 // Enable dynamic expansion.
+                        cwd: 'src/deviceWebSite/css/',        // Src matches are relative to this path.
+                        src: ['*.css'],             // Actual pattern(s) to match.
+                        dest: 'staging/deviceWebSite/css',      // Destination path prefix.
+                    },
+
+                    {
+                        expand: true,                 // Enable dynamic expansion.
+                        cwd: 'src/deviceWebSite/css/',        // Src matches are relative to this path.
+                        src: ['*.less'],             // Actual pattern(s) to match.
+                        dest: 'staging/deviceWebSite/css',      // Destination path prefix.
+                    },
+
+                    {
+                        src: 'src/deviceWebSite/index.html',
+                        dest: 'staging/deviceWebSite/index.html'
+                    },
+                    {
+                        expand: true,                               // Enable dynamic expansion.
+                        cwd: 'bower_components/jquery/dist/',      // Src matches are relative to this path.
+                        src: ['jquery.min.js'],                   // Actual pattern(s) to match.
+                        dest: 'staging/deviceWebSite/lib',                        // Destination path prefix.
+                    },
+
+                    {
+                        expand: true,                               // Enable dynamic expansion.
+                        cwd: 'bower_components/handlebars/',      // Src matches are relative to this path.
+                        src: ['handlebars.js'],                   // Actual pattern(s) to match.
+                        dest: 'staging/deviceWebSite/lib',                        // Destination path prefix.
+                    },
+
+                    {
+                        expand: true,                               // Enable dynamic expansion.
+                        cwd: 'bower_components/underscore/',      // Src matches are relative to this path.
+                        src: ['underscore-min.js'],                   // Actual pattern(s) to match.
+                        dest: 'staging/deviceWebSite/lib',                        // Destination path prefix.
+                    },
+
+                    {
+                        expand: true,                               // Enable dynamic expansion.
+                        cwd: 'bower_components/backbone-amd/',      // Src matches are relative to this path.
+                        src: ['backbone-min.js'],                   // Actual pattern(s) to match.
+                        dest: 'staging/deviceWebSite/lib',                        // Destination path prefix.
+                    },
+
+                    {
+                        expand: true,                 // Enable dynamic expansion.
+                        cwd: 'bower_components/bootstrap/dist/',        // Src matches are relative to this path.
+                        src: ['**/*.*'],             // Actual pattern(s) to match.
+                        dest: 'staging/deviceWebSite/lib/bootstrap',                        // Destination path prefix.
+                    },
+
+                    {
+                        expand: true,                               // Enable dynamic expansion.
+                        cwd: 'bower_components/DateJS/build/',      // Src matches are relative to this path.
+                        src: ['date.js'],                   // Actual pattern(s) to match.
+                        dest: 'staging/deviceWebSite/lib',                        // Destination path prefix.
+                    },
+
+                    {
+                        expand: true,                               // Enable dynamic expansion.
+                        cwd: 'bower_components/requirejs/',      // Src matches are relative to this path.
+                        src: ['require.js'],                   // Actual pattern(s) to match.
+                        dest: 'staging/deviceWebSite/lib',                        // Destination path prefix.
+                    },
                 ]
             }
         }

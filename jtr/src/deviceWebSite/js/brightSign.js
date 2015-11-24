@@ -119,6 +119,45 @@ function executeDeleteSelectedShow(recordingId) {
 
 function initializeBrightSign() {
 
+    var recordingDuration;
+    var recordingTitle;
+
+    console.log("JTR javascript .ready invoked");
+    console.log("User Agent: " + navigator.userAgent);
+
+    // get client from user agent
+    var userAgent = navigator.userAgent;
+    if (userAgent.indexOf("BrightSign") >= 0) {
+        clientType = "BrightSign"
+    }
+    else if (userAgent.indexOf("iPad") >= 0) {
+        clientType = "iPad"
+    }
+
+    if (userAgent.indexOf("Mac") >= 0 && userAgent.indexOf("Chrome") < 0) {
+        browserTypeIsSafari = true;
+    }
+    else {
+        browserTypeIsSafari = false;
+    }
+
+    //if (clientType != "BrightSign") {
+    //    baseURL = document.baseURI.replace("?", "");
+    //    baseIP = document.baseURI.substr(0, document.baseURI.lastIndexOf(":"));
+    //
+    //    //baseURL = "http://10.10.212.44:8080/";
+    //    baseURL = "http://192.168.2.9:8080/";
+    //
+    //    console.log("baseURL from document.baseURI is: " + baseURL + ", baseIP is: " + baseIP);
+    //}
+    //else {
+    //    initializeBrightSign();
+    //}
+
+
+
+
+
     // ir receiver
     try {
         ir_receiver = new BSIRReceiver("Iguana", "NEC");
@@ -136,11 +175,11 @@ function initializeBrightSign() {
     recordingEngineHSM = new recordingEngineStateMachine();
 
     // Create uiEngine state machine
-    uiEngineHSM = new uiEngineStateMachine();
+    //uiEngineHSM = new uiEngineStateMachine();
 
     // register state machines; UI first so that it gets events first.
-    registerStateMachine(uiEngineHSM);
-    uiEngineHSM.Initialize();
+    //registerStateMachine(uiEngineHSM);
+    //uiEngineHSM.Initialize();
 
     registerStateMachine(displayEngineHSM);
     displayEngineHSM.Initialize();
@@ -341,41 +380,41 @@ function indicateReady() {
 }
 
 
-$(document).ready(function () {
-
-    var recordingDuration;
-    var recordingTitle;
-
-    console.log("JTR javascript .ready invoked");
-    console.log("User Agent: " + navigator.userAgent);
-
-    // get client from user agent
-    var userAgent = navigator.userAgent;
-    if (userAgent.indexOf("BrightSign") >= 0) {
-        clientType = "BrightSign"
-    }
-    else if (userAgent.indexOf("iPad") >= 0) {
-        clientType = "iPad"
-    }
-
-    if (userAgent.indexOf("Mac") >= 0 && userAgent.indexOf("Chrome") < 0) {
-        browserTypeIsSafari = true;
-    }
-    else {
-        browserTypeIsSafari = false;
-    }
-
-    if (clientType != "BrightSign") {
-        baseURL = document.baseURI.replace("?", "");
-        baseIP = document.baseURI.substr(0, document.baseURI.lastIndexOf(":"));
-
-        //baseURL = "http://10.10.212.44:8080/";
-        baseURL = "http://192.168.2.9:8080/";
-
-        console.log("baseURL from document.baseURI is: " + baseURL + ", baseIP is: " + baseIP);
-    }
-    else {
-        initializeBrightSign();
-    }
-
-});
+//$(document).ready(function () {
+//
+//    var recordingDuration;
+//    var recordingTitle;
+//
+//    console.log("JTR javascript .ready invoked");
+//    console.log("User Agent: " + navigator.userAgent);
+//
+//    // get client from user agent
+//    var userAgent = navigator.userAgent;
+//    if (userAgent.indexOf("BrightSign") >= 0) {
+//        clientType = "BrightSign"
+//    }
+//    else if (userAgent.indexOf("iPad") >= 0) {
+//        clientType = "iPad"
+//    }
+//
+//    if (userAgent.indexOf("Mac") >= 0 && userAgent
+//    }
+//    else {.indexOf("Chrome") < 0) {
+//        browserTypeIsSafari = true;
+//        browserTypeIsSafari = false;
+//    }
+//
+//    if (clientType != "BrightSign") {
+//        baseURL = document.baseURI.replace("?", "");
+//        baseIP = document.baseURI.substr(0, document.baseURI.lastIndexOf(":"));
+//
+//        //baseURL = "http://10.10.212.44:8080/";
+//        baseURL = "http://192.168.2.9:8080/";
+//
+//        console.log("baseURL from document.baseURI is: " + baseURL + ", baseIP is: " + baseIP);
+//    }
+//    else {
+//        initializeBrightSign();
+//    }
+//
+//});
