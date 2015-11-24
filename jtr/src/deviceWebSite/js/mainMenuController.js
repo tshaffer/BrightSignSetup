@@ -9,6 +9,8 @@ define(['mainMenuView','manualRecordController', 'recordNowController', 'recorde
     var mainMenuController = {
         p1: 69,
 
+        appController: null,
+
         mainMenuView: null,
 
         init: function() {
@@ -20,6 +22,8 @@ define(['mainMenuView','manualRecordController', 'recordNowController', 'recorde
             this.listenTo(this.mainMenuView, "invokeRecordedShows", function () {
                 console.log("MainMenuController:: invokeRecordedShowsHandler event received");
                 $(this.mainMenuView.el).hide();
+
+                this.trigger("activePageChange", "recordedShows");
 
                 //var recordedShowsController = recordedShowsController;
                 recordedShowsController.show();
@@ -70,6 +74,16 @@ define(['mainMenuView','manualRecordController', 'recordNowController', 'recorde
             console.log("mainMenuController:show() invoked");
             this.mainMenuView.show();
         },
+
+        setAppController: function(appController) {
+            this.appController = appController;
+
+            this.listenTo(this.appController, "remoteCommand", function(activePage, remoteCommand) {
+                console.log("remoteCommand received.");
+            });
+
+        }
+
     };
 
     mainMenuController.init();

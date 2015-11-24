@@ -851,10 +851,10 @@ function updateScheduledRecordings() {
                                             if (seriesEpisodesAdded == seriesEpisodesFound) {
                                                 resolve();
                                             }
-                                            consoleLog("addScheduledRecording successfully sent");
+                                            console.log("addScheduledRecording successfully sent");
                                         }, function () {
                                             reject();
-                                            consoleLog("addScheduledRecording failure");
+                                            console.log("addScheduledRecording failure");
                                         });
                                 }
                             })

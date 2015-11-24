@@ -24,8 +24,8 @@ namespace siteDownloader
             txtBoxSiteFolder.Text = "Y:\\Documents\\Projects\\jtr\\jtr\\staging";
 
             //txtBoxIPAddress.Text = "10.1.0.90:8080";
-            //txtBoxIPAddress.Text = "10.1.0.241:8080";
-            txtBoxIPAddress.Text = "192.168.0.109:8080";
+            txtBoxIPAddress.Text = "10.1.0.241:8080";
+            //txtBoxIPAddress.Text = "192.168.0.109:8080";
         }
 
         private void btnBrowse_Click(object sender, RoutedEventArgs e)

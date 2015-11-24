@@ -75,7 +75,7 @@ displayEngineStateMachine.prototype.constructor = displayEngineStateMachine;
 
 displayEngineStateMachine.prototype.InitializeDisplayEngineHSM = function () {
 
-    consoleLog("InitializeDisplayEngineHSM invoked");
+    console.log("InitializeDisplayEngineHSM invoked");
 
     this.currentRecording = null;
     this.priorSelectedRecording = null;
@@ -90,11 +90,11 @@ displayEngineStateMachine.prototype.STIdleEventHandler = function (event, stateD
     this.clockTimer = null;
 
     if (event["EventType"] == "ENTRY_SIGNAL") {
-        consoleLog(this.id + ": entry signal");
+        console.log(this.id + ": entry signal");
         return "HANDLED";
     }
     else if (event["EventType"] == "EXIT_SIGNAL") {
-        consoleLog(this.id + ": exit signal");
+        console.log(this.id + ": exit signal");
         return "HANDLED";
     }
     else if (event["EventType"] == "PLAY_RECORDED_SHOW") {
@@ -110,7 +110,7 @@ displayEngineStateMachine.prototype.STIdleEventHandler = function (event, stateD
     }
     else if (event["EventType"] == "REMOTE") {
         var eventData = event["EventData"]
-        consoleLog(this.id + ": remote command input: " + eventData);
+        console.log(this.id + ": remote command input: " + eventData);
 
         switch (eventData.toLowerCase()) {
             case "clock":
@@ -175,7 +175,7 @@ displayEngineStateMachine.prototype.toggleClock = function () {
 
 displayEngineStateMachine.prototype.playSelectedShow = function (recordingId) {
 
-    consoleLog("playSelectedShow " + recordingId);
+    console.log("playSelectedShow " + recordingId);
 
     // if there's a current recording, save it for later possible jump
     this.stateMachine.priorSelectedRecording = this.stateMachine.currentRecording;
@@ -217,8 +217,8 @@ displayEngineStateMachine.prototype.calculateProgressBarParameters = function ()
     this.stateMachine.recordingDuration = this.stateMachine.currentRecording.Duration * 60
     this.stateMachine.numMinutes = Math.floor(this.stateMachine.recordingDuration / 60);
 
-    consoleLog("toggleProgressBar: duration = " + this.stateMachine.currentRecording.Duration);
-    consoleLog("toggleProgressBar: numMinutes = " + this.stateMachine.numMinutes);
+    console.log("toggleProgressBar: duration = " + this.stateMachine.currentRecording.Duration);
+    console.log("toggleProgressBar: numMinutes = " + this.stateMachine.numMinutes);
 
     this.stateMachine.numTicks = 8;
     minutesPerTick = 1;
@@ -242,14 +242,14 @@ displayEngineStateMachine.prototype.calculateProgressBarParameters = function ()
     }
     this.stateMachine.numTicks = Math.floor(this.stateMachine.numMinutes / this.stateMachine.minutesPerTick);
 
-    consoleLog("toggleProgressBar: numTicks = " + this.stateMachine.numTicks);
-    consoleLog("toggleProgressBar: minutesPerTick = " + this.stateMachine.minutesPerTick);
+    console.log("toggleProgressBar: numTicks = " + this.stateMachine.numTicks);
+    console.log("toggleProgressBar: minutesPerTick = " + this.stateMachine.minutesPerTick);
 
     // determine whether or not to draw last tick - don't draw it if it is at the end of the progress bar
     if (Math.floor(this.stateMachine.numMinutes) % (Math.floor(this.stateMachine.minutesPerTick) * this.stateMachine.numTicks) == 0) {
         this.stateMachine.numTicks--;
     }
-    consoleLog("toggleProgressBar: numTicks = " + this.stateMachine.numTicks);
+    console.log("toggleProgressBar: numTicks = " + this.stateMachine.numTicks);
 }
 
 
@@ -283,7 +283,7 @@ displayEngineStateMachine.prototype.toggleProgressBar = function () {
             var tickOffset = leftOffset + (rightOffset - leftOffset) * (durationAtTick / totalDuration);
             tickOffset = tickOffset - 0.25 / 2; // move to left a little to account for width of tick
 
-            consoleLog("tickOffset=" + tickOffset.toString());
+            console.log("tickOffset=" + tickOffset.toString());
             $("#progressBarTick" + i.toString()).css({ left: tickOffset.toString() + '%', position: 'absolute' });
         }
 
@@ -305,17 +305,17 @@ displayEngineStateMachine.prototype.toggleProgressBar = function () {
 
 displayEngineStateMachine.prototype.updateProgressBarGraphics = function () {
 
-    consoleLog("updateProgressBarGraphics");
+    console.log("updateProgressBarGraphics");
 
     // currentOffset in seconds
-    consoleLog('### currentOffset : ' + this.stateMachine.currentOffset);
+    console.log('### currentOffset : ' + this.stateMachine.currentOffset);
 
     // duration in seconds
-    consoleLog('### recordingDuration : ' + this.stateMachine.recordingDuration);
+    console.log('### recordingDuration : ' + this.stateMachine.recordingDuration);
 
     var percentCompleteVal = (this.stateMachine.currentOffset / this.stateMachine.recordingDuration * 100);
     var percentComplete = percentCompleteVal.toString() + "%";
-    consoleLog("percentComplete = " + percentComplete);
+    console.log("percentComplete = " + percentComplete);
 
     $("#progressBarSpan").width(percentComplete);
 
@@ -323,7 +323,7 @@ displayEngineStateMachine.prototype.updateProgressBarGraphics = function () {
     var leftOffset = 5.5;
     var rightOffset = 89.6;
     var offset = leftOffset + (rightOffset - leftOffset) * (this.stateMachine.currentOffset / this.stateMachine.recordingDuration);
-    consoleLog("offset = " + offset);
+    console.log("offset = " + offset);
 
     // update progress bar position (width is 4%)
     var labelOffset = offset - 4.0 / 2;
@@ -343,7 +343,7 @@ displayEngineStateMachine.prototype.updateProgressBarGraphics = function () {
 
     var elapsedTimeLabel = SecondsToHourMinuteLabel(this.stateMachine.currentOffset);
     $("#progressBarElapsedTime").html("<p>" + elapsedTimeLabel + "</p>");
-    //consoleLog("currentOffset is " + currentOffset + ", elapsedTimeLabel is " + elapsedTimeLabel);
+    //console.log("currentOffset is " + currentOffset + ", elapsedTimeLabel is " + elapsedTimeLabel);
 
     // TODO - should only need to do this when progress bar is first updated with a recording
     var totalTimeLabel = SecondsToHourMinuteLabel(this.stateMachine.recordingDuration);
@@ -357,7 +357,7 @@ displayEngineStateMachine.prototype.STShowingVideoEventHandler = function (event
     stateData.nextState = null;
 
     if (event["EventType"] == "ENTRY_SIGNAL") {
-        consoleLog(this.id + ": entry signal");
+        console.log(this.id + ": entry signal");
         return "HANDLED";
     }
     else if (event["EventType"] == "UPDATE_PROGRESS_BAR") {
@@ -372,11 +372,11 @@ displayEngineStateMachine.prototype.STShowingVideoEventHandler = function (event
     }
     else if (event["EventType"] == "REMOTE") {
         var eventData = event["EventData"]
-        consoleLog(this.id + ": remote command input: " + eventData);
+        console.log(this.id + ": remote command input: " + eventData);
 
         switch (eventData.toLowerCase()) {
             case "progress_bar":
-                consoleLog("+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++toggle the progress bar");
+                console.log("+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++toggle the progress bar");
                 this.calculateProgressBarParameters();
                 this.toggleProgressBar(this.stateMachine.recordingDuration);
                 break;
@@ -386,11 +386,11 @@ displayEngineStateMachine.prototype.STShowingVideoEventHandler = function (event
         }
     }
     else if (event["EventType"] == "EXIT_SIGNAL") {
-        consoleLog(this.id + ": exit signal");
+        console.log(this.id + ": exit signal");
     }
     // events to expect include
     else {
-        consoleLog(this.id + ": signal type = " + event["EventType"]);
+        console.log(this.id + ": signal type = " + event["EventType"]);
     }
 
     stateData.nextState = this.superState;
@@ -403,7 +403,7 @@ displayEngineStateMachine.prototype.STLiveVideoEventHandler = function (event, s
     stateData.nextState = null;
 
     if (event["EventType"] == "ENTRY_SIGNAL") {
-        consoleLog(this.id + ": entry signal");
+        console.log(this.id + ": entry signal");
 
         this.enteredChannel = "";
         this.channelDisplayed = false;
@@ -420,12 +420,12 @@ displayEngineStateMachine.prototype.STLiveVideoEventHandler = function (event, s
         return "HANDLED";
     }
     else if (event["EventType"] == "EXIT_SIGNAL") {
-        consoleLog(this.id + ": exit signal");
+        console.log(this.id + ": exit signal");
         this.hideChannel();
         return "HANDLED";
     }
     else if (event["EventType"] == "PLAY_RECORDED_SHOW") {
-        consoleLog({ command: "debugPrint", "debugMessage": "STLiveVideoEventHandler: play recorded show" });
+        console.log({ command: "debugPrint", "debugMessage": "STLiveVideoEventHandler: play recorded show" });
         var recordingId = event["EventData"];
         this.playSelectedShow(recordingId);
         TransportIconSingleton.getInstance().displayIcon(null, "play", this.stateMachine.playIconDisplayTime);
@@ -434,8 +434,8 @@ displayEngineStateMachine.prototype.STLiveVideoEventHandler = function (event, s
     }
     else if (event["EventType"] == "REMOTE") {
         var eventData = event["EventData"];
-        consoleLog("STLiveVideoEventHandler: event=" + eventData);
-        consoleLog("typeof event=" + typeof eventData);
+        console.log("STLiveVideoEventHandler: event=" + eventData);
+        console.log("typeof event=" + typeof eventData);
         switch (eventData.toLowerCase()) {
             case "enter":
                 if (this.channelEntryTimer != null) {
@@ -471,7 +471,7 @@ displayEngineStateMachine.prototype.STLiveVideoEventHandler = function (event, s
                 channelIndex++;
                 if (channelIndex >= this.tunerChannels.length) channelIndex = 0;
                 this.enteredChannel = this.tunerChannels[channelIndex];
-                consoleLog("channel_up - tune to " + this.enteredChannel);
+                console.log("channel_up - tune to " + this.enteredChannel);
                 this.tuneLiveVideoChannel(true);
                 this.displayChannel(this.lastTunedChannel.toString());
                 return "HANDLED";
@@ -480,7 +480,7 @@ displayEngineStateMachine.prototype.STLiveVideoEventHandler = function (event, s
                 channelIndex--;
                 if (channelIndex < 0) channelIndex = this.tunerChannels.length - 1;
                 this.enteredChannel = this.tunerChannels[channelIndex];
-                consoleLog("channel_down - tune to " + this.enteredChannel);
+                console.log("channel_down - tune to " + this.enteredChannel);
                 this.tuneLiveVideoChannel(true);
                 this.displayChannel(this.lastTunedChannel.toString());
                 return "HANDLED";
@@ -558,14 +558,14 @@ displayEngineStateMachine.prototype.getChannelIdFromChannel = function (channel)
 displayEngineStateMachine.prototype.startChannelEntryTimer = function () {
     var thisObj = this;
     this.channelEntryTimer = setTimeout(function () {
-        consoleLog("channelEntryTimer triggered");
+        console.log("channelEntryTimer triggered");
         thisObj.tuneLiveVideoChannel(true);
     }, 2000);
 }
 
 
 displayEngineStateMachine.prototype.tuneLiveVideoChannel = function (saveChannelToDB) {
-    consoleLog("TTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTune to " + this.enteredChannel);
+    console.log("TTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTune to " + this.enteredChannel);
 
     this.lastTunedChannel = this.enteredChannel;
 
@@ -591,13 +591,13 @@ displayEngineStateMachine.prototype.STPlayingEventHandler = function (event, sta
     stateData.nextState = null;
 
     if (event["EventType"] == "ENTRY_SIGNAL") {
-        consoleLog(this.id + ": entry signal");
+        console.log(this.id + ": entry signal");
         this.stateMachine.ffCount = 1;
         this.stateMachine.rwCount = 1;
         return "HANDLED";
     }
     else if (event["EventType"] == "EXIT_SIGNAL") {
-        consoleLog(this.id + ": exit signal");
+        console.log(this.id + ": exit signal");
     }
     else if (event["EventType"] == "PLAY_RECORDED_SHOW") {
         var recordingId = event["EventData"];
@@ -611,7 +611,7 @@ displayEngineStateMachine.prototype.STPlayingEventHandler = function (event, sta
     }
     else if (event["EventType"] == "REMOTE") {
         var eventData = event["EventData"]
-        consoleLog(this.id + ": remote command input: " + eventData);
+        console.log(this.id + ": remote command input: " + eventData);
         switch (eventData.toLowerCase()) {
             case "pause":
                 executeRemoteCommand("pause");
@@ -637,7 +637,7 @@ displayEngineStateMachine.prototype.STPlayingEventHandler = function (event, sta
                 executeRemoteCommand("quickSkip");
                 return "HANDLED";
             case "stop":
-                consoleLog("STOP invoked when playing");
+                console.log("STOP invoked when playing");
                 executeRemoteCommand("pause");
 
                 var event = {};
@@ -654,7 +654,7 @@ displayEngineStateMachine.prototype.STPlayingEventHandler = function (event, sta
         }
     }
     else {
-        consoleLog(this.id + ": signal type = " + event["EventType"]);
+        console.log(this.id + ": signal type = " + event["EventType"]);
     }
 
     stateData.nextState = this.superState;
@@ -665,12 +665,12 @@ displayEngineStateMachine.prototype.STPlayingEventHandler = function (event, sta
 displayEngineStateMachine.prototype.jump = function () {
 
     if (this.stateMachine.currentRecording == null) {
-        consoleLog("no currentRecording");
+        console.log("no currentRecording");
         return;
     }
 
     if (this.stateMachine.priorSelectedRecording == null) {
-        consoleLog("no priorSelectedRecording");
+        console.log("no priorSelectedRecording");
         return;
     }
 
@@ -684,13 +684,13 @@ displayEngineStateMachine.prototype.STPausedEventHandler = function (event, stat
     stateData.nextState = null;
 
     if (event["EventType"] == "ENTRY_SIGNAL") {
-        consoleLog(this.id + ": entry signal");
+        console.log(this.id + ": entry signal");
         this.stateMachine.ffCount = 1;
         this.stateMachine.rwCount = 1;
         return "HANDLED";
     }
     else if (event["EventType"] == "EXIT_SIGNAL") {
-        consoleLog(this.id + ": exit signal");
+        console.log(this.id + ": exit signal");
     }
     else if (event["EventType"] == "PLAY_RECORDED_SHOW") {
         var recordingId = event["EventData"];
@@ -706,7 +706,7 @@ displayEngineStateMachine.prototype.STPausedEventHandler = function (event, stat
     //  QUICK_SKIP
     else if (event["EventType"] == "REMOTE") {
         var eventData = event["EventData"]
-        consoleLog(this.id + ": remote command input: " + eventData);
+        console.log(this.id + ": remote command input: " + eventData);
         switch (eventData.toLowerCase()) {
             case "pause":
             case "play":
@@ -725,7 +725,7 @@ displayEngineStateMachine.prototype.STPausedEventHandler = function (event, stat
         }
     }
     else {
-        consoleLog(this.id + ": signal type = " + event["EventType"]);
+        console.log(this.id + ": signal type = " + event["EventType"]);
     }
 
     stateData.nextState = this.superState;
@@ -738,12 +738,12 @@ displayEngineStateMachine.prototype.STFastForwardingEventHandler = function (eve
     stateData.nextState = null;
 
     if (event["EventType"] == "ENTRY_SIGNAL") {
-        consoleLog(this.id + ": entry signal");
+        console.log(this.id + ": entry signal");
         executeRemoteCommand("fastForward");
         return "HANDLED";
     }
     else if (event["EventType"] == "EXIT_SIGNAL") {
-        consoleLog(this.id + ": exit signal");
+        console.log(this.id + ": exit signal");
     }
     else if (event["EventType"] == "PLAY_RECORDED_SHOW") {
         var recordingId = event["EventData"];
@@ -761,7 +761,7 @@ displayEngineStateMachine.prototype.STFastForwardingEventHandler = function (eve
     //  MENU
     else if (event["EventType"] == "REMOTE") {
         var eventData = event["EventData"]
-        consoleLog(this.id + ": remote command input: " + eventData);
+        console.log(this.id + ": remote command input: " + eventData);
         switch (eventData.toLowerCase()) {
             case "play":
                 executeRemoteCommand("play");
@@ -791,13 +791,13 @@ displayEngineStateMachine.prototype.STFastForwardingEventHandler = function (eve
                 //executeRemoteCommand("instantReplay");
                 //return "HANDLED";
             case "quick_skip":
-                consoleLog("-------------------------------------------------------------------------------- invoked FORWARD_TO_TICK");
-                consoleLog("numTicks=" + this.stateMachine.numTicks);
-                consoleLog("minutesPerTick=" + this.stateMachine.minutesPerTick);
-                consoleLog("currentOffset=" + this.stateMachine.currentOffset);
-                consoleLog("recordingDuration=" + this.stateMachine.recordingDuration);
+                console.log("-------------------------------------------------------------------------------- invoked FORWARD_TO_TICK");
+                console.log("numTicks=" + this.stateMachine.numTicks);
+                console.log("minutesPerTick=" + this.stateMachine.minutesPerTick);
+                console.log("currentOffset=" + this.stateMachine.currentOffset);
+                console.log("recordingDuration=" + this.stateMachine.recordingDuration);
 
-                consoleLog("STFastForwardingEventHandler: QUICK_SKIP received.");
+                console.log("STFastForwardingEventHandler: QUICK_SKIP received.");
                 bsMessage.PostBSMessage({ command: "forwardToTick", "offset": this.stateMachine.currentOffset, "duration": this.stateMachine.recordingDuration, "numTicks": this.stateMachine.numTicks, "minutesPerTick": this.stateMachine.minutesPerTick });
                 TransportIconSingleton.getInstance().displayIcon(null, "quickSkip", this.stateMachine.miscIconDisplayTime);
                 return "HANDLED";
@@ -807,7 +807,7 @@ displayEngineStateMachine.prototype.STFastForwardingEventHandler = function (eve
         }
     }
     else {
-        consoleLog(this.id + ": signal type = " + event["EventType"]);
+        console.log(this.id + ": signal type = " + event["EventType"]);
     }
 
     stateData.nextState = this.superState;
@@ -819,12 +819,12 @@ displayEngineStateMachine.prototype.STRewindingEventHandler = function (event, s
     stateData.nextState = null;
 
     if (event["EventType"] == "ENTRY_SIGNAL") {
-        consoleLog(this.id + ": entry signal");
+        console.log(this.id + ": entry signal");
         executeRemoteCommand("rewind");
         return "HANDLED";
     }
     else if (event["EventType"] == "EXIT_SIGNAL") {
-        consoleLog(this.id + ": exit signal");
+        console.log(this.id + ": exit signal");
     }
     else if (event["EventType"] == "PLAY_RECORDED_SHOW") {
         var recordingId = event["EventData"];
@@ -842,7 +842,7 @@ displayEngineStateMachine.prototype.STRewindingEventHandler = function (event, s
         //  MENU
     else if (event["EventType"] == "REMOTE") {
         var eventData = event["EventData"]
-        consoleLog(this.id + ": remote command input: " + eventData);
+        console.log(this.id + ": remote command input: " + eventData);
         switch (eventData.toLowerCase()) {
             case "play":
                 executeRemoteCommand("play");
@@ -881,7 +881,7 @@ displayEngineStateMachine.prototype.STRewindingEventHandler = function (event, s
         }
     }
     else {
-        consoleLog(this.id + ": signal type = " + event["EventType"]);
+        console.log(this.id + ": signal type = " + event["EventType"]);
     }
 
     stateData.nextState = this.superState;

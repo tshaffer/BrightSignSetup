@@ -1,6 +1,6 @@
 ﻿function tuneChannel(channel, saveChannelToDB) {
 
-    consoleLog("XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX tuneChannel: channel = " + channel + ", saveChannelToDB=" + saveChannelToDB);
+    console.log("XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX tuneChannel: channel = " + channel + ", saveChannelToDB=" + saveChannelToDB);
 
     var originalChannel = channel;
 
@@ -23,7 +23,7 @@ function tuneDigit(channel) {
         if (char == ".") {
             char = "-";
         }
-        consoleLog("XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX tuneDigit: channel = " + channel + ", char=" + char);
+        console.log("XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX tuneDigit: channel = " + channel + ", char=" + char);
         sendIROut(char);
         channel = channel.substr(1);
         if (channel.length == 0) return;
@@ -74,7 +74,7 @@ function sendIROut(char) {
     }
 
     if (irCode > 0) {
-        consoleLog("sendIROut: send NEC " + irCode);
+        console.log("sendIROut: send NEC " + irCode);
         ir_transmitter.Send("NEC", irCode);
     }
 }
@@ -101,7 +101,7 @@ function setHDMIInput(port) {
 
 function cycleHDMIInputs(up) {
 
-    consoleLog("cycleHDMIInputs entry: _hdmiInputPort = " + _hdmiInputPort.toString());
+    console.log("cycleHDMIInputs entry: _hdmiInputPort = " + _hdmiInputPort.toString());
 
     var targetPort = _hdmiInputPort;
     if (up) {
@@ -118,15 +118,15 @@ function cycleHDMIInputs(up) {
     }
     programHDMIInput(targetPort);
 
-    consoleLog("cycleHDMIInputs exit: _hdmiInputPort = " + _hdmiInputPort.toString());
+    console.log("cycleHDMIInputs exit: _hdmiInputPort = " + _hdmiInputPort.toString());
 }
 
 function programHDMIInput(targetPort) {
 
-    consoleLog("696969696969696969696969696969696969696969696969 programHDMIInput(): currentPort=" + _hdmiInputPort.toString() + ", targtePort=" + targetPort.toString());
+    console.log("696969696969696969696969696969696969696969696969 programHDMIInput(): currentPort=" + _hdmiInputPort.toString() + ", targtePort=" + targetPort.toString());
 
     if (targetPort == _hdmiInputPort) {
-        consoleLog("programHDMIInput(): port == _hdmiInputPort (" + targetPort.toString() + ")");
+        console.log("programHDMIInput(): port == _hdmiInputPort (" + targetPort.toString() + ")");
     }
     else {
         var irCode;
@@ -167,7 +167,7 @@ function programHDMIInput(targetPort) {
         }
     }
 
-    consoleLog("programHDMIInput: send NEC " + irCode);
+    console.log("programHDMIInput: send NEC " + irCode);
     ir_transmitter.Send("NEC", irCode);
 
     _hdmiInputPort = targetPort;
@@ -180,10 +180,10 @@ function resetHDMIInputPort() {
     var port1IRCode = 65290;
     var downIRCode = 65280;
 
-    consoleLog("resetHDMIInputPort() - send port1IRCode");
+    console.log("resetHDMIInputPort() - send port1IRCode");
     ir_transmitter.Send("NEC", port1IRCode);
     setTimeout(function () {
-        consoleLog("resetHDMIInputPort() - send downIRCode");
+        console.log("resetHDMIInputPort() - send downIRCode");
         ir_transmitter.Send("NEC", downIRCode);
     }, 2000);
 }
