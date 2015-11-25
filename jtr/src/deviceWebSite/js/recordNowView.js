@@ -139,6 +139,25 @@ define(function () {
             return title;
         },
 
+        executeRemoteCommand: function(remoteCommand) {
+            console.log("recordNowView:executeRemoteCommand:" + remoteCommand);
+
+            switch (remoteCommand) {
+                case "MENU":
+                    console.log("recordNowView::invokeHomeHandler invoked");
+                    this.trigger("invokeHome");
+                    break;
+                case "UP":
+                case "DOWN":
+                case "LEFT":
+                case "RIGHT":
+                    //this.navigate(remoteCommand);
+                    break;
+                case "SELECT":
+                    //this.select(remoteCommand);
+                    break;
+            }
+        },
 
     });
 

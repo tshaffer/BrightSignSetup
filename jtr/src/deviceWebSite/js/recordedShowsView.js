@@ -117,7 +117,7 @@ define(function () {
         //}
 
         executeRemoteCommand: function(remoteCommand) {
-            console.log("mainMenuView:executeRemoteCommand:" + remoteCommand);
+            console.log("recordedShowsView:executeRemoteCommand:" + remoteCommand);
 
             switch (remoteCommand) {
                 case "MENU":

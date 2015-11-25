@@ -25,6 +25,8 @@ define(['recordNowModel','recordNowView'], function (recordNowModel, recordNowVi
 
             _.extend(this, Backbone.Events);
 
+            var self = this;
+
             //this.listenTo(this.recordNowView, "executerecordNow", function() {
             //    console.log("recordNowController:: executerecordNow event received");
             //    return false;
@@ -32,6 +34,12 @@ define(['recordNowModel','recordNowView'], function (recordNowModel, recordNowVi
             this.listenTo(this.recordNowView, "recordNowModelUpdateComplete", function() {
                 console.log("recordNowController:: recordNowModelUpdateComplete event received");
                 this.recordNowModel.save();
+                return false;
+            });
+
+            this.listenTo(this.recordNowView, "invokeHome", function() {
+                console.log("recordNowController:: invokeHome event received");
+                self.trigger("invokeHome");
                 return false;
             });
 
@@ -48,6 +56,7 @@ define(['recordNowModel','recordNowView'], function (recordNowModel, recordNowVi
             this.listenTo(this.appController, "remoteCommand", function(targetPage, remoteCommand) {
                 if (targetPage == "recordNowPage") {
                     console.log("recordNowController: remoteCommand received.");
+                    this.recordNowView.executeRemoteCommand(remoteCommand);
                 }
             });
         }

@@ -202,6 +202,26 @@ define(['stationsModel'], function (StationsModel) {
             //    console.log("playback recording with id = " + event.data.recordingId);
             //}
 
+            executeRemoteCommand: function(remoteCommand) {
+                console.log("scheduledRecordingsView:executeRemoteCommand:" + remoteCommand);
+
+                switch (remoteCommand) {
+                    case "MENU":
+                        console.log("scheduledRecordingsView::invokeHomeHandler invoked");
+                        this.trigger("invokeHome");
+                        break;
+                    case "UP":
+                    case "DOWN":
+                    case "LEFT":
+                    case "RIGHT":
+                        //this.navigate(remoteCommand);
+                        break;
+                    case "SELECT":
+                        //this.select(remoteCommand);
+                        break;
+                }
+            },
+
         });
 
         return ScheduledRecordingsView;

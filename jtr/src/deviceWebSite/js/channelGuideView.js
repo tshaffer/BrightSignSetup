@@ -707,6 +707,25 @@ define(['serverInterface'], function (serverInterface) {
             return stationNumber;
         },
 
+        executeRemoteCommand: function(remoteCommand) {
+            console.log("channelGuideView:executeRemoteCommand:" + remoteCommand);
+
+            switch (remoteCommand) {
+                case "MENU":
+                    console.log("channelGuideView::invokeHomeHandler invoked");
+                    this.trigger("invokeHome");
+                    break;
+                case "UP":
+                case "DOWN":
+                case "LEFT":
+                case "RIGHT":
+                    //this.navigate(remoteCommand);
+                    break;
+                case "SELECT":
+                    //this.select(remoteCommand);
+                    break;
+            }
+        },
 
     });
 

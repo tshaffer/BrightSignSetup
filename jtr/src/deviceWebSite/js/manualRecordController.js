@@ -25,6 +25,8 @@ define(['manualRecordModel','manualRecordView'], function (ManualRecordModel, Ma
 
             _.extend(this, Backbone.Events);
 
+            var self = this;
+
             //this.listenTo(this.manualRecordView, "executeManualRecord", function() {
             //    console.log("ManualRecordController:: executeManualRecord event received");
             //    return false;
@@ -35,6 +37,11 @@ define(['manualRecordModel','manualRecordView'], function (ManualRecordModel, Ma
                 return false;
             });
 
+            this.listenTo(this.manualRecordView, "invokeHome", function() {
+                console.log("manualRecordController:: invokeHome event received");
+                self.trigger("invokeHome");
+                return false;
+            });
         },
 
         show: function() {
@@ -48,6 +55,7 @@ define(['manualRecordModel','manualRecordView'], function (ManualRecordModel, Ma
             this.listenTo(this.appController, "remoteCommand", function(targetPage, remoteCommand) {
                 if (targetPage == "manualRecordPage") {
                     console.log("manualRecordController: remoteCommand received.");
+                    this.manualRecordView.executeRemoteCommand(remoteCommand);
                 }
             });
         }

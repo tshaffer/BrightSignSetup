@@ -54,7 +54,7 @@ define(['serverInterface','recordedShowsModel','recordedShowsView'], function (s
             });
 
             this.listenTo(this.recordedShowsView, "invokeHome", function() {
-                console.log("recordedShowsView:: invokeHome event received");
+                console.log("recordedShowsController:: invokeHome event received");
                 self.trigger("invokeHome");
                 return false;
             });

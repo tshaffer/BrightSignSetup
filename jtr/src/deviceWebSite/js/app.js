@@ -37,49 +37,6 @@ define(function() {
 
                 this.listenTo(mainMenuController, "activePageChange", function (newActivePage) {
                     self.activePage = newActivePage;
-                    //self.activePage = "homePage";
-                });
-
-                //this.listenTo(recordedShowsController, "activePageChange", function () {
-                //    self.activePage = "recordedShowsPage";
-                //});
-                //
-                //this.listenTo(recordNowController, "activePageChange", function () {
-                //    self.activePage = "recordNowPage";
-                //});
-                //
-                //this.listenTo(manualRecordController, "activePageChange", function () {
-                //    self.activePage = "manualRecordPage";
-                //});
-                //
-                //this.listenTo(channelGuideController, "activePageChange", function () {
-                //    self.activePage = "channelGuidePage";
-                //});
-                //
-                //this.listenTo(scheduledRecordingsController, "activePageChange", function () {
-                //    self.activePage = "scheduledRecordingsPage";
-                //});
-                //
-                //this.listenTo(settingsController, "activePageChange", function () {
-                //    self.activePage = "settingsPage";
-                //});
-
-                this.listenTo(footerController, "invokeHome", function() {
-                    console.log("app.js:: invokeHome event received");
-
-                    // erase all main div's
-                    $("#manualRecordPage").css("display", "none");
-                    $("#recordNowPage").css("display", "none");
-                    $("#channelGuidePage").css("display", "none");
-                    $("#recordedShowsPage").css("display", "none");
-                    $("#scheduledRecordingsPage").css("display", "none");
-                    $("#settingsPage").css("display", "none");
-
-                    //this.activePage = "homePage";
-
-                    self.mainMenuController.show();
-
-                    return false;
                 });
 
                 this.listenTo(recordedShowsController, "invokeHome", function() {
@@ -93,7 +50,101 @@ define(function() {
                     $("#scheduledRecordingsPage").css("display", "none");
                     $("#settingsPage").css("display", "none");
 
-                    //this.trigger("activePageChange", "homePage");
+                    self.mainMenuController.show();
+
+                    return false;
+                });
+
+                this.listenTo(recordNowController, "invokeHome", function() {
+                    console.log("app.js:: invokeHome event received");
+
+                    // erase all main div's
+                    $("#manualRecordPage").css("display", "none");
+                    $("#recordNowPage").css("display", "none");
+                    $("#channelGuidePage").css("display", "none");
+                    $("#recordedShowsPage").css("display", "none");
+                    $("#scheduledRecordingsPage").css("display", "none");
+                    $("#settingsPage").css("display", "none");
+
+                    self.mainMenuController.show();
+
+                    return false;
+                });
+
+                this.listenTo(manualRecordController, "invokeHome", function() {
+                    console.log("app.js:: invokeHome event received");
+
+                    // erase all main div's
+                    $("#manualRecordPage").css("display", "none");
+                    $("#recordNowPage").css("display", "none");
+                    $("#channelGuidePage").css("display", "none");
+                    $("#recordedShowsPage").css("display", "none");
+                    $("#scheduledRecordingsPage").css("display", "none");
+                    $("#settingsPage").css("display", "none");
+
+                    self.mainMenuController.show();
+
+                    return false;
+                });
+
+                this.listenTo(channelGuideController, "invokeHome", function() {
+                    console.log("app.js:: invokeHome event received");
+
+                    // erase all main div's
+                    $("#manualRecordPage").css("display", "none");
+                    $("#recordNowPage").css("display", "none");
+                    $("#channelGuidePage").css("display", "none");
+                    $("#recordedShowsPage").css("display", "none");
+                    $("#scheduledRecordingsPage").css("display", "none");
+                    $("#settingsPage").css("display", "none");
+
+                    self.mainMenuController.show();
+
+                    return false;
+                });
+
+                this.listenTo(scheduledRecordingsController, "invokeHome", function() {
+                    console.log("app.js:: invokeHome event received");
+
+                    // erase all main div's
+                    $("#manualRecordPage").css("display", "none");
+                    $("#recordNowPage").css("display", "none");
+                    $("#channelGuidePage").css("display", "none");
+                    $("#recordedShowsPage").css("display", "none");
+                    $("#scheduledRecordingsPage").css("display", "none");
+                    $("#settingsPage").css("display", "none");
+
+                    self.mainMenuController.show();
+
+                    return false;
+                });
+
+                this.listenTo(settingsController, "invokeHome", function() {
+                    console.log("app.js:: invokeHome event received");
+
+                    // erase all main div's
+                    $("#manualRecordPage").css("display", "none");
+                    $("#recordNowPage").css("display", "none");
+                    $("#channelGuidePage").css("display", "none");
+                    $("#recordedShowsPage").css("display", "none");
+                    $("#scheduledRecordingsPage").css("display", "none");
+                    $("#settingsPage").css("display", "none");
+
+                    self.mainMenuController.show();
+
+                    return false;
+                });
+
+                this.listenTo(footerController, "invokeHome", function() {
+                    console.log("app.js:: invokeHome event received");
+
+                    // erase all main div's
+                    $("#manualRecordPage").css("display", "none");
+                    $("#recordNowPage").css("display", "none");
+                    $("#channelGuidePage").css("display", "none");
+                    $("#recordedShowsPage").css("display", "none");
+                    $("#scheduledRecordingsPage").css("display", "none");
+                    $("#settingsPage").css("display", "none");
 
                     self.mainMenuController.show();
 

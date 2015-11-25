@@ -7,6 +7,8 @@ define(['settingsModel','settingsView'], function (SettingsModel,SettingsView) {
 
     var settingsController = {
 
+        appController: null,
+
         settingsModel: null,
         settingsView: null,
         retrieveSettingsPromise: null,
@@ -23,6 +25,13 @@ define(['settingsModel','settingsView'], function (SettingsModel,SettingsView) {
 
             _.extend(this, Backbone.Events);
 
+            var self = this;
+
+            this.listenTo(this.settingsView, "invokeHome", function() {
+                console.log("settingsController:: invokeHome event received");
+                self.trigger("invokeHome");
+                return false;
+            });
         },
 
         show: function() {
@@ -44,6 +53,18 @@ define(['settingsModel','settingsView'], function (SettingsModel,SettingsView) {
             //    var segmentRecordings = self.settingsModel.getSegmentRecordings();
             //})
         },
+
+        setAppController: function(appController) {
+            this.appController = appController;
+
+            this.listenTo(this.appController, "remoteCommand", function(targetPage, remoteCommand) {
+                if (targetPage == "settingsPage") {
+                    console.log("settingsController: remoteCommand received.");
+                    this.settingsView.executeRemoteCommand(remoteCommand);
+                }
+            });
+        }
+
     };
 
     settingsController.init();

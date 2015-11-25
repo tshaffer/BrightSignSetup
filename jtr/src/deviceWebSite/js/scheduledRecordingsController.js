@@ -50,6 +50,13 @@ define(['serverInterface', 'scheduledRecordingsModel','scheduledRecordingsView']
 
                 return false;
             });
+
+            this.listenTo(this.scheduledRecordingsView, "invokeHome", function() {
+                console.log("scheduledRecordingsController:: invokeHome event received");
+                self.trigger("invokeHome");
+                return false;
+            });
+
         },
 
         show: function() {
@@ -79,6 +86,7 @@ define(['serverInterface', 'scheduledRecordingsModel','scheduledRecordingsView']
             this.listenTo(this.appController, "remoteCommand", function(targetPage, remoteCommand) {
                 if (targetPage == "scheduledRecordingsPage") {
                     console.log("scheduledRecordingsController: remoteCommand received.");
+                    this.scheduledRecordingsView.executeRemoteCommand(remoteCommand);
                 }
             });
         }

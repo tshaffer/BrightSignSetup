@@ -7,6 +7,8 @@ define(['stationsModel', 'channelGuideModel','channelGuideView','cgPopupView'], 
 
     var channelGuideController = {
 
+        appController: null,
+
         channelGuideModel: null,
         channelGuideView: null,
         cgPopupView: null,
@@ -49,6 +51,11 @@ define(['stationsModel', 'channelGuideModel','channelGuideView','cgPopupView'], 
                 return false;
             });
 
+            this.listenTo(this.channelGuideView, "invokeHome", function() {
+                console.log("channelGuideController:: invokeHome event received");
+                self.trigger("invokeHome");
+                return false;
+            });
         },
 
         retrieveData: function() {
@@ -78,7 +85,16 @@ define(['stationsModel', 'channelGuideModel','channelGuideView','cgPopupView'], 
             return this.stationsModel;
         },
 
-        pizza: "pizza"
+        setAppController: function(appController) {
+            this.appController = appController;
+
+            this.listenTo(this.appController, "remoteCommand", function(targetPage, remoteCommand) {
+                if (targetPage == "channelGuidePage") {
+                    console.log("channelGuideController: remoteCommand received.");
+                    this.channelGuideView.executeRemoteCommand(remoteCommand);
+                }
+            });
+        }
     };
 
     channelGuideController.init();
