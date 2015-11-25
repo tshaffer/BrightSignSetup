@@ -81,6 +81,7 @@ define(['mainMenuView','manualRecordController', 'recordNowController', 'recorde
 
         show: function() {
             console.log("mainMenuController:show() invoked");
+            this.trigger("activePageChange", "homePage");
             this.mainMenuView.show();
         },
 

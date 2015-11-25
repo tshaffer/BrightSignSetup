@@ -53,6 +53,13 @@ define(['serverInterface','recordedShowsModel','recordedShowsView'], function (s
                 return false;
             });
 
+            this.listenTo(this.recordedShowsView, "invokeHome", function() {
+                console.log("recordedShowsView:: invokeHome event received");
+                self.trigger("invokeHome");
+                return false;
+            });
+
+
         },
 
         show: function() {
@@ -78,6 +85,7 @@ define(['serverInterface','recordedShowsModel','recordedShowsView'], function (s
             this.listenTo(this.appController, "remoteCommand", function(targetPage, remoteCommand) {
                 if (targetPage == "recordedShowsPage") {
                     console.log("recordedShowsController: remoteCommand received.");
+                    this.recordedShowsView.executeRemoteCommand(remoteCommand);
                 }
             });
         }

@@ -59,7 +59,7 @@ define(function () {
         },
 
         invokeHomeHandler: function(event) {
-            console.log("FooterView::invokeHomHandler invoked");
+            console.log("FooterView::invokeHomeHandler invoked");
             this.trigger("invokeHome");
             return false;
         },

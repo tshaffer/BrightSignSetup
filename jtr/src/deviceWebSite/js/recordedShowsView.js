@@ -116,6 +116,26 @@ define(function () {
         //    console.log("playback recording with id = " + event.data.recordingId);
         //}
 
+        executeRemoteCommand: function(remoteCommand) {
+            console.log("mainMenuView:executeRemoteCommand:" + remoteCommand);
+
+            switch (remoteCommand) {
+                case "MENU":
+                    console.log("recordedShowsView::invokeHomeHandler invoked");
+                    this.trigger("invokeHome");
+                    break;
+                case "UP":
+                case "DOWN":
+                case "LEFT":
+                case "RIGHT":
+                    //this.navigate(remoteCommand);
+                    break;
+                case "SELECT":
+                    //this.select(remoteCommand);
+                    break;
+            }
+        },
+
 
     });
 
