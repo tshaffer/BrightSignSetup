@@ -72,6 +72,22 @@ define(function () {
 
             $("#homePage").css("display", "block");
 
+            for (i = 0; i < this.mainMenuIds.length; i++) {
+                for (j = 0; j < this.mainMenuIds[i].length; j++) {
+                    var elementId = "#" + this.mainMenuIds[i][j];
+
+                    if (i != 0 || j != 0) {
+                        $(elementId).removeClass("btn-primary");
+                        $(elementId).addClass("btn-secondary");
+                    }
+                    else {
+                        $(elementId).removeClass("btn-secondary");
+                        $(elementId).addClass("btn-primary");
+                        $(elementId).focus();
+                    }
+                }
+            }
+
             return this;
         },
 
