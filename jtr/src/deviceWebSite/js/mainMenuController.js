@@ -7,7 +7,6 @@ define(['mainMenuView','manualRecordController', 'recordNowController', 'recorde
     console.log("creating mainMenuController module");
 
     var mainMenuController = {
-        p1: 69,
 
         appController: null,
 
@@ -23,7 +22,7 @@ define(['mainMenuView','manualRecordController', 'recordNowController', 'recorde
                 console.log("MainMenuController:: invokeRecordedShowsHandler event received");
                 $(this.mainMenuView.el).hide();
 
-                this.trigger("activePageChange", "recordedShows");
+                this.trigger("activePageChange", "recordedShowsPage");
 
                 //var recordedShowsController = recordedShowsController;
                 recordedShowsController.show();
@@ -33,12 +32,16 @@ define(['mainMenuView','manualRecordController', 'recordNowController', 'recorde
                 console.log("MainMenuController:: invokeRecordNow event received");
                 $(this.mainMenuView.el).hide();
 
+                this.trigger("activePageChange", "recordNowPage");
+
                 recordNowController.show();
             });
 
             this.listenTo(this.mainMenuView, "invokeManualRecord", function () {
                 console.log("MainMenuController:: invokeManualRecord event received");
                 $(this.mainMenuView.el).hide();
+
+                this.trigger("activePageChange", "manualRecordPage");
 
                 // note - do not invoke new on manualRecordController
                 //var manualRecordController = manualRecordController;
@@ -49,6 +52,8 @@ define(['mainMenuView','manualRecordController', 'recordNowController', 'recorde
                 console.log("MainMenuController:: invokeChannelGuide event received");
                 $(this.mainMenuView.el).hide();
 
+                this.trigger("activePageChange", "channelGuidePage");
+
                 //var channelGuideController = channelGuideController;
                 channelGuideController.show();
             });
@@ -57,6 +62,8 @@ define(['mainMenuView','manualRecordController', 'recordNowController', 'recorde
                 console.log("MainMenuController:: invokeScheduledRecordings event received");
                 $(this.mainMenuView.el).hide();
 
+                this.trigger("activePageChange", "scheduledRecordingsPage");
+
                 //var scheduledRecordingsController = scheduledRecordingsController;
                 scheduledRecordingsController.show();
             });
@@ -64,6 +71,8 @@ define(['mainMenuView','manualRecordController', 'recordNowController', 'recorde
             this.listenTo(this.mainMenuView, "invokeSettings", function () {
                 console.log("MainMenuController:: invokeSettings event received");
                 $(this.mainMenuView.el).hide();
+
+                this.trigger("activePageChange", "settingsPage");
 
                 settingsController.show();
             });
@@ -78,10 +87,12 @@ define(['mainMenuView','manualRecordController', 'recordNowController', 'recorde
         setAppController: function(appController) {
             this.appController = appController;
 
-            this.listenTo(this.appController, "remoteCommand", function(activePage, remoteCommand) {
-                console.log("remoteCommand received.");
+            this.listenTo(this.appController, "remoteCommand", function(targetPage, remoteCommand) {
+                if (targetPage == "homePage") {
+                    console.log("mainMenuController: remoteCommand received.");
+                    this.mainMenuView.executeRemoteCommand(remoteCommand);
+                }
             });
-
         }
 
     };

@@ -7,6 +7,8 @@ define(['recordNowModel','recordNowView'], function (recordNowModel, recordNowVi
 
     var recordNowController = {
 
+        appController: null,
+
         recordNowModel: null,
         recordNowView: null,
 
@@ -40,7 +42,15 @@ define(['recordNowModel','recordNowView'], function (recordNowModel, recordNowVi
             this.recordNowView.show();
         },
 
-        pizza: "pizza"
+        setAppController: function(appController) {
+            this.appController = appController;
+
+            this.listenTo(this.appController, "remoteCommand", function(targetPage, remoteCommand) {
+                if (targetPage == "recordNowPage") {
+                    console.log("recordNowController: remoteCommand received.");
+                }
+            });
+        }
     };
 
     recordNowController.init();

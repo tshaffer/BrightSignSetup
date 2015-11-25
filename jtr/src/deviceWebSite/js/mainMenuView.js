@@ -67,6 +67,10 @@ define(function () {
             return this;
         },
 
+        executeRemoteCommand: function(remoteCommand) {
+            console.log("mainMenuView:executeRemoteCommand:" + remoteCommand);
+        },
+
         pizzaTest: "pizza"
     });
 

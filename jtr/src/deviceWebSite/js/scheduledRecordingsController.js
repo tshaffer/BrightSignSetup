@@ -7,6 +7,8 @@ define(['serverInterface', 'scheduledRecordingsModel','scheduledRecordingsView']
 
     var scheduledRecordingsController =
     {
+        appController: null,
+
         scheduledRecordingsModel: null,
         scheduledRecordingsView: null,
 
@@ -70,6 +72,16 @@ define(['serverInterface', 'scheduledRecordingsModel','scheduledRecordingsView']
                 }
             });
         },
+
+        setAppController: function(appController) {
+            this.appController = appController;
+
+            this.listenTo(this.appController, "remoteCommand", function(targetPage, remoteCommand) {
+                if (targetPage == "scheduledRecordingsPage") {
+                    console.log("scheduledRecordingsController: remoteCommand received.");
+                }
+            });
+        }
     };
 
     scheduledRecordingsController.init();

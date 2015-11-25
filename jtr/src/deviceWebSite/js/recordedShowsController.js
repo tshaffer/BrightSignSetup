@@ -8,6 +8,8 @@ define(['serverInterface','recordedShowsModel','recordedShowsView'], function (s
 
     var recordedShowsController =
     {
+        appController: null,
+
         recordedShowsModel: null,
         recordedShowsView: null,
 
@@ -68,7 +70,18 @@ define(['serverInterface','recordedShowsModel','recordedShowsView'], function (s
                     console.log('There was some error in loading and processing the JSON file');
                 }
             });
+        },
+
+        setAppController: function(appController) {
+            this.appController = appController;
+
+            this.listenTo(this.appController, "remoteCommand", function(targetPage, remoteCommand) {
+                if (targetPage == "recordedShowsPage") {
+                    console.log("recordedShowsController: remoteCommand received.");
+                }
+            });
         }
+
     };
 
     recordedShowsController.init();

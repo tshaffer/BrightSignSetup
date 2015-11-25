@@ -3,16 +3,24 @@
  */
 define(function() {
     $(document).ready(function () {
-        require(['serverInterface','settingsController','channelGuideController','mainMenuController','footerController'],
-            function(serverInterface,settingsController,channelGuideController,mainMenuController,footerController) {
+        require(['serverInterface','mainMenuController','recordedShowsController','recordNowController','manualRecordController','channelGuideController','scheduledRecordingsController','settingsController','footerController'],
+            function(serverInterface,mainMenuController,recordedShowsController,recordNowController,manualRecordController,channelGuideController,scheduledRecordingsController,settingsController,footerController) {
 
                 _.extend(this, Backbone.Events);
+
+                var self = this;
 
                 console.log("all controllers loaded");
 
                 //initializeBrightSign();
 
                 mainMenuController.setAppController(this);
+                recordedShowsController.setAppController(this);
+                recordNowController.setAppController(this);
+                manualRecordController.setAppController(this);
+                channelGuideController.setAppController(this);
+                scheduledRecordingsController.setAppController(this);
+                settingsController.setAppController(this);
 
                 // JTRTODO - instead of doing the following, just invoke the serverInterface method to get a promise. then wait for all promises to finish
                 settingsController.retrieveData();
@@ -27,12 +35,35 @@ define(function() {
 
                 this.activePage = "homePage";
 
-                this.listenTo(this.mainMenuController, "activePageChange", function (newActivePage) {
-                    console.log("mainMenuController: activePage is " + newActivePage);
-                    this.activePage = newActivePage;
+                this.listenTo(mainMenuController, "activePageChange", function () {
+                    self.activePage = "homePage";
                 });
 
-                this.listenTo(this.footerController, "invokeHome", function() {
+                this.listenTo(recordedShowsController, "activePageChange", function () {
+                    self.activePage = "recordedShowsPage";
+                });
+
+                this.listenTo(recordNowController, "activePageChange", function () {
+                    self.activePage = "recordNowPage";
+                });
+
+                this.listenTo(manualRecordController, "activePageChange", function () {
+                    self.activePage = "manualRecordPage";
+                });
+
+                this.listenTo(channelGuideController, "activePageChange", function () {
+                    self.activePage = "channelGuidePage";
+                });
+
+                this.listenTo(scheduledRecordingsController, "activePageChange", function () {
+                    self.activePage = "scheduledRecordingsPage";
+                });
+
+                this.listenTo(settingsController, "activePageChange", function () {
+                    self.activePage = "settingsPage";
+                });
+
+                this.listenTo(footerController, "invokeHome", function() {
                     console.log("app.js:: invokeHome event received");
 
                     // erase all main div's
@@ -43,13 +74,12 @@ define(function() {
                     $("#scheduledRecordingsPage").css("display", "none");
                     $("#settingsPage").css("display", "none");
 
-                    this.mainMenuController.show();
+                    self.mainMenuController.show();
 
                     return false;
                 });
 
                 this.serverInterface = serverInterface;
-                var self = this;
 
                 this.listenTo(this.footerController, "invokeRemote", function(id) {
                     console.log("app.js:: invokeRemote event received, id = " + id);
@@ -139,8 +169,6 @@ define(function() {
 
                 registerStateMachine(recordingEngineHSM);
                 recordingEngineHSM.Initialize();
-
-                var self = this;
 
                 if (typeof ir_receiver != 'undefined') {
                     ir_receiver.onremotedown = function (e) {

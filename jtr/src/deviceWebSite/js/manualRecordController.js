@@ -7,6 +7,8 @@ define(['manualRecordModel','manualRecordView'], function (ManualRecordModel, Ma
 
     var manualRecordController = {
 
+        appController: null,
+
         manualRecordModel: null,
         manualRecordView: null,
 
@@ -40,7 +42,15 @@ define(['manualRecordModel','manualRecordView'], function (ManualRecordModel, Ma
             this.manualRecordView.show();
         },
 
-        pizza: "pizza"
+        setAppController: function(appController) {
+            this.appController = appController;
+
+            this.listenTo(this.appController, "remoteCommand", function(targetPage, remoteCommand) {
+                if (targetPage == "manualRecordPage") {
+                    console.log("manualRecordController: remoteCommand received.");
+                }
+            });
+        }
     };
 
     manualRecordController.init();
