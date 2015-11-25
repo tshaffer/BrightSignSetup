@@ -1,10 +1,14 @@
 /**
  * Created by tedshaffer on 10/25/15.
  */
-define(function() {
-    $(document).ready(function () {
-        require(['serverInterface','mainMenuController','recordedShowsController','recordNowController','manualRecordController','channelGuideController','scheduledRecordingsController','settingsController','footerController'],
-            function(serverInterface,mainMenuController,recordedShowsController,recordNowController,manualRecordController,channelGuideController,scheduledRecordingsController,settingsController,footerController) {
+define(['serverInterface','mainMenuController','recordedShowsController','recordNowController','manualRecordController','channelGuideController','scheduledRecordingsController','settingsController','footerController'],
+    function(serverInterface,mainMenuController,recordedShowsController,recordNowController,manualRecordController,channelGuideController,scheduledRecordingsController,settingsController,footerController) {
+
+        console.log("creating appController module");
+
+        var appController = {
+
+            init: function () {
 
                 _.extend(this, Backbone.Events);
 
@@ -39,121 +43,37 @@ define(function() {
                     self.activePage = newActivePage;
                 });
 
-                this.listenTo(recordedShowsController, "invokeHome", function() {
-                    console.log("app.js:: invokeHome event received");
-
-                    // erase all main div's
-                    $("#manualRecordPage").css("display", "none");
-                    $("#recordNowPage").css("display", "none");
-                    $("#channelGuidePage").css("display", "none");
-                    $("#recordedShowsPage").css("display", "none");
-                    $("#scheduledRecordingsPage").css("display", "none");
-                    $("#settingsPage").css("display", "none");
-
-                    self.mainMenuController.show();
-
-                    return false;
+                this.listenTo(recordedShowsController, "invokeHome", function () {
+                    this.executeReturnToHome();
                 });
 
-                this.listenTo(recordNowController, "invokeHome", function() {
-                    console.log("app.js:: invokeHome event received");
-
-                    // erase all main div's
-                    $("#manualRecordPage").css("display", "none");
-                    $("#recordNowPage").css("display", "none");
-                    $("#channelGuidePage").css("display", "none");
-                    $("#recordedShowsPage").css("display", "none");
-                    $("#scheduledRecordingsPage").css("display", "none");
-                    $("#settingsPage").css("display", "none");
-
-                    self.mainMenuController.show();
-
-                    return false;
+                this.listenTo(recordNowController, "invokeHome", function () {
+                    this.executeReturnToHome();
                 });
 
-                this.listenTo(manualRecordController, "invokeHome", function() {
-                    console.log("app.js:: invokeHome event received");
-
-                    // erase all main div's
-                    $("#manualRecordPage").css("display", "none");
-                    $("#recordNowPage").css("display", "none");
-                    $("#channelGuidePage").css("display", "none");
-                    $("#recordedShowsPage").css("display", "none");
-                    $("#scheduledRecordingsPage").css("display", "none");
-                    $("#settingsPage").css("display", "none");
-
-                    self.mainMenuController.show();
-
-                    return false;
+                this.listenTo(manualRecordController, "invokeHome", function () {
+                    this.executeReturnToHome();
                 });
 
-                this.listenTo(channelGuideController, "invokeHome", function() {
-                    console.log("app.js:: invokeHome event received");
-
-                    // erase all main div's
-                    $("#manualRecordPage").css("display", "none");
-                    $("#recordNowPage").css("display", "none");
-                    $("#channelGuidePage").css("display", "none");
-                    $("#recordedShowsPage").css("display", "none");
-                    $("#scheduledRecordingsPage").css("display", "none");
-                    $("#settingsPage").css("display", "none");
-
-                    self.mainMenuController.show();
-
-                    return false;
+                this.listenTo(channelGuideController, "invokeHome", function () {
+                    this.executeReturnToHome();
                 });
 
-                this.listenTo(scheduledRecordingsController, "invokeHome", function() {
-                    console.log("app.js:: invokeHome event received");
-
-                    // erase all main div's
-                    $("#manualRecordPage").css("display", "none");
-                    $("#recordNowPage").css("display", "none");
-                    $("#channelGuidePage").css("display", "none");
-                    $("#recordedShowsPage").css("display", "none");
-                    $("#scheduledRecordingsPage").css("display", "none");
-                    $("#settingsPage").css("display", "none");
-
-                    self.mainMenuController.show();
-
-                    return false;
+                this.listenTo(scheduledRecordingsController, "invokeHome", function () {
+                    this.executeReturnToHome();
                 });
 
-                this.listenTo(settingsController, "invokeHome", function() {
-                    console.log("app.js:: invokeHome event received");
-
-                    // erase all main div's
-                    $("#manualRecordPage").css("display", "none");
-                    $("#recordNowPage").css("display", "none");
-                    $("#channelGuidePage").css("display", "none");
-                    $("#recordedShowsPage").css("display", "none");
-                    $("#scheduledRecordingsPage").css("display", "none");
-                    $("#settingsPage").css("display", "none");
-
-                    self.mainMenuController.show();
-
-                    return false;
+                this.listenTo(settingsController, "invokeHome", function () {
+                    this.executeReturnToHome();
                 });
 
-                this.listenTo(footerController, "invokeHome", function() {
-                    console.log("app.js:: invokeHome event received");
-
-                    // erase all main div's
-                    $("#manualRecordPage").css("display", "none");
-                    $("#recordNowPage").css("display", "none");
-                    $("#channelGuidePage").css("display", "none");
-                    $("#recordedShowsPage").css("display", "none");
-                    $("#scheduledRecordingsPage").css("display", "none");
-                    $("#settingsPage").css("display", "none");
-
-                    self.mainMenuController.show();
-
-                    return false;
+                this.listenTo(footerController, "invokeHome", function () {
+                    this.executeReturnToHome();
                 });
 
                 this.serverInterface = serverInterface;
 
-                this.listenTo(this.footerController, "invokeRemote", function(id) {
+                this.listenTo(this.footerController, "invokeRemote", function (id) {
                     console.log("app.js:: invokeRemote event received, id = " + id);
 
                     var cmd;
@@ -191,9 +111,10 @@ define(function() {
                         case "remoteFastForward":
                             cmd = "fastForward";
                             break;
-                    };
+                    }
+                    ;
 
-                    var commandData = { "command": "remoteCommand", "value": cmd };
+                    var commandData = {"command": "remoteCommand", "value": cmd};
                     var remotePromise = self.serverInterface.browserCommand(commandData);
 
                     return false;
@@ -284,7 +205,7 @@ define(function() {
                 // message port for getting messages from the BrightSign via roMessagePort
                 bsMessage = new BSMessagePort();
                 console.log("typeof bsMessage is " + typeof bsMessage);
-                bsMessage.PostBSMessage({ message: "javascript ready" });
+                bsMessage.PostBSMessage({message: "javascript ready"});
 
                 bsMessage.onbsmessage = function (msg) {
                     console.log("onbsmessage invoked");
@@ -427,8 +348,27 @@ define(function() {
                             break;
                     }
                 }
+            },
 
+            executeReturnToHome: function() {
 
-            });
+                console.log("app.js:: invokeHome event received");
+
+                // erase all main div's
+                $("#manualRecordPage").css("display", "none");
+                $("#recordNowPage").css("display", "none");
+                $("#channelGuidePage").css("display", "none");
+                $("#recordedShowsPage").css("display", "none");
+                $("#scheduledRecordingsPage").css("display", "none");
+                $("#settingsPage").css("display", "none");
+
+                this.mainMenuController.show();
+
+                return false;
+            }
+
+        }
+
+        appController.init();
+
     });
-});
