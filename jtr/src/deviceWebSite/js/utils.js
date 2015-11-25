@@ -33,3 +33,17 @@ function timeOfDay(dateTime) {
     return hour + dateTime.toString(":mmtt").toLowerCase();
 }
 
+// progress bar
+function SecondsToHourMinuteLabel(numSeconds) {
+
+    // convert seconds to hh:mm
+    var hours = Math.floor(Number(numSeconds) / 3600).toString();
+    hours = twoDigitFormat(hours);
+
+    var minutes = Math.floor((Number(numSeconds) / 60) % 60).toString();
+    minutes = twoDigitFormat(minutes);
+
+    return hours + ":" + minutes;
+}
+
+

@@ -47,6 +47,10 @@ define(['serverInterface','mainMenuController','recordedShowsController','record
                     this.executeReturnToHome();
                 });
 
+                this.listenTo(recordedShowsController, "eraseUI", function () {
+                    this.eraseUI();
+                });
+
                 this.listenTo(recordNowController, "invokeHome", function () {
                     this.executeReturnToHome();
                 });
@@ -354,6 +358,14 @@ define(['serverInterface','mainMenuController','recordedShowsController','record
 
                 console.log("app.js:: invokeHome event received");
 
+                this.eraseUI();
+
+                this.mainMenuController.show();
+
+                return false;
+            },
+
+            eraseUI: function() {
                 // erase all main div's
                 $("#manualRecordPage").css("display", "none");
                 $("#recordNowPage").css("display", "none");
@@ -361,11 +373,7 @@ define(['serverInterface','mainMenuController','recordedShowsController','record
                 $("#recordedShowsPage").css("display", "none");
                 $("#scheduledRecordingsPage").css("display", "none");
                 $("#settingsPage").css("display", "none");
-
-                this.mainMenuController.show();
-
-                return false;
-            }
+            },
 
         }
 

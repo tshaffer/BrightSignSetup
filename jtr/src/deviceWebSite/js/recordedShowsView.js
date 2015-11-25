@@ -9,6 +9,8 @@ define(function () {
 
         el: '#recordedShowsPage',
 
+        recordedPageIds: [],
+
         initialize: function () {
         },
 
@@ -17,6 +19,9 @@ define(function () {
         },
 
         render: function() {
+
+            var self = this;
+
             this.$el.html('');
 
             // Grab the template script
@@ -28,6 +33,10 @@ define(function () {
             // Create the context for recorded shows
             var recordedShowsAttributes = [];
             var recordingIds = [];
+
+            this.recordedPageIds = [];
+
+
             this.model.each(function(recordedShowModel) {
 
                 // TITLE
@@ -81,7 +90,23 @@ define(function () {
 
                 recordedShowsAttributes.push(recordedShowAttributes);
 
-                recordingIds.push(recordedShowModel.get('RecordingId'));
+                var recordedPageRow = [];
+                recordedPageRow.push("#" + playRecordingId);
+                recordedPageRow.push("#" + deleteRecordingId);
+                self.recordedPageIds.push(recordedPageRow);
+
+                //// play from beginning
+                //var btnIdPlayFromBeginning = "#repeat" + recordingId;
+                //
+                //// stream a recording
+                //var btnIdStream = "#stream" + recordingId;
+                //
+                //// highlight the last selected show
+                //if (recordingId == lastSelectedShowId) {
+                //    focusApplied = true;
+                //    $(btnIdRecording).focus();
+                //}
+                //
             });
             var context = {
                 recordedShows : recordedShowsAttributes
@@ -93,7 +118,6 @@ define(function () {
             // Add the compiled html to the page
             $("#recordedShowsTableBody").append(theCompiledHtml);
 
-            var self = this;
             $.each(recordingIds, function (index, recordingId) {
                 var btnIdPlayRecording = "#recording" + recordingId;
                 $(btnIdPlayRecording).click({ recordingId: recordingId }, function (event) {
@@ -109,6 +133,9 @@ define(function () {
 
             $("#recordedShowsPage").css("display", "block");
 
+            // will fail if there are no recordings
+            $(this.recordedPageIds[0][0]).focus();
+
             return this;
         },
 
@@ -116,28 +143,113 @@ define(function () {
         //    console.log("playback recording with id = " + event.data.recordingId);
         //}
 
-        executeRemoteCommand: function(remoteCommand) {
-            console.log("recordedShowsView:executeRemoteCommand:" + remoteCommand);
+        executeRemoteCommand: function(command) {
+            console.log("recordedShowsView:executeRemoteCommand:" + command);
 
-            switch (remoteCommand) {
-                case "MENU":
+            switch (command.toLowerCase()) {
+                case "menu":
                     console.log("recordedShowsView::invokeHomeHandler invoked");
                     this.trigger("invokeHome");
                     break;
-                case "UP":
-                case "DOWN":
-                case "LEFT":
-                case "RIGHT":
-                    //this.navigate(remoteCommand);
+                case "up":
+                case "down":
+                case "left":
+                case "right":
+                    this.navigate(command.toLowerCase());
                     break;
-                case "SELECT":
-                    //this.select(remoteCommand);
+                case "select":
+                    this.select(command);
                     break;
             }
         },
 
+        select: function (command) {
 
-    });
+            var currentElement = document.activeElement;
+            var currentElementId = currentElement.id;
+            console.log("active recorded shows page item is " + currentElementId);
+
+            var action = this.getAction(currentElementId);
+            if (action != "") {
+                var recordingId = currentElementId.substring(action.length);
+                switch (action) {
+                    case "recording":
+                        this.trigger("playSelectedShow", recordingId);
+                        this.trigger("eraseUI");
+                        break;
+                    case "delete":
+                        this.trigger("deleteSelectedShow", recordingId);
+                        break;
+                }
+            }
+
+        },
+
+        getAction : function (actionButtonId) {
+
+            if (actionButtonId.lastIndexOf("recording") === 0) {
+                return "recording";
+            }
+            else if (actionButtonId.lastIndexOf("delete") === 0) {
+                return "delete";
+            }
+            console.log("getAction - no matching action found for " + actionButtonId);
+            return "";
+        },
+
+        navigate: function (command) {
+
+                console.log("navigateRecordedShowsPage entry");
+
+                var rowIndex = -1;
+                var colIndex = -1;
+
+                var currentElement = document.activeElement;
+                var currentElementId = currentElement.id;
+
+                if (currentElementId == "" || currentElementId == "recordedShows") {
+                    rowIndex = 0;
+                    colIndex = 0;
+                }
+                else {
+                    currentElementId = "#" + currentElementId;
+                    for (i = 0; i < this.recordedPageIds.length; i++) {
+
+                        var recordingId = this.recordedPageIds[i][0];
+                        var deleteId = this.recordedPageIds[i][1];
+
+                        if (recordingId == currentElementId) {
+                            rowIndex = i;
+                            colIndex = 0;
+                            break;
+                        }
+                        else if (deleteId == currentElementId) {
+                            rowIndex = i;
+                            colIndex = 1;
+                            break;
+                        }
+                    }
+
+                    switch (command) {
+                        case "up":
+                            if (rowIndex > 0) rowIndex--;
+                            break;
+                        case "down":
+                            if (rowIndex < this.recordedPageIds.length) rowIndex++;
+                            break;
+                        case "left":
+                            if (colIndex > 0) colIndex--;
+                            break;
+                        case "right":
+                            if (colIndex < 1) colIndex++;
+                            break;
+                    }
+                }
+
+                $(this.recordedPageIds[rowIndex][colIndex]).focus();
+            }
+
+        });
 
     return RecordedShowsView;
 });

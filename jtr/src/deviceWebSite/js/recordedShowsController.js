@@ -59,6 +59,12 @@ define(['serverInterface','recordedShowsModel','recordedShowsView'], function (s
                 return false;
             });
 
+            this.listenTo(this.recordedShowsView, "eraseUI", function() {
+                console.log("recordedShowsController:: eraseUI event received");
+                self.trigger("eraseUI");
+                return false;
+            });
+
 
         },
 

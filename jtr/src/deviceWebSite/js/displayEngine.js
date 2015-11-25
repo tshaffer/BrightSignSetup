@@ -187,10 +187,11 @@ displayEngineStateMachine.prototype.playSelectedShow = function (recordingId) {
     var parts = [];
     parts.push("lastSelectedShowId" + '=' + recordingId.toString());
     var paramString = parts.join('&');
+    baseURL = "localHost:8080/";
     var url = baseURL + "lastSelectedShow";
     $.post(url, paramString);
 
-    eraseUI();
+    //eraseUI();
 
     // initialize value used by progress bar to last position viewed
     this.stateMachine.currentOffset = this.stateMachine.currentRecording.LastViewedPosition;
