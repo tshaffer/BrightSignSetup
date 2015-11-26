@@ -180,7 +180,33 @@ define(['serverInterface','mainMenuController','recordedShowsController','record
                         if (msSinceLastCommand > 400) {
                             lastRemoteEventTime = now;
 
-                            self.trigger("remoteCommand", self.activePage, remoteCommand);
+                            //handlers = $._data( document.getElementById("recording1"), "events" )
+                            var currentElement = document.activeElement;
+                            var handlers = $._data( currentElement, "events" )
+                            if (typeof handlers != 'undefined') {
+
+                                console.log("handlers exist");
+
+                                var keys = [];
+                                for (var key in handlers) {
+                                    if (handlers.hasOwnProperty(key)) {
+                                        // check to see if event represented by key matches remote event
+                                        console.log("handlers key = " + key);
+                                        var handlersForKey = handlers[key];
+                                        $.each(handlersForKey, function (index, handlerForKey) {
+                                            var event = {};
+                                            event.data = {};
+                                            //event.data.recordingId = handlerForKey.data.recordingId;
+                                            // pass data instead of individual fields. contract
+                                            handlerForKey.handler(event);
+                                        });
+                                    }
+                                }
+                            }
+                            else
+                            {
+                                self.trigger("remoteCommand", self.activePage, remoteCommand);
+                            }
 
                             //var event = {};
                             //event["EventType"] = "REMOTE";

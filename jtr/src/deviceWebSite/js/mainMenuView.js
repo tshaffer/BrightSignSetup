@@ -15,27 +15,27 @@ define(function () {
         ],
 
 
-    initialize: function () {
-            console.log("MainMenuView::initialize");
+        initialize: function () {
+                console.log("MainMenuView::initialize");
 
-            this.template = _.template($('#homePageTemplate').html());
-        },
+                this.template = _.template($('#homePageTemplate').html());
+         },
 
-        events: {
-            "click #recordedShows": "recordedShowsHandler",
-            "click #recordNow": "recordNowHandler",
-            "click #manualRecord": "manualRecordHandler",
-            "click #channelGuideId": "channelGuideHandler",
-            "click #scheduledRecordings": "scheduledRecordingsHandler",
-            "click #settings": "settingsHandler"
-        },
+        //events: {
+        //    //"click #recordedShows": "recordedShowsHandler",
+        //    "click #recordNow": "recordNowHandler",
+        //    "click #manualRecord": "manualRecordHandler",
+        //    "click #channelGuideId": "channelGuideHandler",
+        //    "click #scheduledRecordings": "scheduledRecordingsHandler",
+        //    "click #settings": "settingsHandler"
+        //},
 
-        recordedShowsHandler: function (event) {
-            // Button clicked, you can access the element that was clicked with event.currentTarget
-            console.log("recordedShowsHandler, trigger invokeRecordedShows");
-            // broadcast event - only goes to those objects specifically listening to MainMenuView
-            this.trigger("invokeRecordedShows");
-        },
+        //recordedShowsHandler: function (event) {
+        //    // Button clicked, you can access the element that was clicked with event.currentTarget
+        //    console.log("recordedShowsHandler, trigger invokeRecordedShows");
+        //    // broadcast event - only goes to those objects specifically listening to MainMenuView
+        //    this.trigger("invokeRecordedShows");
+        //},
 
         recordNowHandler: function (event) {
             console.log("recordNowHandler, trigger invokeRecordNow");
@@ -67,8 +67,15 @@ define(function () {
         },
 
         render: function () {
+            var self = this;
+
             console.log("MainMenuView::render");
             this.$el.html(this.template()); // this.$el is a jQuery wrapped el var
+
+            $("#recordedShows").click(function (event) {
+                console.log("recordedShowsHandler, trigger invokeRecordedShows");
+                self.trigger("invokeRecordedShows");
+            });
 
             $("#homePage").css("display", "block");
 
