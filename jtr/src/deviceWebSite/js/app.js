@@ -192,8 +192,7 @@ define(['serverInterface','mainMenuController','recordedShowsController','record
                                     // match handler event type to remote control key (only handle click for now)
                                     if (eventType == "click" && remoteCommand == "SELECT") {
                                         if (handlers.hasOwnProperty(eventType)) {
-                                            // check to see if event represented by key matches remote event
-                                            console.log("handlers key = " + eventType);
+                                            console.log("handlers eventType = " + eventType);
                                             var handlersForKey = handlers[eventType];
                                             $.each(handlersForKey, function (index, handlerForKey) {
                                                 var event = {};
@@ -203,11 +202,42 @@ define(['serverInterface','mainMenuController','recordedShowsController','record
                                             });
                                         }
                                     }
+                                    else if (eventType == "keydown" && (remoteCommand = "UP" || remoteCommand == "DOWN" | remoteCommand == "LEFT" || remoteCommand == "RIGHT")) {
+                                        //left = 37
+                                        //up = 38
+                                        //right = 39
+                                        //down = 40
+                                        console.log("handlers eventType = " + eventType);
+                                        var handlersForKey = handlers[eventType];
+                                        $.each(handlersForKey, function (index, handlerForKey) {
+                                            var event = {};
+                                            switch (remoteCommand) {
+                                                case "UP":
+                                                    event.which = 38;
+                                                    break;
+                                                case "DOWN":
+                                                    event.which = 40;
+                                                    break;
+                                                case "LEFT":
+                                                    event.which = 37;
+                                                    break;
+                                                case "RIGHT":
+                                                    event.which = 39;
+                                                    break;
+                                            }
+                                            //event.data = handlerForKey.data;
+                                            // set event.target to currentElement?
+                                            event.target = currentElement;
+                                            handlerForKey.handler(event);
+                                            inputHandled = true;
+                                        });
+                                    }
                                 }
                             }
 
                             if (!inputHandled)
                             {
+                                debugger;
                                 self.trigger("remoteCommand", self.activePage, remoteCommand);
                             }
                         }

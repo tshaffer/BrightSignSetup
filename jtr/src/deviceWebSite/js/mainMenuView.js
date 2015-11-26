@@ -66,19 +66,54 @@ define(function () {
             this.render();
         },
 
-        render: function () {
+        addClickHandlers: function() {
+
             var self = this;
 
-            console.log("MainMenuView::render");
-            this.$el.html(this.template()); // this.$el is a jQuery wrapped el var
+            //$("#recordedShows").keydown (function(event) {
+            //    console.log("recordedShows keydown");
+            //});
+
+            $(".homePageBtn").keydown (function(event) {
+                // event.target
+                // event.target.id
+                // event.which
+                console.log("homePageBtn keydown");
+            });
 
             $("#recordedShows").click(function (event) {
                 self.recordedShowsHandler(event);
             });
 
+            $("#recordNow").click(function (event) {
+                self.recordNowHandler(event);
+            });
+
             $("#manualRecord").click(function (event) {
                 self.manualRecordHandler(event);
             });
+
+            $("#channelGuideId").click(function (event) {
+                self.channelGuideHandler(event);
+            });
+
+            $("#scheduledRecordings").click(function (event) {
+                self.scheduledRecordingsHandler(event);
+            });
+
+            $("#settings").click(function (event) {
+                self.settingsHandler(event);
+            });
+        },
+
+        render: function () {
+
+            var self = this;
+
+            console.log("MainMenuView::render");
+            this.$el.html(this.template()); // this.$el is a jQuery wrapped el var
+
+            this.addClickHandlers();
 
             $("#homePage").css("display", "block");
 
