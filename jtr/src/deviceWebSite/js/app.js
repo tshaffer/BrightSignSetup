@@ -378,6 +378,21 @@ define(['serverInterface','mainMenuController','recordedShowsController','record
                                         });
                                     }
                                 }
+                                else if (eventType == "keydown" && remoteCommand == "MENU") {
+                                    if (handlers.hasOwnProperty(eventType)) {
+                                        console.log("handlers eventType = " + eventType);
+                                        var handlersForKey = handlers[eventType];
+                                        $.each(handlersForKey, function (index, handlerForKey) {
+                                            var event = {};
+                                            event.data = handlerForKey.data;
+                                            var eventHandled = handlerForKey.handler(event);
+                                            if (eventHandled) {
+                                                inputHandled = true;
+                                            }
+                                            return false;
+                                        });
+                                    }
+                                }
                                 else if (eventType == "keydown" && (remoteCommand == "UP" || remoteCommand == "DOWN" | remoteCommand == "LEFT" || remoteCommand == "RIGHT")) {
                                     //left = 37
                                     //up = 38
@@ -421,7 +436,7 @@ define(['serverInterface','mainMenuController','recordedShowsController','record
                         if (inputHandled) {
                             return;
                         }
-                        
+
                         if (typeof currentElement.parentElement != "undefined") {
                             currentElement = currentElement.parentElement;
                         }

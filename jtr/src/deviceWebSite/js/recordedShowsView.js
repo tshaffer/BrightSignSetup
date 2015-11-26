@@ -121,6 +121,11 @@ define(function () {
             // Add the compiled html to the page
             $("#recordedShowsTableBody").append(theCompiledHtml);
 
+            $("#recordedShowsPage").keydown(function (event) {
+                console.log("menu button pressed in recordedShowsPage");
+                self.trigger("invokeHome");
+            });
+
             $.each(recordingIds, function (index, recordingId) {
                 var btnIdPlayRecording = "#recording" + recordingId;
                 $(btnIdPlayRecording).click({ recordingId: recordingId }, function (event) {
@@ -135,6 +140,37 @@ define(function () {
                 $(btnIdDeleteRecording).click({ recordingId: recordingId }, function (event) {
                     self.trigger("deleteSelectedShow", event.data.recordingId);
                 });
+
+                $(btnIdPlayRecording).keydown(function (keyEvent) {
+
+                    //var command = "";
+
+                    var keyCode = keyEvent.which;
+                    //switch (keyCode) {
+                    //    case 38:
+                    //        command = "up";
+                    //        break;
+                    //    case 40:
+                    //        command = "down";
+                    //        break;
+                    //    case 37:
+                    //        command = "left";
+                    //        break;
+                    //    case 39:
+                    //        command = "right";
+                    //        break;
+                    //}
+                    //
+                    //self.navigate(command);
+
+                    if (typeof keyCode != "undefined") {
+                        self.navigate(keyCode);
+                        return true;
+                    }
+                    return false;
+                    // not handling enter / select yet
+                });
+
             });
 
             $("#recordedShowsPage").css("display", "block");
@@ -149,59 +185,59 @@ define(function () {
         //    console.log("playback recording with id = " + event.data.recordingId);
         //}
 
-        executeRemoteCommand: function(command) {
-            console.log("recordedShowsView:executeRemoteCommand:" + command);
+        //executeRemoteCommand: function(command) {
+        //    console.log("recordedShowsView:executeRemoteCommand:" + command);
+        //
+        //    switch (command.toLowerCase()) {
+        //        case "menu":
+        //            console.log("recordedShowsView::invokeHomeHandler invoked");
+        //            this.trigger("invokeHome");
+        //            break;
+        //        case "up":
+        //        case "down":
+        //        case "left":
+        //        case "right":
+        //            this.navigate(command.toLowerCase());
+        //            break;
+        //        case "select":
+        //            this.select(command);
+        //            break;
+        //    }
+        //},
+        //
+        //select: function (command) {
+        //
+        //    var currentElement = document.activeElement;
+        //    var currentElementId = currentElement.id;
+        //    console.log("active recorded shows page item is " + currentElementId);
+        //
+        //    var action = this.getAction(currentElementId);
+        //    if (action != "") {
+        //        var recordingId = currentElementId.substring(action.length);
+        //        switch (action) {
+        //            case "recording":
+        //                this.trigger("playSelectedShow", recordingId);
+        //                this.trigger("eraseUI");
+        //                break;
+        //            case "delete":
+        //                this.trigger("deleteSelectedShow", recordingId);
+        //                break;
+        //        }
+        //    }
+        //
+        //},
 
-            switch (command.toLowerCase()) {
-                case "menu":
-                    console.log("recordedShowsView::invokeHomeHandler invoked");
-                    this.trigger("invokeHome");
-                    break;
-                case "up":
-                case "down":
-                case "left":
-                case "right":
-                    this.navigate(command.toLowerCase());
-                    break;
-                case "select":
-                    this.select(command);
-                    break;
-            }
-        },
-
-        select: function (command) {
-
-            var currentElement = document.activeElement;
-            var currentElementId = currentElement.id;
-            console.log("active recorded shows page item is " + currentElementId);
-
-            var action = this.getAction(currentElementId);
-            if (action != "") {
-                var recordingId = currentElementId.substring(action.length);
-                switch (action) {
-                    case "recording":
-                        this.trigger("playSelectedShow", recordingId);
-                        this.trigger("eraseUI");
-                        break;
-                    case "delete":
-                        this.trigger("deleteSelectedShow", recordingId);
-                        break;
-                }
-            }
-
-        },
-
-        getAction : function (actionButtonId) {
-
-            if (actionButtonId.lastIndexOf("recording") === 0) {
-                return "recording";
-            }
-            else if (actionButtonId.lastIndexOf("delete") === 0) {
-                return "delete";
-            }
-            console.log("getAction - no matching action found for " + actionButtonId);
-            return "";
-        },
+        //getAction : function (actionButtonId) {
+        //
+        //    if (actionButtonId.lastIndexOf("recording") === 0) {
+        //        return "recording";
+        //    }
+        //    else if (actionButtonId.lastIndexOf("delete") === 0) {
+        //        return "delete";
+        //    }
+        //    console.log("getAction - no matching action found for " + actionButtonId);
+        //    return "";
+        //},
 
         navigate: function (command) {
 
@@ -237,16 +273,16 @@ define(function () {
                     }
 
                     switch (command) {
-                        case "up":
+                        case 38:
                             if (rowIndex > 0) rowIndex--;
                             break;
-                        case "down":
+                        case 40:
                             if (rowIndex < this.recordedPageIds.length) rowIndex++;
                             break;
-                        case "left":
+                        case 37:
                             if (colIndex > 0) colIndex--;
                             break;
-                        case "right":
+                        case 39:
                             if (colIndex < 1) colIndex++;
                             break;
                     }
