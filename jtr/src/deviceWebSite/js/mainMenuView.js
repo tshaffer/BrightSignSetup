@@ -79,6 +79,7 @@ define(function () {
                 // event.target.id
                 // event.which
                 console.log("homePageBtn keydown");
+                self.navigate(event.which);
             });
 
             $("#recordedShows").click(function (event) {
@@ -136,48 +137,48 @@ define(function () {
             return this;
         },
 
-        executeRemoteCommand: function(remoteCommand) {
-            console.log("mainMenuView:executeRemoteCommand:" + remoteCommand);
-
-            switch (remoteCommand) {
-                case "UP":
-                case "DOWN":
-                case "LEFT":
-                case "RIGHT":
-                    this.navigate(remoteCommand);
-                    break;
-                case "SELECT":
-                    this.select(remoteCommand);
-                    break;
-            }
-        },
-
-        select: function() {
-
-            var currentElement = document.activeElement;
-            var currentElementId = currentElement.id;
-
-            switch (currentElementId) {
-                case "recordedShows":
-                    this.trigger("invokeRecordedShows");
-                    break;
-                case "recordNow":
-                    this.trigger("invokeRecordNow");
-                    break;
-                case "manualRecord":
-                    this.trigger("invokeManualRecord");
-                    break;
-                case "channelGuideId":
-                    this.trigger("invokeChannelGuide");
-                    break;
-                case "scheduledRecordings":
-                    this.trigger("invokeScheduledRecordings");
-                    break;
-                case "settings":
-                    this.trigger("invokeSettings");
-                    break;
-            };
-        },
+        //executeRemoteCommand: function(remoteCommand) {
+        //    console.log("mainMenuView:executeRemoteCommand:" + remoteCommand);
+        //
+        //    switch (remoteCommand) {
+        //        case "UP":
+        //        case "DOWN":
+        //        case "LEFT":
+        //        case "RIGHT":
+        //            this.navigate(remoteCommand);
+        //            break;
+        //        case "SELECT":
+        //            this.select(remoteCommand);
+        //            break;
+        //    }
+        //},
+        //
+        //select: function() {
+        //
+        //    var currentElement = document.activeElement;
+        //    var currentElementId = currentElement.id;
+        //
+        //    switch (currentElementId) {
+        //        case "recordedShows":
+        //            this.trigger("invokeRecordedShows");
+        //            break;
+        //        case "recordNow":
+        //            this.trigger("invokeRecordNow");
+        //            break;
+        //        case "manualRecord":
+        //            this.trigger("invokeManualRecord");
+        //            break;
+        //        case "channelGuideId":
+        //            this.trigger("invokeChannelGuide");
+        //            break;
+        //        case "scheduledRecordings":
+        //            this.trigger("invokeScheduledRecordings");
+        //            break;
+        //        case "settings":
+        //            this.trigger("invokeSettings");
+        //            break;
+        //    };
+        //},
 
         navigate: function(direction) {
 
@@ -200,16 +201,16 @@ define(function () {
 
             if (rowIndex >= 0 && colIndex >= 0) {
                 switch (direction) {
-                    case "UP":
+                    case "up":
                         if (rowIndex > 0) rowIndex--;
                         break;
-                    case "DOWN":
+                    case "down":
                         if (rowIndex < this.mainMenuIds.length) rowIndex++;
                         break;
-                    case "LEFT":
+                    case "left":
                         if (colIndex > 0) colIndex--;
                         break;
-                    case "RIGHT":
+                    case "right":
                         if (colIndex < this.mainMenuIds[0].length) colIndex++;
                         break;
                 }

@@ -202,7 +202,7 @@ define(['serverInterface','mainMenuController','recordedShowsController','record
                                             });
                                         }
                                     }
-                                    else if (eventType == "keydown" && (remoteCommand = "UP" || remoteCommand == "DOWN" | remoteCommand == "LEFT" || remoteCommand == "RIGHT")) {
+                                    else if (eventType == "keydown" && (remoteCommand == "UP" || remoteCommand == "DOWN" | remoteCommand == "LEFT" || remoteCommand == "RIGHT")) {
                                         //left = 37
                                         //up = 38
                                         //right = 39
@@ -211,20 +211,21 @@ define(['serverInterface','mainMenuController','recordedShowsController','record
                                         var handlersForKey = handlers[eventType];
                                         $.each(handlersForKey, function (index, handlerForKey) {
                                             var event = {};
-                                            switch (remoteCommand) {
-                                                case "UP":
-                                                    event.which = 38;
-                                                    break;
-                                                case "DOWN":
-                                                    event.which = 40;
-                                                    break;
-                                                case "LEFT":
-                                                    event.which = 37;
-                                                    break;
-                                                case "RIGHT":
-                                                    event.which = 39;
-                                                    break;
-                                            }
+                                            //switch (remoteCommand) {
+                                            //    case "UP":
+                                            //        event.which = 38;
+                                            //        break;
+                                            //    case "DOWN":
+                                            //        event.which = 40;
+                                            //        break;
+                                            //    case "LEFT":
+                                            //        event.which = 37;
+                                            //        break;
+                                            //    case "RIGHT":
+                                            //        event.which = 39;
+                                            //        break;
+                                            //}
+                                            event.which = remoteCommand.toLowerCase();
                                             //event.data = handlerForKey.data;
                                             // set event.target to currentElement?
                                             event.target = currentElement;
@@ -237,8 +238,8 @@ define(['serverInterface','mainMenuController','recordedShowsController','record
 
                             if (!inputHandled)
                             {
-                                debugger;
-                                self.trigger("remoteCommand", self.activePage, remoteCommand);
+                                //debugger;
+                                //self.trigger("remoteCommand", self.activePage, remoteCommand);
                             }
                         }
                         else {
