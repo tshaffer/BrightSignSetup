@@ -180,38 +180,36 @@ define(['serverInterface','mainMenuController','recordedShowsController','record
                         if (msSinceLastCommand > 400) {
                             lastRemoteEventTime = now;
 
+                            var inputHandled = false;
+
                             //handlers = $._data( document.getElementById("recording1"), "events" )
                             var currentElement = document.activeElement;
                             var handlers = $._data( currentElement, "events" )
                             if (typeof handlers != 'undefined') {
 
-                                console.log("handlers exist");
+                                for (var eventType in handlers) {
 
-                                var keys = [];
-                                for (var key in handlers) {
-                                    if (handlers.hasOwnProperty(key)) {
-                                        // check to see if event represented by key matches remote event
-                                        console.log("handlers key = " + key);
-                                        var handlersForKey = handlers[key];
-                                        $.each(handlersForKey, function (index, handlerForKey) {
-                                            var event = {};
-                                            event.data = {};
-                                            //event.data.recordingId = handlerForKey.data.recordingId;
-                                            // pass data instead of individual fields. contract
-                                            handlerForKey.handler(event);
-                                        });
+                                    // match handler event type to remote control key (only handle click for now)
+                                    if (eventType == "click" && remoteCommand == "SELECT") {
+                                        if (handlers.hasOwnProperty(eventType)) {
+                                            // check to see if event represented by key matches remote event
+                                            console.log("handlers key = " + eventType);
+                                            var handlersForKey = handlers[eventType];
+                                            $.each(handlersForKey, function (index, handlerForKey) {
+                                                var event = {};
+                                                event.data = handlerForKey.data;
+                                                handlerForKey.handler(event);
+                                                inputHandled = true;
+                                            });
+                                        }
                                     }
                                 }
                             }
-                            else
+
+                            if (!inputHandled)
                             {
                                 self.trigger("remoteCommand", self.activePage, remoteCommand);
                             }
-
-                            //var event = {};
-                            //event["EventType"] = "REMOTE";
-                            //event["EventData"] = remoteCommand;
-                            //postMessage(event);
                         }
                         else {
                             console.log("ignore extraneous remote input");

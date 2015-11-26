@@ -68,8 +68,11 @@ define(function () {
                 var lastViewedPositionInMinutes = Math.floor(recordedShowModel.get('LastViewedPosition') / 60);
                 var position = lastViewedPositionInMinutes.toString() + " of " + recordedShowModel.get('Duration').toString() + " minutes";
 
+                var recordingId = recordedShowModel.get('RecordingId');
+                recordingIds.push(recordingId);
+
                 // IDs
-                var recordingIdStr = recordedShowModel.get('RecordingId').toString();
+                var recordingIdStr = recordingId.toString();
                 var playRecordingId = "recording" + recordingIdStr;
                 var deleteRecordingId = "delete" + recordingIdStr;
                 var repeatRecordingId = "repeat" + recordingIdStr;
@@ -123,6 +126,9 @@ define(function () {
                 $(btnIdPlayRecording).click({ recordingId: recordingId }, function (event) {
                     //self.playSelectedShowCallback(event);
                     self.trigger("playSelectedShow", event.data.recordingId);
+
+                    // only want to erase UI when this is invoked from device
+                    self.trigger("eraseUI");
                 });
 
                 var btnIdDeleteRecording = "#delete" + recordingId;

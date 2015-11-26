@@ -30,12 +30,12 @@ define(function () {
         //    "click #settings": "settingsHandler"
         //},
 
-        //recordedShowsHandler: function (event) {
-        //    // Button clicked, you can access the element that was clicked with event.currentTarget
-        //    console.log("recordedShowsHandler, trigger invokeRecordedShows");
-        //    // broadcast event - only goes to those objects specifically listening to MainMenuView
-        //    this.trigger("invokeRecordedShows");
-        //},
+        recordedShowsHandler: function (event) {
+            // Button clicked, you can access the element that was clicked with event.currentTarget
+            console.log("recordedShowsHandler, trigger invokeRecordedShows");
+            // broadcast event - only goes to those objects specifically listening to MainMenuView
+            this.trigger("invokeRecordedShows");
+        },
 
         recordNowHandler: function (event) {
             console.log("recordNowHandler, trigger invokeRecordNow");
@@ -73,8 +73,11 @@ define(function () {
             this.$el.html(this.template()); // this.$el is a jQuery wrapped el var
 
             $("#recordedShows").click(function (event) {
-                console.log("recordedShowsHandler, trigger invokeRecordedShows");
-                self.trigger("invokeRecordedShows");
+                self.recordedShowsHandler(event);
+            });
+
+            $("#manualRecord").click(function (event) {
+                self.manualRecordHandler(event);
             });
 
             $("#homePage").css("display", "block");
