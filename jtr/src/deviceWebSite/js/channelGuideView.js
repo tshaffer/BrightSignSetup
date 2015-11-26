@@ -42,17 +42,41 @@ define(['serverInterface'], function (serverInterface) {
                 self.navigateForwardOneDay();
             });
 
+            //$("#cgData").keydown(function (keyEvent) {
+            //    var keyIdentifier = event.keyIdentifier;
+            //    if (keyIdentifier == "Right" || keyIdentifier == "Left" || keyIdentifier == "Up" || keyIdentifier == "Down") {
+            //        self.navigateChannelGuide(keyIdentifier.toLowerCase());
+            //        return false;
+            //    }
+            //    else if (keyIdentifier == "Enter") {
+            //        var programData = self.getSelectedStationAndProgram();
+            //        self.trigger("displayCGPopup", programData);
+            //        return false;
+            //    }
+            //});
             $("#cgData").keydown(function (keyEvent) {
-                var keyIdentifier = event.keyIdentifier;
-                if (keyIdentifier == "Right" || keyIdentifier == "Left" || keyIdentifier == "Up" || keyIdentifier == "Down") {
-                    self.navigateChannelGuide(keyIdentifier.toLowerCase());
-                    return false;
+
+                var command = "";
+
+                var keyCode = keyEvent.which;
+                switch (keyCode) {
+                    case 38:
+                        command = "up";
+                        break;
+                    case 40:
+                        command = "down";
+                        break;
+                    case 37:
+                        command = "left";
+                        break;
+                    case 39:
+                        command = "right";
+                        break;
                 }
-                else if (keyIdentifier == "Enter") {
-                    var programData = self.getSelectedStationAndProgram();
-                    self.trigger("displayCGPopup", programData);
-                    return false;
-                }
+
+                self.navigateChannelGuide(command);
+                return false;
+                // not handling enter / select yet
             });
 
         },
@@ -719,14 +743,21 @@ define(['serverInterface'], function (serverInterface) {
                 case "DOWN":
                 case "LEFT":
                 case "RIGHT":
-                    //this.navigate(remoteCommand);
+                    this.navigate(remoteCommand);
                     break;
                 case "SELECT":
-                    //this.select(remoteCommand);
+                    this.select(remoteCommand);
                     break;
             }
         },
 
+        navigate: function(command) {
+
+        },
+
+        select: function() {
+
+        }
     });
 
     return ChannelGuideView;

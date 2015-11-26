@@ -8,6 +8,8 @@ define(['serverInterface','mainMenuController','recordedShowsController','record
 
         var appController = {
 
+            lastRemoteEventTime:  0,
+
             init: function () {
 
                 _.extend(this, Backbone.Events);
@@ -153,8 +155,6 @@ define(['serverInterface','mainMenuController','recordedShowsController','record
                     console.log("********************************************************************* UNABLE TO CREATE IR_RECEIVER ***************************** ");
                 }
 
-                var lastRemoteEventTime = 0;
-
                 // Create displayEngine state machine
                 displayEngineHSM = new displayEngineStateMachine();
 
@@ -169,82 +169,7 @@ define(['serverInterface','mainMenuController','recordedShowsController','record
 
                 if (typeof ir_receiver != 'undefined') {
                     ir_receiver.onremotedown = function (e) {
-                        console.log('############ onremotedown: ' + e.irType + " - " + e.code);
-                        var remoteCommand = GetRemoteCommand(e.code);
-                        console.log('############ onremotedown: remoteCommand=' + remoteCommand);
-
-                        // debounce remote
-                        var now = new Date();
-                        var msSinceLastCommand = now - lastRemoteEventTime;
-                        console.log("msSinceLastCommand=" + msSinceLastCommand);
-                        if (msSinceLastCommand > 400) {
-                            lastRemoteEventTime = now;
-
-                            var inputHandled = false;
-
-                            //handlers = $._data( document.getElementById("recording1"), "events" )
-                            var currentElement = document.activeElement;
-                            var handlers = $._data( currentElement, "events" )
-                            if (typeof handlers != 'undefined') {
-
-                                for (var eventType in handlers) {
-
-                                    // match handler event type to remote control key (only handle click for now)
-                                    if (eventType == "click" && remoteCommand == "SELECT") {
-                                        if (handlers.hasOwnProperty(eventType)) {
-                                            console.log("handlers eventType = " + eventType);
-                                            var handlersForKey = handlers[eventType];
-                                            $.each(handlersForKey, function (index, handlerForKey) {
-                                                var event = {};
-                                                event.data = handlerForKey.data;
-                                                handlerForKey.handler(event);
-                                                inputHandled = true;
-                                            });
-                                        }
-                                    }
-                                    else if (eventType == "keydown" && (remoteCommand == "UP" || remoteCommand == "DOWN" | remoteCommand == "LEFT" || remoteCommand == "RIGHT")) {
-                                        //left = 37
-                                        //up = 38
-                                        //right = 39
-                                        //down = 40
-                                        console.log("handlers eventType = " + eventType);
-                                        var handlersForKey = handlers[eventType];
-                                        $.each(handlersForKey, function (index, handlerForKey) {
-                                            var event = {};
-                                            //switch (remoteCommand) {
-                                            //    case "UP":
-                                            //        event.which = 38;
-                                            //        break;
-                                            //    case "DOWN":
-                                            //        event.which = 40;
-                                            //        break;
-                                            //    case "LEFT":
-                                            //        event.which = 37;
-                                            //        break;
-                                            //    case "RIGHT":
-                                            //        event.which = 39;
-                                            //        break;
-                                            //}
-                                            event.which = remoteCommand.toLowerCase();
-                                            //event.data = handlerForKey.data;
-                                            // set event.target to currentElement?
-                                            event.target = currentElement;
-                                            handlerForKey.handler(event);
-                                            inputHandled = true;
-                                        });
-                                    }
-                                }
-                            }
-
-                            if (!inputHandled)
-                            {
-                                //debugger;
-                                //self.trigger("remoteCommand", self.activePage, remoteCommand);
-                            }
-                        }
-                        else {
-                            console.log("ignore extraneous remote input");
-                        }
+                        self.processIRInput(e);
                     }
 
                     //ir_receiver.onremoteup = function (e) {
@@ -260,6 +185,9 @@ define(['serverInterface','mainMenuController','recordedShowsController','record
                 catch (err) {
                     console.log("unable to create ir_transmitter");
                 }
+
+                // put in appropriate place - is this too early?
+                initializeEpgData();
 
                 // message port for getting messages from the BrightSign via roMessagePort
                 bsMessage = new BSMessagePort();
@@ -406,6 +334,101 @@ define(['serverInterface','mainMenuController','recordedShowsController','record
                             postMessage(event);
                             break;
                     }
+                }
+            },
+
+            processIRInput: function(e) {
+
+                var self = this;
+
+                console.log('############ onremotedown: ' + e.irType + " - " + e.code);
+                var remoteCommand = GetRemoteCommand(e.code);
+                console.log('############ onremotedown: remoteCommand=' + remoteCommand);
+
+                // debounce remote
+                var now = new Date();
+                var msSinceLastCommand = now - this.lastRemoteEventTime;
+                console.log("msSinceLastCommand=" + msSinceLastCommand);
+                if (msSinceLastCommand > 400) {
+                    this.lastRemoteEventTime = now;
+
+                    var inputHandled = false;
+
+                    //handlers = $._data( document.getElementById("recording1"), "events" )
+                    var currentElement = document.activeElement;
+
+                    while (typeof currentElement == 'object') {
+
+                        var handlers = $._data(currentElement, "events")
+                        if (typeof handlers != 'undefined') {
+
+                            for (var eventType in handlers) {
+
+                                // match handler event type to remote control key (only handle click for now)
+                                if (eventType == "click" && remoteCommand == "SELECT") {
+                                    if (handlers.hasOwnProperty(eventType)) {
+                                        console.log("handlers eventType = " + eventType);
+                                        var handlersForKey = handlers[eventType];
+                                        $.each(handlersForKey, function (index, handlerForKey) {
+                                            var event = {};
+                                            event.data = handlerForKey.data;
+                                            handlerForKey.handler(event);
+                                            inputHandled = true;
+                                            return false;
+                                        });
+                                    }
+                                }
+                                else if (eventType == "keydown" && (remoteCommand == "UP" || remoteCommand == "DOWN" | remoteCommand == "LEFT" || remoteCommand == "RIGHT")) {
+                                    //left = 37
+                                    //up = 38
+                                    //right = 39
+                                    //down = 40
+                                    console.log("handlers eventType = " + eventType);
+                                    var handlersForKey = handlers[eventType];
+                                    $.each(handlersForKey, function (index, handlerForKey) {
+                                        var event = {};
+                                        switch (remoteCommand.toLowerCase()) {
+                                            case "up":
+                                                event.which = 38;
+                                                break;
+                                            case "down":
+                                                event.which = 40;
+                                                break;
+                                            case "left":
+                                                event.which = 37;
+                                                break;
+                                            case "right":
+                                                event.which = 39;
+                                                break;
+                                        }
+                                        //event.which = remoteCommand.toLowerCase();
+                                        //event.data = handlerForKey.data;
+                                        // set event.target to currentElement?
+                                        event.target = currentElement;
+                                        handlerForKey.handler(event);
+                                        inputHandled = true;
+                                        return false;
+                                    });
+                                }
+                            }
+                        }
+
+                        //if (!inputHandled) {
+                        //    //debugger;
+                        //    //self.trigger("remoteCommand", self.activePage, remoteCommand);
+                        //}
+
+                        if (inputHandled) {
+                            return;
+                        }
+                        
+                        if (typeof currentElement.parentElement != "undefined") {
+                            currentElement = currentElement.parentElement;
+                        }
+                    }
+                }
+                else {
+                    console.log("ignore extraneous remote input");
                 }
             },
 

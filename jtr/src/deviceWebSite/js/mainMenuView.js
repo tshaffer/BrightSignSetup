@@ -201,16 +201,20 @@ define(function () {
 
             if (rowIndex >= 0 && colIndex >= 0) {
                 switch (direction) {
-                    case "up":
+                    //case "up":
+                    case 38:
                         if (rowIndex > 0) rowIndex--;
                         break;
-                    case "down":
+                    //case "down":
+                    case 40:
                         if (rowIndex < this.mainMenuIds.length) rowIndex++;
                         break;
-                    case "left":
+                    //case "left":
+                    case 37:
                         if (colIndex > 0) colIndex--;
                         break;
-                    case "right":
+                    case 39:
+                    //case "right":
                         if (colIndex < this.mainMenuIds[0].length) colIndex++;
                         break;
                 }
