@@ -47,3 +47,7 @@ function SecondsToHourMinuteLabel(numSeconds) {
 }
 
 
+function addMilliseconds(date, milliseconds) {
+    return new Date(date.getTime() + milliseconds);
+}
+

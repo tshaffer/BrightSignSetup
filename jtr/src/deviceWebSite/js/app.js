@@ -356,6 +356,7 @@ define(['serverInterface','mainMenuController','recordedShowsController','record
 
                     //handlers = $._data( document.getElementById("recording1"), "events" )
                     var currentElement = document.activeElement;
+                    var originalTarget = currentElement;
 
                     while (typeof currentElement == 'object') {
 
@@ -370,11 +371,15 @@ define(['serverInterface','mainMenuController','recordedShowsController','record
                                         console.log("handlers eventType = " + eventType);
                                         var handlersForKey = handlers[eventType];
                                         $.each(handlersForKey, function (index, handlerForKey) {
-                                            var event = {};
-                                            event.data = handlerForKey.data;
-                                            handlerForKey.handler(event);
-                                            inputHandled = true;
-                                            return false;
+                                            // MEGAHACK
+                                            if (handlerForKey.namespace != "bs.dismiss.modal") {
+                                                var event = {};
+                                                event.data = handlerForKey.data;
+                                                event.target = originalTarget;  // is this right? click always goes to the button that had focus when select was pressed.
+                                                handlerForKey.handler(event);
+                                                inputHandled = true;
+                                                return false;
+                                            }
                                         });
                                     }
                                 }
@@ -386,6 +391,7 @@ define(['serverInterface','mainMenuController','recordedShowsController','record
                                             var event = {};
                                             event.which = "menu";
                                             event.data = handlerForKey.data;
+                                            event.target = currentElement;
                                             var eventHandled = handlerForKey.handler(event);
                                             if (eventHandled) {
                                                 inputHandled = true;

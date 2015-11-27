@@ -368,7 +368,8 @@ recordingEngineStateMachine.prototype.addSeriesToDB = function (title, inputSour
             console.log("scheduledSeriesRecordingId=" + scheduledSeriesRecordingId);
 
             // series recording has been added - add episodes in epg data to scheduledRecordings
-            var epgStartDate = Date.now().toISOString();
+            //var epgStartDate = Date.now().toISOString();
+            var epgStartDate = new Date().toISOString();
             var atsc = channel.split("-");
             var getEpgMatchingProgramsData = {
                 "startDate": epgStartDate,

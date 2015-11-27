@@ -72,7 +72,7 @@ define(function () {
             $("#settingsPage").css("display", "block");
 
             $("#recordingQualityMedium").focus();
-            
+
             // handlers
             var self = this;
             $("#recordingQualityLow").change(function () {

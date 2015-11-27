@@ -182,33 +182,29 @@ define(['serverInterface','settingsModel'], function (serverInterface, SettingsM
                     $(self.cgRecordEpisodeId).unbind("click");
                     //self.cgRecordProgramFromClient(true, self.channelGuide.retrieveScheduledRecordings);
 
-                    var promise = self.cgRecordProgramFromClient(true);
-                    promise.then(function() {
-                        var retrieveScheduledRecordingsPromise = serverInterface.retrieveScheduledRecordings();
-                    })
-
-                    self.cgProgramDlgCloseInvoked();
-                    self.reselectCurrentProgram();
+                    self.invokeRecordEpisode();
                 });
             }
             if (this.cgRecordSeriesId) {
                 $(this.cgRecordSeriesId).off();
                 $(this.cgRecordSeriesId).click(function (event) {
-                    var promise = self.cgRecordSelectedSeriesFromClient();
-                    promise.then(function() {
-                        serverInterface.retrieveScheduledRecordings();
-                    })
-                    self.cgProgramDlgCloseInvoked();
-                    self.reselectCurrentProgram();
+                    self.invokeRecordSeries();
+                    //var promise = self.cgRecordSelectedSeriesFromClient();
+                    //promise.then(function() {
+                    //    serverInterface.retrieveScheduledRecordings();
+                    //})
+                    //self.cgProgramDlgCloseInvoked();
+                    //self.reselectCurrentProgram();
                 });
             }
 
             if (this.cgTuneEpisodeId){
                 $(this.cgTuneEpisodeId).off();
                 $(this.cgTuneEpisodeId).click(function (event) {
-                    self.cgTuneFromClient();
-                    self.cgProgramDlgCloseInvoked();
-                    self.reselectCurrentProgram();
+                    self.invokeTune();
+                    //self.cgTuneFromClient();
+                    //self.cgProgramDlgCloseInvoked();
+                    //self.reselectCurrentProgram();
                 });
             }
 
@@ -244,10 +240,11 @@ define(['serverInterface','settingsModel'], function (serverInterface, SettingsM
             if (this.cgRecordSetOptionsId) {
                 $(this.cgRecordSetOptionsId).off();
                 $(this.cgRecordSetOptionsId).click(function (event) {
-                    console.log("recordSetOptions invoked");
-                    self.cgRecordProgramSetOptions();
-                    self.cgProgramDlgCloseInvoked();
-                    self.reselectCurrentProgram();
+                    self.invokeRecordProgramSetOptions();
+                    //console.log("recordSetOptions invoked");
+                    //self.cgRecordProgramSetOptions();
+                    //self.cgProgramDlgCloseInvoked();
+                    //self.reselectCurrentProgram();
                 });
             }
 
@@ -263,8 +260,9 @@ define(['serverInterface','settingsModel'], function (serverInterface, SettingsM
             if (this.cgCloseEpisodeId) {
                 $(this.cgCloseEpisodeId).off();
                 $(this.cgCloseEpisodeId).click(function (event) {
-                    self.cgProgramDlgCloseInvoked();
-                    self.reselectCurrentProgram();
+                    self.invokeCloseDialog();
+                    //self.cgProgramDlgCloseInvoked();
+                    //self.reselectCurrentProgram();
                 });
             }
 
@@ -285,23 +283,78 @@ define(['serverInterface','settingsModel'], function (serverInterface, SettingsM
                 $(this.cgPopupElements[i]).addClass("btn-secondary");
             }
 
+            // remote control handler - click
+            // event.target is 'this.cgPopupId', not the id of the button actually pressed (which is why the click handler is added to cgPopupId)
+            $(this.cgPopupId).click(function (event) {
+
+                switch (self.cgPopupId) {
+                    case "#cgSeriesDlg":
+                        switch (self.cgPopupSelectedIndex) {
+                            case 0:
+                                self.invokeRecordEpisode();
+                                break;
+                            case 1:
+                                self.invokeRecordProgramSetOptions();
+                                //// cgRecordProgramSetOptions
+                                //console.log("recordSetOptions invoked");
+                                //self.cgRecordProgramSetOptions();
+                                //self.cgProgramDlgCloseInvoked();
+                                //self.reselectCurrentProgram();
+                                break;
+                            case 2:
+                                self.invokeRecordSeries();
+                                //// cgRecordSelectedSeries
+                                //var promise = self.cgRecordSelectedSeriesFromClient();
+                                //promise.then(function() {
+                                //    serverInterface.retrieveScheduledRecordings();
+                                //})
+                                //self.cgProgramDlgCloseInvoked();
+                                //self.reselectCurrentProgram();
+                                break;
+                            case 3:
+                                self.invokeTune();
+                                break;
+                            case 4:
+                                self.invokeCloseDialog();
+                                //self.cgProgramDlgCloseInvoked();
+                                //self.reselectCurrentProgram();
+                                break;
+                        }
+                        break;
+                }
+
+            });
+
             $(this.cgPopupId).off("keydown");
             $(this.cgPopupId).keydown(function (keyEvent) {
-                var keyIdentifier = event.keyIdentifier;
-                console.log("Key " + keyIdentifier.toString() + "pressed")
-                if (keyIdentifier == "Up") {
-                    self.cgProgramDlgUp();
-                }
-                else if (keyIdentifier == "Down") {
-                    self.cgProgramDlgDown();
-                }
-                else if (keyIdentifier == "Enter") {
-                    var func = self.cgPopupHandlers[self.cgPopupSelectedIndex];
-                    func.call(self);
-                    self.cgProgramDlgCloseInvoked();
-                    // ?? JTRTODO - update scheduled recordings
+                var command = "";
 
+                var keyCode = keyEvent.which;
+                switch (keyCode) {
+                    case 38:
+                        self.cgProgramDlgUp();
+                        break;
+                    case 40:
+                        self.cgProgramDlgDown();
+                        break;
                 }
+
+                return false;
+
+                //var keyIdentifier = event.keyIdentifier;
+                //console.log("Key " + keyIdentifier.toString() + "pressed")
+                //if (keyIdentifier == "Up") {
+                //    self.cgProgramDlgUp();
+                //}
+                //else if (keyIdentifier == "Down") {
+                //    self.cgProgramDlgDown();
+                //}
+                //else if (keyIdentifier == "Enter") {
+                //    var func = self.cgPopupHandlers[self.cgPopupSelectedIndex];
+                //    func.call(self);
+                //    self.cgProgramDlgCloseInvoked();
+                //    // ?? JTRTODO - update scheduled recordings
+                //}
             });
             // browser event handlers - browser.js - this approach didn't work - why?
             //for (i = 0; i < this.cgPopupEpisodeElements.length; i++) {
@@ -389,16 +442,16 @@ define(['serverInterface','settingsModel'], function (serverInterface, SettingsM
 
         cgRecordSelectedSeriesFromClient: function () {
 
-            var stationName = this.getStationFromId(self.cgSelectedStationId);
+            var stationName = this.getStationFromId(this.cgSelectedStationId);
             stationName = stationName.replace(".", "-");
 
             var commandData = {
                 "command": "addSeries",
-                "title": self.cgSelectedProgram.title,
+                "title": this.cgSelectedProgram.title,
                 "inputSource": "tuner",
                 "channel": stationName,
-                "recordingBitRate": this.settingsModel.recordingBitRate,
-                "segmentRecording": this.settingsModel.segmentRecordings
+                "recordingBitRate": this.settingsModel.getRecordingBitRate(),
+                "segmentRecording": this.settingsModel.getSegmentRecordings()
             };
 
             return serverInterface.browserCommand(commandData);
@@ -667,7 +720,42 @@ define(['serverInterface','settingsModel'], function (serverInterface, SettingsM
             $("#cgRecordOptionsStopTimeLabel")[0].innerHTML = this.stopTimeOptions[this.stopTimeIndex];
         },
 
+        invokeRecordEpisode: function() {
+            var promise = this.cgRecordProgramFromClient(true);
+            promise.then(function() {
+                var retrieveScheduledRecordingsPromise = serverInterface.retrieveScheduledRecordings();
+            })
 
+            this.cgProgramDlgCloseInvoked();
+            this.reselectCurrentProgram();
+        },
+
+        invokeRecordProgramSetOptions: function() {
+            console.log("recordSetOptions invoked");
+            this.cgRecordProgramSetOptions();
+            this.cgProgramDlgCloseInvoked();
+            this.reselectCurrentProgram();
+        },
+
+        invokeRecordSeries: function() {
+            var promise = this.cgRecordSelectedSeriesFromClient();
+            promise.then(function() {
+                serverInterface.retrieveScheduledRecordings();
+            })
+            this.cgProgramDlgCloseInvoked();
+            this.reselectCurrentProgram();
+        },
+
+        invokeTune: function() {
+            this.cgTuneFromClient();
+            this.cgProgramDlgCloseInvoked();
+            this.reselectCurrentProgram();
+        },
+
+        invokeCloseDialog: function() {
+            this.cgProgramDlgCloseInvoked();
+            this.reselectCurrentProgram();
+        }
     });
 
     return cgPopupView;
