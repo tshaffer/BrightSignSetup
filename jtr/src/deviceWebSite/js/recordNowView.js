@@ -40,8 +40,18 @@ define(function () {
             // Add the compiled html to the page
             $("#recordNowPage").append(theCompiledHtml);
 
+            $("#recordNowPage").keydown(function (event) {
+                if (event.which == 'menu') {
+                    console.log("menu button pressed in recordNowPage");
+                    self.trigger("invokeHome");
+                    return true;
+                }
+                return false;
+            });
 
             $("#recordNowPage").css("display", "block");
+
+            $("#recordNowTitle").focus();
 
             // set visual elements based on values in model
             //var title = this.model.get('title');
@@ -139,25 +149,25 @@ define(function () {
             return title;
         },
 
-        executeRemoteCommand: function(remoteCommand) {
-            console.log("recordNowView:executeRemoteCommand:" + remoteCommand);
-
-            switch (remoteCommand) {
-                case "MENU":
-                    console.log("recordNowView::invokeHomeHandler invoked");
-                    this.trigger("invokeHome");
-                    break;
-                case "UP":
-                case "DOWN":
-                case "LEFT":
-                case "RIGHT":
-                    //this.navigate(remoteCommand);
-                    break;
-                case "SELECT":
-                    //this.select(remoteCommand);
-                    break;
-            }
-        },
+        //executeRemoteCommand: function(remoteCommand) {
+        //    console.log("recordNowView:executeRemoteCommand:" + remoteCommand);
+        //
+        //    switch (remoteCommand) {
+        //        case "MENU":
+        //            console.log("recordNowView::invokeHomeHandler invoked");
+        //            this.trigger("invokeHome");
+        //            break;
+        //        case "UP":
+        //        case "DOWN":
+        //        case "LEFT":
+        //        case "RIGHT":
+        //            //this.navigate(remoteCommand);
+        //            break;
+        //        case "SELECT":
+        //            //this.select(remoteCommand);
+        //            break;
+        //    }
+        //},
 
     });
 

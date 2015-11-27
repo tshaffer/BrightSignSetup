@@ -60,9 +60,19 @@ define(function () {
             // Add the compiled html to the page
             $("#settingsPage").append(theCompiledHtml);
 
+            $("#settingsPage").keydown(function (event) {
+                if (event.which == 'menu') {
+                    console.log("menu button pressed in settingsPage");
+                    self.trigger("invokeHome");
+                    return true;
+                }
+                return false;
+            });
 
             $("#settingsPage").css("display", "block");
 
+            $("#recordingQualityMedium").focus();
+            
             // handlers
             var self = this;
             $("#recordingQualityLow").change(function () {
@@ -89,25 +99,25 @@ define(function () {
             return this;
         },
 
-        executeRemoteCommand: function(remoteCommand) {
-            console.log("settingsView:executeRemoteCommand:" + remoteCommand);
-
-            switch (remoteCommand) {
-                case "MENU":
-                    console.log("settingsView::invokeHomeHandler invoked");
-                    this.trigger("invokeHome");
-                    break;
-                case "UP":
-                case "DOWN":
-                case "LEFT":
-                case "RIGHT":
-                    //this.navigate(remoteCommand);
-                    break;
-                case "SELECT":
-                    //this.select(remoteCommand);
-                    break;
-            }
-        },
+        //executeRemoteCommand: function(remoteCommand) {
+        //    console.log("settingsView:executeRemoteCommand:" + remoteCommand);
+        //
+        //    switch (remoteCommand) {
+        //        case "MENU":
+        //            console.log("settingsView::invokeHomeHandler invoked");
+        //            this.trigger("invokeHome");
+        //            break;
+        //        case "UP":
+        //        case "DOWN":
+        //        case "LEFT":
+        //        case "RIGHT":
+        //            //this.navigate(remoteCommand);
+        //            break;
+        //        case "SELECT":
+        //            //this.select(remoteCommand);
+        //            break;
+        //    }
+        //},
     });
 
     return SettingsView;

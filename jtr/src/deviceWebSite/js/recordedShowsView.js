@@ -122,8 +122,12 @@ define(function () {
             $("#recordedShowsTableBody").append(theCompiledHtml);
 
             $("#recordedShowsPage").keydown(function (event) {
-                console.log("menu button pressed in recordedShowsPage");
-                self.trigger("invokeHome");
+                if (event.which == 'menu') {
+                    console.log("menu button pressed in recordedShowsPage");
+                    self.trigger("invokeHome");
+                    return true;
+                }
+                return false;
             });
 
             $.each(recordingIds, function (index, recordingId) {
@@ -164,8 +168,7 @@ define(function () {
                     //self.navigate(command);
 
                     if (typeof keyCode != "undefined") {
-                        self.navigate(keyCode);
-                        return true;
+                        return self.navigate(keyCode);
                     }
                     return false;
                     // not handling enter / select yet
@@ -255,7 +258,7 @@ define(function () {
                 }
                 else {
                     currentElementId = "#" + currentElementId;
-                    for (i = 0; i < this.recordedPageIds.length; i++) {
+                    for (var i = 0; i < this.recordedPageIds.length; i++) {
 
                         var recordingId = this.recordedPageIds[i][0];
                         var deleteId = this.recordedPageIds[i][1];
@@ -285,10 +288,14 @@ define(function () {
                         case 39:
                             if (colIndex < 1) colIndex++;
                             break;
+                        default:
+                            return false;
                     }
                 }
 
                 $(this.recordedPageIds[rowIndex][colIndex]).focus();
+
+                return true;
             }
 
         });

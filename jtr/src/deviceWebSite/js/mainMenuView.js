@@ -70,10 +70,6 @@ define(function () {
 
             var self = this;
 
-            //$("#recordedShows").keydown (function(event) {
-            //    console.log("recordedShows keydown");
-            //});
-
             $(".homePageBtn").keydown (function(event) {
                 // event.target
                 // event.target.id

@@ -384,6 +384,7 @@ define(['serverInterface','mainMenuController','recordedShowsController','record
                                         var handlersForKey = handlers[eventType];
                                         $.each(handlersForKey, function (index, handlerForKey) {
                                             var event = {};
+                                            event.which = "menu";
                                             event.data = handlerForKey.data;
                                             var eventHandled = handlerForKey.handler(event);
                                             if (eventHandled) {

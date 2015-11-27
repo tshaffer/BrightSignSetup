@@ -38,6 +38,15 @@ define(function () {
             console.log("ManualRecordView::render");
             this.$el.html(this.template()); // this.$el is a jQuery wrapped el var
 
+            $("#manualRecordPage").keydown(function (event) {
+                if (event.which == 'menu') {
+                    console.log("menu button pressed in manualRecordPage");
+                    self.trigger("invokeHome");
+                    return true;
+                }
+                return false;
+            });
+
             // set visual elements based on values in model
             var title = this.model.get('title');
             $("#manualRecordTitle").val(title);
@@ -76,6 +85,8 @@ define(function () {
             });
 
             $("#manualRecordPage").css("display", "block");
+
+            $("#manualRecordTitle").focus();
 
             return this;
         },

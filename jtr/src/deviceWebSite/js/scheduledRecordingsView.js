@@ -135,6 +135,15 @@ define(['stationsModel'], function (StationsModel) {
                 // Add the compiled html to the page
                 $("#scheduledRecordingsTableBody").append(theCompiledHtml);
 
+                $("#scheduledRecordingsPage").keydown(function (event) {
+                    if (event.which == 'menu') {
+                        console.log("menu button pressed in scheduledRecordingsPage");
+                        self.trigger("invokeHome");
+                        return true;
+                    }
+                    return false;
+                });
+
                 //var self = this;
                 //$.each(recordingIds, function (index, recordingId) {
                 //

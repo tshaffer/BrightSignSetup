@@ -25,6 +25,15 @@ define(['serverInterface'], function (serverInterface) {
 
         addHandlers: function() {
 
+            $("#channelGuidePage").keydown(function (event) {
+                if (event.which == 'menu') {
+                    console.log("menu button pressed in channelGuidePage");
+                    self.trigger("invokeHome");
+                    return true;
+                }
+                return false;
+            });
+
             var self = this;
             $("#btnNavigateBackwardOneDay").click(function (event) {
                 self.navigateBackwardOneDay();
