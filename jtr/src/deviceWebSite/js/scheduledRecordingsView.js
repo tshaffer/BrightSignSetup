@@ -8,6 +8,7 @@ define(['stationsModel'], function (StationsModel) {
         var ScheduledRecordingsView = Backbone.View.extend({
 
             stationsModel: null,
+            scheduledRecordingsAttributes: [],
 
             el: '#scheduledRecordingsPage',
 
@@ -28,7 +29,7 @@ define(['stationsModel'], function (StationsModel) {
                 var theTemplate = Handlebars.compile(theTemplateScript);
 
                 // Create the context for scheduled recordings
-                var scheduledRecordingsAttributes = [];
+                this.scheduledRecordingsAttributes = [];
                 var scheduledRecordingIds = [];
 
                 var self = this;
@@ -122,11 +123,11 @@ define(['stationsModel'], function (StationsModel) {
                     scheduledRecordingAttributes.Id = clickAction + id;
                     scheduledRecordingAttributes.Icon = icon;
 
-                    scheduledRecordingsAttributes.push(scheduledRecordingAttributes);
+                    self.scheduledRecordingsAttributes.push(scheduledRecordingAttributes);
                     scheduledRecordingIds.push(id);
                 });
                 var context = {
-                    scheduledRecordings : scheduledRecordingsAttributes
+                    scheduledRecordings : self.scheduledRecordingsAttributes
                 };
 
                 // Pass our data to the template
@@ -135,14 +136,14 @@ define(['stationsModel'], function (StationsModel) {
                 // Add the compiled html to the page
                 $("#scheduledRecordingsTableBody").append(theCompiledHtml);
 
-                $("#scheduledRecordingsPage").keydown(function (event) {
-                    if (event.which == 'menu') {
-                        console.log("menu button pressed in scheduledRecordingsPage");
-                        self.trigger("invokeHome");
-                        return true;
-                    }
-                    return false;
-                });
+                //$("#scheduledRecordingsPage").keydown(function (event) {
+                //    if (event.which == 'menu') {
+                //        console.log("menu button pressed in scheduledRecordingsPage");
+                //        self.trigger("invokeHome");
+                //        return true;
+                //    }
+                //    return false;
+                //});
 
                 //var self = this;
                 //$.each(recordingIds, function (index, recordingId) {
@@ -162,16 +163,25 @@ define(['stationsModel'], function (StationsModel) {
                     // stop an active recording
                     var btnIdStop = "#stop" + scheduledRecordingId;
                     $(btnIdStop).click({ scheduledRecordingId: scheduledRecordingId }, function (event) {
-                        //self.browser.stopActiveRecording(event);
-                        self.trigger("stopActiveRecording", scheduledRecordingId);
+                        self.trigger("stopActiveRecording", event.data.scheduledRecordingId);
                     });
 
                     // delete a scheduled recording
                     var btnIdDelete = "#delete" + scheduledRecordingId;
                     $(btnIdDelete).click({ scheduledRecordingId: scheduledRecordingId }, function (event) {
-                        self.trigger("deleteScheduledRecording", scheduledRecordingId);
+                        self.trigger("deleteScheduledRecording", event.data.scheduledRecordingId);
                     });
 
+                    $(btnIdDelete).keydown(function (keyEvent) {
+
+                        var keyCode = keyEvent.which;
+
+                        if (typeof keyCode != "undefined") {
+                            return self.navigate(keyCode);
+                        }
+                        return false;
+                        // not handling enter / select yet
+                    });
                 }
 
                 //self.scheduledRecordingIds.length = 0;
@@ -200,36 +210,77 @@ define(['stationsModel'], function (StationsModel) {
                 //    self.scheduledRecordingIds.push(scheduledRecordingRow);
                 //});
 
-
-
                 $("#scheduledRecordingsPage").css("display", "block");
+
+                // will fail if there are no scheduled recordings
+                $("#" + this.scheduledRecordingsAttributes[0].Id).focus();
 
                 return this;
             },
+
+            navigate: function (command) {
+
+                console.log("scheduledRecordingsView::navigate entry");
+
+                var rowIndex = -1;
+
+                var currentElement = document.activeElement;
+                var currentElementId = currentElement.id;
+
+                if (currentElementId == "") {
+                    rowIndex = 0;
+                }
+                else {
+                    for (var i = 0; i < this.scheduledRecordingsAttributes.length; i++) {
+
+                        var iconId = this.scheduledRecordingsAttributes[i].Id;
+
+                        if (iconId == currentElementId) {
+                            rowIndex = i;
+                            break;
+                        }
+                    }
+
+                    switch (command) {
+                        case 38:
+                            if (rowIndex > 0) rowIndex--;
+                            break;
+                        case 40:
+                            if (rowIndex < this.scheduledRecordingsAttributes.length) rowIndex++;
+                            break;
+                        default:
+                            return false;
+                    }
+                }
+
+                $("#" + this.scheduledRecordingsAttributes[rowIndex].Id).focus();
+
+                return true;
+            }
 
             //playSelectedShowCallback: function(event) {
             //    console.log("playback recording with id = " + event.data.recordingId);
             //}
 
-            executeRemoteCommand: function(remoteCommand) {
-                console.log("scheduledRecordingsView:executeRemoteCommand:" + remoteCommand);
-
-                switch (remoteCommand) {
-                    case "MENU":
-                        console.log("scheduledRecordingsView::invokeHomeHandler invoked");
-                        this.trigger("invokeHome");
-                        break;
-                    case "UP":
-                    case "DOWN":
-                    case "LEFT":
-                    case "RIGHT":
-                        //this.navigate(remoteCommand);
-                        break;
-                    case "SELECT":
-                        //this.select(remoteCommand);
-                        break;
-                }
-            },
+            //executeRemoteCommand: function(remoteCommand) {
+            //    console.log("scheduledRecordingsView:executeRemoteCommand:" + remoteCommand);
+            //
+            //    switch (remoteCommand) {
+            //        case "MENU":
+            //            console.log("scheduledRecordingsView::invokeHomeHandler invoked");
+            //            this.trigger("invokeHome");
+            //            break;
+            //        case "UP":
+            //        case "DOWN":
+            //        case "LEFT":
+            //        case "RIGHT":
+            //            //this.navigate(remoteCommand);
+            //            break;
+            //        case "SELECT":
+            //            //this.select(remoteCommand);
+            //            break;
+            //    }
+            //},
 
         });
 

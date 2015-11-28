@@ -366,7 +366,7 @@ define(['serverInterface','mainMenuController','recordedShowsController','record
                                     //        });
                                     //    }
                                     //}
-                                    else if (eventType == "keydown" && (remoteCommand == "UP" || remoteCommand == "DOWN" | remoteCommand == "LEFT" || remoteCommand == "RIGHT")) {
+                                    else if (eventType == "keydown" && (remoteCommand == "UP" || remoteCommand == "DOWN" | remoteCommand == "LEFT" || remoteCommand == "RIGHT" || remoteCommand == "HIGHEST_SPEED_RW" || remoteCommand == "PREV" || remoteCommand == "NEXT" || remoteCommand ==  "HIGHEST_SPEED_FW")) {
                                         //left = 37
                                         //up = 38
                                         //right = 39
@@ -387,6 +387,18 @@ define(['serverInterface','mainMenuController','recordedShowsController','record
                                                     break;
                                                 case "right":
                                                     event.which = 39;
+                                                    break;
+                                                case "highest_speed_rw":
+                                                    event.which = "highest_speed_rw";
+                                                    break;
+                                                case "highest_speed_fw":
+                                                    event.which = "highest_speed_fw";
+                                                    break;
+                                                case "prev":
+                                                    event.which = "prev";
+                                                    break;
+                                                case "next":
+                                                    event.which = "next";
                                                     break;
                                             }
                                             //event.which = remoteCommand.toLowerCase();

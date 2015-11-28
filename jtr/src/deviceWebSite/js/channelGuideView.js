@@ -81,6 +81,22 @@ define(['serverInterface'], function (serverInterface) {
                     case 39:
                         command = "right";
                         break;
+                    case "highest_speed_rw":
+                        self.navigateBackwardOneDay();
+                        return false;
+                        break;
+                    case "highest_speed_fw":
+                        self.navigateForwardOneDay();
+                        return false;
+                        break;
+                    case "prev":
+                        self.navigateBackwardOneScreen();
+                        return false;
+                        break;
+                    case "next":
+                        self.navigateForwardOneScreen();
+                        return false;
+                        break;
                 }
 
                 self.navigateChannelGuide(command);

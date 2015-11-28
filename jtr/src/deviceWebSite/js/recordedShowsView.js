@@ -121,14 +121,14 @@ define(function () {
             // Add the compiled html to the page
             $("#recordedShowsTableBody").append(theCompiledHtml);
 
-            $("#recordedShowsPage").keydown(function (event) {
-                if (event.which == 'menu') {
-                    console.log("menu button pressed in recordedShowsPage");
-                    self.trigger("invokeHome");
-                    return true;
-                }
-                return false;
-            });
+            //$("#recordedShowsPage").keydown(function (event) {
+            //    if (event.which == 'menu') {
+            //        console.log("menu button pressed in recordedShowsPage");
+            //        self.trigger("invokeHome");
+            //        return true;
+            //    }
+            //    return false;
+            //});
 
             $.each(recordingIds, function (index, recordingId) {
                 var btnIdPlayRecording = "#recording" + recordingId;
