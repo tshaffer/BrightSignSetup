@@ -642,6 +642,8 @@ define(['serverInterface','settingsModel'], function (serverInterface, SettingsM
                 $("#cgRecordingOptionsDlg").modal('hide');
                 self.reselectCurrentProgram();
             });
+
+            $("#cgRecordOptionsSave").focus();
         },
 
         cgRecordProgramViewUpcomingEpisodes: function () {
