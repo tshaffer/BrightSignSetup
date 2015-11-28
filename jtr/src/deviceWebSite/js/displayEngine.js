@@ -576,6 +576,11 @@ displayEngineStateMachine.prototype.tuneLiveVideoChannel = function (saveChannel
 }
 
 
+function executeRemoteCommand(remoteCommand) {
+    console.log("executeRemoteCommand:" + remoteCommand);
+    bsMessage.PostBSMessage({ command: "remoteCommand", "remoteCommand": remoteCommand });
+}
+
 displayEngineStateMachine.prototype.STPlayingEventHandler = function (event, stateData) {
 
     // events handled

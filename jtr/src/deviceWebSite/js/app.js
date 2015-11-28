@@ -39,6 +39,8 @@ define(['serverInterface','mainMenuController','recordedShowsController','record
                 this.mainMenuController.show();
                 this.footerController.show();
 
+                this.serverInterface = serverInterface;
+
                 this.activePage = "homePage";
 
                 this.listenTo(mainMenuController, "activePageChange", function (newActivePage) {
@@ -77,55 +79,10 @@ define(['serverInterface','mainMenuController','recordedShowsController','record
                     this.executeReturnToHome();
                 });
 
-                this.serverInterface = serverInterface;
-
                 this.listenTo(this.footerController, "invokeRemote", function (id) {
-                    console.log("app.js:: invokeRemote event received, id = " + id);
-
-                    var cmd;
-
-                    switch (id) {
-                        case "btnRemoteRecord":
-                        case "remoteRecord":
-                            cmd = "record";
-                            break;
-                        case "btnRemoteStop":
-                        case "remoteStop":
-                            cmd = "stop";
-                            break;
-                        case "btnRemoteRewind":
-                        case "remoteRewind":
-                            cmd = "rewind";
-                            break;
-                        case "btnRemoteInstantReplay":
-                        case "remoteInstantReplay":
-                            cmd = "instantReplay";
-                            break;
-                        case "btnRemotePause":
-                        case "remotePause":
-                            cmd = "pause";
-                            break;
-                        case "btnRemotePlay":
-                        case "remotePlay":
-                            cmd = "play";
-                            break;
-                        case "btnRemoteQuickSkip":
-                        case "remoteQuickSkip":
-                            cmd = "quickSkip";
-                            break;
-                        case "btnRemoteFastForward":
-                        case "remoteFastForward":
-                            cmd = "fastForward";
-                            break;
-                    }
-                    ;
-
-                    var commandData = {"command": "remoteCommand", "value": cmd};
-                    var remotePromise = self.serverInterface.browserCommand(commandData);
-
+                    this.executeRemoteCommand(id);
                     return false;
                 });
-
 
                 // taken from BrightSign.js
                 console.log("JTR javascript .ready invoked");
@@ -356,6 +313,9 @@ define(['serverInterface','mainMenuController','recordedShowsController','record
                     if (remoteCommand == "MENU") {
                         this.executeReturnToHome();
                     }
+                    else if (remoteCommand == "PAUSE" || remoteCommand == "PLAY" || remoteCommand == "FF" || remoteCommand == "RW" || remoteCommand == "INSTANT_REPLAY" || remoteCommand == "QUICK_SKIP" || remoteCommand == "STOP" || remoteCommand == "RECORD") {
+                        this.executeRemoteCommand(remoteCommand.toLowerCase());
+                    }
                     else {
 
                         var inputHandled = false;
@@ -471,6 +431,59 @@ define(['serverInterface','mainMenuController','recordedShowsController','record
                 this.mainMenuController.show();
 
                 return false;
+            },
+
+            executeRemoteCommand: function(id) {
+
+                console.log("app.js:: invokeRemote event received, id = " + id);
+
+                var cmd;
+
+                switch (id) {
+                    case "btnRemoteRecord":
+                    case "remoteRecord":
+                    case "record":
+                        cmd = "record";
+                        break;
+                    case "btnRemoteStop":
+                    case "remoteStop":
+                    case "stop":
+                        cmd = "stop";
+                        break;
+                    case "btnRemoteRewind":
+                    case "remoteRewind":
+                    case "rw":
+                        cmd = "rewind";
+                        break;
+                    case "btnRemoteInstantReplay":
+                    case "remoteInstantReplay":
+                    case "instant_replay":
+                        cmd = "instantReplay";
+                        break;
+                    case "btnRemotePause":
+                    case "remotePause":
+                    case "pause":
+                        cmd = "pause";
+                        break;
+                    case "btnRemotePlay":
+                    case "remotePlay":
+                    case "play":
+                        cmd = "play";
+                        break;
+                    case "btnRemoteQuickSkip":
+                    case "remoteQuickSkip":
+                    case "quick_skip":
+                        cmd = "quickSkip";
+                        break;
+                    case "btnRemoteFastForward":
+                    case "remoteFastForward":
+                    case "ff":
+                        cmd = "fastForward";
+                        break;
+                };
+
+                var commandData = {"command": "remoteCommand", "value": cmd};
+                var remotePromise = this.serverInterface.browserCommand(commandData);
             },
 
             eraseUI: function() {
