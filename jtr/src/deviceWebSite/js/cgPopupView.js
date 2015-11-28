@@ -34,7 +34,7 @@ define(['serverInterface','settingsModel'], function (serverInterface, SettingsM
 
         cgPopupSeriesElements: ["#cgEpisodeRecord", "#cgSeriesRecordSetProgramOptions", "#cgSeriesRecord", "#cgSeriesTune", "#cgSeriesClose"],
 
-        cgPopupScheduledSeriesElements: ["cgSeriesCancelEpisode", "cgSeriesCancelSeries", "cgSeriesViewUpcoming", "cgSeriesRecordingTune", "cgSeriesRecordingClose"],
+        cgPopupScheduledSeriesElements: ["#cgSeriesCancelEpisode", "#cgSeriesCancelSeries", "#cgSeriesViewUpcoming", "#cgSeriesRecordingTune", "#cgSeriesRecordingClose"],
 
         stopTimeOptions: ["30 minutes early", "15 minutes early", "10 minutes early", "5 minutes early", "On time", "5 minutes late", "10 minutes late", "15 minutes late", "30 minute late", "1 hour late", "1 1/2 hours late", "2 hours late", "3 hours late"],
         stopTimeOffsets: [-30, -15, -10, -5, 0, 5, 10, 15, 30, 60, 90, 120, 180],

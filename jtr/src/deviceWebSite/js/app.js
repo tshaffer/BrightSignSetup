@@ -352,102 +352,110 @@ define(['serverInterface','mainMenuController','recordedShowsController','record
                 if (msSinceLastCommand > 400) {
                     this.lastRemoteEventTime = now;
 
-                    var inputHandled = false;
+                    // handle hard keys here
+                    if (remoteCommand == "MENU") {
+                        this.executeReturnToHome();
+                    }
+                    else {
 
-                    //handlers = $._data( document.getElementById("recording1"), "events" )
-                    var currentElement = document.activeElement;
-                    var originalTarget = currentElement;
+                        var inputHandled = false;
 
-                    while (typeof currentElement == 'object') {
+                        //handlers = $._data( document.getElementById("recording1"), "events" )
+                        var currentElement = document.activeElement;
+                        var originalTarget = currentElement;
 
-                        var handlers = $._data(currentElement, "events")
-                        if (typeof handlers != 'undefined') {
+                        while (typeof currentElement == 'object') {
 
-                            for (var eventType in handlers) {
+                            var handlers = $._data(currentElement, "events")
+                            if (typeof handlers != 'undefined') {
 
-                                // match handler event type to remote control key (only handle click for now)
-                                if (eventType == "click" && remoteCommand == "SELECT") {
-                                    if (handlers.hasOwnProperty(eventType)) {
-                                        console.log("handlers eventType = " + eventType);
-                                        var handlersForKey = handlers[eventType];
-                                        $.each(handlersForKey, function (index, handlerForKey) {
-                                            // MEGAHACK
-                                            if (handlerForKey.namespace != "bs.dismiss.modal") {
-                                                var event = {};
-                                                event.data = handlerForKey.data;
-                                                event.target = originalTarget;  // is this right? click always goes to the button that had focus when select was pressed.
-                                                handlerForKey.handler(event);
-                                                inputHandled = true;
-                                                return false;
-                                            }
-                                        });
+                                for (var eventType in handlers) {
+
+                                    // match handler event type to remote control key (only handle click for now)
+                                    if (eventType == "click" && remoteCommand == "SELECT") {
+                                        if (handlers.hasOwnProperty(eventType)) {
+                                            console.log("handlers eventType = " + eventType);
+                                            var handlersForKey = handlers[eventType];
+                                            $.each(handlersForKey, function (index, handlerForKey) {
+                                                // MEGAHACK
+                                                if (handlerForKey.namespace != "bs.dismiss.modal") {
+                                                    var event = {};
+                                                    event.data = handlerForKey.data;
+                                                    event.target = originalTarget;  // is this right? click always goes to the button that had focus when select was pressed.
+                                                    handlerForKey.handler(event);
+                                                    inputHandled = true;
+                                                    return false;
+                                                }
+                                            });
+                                        }
                                     }
-                                }
-                                else if (eventType == "keydown" && remoteCommand == "MENU") {
-                                    if (handlers.hasOwnProperty(eventType)) {
+                                    //else if (eventType == "keydown" && remoteCommand == "MENU") {
+                                    //    if (handlers.hasOwnProperty(eventType)) {
+                                    //        console.log("handlers eventType = " + eventType);
+                                    //        var handlersForKey = handlers[eventType];
+                                    //        $.each(handlersForKey, function (index, handlerForKey) {
+                                    //            var event = {};
+                                    //            event.which = "menu";
+                                    //            event.data = handlerForKey.data;
+                                    //            event.target = currentElement;
+                                    //            var eventHandled = handlerForKey.handler(event);
+                                    //            if (eventHandled) {
+                                    //                inputHandled = true;
+                                    //            }
+                                    //            return false;
+                                    //        });
+                                    //    }
+                                    //}
+                                    else if (eventType == "keydown" && (remoteCommand == "UP" || remoteCommand == "DOWN" | remoteCommand == "LEFT" || remoteCommand == "RIGHT")) {
+                                        //left = 37
+                                        //up = 38
+                                        //right = 39
+                                        //down = 40
                                         console.log("handlers eventType = " + eventType);
                                         var handlersForKey = handlers[eventType];
                                         $.each(handlersForKey, function (index, handlerForKey) {
                                             var event = {};
-                                            event.which = "menu";
-                                            event.data = handlerForKey.data;
-                                            event.target = currentElement;
-                                            var eventHandled = handlerForKey.handler(event);
-                                            if (eventHandled) {
-                                                inputHandled = true;
+                                            switch (remoteCommand.toLowerCase()) {
+                                                case "up":
+                                                    event.which = 38;
+                                                    break;
+                                                case "down":
+                                                    event.which = 40;
+                                                    break;
+                                                case "left":
+                                                    event.which = 37;
+                                                    break;
+                                                case "right":
+                                                    event.which = 39;
+                                                    break;
                                             }
+                                            //event.which = remoteCommand.toLowerCase();
+                                            //event.data = handlerForKey.data;
+                                            // set event.target to currentElement?
+                                            event.target = currentElement;
+                                            handlerForKey.handler(event);
+                                            inputHandled = true;
                                             return false;
                                         });
                                     }
                                 }
-                                else if (eventType == "keydown" && (remoteCommand == "UP" || remoteCommand == "DOWN" | remoteCommand == "LEFT" || remoteCommand == "RIGHT")) {
-                                    //left = 37
-                                    //up = 38
-                                    //right = 39
-                                    //down = 40
-                                    console.log("handlers eventType = " + eventType);
-                                    var handlersForKey = handlers[eventType];
-                                    $.each(handlersForKey, function (index, handlerForKey) {
-                                        var event = {};
-                                        switch (remoteCommand.toLowerCase()) {
-                                            case "up":
-                                                event.which = 38;
-                                                break;
-                                            case "down":
-                                                event.which = 40;
-                                                break;
-                                            case "left":
-                                                event.which = 37;
-                                                break;
-                                            case "right":
-                                                event.which = 39;
-                                                break;
-                                        }
-                                        //event.which = remoteCommand.toLowerCase();
-                                        //event.data = handlerForKey.data;
-                                        // set event.target to currentElement?
-                                        event.target = currentElement;
-                                        handlerForKey.handler(event);
-                                        inputHandled = true;
-                                        return false;
-                                    });
-                                }
+                            }
+
+                            //if (!inputHandled) {
+                            //    //debugger;
+                            //    //self.trigger("remoteCommand", self.activePage, remoteCommand);
+                            //}
+
+                            if (inputHandled) {
+                                return;
+                            }
+
+                            if (typeof currentElement.parentElement != "undefined") {
+                                currentElement = currentElement.parentElement;
                             }
                         }
-
-                        //if (!inputHandled) {
-                        //    //debugger;
-                        //    //self.trigger("remoteCommand", self.activePage, remoteCommand);
-                        //}
-
-                        if (inputHandled) {
-                            return;
-                        }
-
-                        if (typeof currentElement.parentElement != "undefined") {
-                            currentElement = currentElement.parentElement;
-                        }
                     }
+
                 }
                 else {
                     console.log("ignore extraneous remote input");
@@ -473,6 +481,14 @@ define(['serverInterface','mainMenuController','recordedShowsController','record
                 $("#recordedShowsPage").css("display", "none");
                 $("#scheduledRecordingsPage").css("display", "none");
                 $("#settingsPage").css("display", "none");
+
+                $("#cgSeriesDlg").modal('hide');
+                $("#cgScheduledSeriesDlg").modal('hide');
+                $("#cgScheduledRecordingDlg").modal('hide');
+                $("#cgProgramDlg").modal('hide');
+                $("#cgScheduledRecordingDlg").modal('hide');
+                $("#cgRecordingOptionsDlg").modal('hide');
+
             },
 
         }
