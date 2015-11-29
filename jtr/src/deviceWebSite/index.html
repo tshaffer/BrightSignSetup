@@ -31,9 +31,6 @@
     <script src="./js/displayEngine.js"></script>
 
 
-
-
-
     <script data-main="js/main" src="./lib/require.js"></script>
 
     <script type="text/template" id="manualRecordTemplate">
@@ -236,16 +233,16 @@
 
     <script id="homePageTemplate" type="text/x-handlebars-template">
         <div class="col-lg-6">
-            <button id="recordedShows" class="btn btn-primary tv-words" autofocus>Recorded Shows</button><br><br>
-            <button id="recordNow" class="btn btn-secondary tv-words">Record Now</button><br><br>
-            <button id="manualRecord" class="btn btn-secondary tv-words">Manual Record</button><br><br>
+            <button id="recordedShows" class="btn btn-primary tv-words homePageBtn" autofocus>Recorded Shows</button><br><br>
+            <button id="recordNow" class="btn btn-secondary tv-words homePageBtn">Record Now</button><br><br>
+            <button id="manualRecord" class="btn btn-secondary tv-words homePageBtn">Manual Record</button><br><br>
         </div>
 
         <div class="col-lg-6">
-            <button id="liveVideo" class="btn btn-secondary tv-words">Live Video</button><br><br>
-            <button id="channelGuideId" class="btn btn-secondary tv-words">Channel Guide</button><br><br>
-            <button id="scheduledRecordings" class="btn btn-secondary tv-words">Scheduled Recordings</button><br><br>
-            <button id="settings" class="btn btn-secondary tv-words">Settings</button><br><br>
+            <button id="liveVideo" class="btn btn-secondary tv-words homePageBtn">Live Video</button><br><br>
+            <button id="channelGuideId" class="btn btn-secondary tv-words homePageBtn">Channel Guide</button><br><br>
+            <button id="scheduledRecordings" class="btn btn-secondary tv-words homePageBtn">Scheduled Recordings</button><br><br>
+            <button id="settings" class="btn btn-secondary tv-words homePageBtn">Settings</button><br><br>
         </div>
     </script>
 
@@ -361,6 +358,15 @@
                     <button type="button" class="btn btn-default btn-secondary modalButton" id="cgSeriesRecordingClose">Close</button> <br />
                 </div>
             </div>
+        </div>
+    </div>
+
+    <div id="videoPlayer">
+        <div id="videoControlRegion">
+            <button type='button' id="transportIconButton" class='btn btn-default recorded-shows-icon transportIcon' aria-label='Left Align'>
+                <span id="transportPrefix"></span>
+                <span id="transportIconSpan" class='glyphicon glyphicon-play' aria-hidden='true'></span>
+            </button>
         </div>
     </div>
 
