@@ -36,6 +36,8 @@ define(['serverInterface','settingsModel'], function (serverInterface, SettingsM
 
         cgPopupScheduledSeriesElements: ["#cgSeriesCancelEpisode", "#cgSeriesCancelSeries", "#cgSeriesViewUpcoming", "#cgSeriesRecordingTune", "#cgSeriesRecordingClose"],
 
+        cgPopupRecordingOptionsElements: ["#cgRecordOptionsStartTimeLabel","#cgRecordOptionsStopTimeLabel","#cgRecordOptionsSave","#cgRecordOptionsCancel"],
+
         stopTimeOptions: ["30 minutes early", "15 minutes early", "10 minutes early", "5 minutes early", "On time", "5 minutes late", "10 minutes late", "15 minutes late", "30 minute late", "1 hour late", "1 1/2 hours late", "2 hours late", "3 hours late"],
         stopTimeOffsets: [-30, -15, -10, -5, 0, 5, 10, 15, 30, 60, 90, 120, 180],
 
@@ -59,6 +61,7 @@ define(['serverInterface','settingsModel'], function (serverInterface, SettingsM
             this.cgPopupScheduledProgramHandlers = [this.cgCancelScheduledRecording, this.cgChangeScheduledRecordingOptions, this.cgScheduledRecordingViewUpcomingEpisodes, this.cgScheduledRecordingTune, this.cgScheduledRecordingClose];
             this.cgPopupSeriesHandlers = [this.cgRecordSelectedProgram, this.cgRecordProgramSetOptions, this.cgRecordSelectedSeries, this.cgTuneFromClient, this.cgModalClose];
             this.cgPopupSchedulesSeriesHandlers = [this.cgCancelScheduledRecording, this.cgCancelScheduledSeries, this.cgScheduledSeriesViewUpcoming, this.cgTuneFromClient, this.cgModalClose];
+            this.cgPopupRecordingOptionsHandlers = [null, null, this.cgRecordOptionsSave, this.cgRecordOptionsCancel];
         },
 
         show: function(programData) {
@@ -272,7 +275,6 @@ define(['serverInterface','settingsModel'], function (serverInterface, SettingsM
                                 self.invokeCloseDialog();
                                 break;
                         }
-                        break;
                         break;
                     case "#cgScheduledRecordingDlg":
                         switch (self.cgPopupSelectedIndex) {
@@ -589,6 +591,64 @@ define(['serverInterface','settingsModel'], function (serverInterface, SettingsM
                 return false;
             });
 
+            $("#cgRecordingOptionsDlg").off("keydown");
+            $("#cgRecordingOptionsDlg").keydown(function (keyEvent) {
+                var command = "";
+
+                var keyCode = keyEvent.which;
+                switch (keyCode) {
+                    case 37: // left
+                        if (self.cgPopupSelectedIndex == 0) {
+                            self.cgRecordOptionsNextEarlyStartTime();
+                        }
+                        else if (self.cgPopupSelectedIndex == 1) {
+                            self.cgRecordOptionsNextEarlyStopTime();
+                        }
+                        break;
+                    case 39: // right
+                        if (self.cgPopupSelectedIndex == 0) {
+                            self.cgRecordOptionsNextLateStartTime();
+                        }
+                        else if (self.cgPopupSelectedIndex == 1) {
+                            self.cgRecordOptionsNextLateStopTime();
+                        }
+                        break;
+                    case 38:
+                        self.cgProgramDlgUp();
+                        break;
+                    case 40:
+                        self.cgProgramDlgDown();
+                        break;
+                }
+
+                return false;
+            });
+
+            var addRecordToDB = true;
+            if (this.cgSelectedProgram.scheduledRecordingId > 0) {
+                addRecordToDB = false;
+            }
+
+            $("#cgRecordingOptionsDlg").click(function (event) {
+                console.log("click pressed");
+                switch (self.cgPopupSelectedIndex) {
+                    case 0:
+                        break;
+                    case 1:
+                        break;
+                    case 2:
+                        self.cgRecordOptionsSave(addRecordToDB);
+                        break;
+                    case 3:
+                        self.cgRecordOptionsCancel();
+                        break;
+                }
+            });
+
+            this.cgPopupSelectedIndex = 0;
+            this.cgPopupElements = this.cgPopupRecordingOptionsElements;
+            this.cgPopupHandlers = this.cgPopupRecordingOptionsHandlers;
+
             // for a program that has not been setup to record, this.cgSelectedProgram.startTimeOffset = 0, etc.
             this.stopTimeIndex = this.stopTimeOnTimeIndex;
             this.startTimeIndex = this.startTimeOnTimeIndex;
@@ -611,39 +671,54 @@ define(['serverInterface','settingsModel'], function (serverInterface, SettingsM
             this.displayStopTimeSetting();
 
             // highlight first button; unhighlight other buttons
-            $("#cgRecordOptionsStopTime").removeClass("btn-secondary");
-            $("#cgRecordOptionsStopTime").addClass("btn-primary");
-            $("#cgRecordOptionsStartTime").removeClass("btn-primary");
-            $("#cgRecordOptionsStartTime").addClass("btn-secondary");
+            $("#cgRecordOptionsStartTimeLabel").removeClass("btn-secondary");
+            $("#cgRecordOptionsStartTimeLabel").addClass("btn-primary");
+            $("#cgRecordOptionsStopTimeLabel").removeClass("btn-primary");
+            $("#cgRecordOptionsStopTimeLabel").addClass("btn-secondary");
             $("#cgRecordOptionsSave").removeClass("btn-primary");
             $("#cgRecordOptionsSave").addClass("btn-secondary");
             $("#cgRecordOptionsCancel").removeClass("btn-primary");
             $("#cgRecordOptionsCancel").addClass("btn-secondary");
 
-
-            var addRecordToDB = true;
-            if (this.cgSelectedProgram.scheduledRecordingId > 0) {
-                addRecordToDB = false;
-            }
             $("#cgRecordOptionsSave").click(function (event) {
-                $("#cgRecordOptionsSave").unbind("click");
-                $("#cgRecordingOptionsDlg").modal('hide');
-                //self.cgRecordProgramFromClient(addRecordToDB, self.channelGuide.retrieveScheduledRecordings);
-
-                var promise = self.cgRecordProgramFromClient(addRecordToDB);
-                promise.then(function() {
-                    serverInterface.retrieveScheduledRecordings();
-                })
-
-                self.reselectCurrentProgram();
+                //$("#cgRecordOptionsSave").unbind("click");
+                //$("#cgRecordingOptionsDlg").modal('hide');
+                ////self.cgRecordProgramFromClient(addRecordToDB, self.channelGuide.retrieveScheduledRecordings);
+                //
+                //var promise = self.cgRecordProgramFromClient(addRecordToDB);
+                //promise.then(function() {
+                //    serverInterface.retrieveScheduledRecordings();
+                //})
+                //
+                //self.reselectCurrentProgram();
+                self.cgRecordOptionsSave(addRecordToDB);
             });
 
             $("#cgRecordOptionsCancel").click(function (event) {
-                $("#cgRecordingOptionsDlg").modal('hide');
-                self.reselectCurrentProgram();
+                //$("#cgRecordingOptionsDlg").modal('hide');
+                //self.reselectCurrentProgram();
+                self.cgRecordOptionsCancel();
             });
 
             $("#cgRecordOptionsSave").focus();
+        },
+
+        cgRecordOptionsSave: function(addRecordToDB) {
+            $("#cgRecordOptionsSave").unbind("click");
+            $("#cgRecordingOptionsDlg").modal('hide');
+            //self.cgRecordProgramFromClient(addRecordToDB, self.channelGuide.retrieveScheduledRecordings);
+
+            var promise = this.cgRecordProgramFromClient(addRecordToDB);
+            promise.then(function() {
+                serverInterface.retrieveScheduledRecordings();
+            })
+
+            this.reselectCurrentProgram();
+        },
+
+        cgRecordOptionsCancel: function() {
+            $("#cgRecordingOptionsDlg").modal('hide');
+            this.reselectCurrentProgram();
         },
 
         cgRecordProgramViewUpcomingEpisodes: function () {
