@@ -313,6 +313,12 @@ define(['serverInterface','mainMenuController','recordedShowsController','record
                     if (remoteCommand == "MENU") {
                         this.executeReturnToHome();
                     }
+                    else if (remoteCommand == "RECORDED_SHOWS") {
+                        this.executeDisplayRecordedShows();
+                    }
+                    else if (remoteCommand == "GUIDE") {
+                        this.executeDisplayChannelGuide();
+                    }
                     else if (remoteCommand == "PAUSE" || remoteCommand == "PLAY" || remoteCommand == "FF" || remoteCommand == "RW" || remoteCommand == "INSTANT_REPLAY" || remoteCommand == "QUICK_SKIP" || remoteCommand == "STOP" || remoteCommand == "RECORD" || remoteCommand == "PROGRESS_BAR" || remoteCommand == "CLOCK") {
                         this.executeRemoteCommand(remoteCommand.toLowerCase());
                     }
@@ -435,13 +441,20 @@ define(['serverInterface','mainMenuController','recordedShowsController','record
             },
 
             executeReturnToHome: function() {
-
-                console.log("app.js:: invokeHome event received");
-
                 this.eraseUI();
-
                 this.mainMenuController.show();
+                return false;
+            },
 
+            executeDisplayRecordedShows: function() {
+                this.eraseUI();
+                recordedShowsController.show();
+                return false;
+            },
+
+            executeDisplayChannelGuide: function() {
+                this.eraseUI();
+                channelGuideController.show();
                 return false;
             },
 
@@ -506,6 +519,7 @@ define(['serverInterface','mainMenuController','recordedShowsController','record
 
             eraseUI: function() {
                 // erase all main div's
+                $("#homePage").css("display", "none");
                 $("#manualRecordPage").css("display", "none");
                 $("#recordNowPage").css("display", "none");
                 $("#channelGuidePage").css("display", "none");
