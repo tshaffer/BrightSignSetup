@@ -69,6 +69,7 @@ define(['serverInterface', 'scheduledRecordingsModel','scheduledRecordingsView']
 
             this.scheduledRecordingsModel.fetch({
                 data: $.param({currentDateTime: currentDateTimeIso}),
+                reset: true,
                 success: function (model, response, options) {
                     console.log("JSON file load was successful", self.scheduledRecordingsModel);
                     console.log("number of scheduled recordings = " + self.scheduledRecordingsModel.models.length.toString());
