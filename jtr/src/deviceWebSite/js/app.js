@@ -313,7 +313,7 @@ define(['serverInterface','mainMenuController','recordedShowsController','record
                     if (remoteCommand == "MENU") {
                         this.executeReturnToHome();
                     }
-                    else if (remoteCommand == "PAUSE" || remoteCommand == "PLAY" || remoteCommand == "FF" || remoteCommand == "RW" || remoteCommand == "INSTANT_REPLAY" || remoteCommand == "QUICK_SKIP" || remoteCommand == "STOP" || remoteCommand == "RECORD") {
+                    else if (remoteCommand == "PAUSE" || remoteCommand == "PLAY" || remoteCommand == "FF" || remoteCommand == "RW" || remoteCommand == "INSTANT_REPLAY" || remoteCommand == "QUICK_SKIP" || remoteCommand == "STOP" || remoteCommand == "RECORD" || remoteCommand == "PROGRESS_BAR" || remoteCommand == "CLOCK") {
                         this.executeRemoteCommand(remoteCommand.toLowerCase());
                     }
                     else {
@@ -452,6 +452,12 @@ define(['serverInterface','mainMenuController','recordedShowsController','record
                 var cmd;
 
                 switch (id) {
+                    case "clock":
+                        cmd = "clock";
+                        break;
+                    case "progress_bar":
+                        cmd = "progress_bar";
+                        break;
                     case "btnRemoteRecord":
                     case "remoteRecord":
                     case "record":
