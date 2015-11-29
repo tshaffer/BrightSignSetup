@@ -1,4 +1,7 @@
-﻿function tuneChannel(channel, saveChannelToDB) {
+﻿var _hdmiInputPort = 0;
+var _maxHDMIInput = 2;
+
+function tuneChannel(channel, saveChannelToDB) {
 
     console.log("XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX tuneChannel: channel = " + channel + ", saveChannelToDB=" + saveChannelToDB);
 
@@ -123,7 +126,7 @@ function cycleHDMIInputs(up) {
 
 function programHDMIInput(targetPort) {
 
-    console.log("696969696969696969696969696969696969696969696969 programHDMIInput(): currentPort=" + _hdmiInputPort.toString() + ", targtePort=" + targetPort.toString());
+    console.log("696969696969696969696969696969696969696969696969 programHDMIInput(): currentPort=" + _hdmiInputPort.toString() + ", targetPort=" + targetPort.toString());
 
     if (targetPort == _hdmiInputPort) {
         console.log("programHDMIInput(): port == _hdmiInputPort (" + targetPort.toString() + ")");

@@ -143,8 +143,6 @@ define(['serverInterface','mainMenuController','recordedShowsController','record
                     console.log("unable to create ir_transmitter");
                 }
 
-                // put in appropriate place - is this too early?
-                initializeEpgData();
 
                 // message port for getting messages from the BrightSign via roMessagePort
                 bsMessage = new BSMessagePort();
@@ -173,7 +171,7 @@ define(['serverInterface','mainMenuController','recordedShowsController','record
                             // temporary location - JTRTODO
                             initializeEpgData();
 
-                            retrieveSettings(indicateReady);
+                            //retrieveSettings(indicateReady);
                             break;
                         case "remoteCommand":
                             var event = {};
@@ -292,6 +290,9 @@ define(['serverInterface','mainMenuController','recordedShowsController','record
                             break;
                     }
                 }
+
+                initializeEpgData();
+                this.indicateReady();
             },
 
             processIRInput: function(e) {
@@ -539,6 +540,11 @@ define(['serverInterface','mainMenuController','recordedShowsController','record
 
             },
 
+            indicateReady: function() {
+                // post message indicating that initialization is complete ??
+                event["EventType"] = "READY";
+                postMessage(event);
+            },
         }
 
         appController.init();
