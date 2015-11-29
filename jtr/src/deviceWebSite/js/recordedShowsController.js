@@ -74,6 +74,7 @@ define(['serverInterface','recordedShowsModel','recordedShowsView'], function (s
             var self = this;
 
             this.recordedShowsModel.fetch({
+                reset: true,
                 success: function () {
                     console.log("JSON file load was successful", self.recordedShowsModel);
                     console.log("number of recorded shows = " + self.recordedShowsModel.models.length.toString());

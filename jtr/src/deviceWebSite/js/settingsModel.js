@@ -29,6 +29,7 @@ define(['serverInterface'], function (serverInterface) {
             return new Promise(function(resolve, reject) {
 
                 self.fetch({
+                    reset: true,
                     success: function (model, response, options) {
                         console.log("settings load was successful");
                         resolve();

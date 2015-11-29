@@ -71,6 +71,7 @@ define(['serverInterface'], function (serverInterface) {
                 var epgStartDate = new Date().toString("yyyy-MM-dd");
 
                 self.fetch({
+                    reset: true,
                     data: $.param({startDate: epgStartDate}),
                     success: function (model, response, options) {
                         console.log("XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX getEpg success ************************************");
