@@ -182,6 +182,16 @@ define(['stationsModel'], function (StationsModel) {
                         return false;
                         // not handling enter / select yet
                     });
+                    $(btnIdStop).keydown(function (keyEvent) {
+
+                        var keyCode = keyEvent.which;
+
+                        if (typeof keyCode != "undefined") {
+                            return self.navigate(keyCode);
+                        }
+                        return false;
+                        // not handling enter / select yet
+                    });
                 }
 
                 //self.scheduledRecordingIds.length = 0;
