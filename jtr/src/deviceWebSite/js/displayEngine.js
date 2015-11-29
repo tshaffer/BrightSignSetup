@@ -14,16 +14,20 @@
     this.stTop = new HState(this, "Top");
     this.stTop.HStateEventHandler = STTopEventHandler;
 
+    this.stDisplayer = new HState(this, "Idle");
+    this.stDisplayer.HStateEventHandler = this.STDisplayerEventHandler;
+    this.stDisplayer.superState = this.stTop;
+
     this.stIdle = new HState(this, "Idle");
     this.stIdle.HStateEventHandler = this.STIdleEventHandler;
-    this.stIdle.superState = this.stTop;
+    this.stIdle.superState = this.stDisplayer;
     this.stIdle.playSelectedShow = this.playSelectedShow;
     this.stIdle.toggleClock = this.toggleClock;
     this.stIdle.formatCurrentTime = this.formatCurrentTime;
 
     this.stShowingVideo = new HState(this, "ShowingVideo");
     this.stShowingVideo.HStateEventHandler = this.STShowingVideoEventHandler;
-    this.stShowingVideo.superState = this.stTop;
+    this.stShowingVideo.superState = this.stDisplayer;
     this.stShowingVideo.calculateProgressBarParameters = this.calculateProgressBarParameters;
     this.stShowingVideo.toggleProgressBar = this.toggleProgressBar;
     this.stShowingVideo.updateProgressBarGraphics = this.updateProgressBarGraphics;
@@ -81,6 +85,37 @@ displayEngineStateMachine.prototype.InitializeDisplayEngineHSM = function () {
     this.priorSelectedRecording = null;
 
     return this.stIdle;
+}
+
+
+function executeDeleteSelectedShow(recordingId) {
+
+    console.log("executeDeleteSelectedShow " + recordingId);
+    bsMessage.PostBSMessage({ command: "deleteRecordedShow", "recordingId": recordingId });
+}
+
+
+displayEngineStateMachine.prototype.STDisplayerEventHandler = function (event, stateData) {
+
+    stateData.nextState = null;
+    this.clockTimer = null;
+
+    if (event["EventType"] == "ENTRY_SIGNAL") {
+        console.log(this.id + ": entry signal");
+        return "HANDLED";
+    }
+    else if (event["EventType"] == "EXIT_SIGNAL") {
+        console.log(this.id + ": exit signal");
+        return "HANDLED";
+    }
+    else if (event["EventType"] == "DELETE_RECORDED_SHOW") {
+        var recordingId = event["EventData"];
+        executeDeleteSelectedShow(recordingId);
+        return "HANDLED";
+    }
+
+    stateData.nextState = this.superState;
+    return "SUPER";
 }
 
 
