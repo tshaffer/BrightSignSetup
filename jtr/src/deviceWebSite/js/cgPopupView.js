@@ -349,6 +349,10 @@ define(['serverInterface','settingsModel'], function (serverInterface, SettingsM
                     case 40:
                         self.cgProgramDlgDown();
                         break;
+                    case "exit":
+                        $(self.cgPopupId).modal('hide');
+                        self.reselectCurrentProgram();
+                        break;
                 }
 
                 return false;
@@ -618,6 +622,10 @@ define(['serverInterface','settingsModel'], function (serverInterface, SettingsM
                         break;
                     case 40:
                         self.cgProgramDlgDown();
+                        break;
+                    case "exit":
+                        $("#cgRecordingOptionsDlg").modal('hide');
+                        self.reselectCurrentProgram();
                         break;
                 }
 

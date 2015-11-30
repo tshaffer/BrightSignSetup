@@ -75,7 +75,13 @@ define(function () {
                 // event.target.id
                 // event.which
                 console.log("homePageBtn keydown");
-                self.navigate(event.which);
+
+                if (event.which == "exit") {
+                    self.trigger("eraseUI")
+                }
+                else {
+                    self.navigate(event.which);
+                }
             });
 
             $("#recordedShows").click(function (event) {

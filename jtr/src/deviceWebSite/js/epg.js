@@ -75,6 +75,7 @@ function getStations(nextFunction) {
 
     console.log("getStations() invoked");
 
+    //baseURL = "http://localHost:8080/";
     var url = baseURL + "getStations";
 
     var jqxhr = $.ajax({

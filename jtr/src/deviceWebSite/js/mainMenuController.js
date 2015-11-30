@@ -77,6 +77,32 @@ define(['mainMenuView','manualRecordController', 'recordNowController', 'recorde
                 settingsController.show();
             });
 
+            this.listenTo(this.mainMenuView, "eraseUI", function() {
+                console.log("MainMenuController:: eraseUI event received");
+                this.trigger("eraseUI");
+                return false;
+            });
+            this.listenTo(channelGuideController, "eraseUI", function() {
+                console.log("MainMenuController:: eraseUI event received");
+                this.trigger("eraseUI");
+                return false;
+            });
+            this.listenTo(recordNowController, "eraseUI", function() {
+                console.log("recordNowController:: eraseUI event received");
+                this.trigger("eraseUI");
+                return false;
+            });
+            this.listenTo(manualRecordController, "eraseUI", function() {
+                console.log("manualRecordController:: eraseUI event received");
+                this.trigger("eraseUI");
+                return false;
+            });
+            this.listenTo(settingsController, "eraseUI", function() {
+                console.log("MainMenuController:: eraseUI event received");
+                this.trigger("eraseUI");
+                return false;
+            });
+
         },
 
         show: function() {

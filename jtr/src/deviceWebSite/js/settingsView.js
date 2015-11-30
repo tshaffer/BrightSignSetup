@@ -66,6 +66,11 @@ define(function () {
                     self.trigger("invokeHome");
                     return true;
                 }
+                else if (event.which == "exit") {
+                    console.log("exit button pressed in settingsPage");
+                    self.trigger("eraseUI");
+                    return true;
+                }
                 return false;
             });
 

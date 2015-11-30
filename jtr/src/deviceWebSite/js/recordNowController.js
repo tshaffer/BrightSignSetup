@@ -43,6 +43,11 @@ define(['recordNowModel','recordNowView'], function (recordNowModel, recordNowVi
                 return false;
             });
 
+            this.listenTo(this.recordNowView, "eraseUI", function() {
+                console.log("recordNowView:: eraseUI event received");
+                self.trigger("eraseUI");
+                return false;
+            });
         },
 
         show: function() {

@@ -57,6 +57,12 @@ define(['serverInterface', 'scheduledRecordingsModel','scheduledRecordingsView']
                 return false;
             });
 
+            this.listenTo(this.scheduledRecordingsView, "eraseUI", function() {
+                console.log("scheduledRecordingsController:: eraseUI event received");
+                self.trigger("eraseUI");
+                return false;
+            });
+
         },
 
         show: function() {

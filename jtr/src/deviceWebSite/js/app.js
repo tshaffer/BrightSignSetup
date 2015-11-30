@@ -55,6 +55,10 @@ define(['serverInterface','mainMenuController','recordedShowsController','record
                     this.eraseUI();
                 });
 
+                this.listenTo(mainMenuController, "eraseUI", function () {
+                    this.eraseUI();
+                });
+
                 this.listenTo(recordNowController, "invokeHome", function () {
                     this.executeReturnToHome();
                 });
@@ -85,6 +89,8 @@ define(['serverInterface','mainMenuController','recordedShowsController','record
                 });
 
                 // taken from BrightSign.js
+                baseURL = "http://localHost:8080/";
+
                 console.log("JTR javascript .ready invoked");
                 console.log("User Agent: " + navigator.userAgent);
 
@@ -373,7 +379,7 @@ define(['serverInterface','mainMenuController','recordedShowsController','record
                                     //        });
                                     //    }
                                     //}
-                                    else if (eventType == "keydown" && (remoteCommand == "UP" || remoteCommand == "DOWN" | remoteCommand == "LEFT" || remoteCommand == "RIGHT" || remoteCommand == "HIGHEST_SPEED_RW" || remoteCommand == "PREV" || remoteCommand == "NEXT" || remoteCommand ==  "HIGHEST_SPEED_FW")) {
+                                    else if (eventType == "keydown" && (remoteCommand == "EXIT" || remoteCommand == "RECORD" || remoteCommand == "UP" || remoteCommand == "DOWN" | remoteCommand == "LEFT" || remoteCommand == "RIGHT" || remoteCommand == "HIGHEST_SPEED_RW" || remoteCommand == "PREV" || remoteCommand == "NEXT" || remoteCommand ==  "HIGHEST_SPEED_FW")) {
                                         //left = 37
                                         //up = 38
                                         //right = 39
@@ -406,6 +412,9 @@ define(['serverInterface','mainMenuController','recordedShowsController','record
                                                     break;
                                                 case "next":
                                                     event.which = "next";
+                                                    break;
+                                                case "exit":
+                                                    event.which = "exit";
                                                     break;
                                             }
                                             //event.which = remoteCommand.toLowerCase();

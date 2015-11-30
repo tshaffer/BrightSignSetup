@@ -222,7 +222,6 @@ displayEngineStateMachine.prototype.playSelectedShow = function (recordingId) {
     var parts = [];
     parts.push("lastSelectedShowId" + '=' + recordingId.toString());
     var paramString = parts.join('&');
-    baseURL = "http://localHost:8080/";
     var url = baseURL + "lastSelectedShow";
     $.post(url, paramString);
 

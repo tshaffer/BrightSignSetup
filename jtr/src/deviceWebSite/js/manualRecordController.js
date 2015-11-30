@@ -42,6 +42,11 @@ define(['manualRecordModel','manualRecordView'], function (ManualRecordModel, Ma
                 self.trigger("invokeHome");
                 return false;
             });
+            this.listenTo(this.manualRecordView, "eraseUI", function() {
+                console.log("manualRecordController:: eraseUI event received");
+                self.trigger("eraseUI");
+                return false;
+            });
         },
 
         show: function() {

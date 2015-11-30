@@ -32,6 +32,12 @@ define(['settingsModel','settingsView'], function (SettingsModel,SettingsView) {
                 self.trigger("invokeHome");
                 return false;
             });
+
+            this.listenTo(this.settingsView, "eraseUI", function() {
+                console.log("settingsController:: eraseUI event received");
+                self.trigger("eraseUI");
+                return false;
+            });
         },
 
         show: function() {

@@ -31,6 +31,11 @@ define(['serverInterface'], function (serverInterface) {
                     self.trigger("invokeHome");
                     return true;
                 }
+                else if (event.which == "exit") {
+                    console.log("exit button pressed in channelGuidePage");
+                    self.trigger("eraseUI");
+                    return true;
+                }
                 return false;
             });
 
@@ -95,6 +100,10 @@ define(['serverInterface'], function (serverInterface) {
                         break;
                     case "next":
                         self.navigateForwardOneScreen();
+                        return false;
+                        break;
+                    case "exit":
+                        self.trigger("eraseUI");
                         return false;
                         break;
                 }

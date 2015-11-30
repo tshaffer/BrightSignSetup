@@ -168,7 +168,30 @@ define(function () {
                     //self.navigate(command);
 
                     if (typeof keyCode != "undefined") {
-                        return self.navigate(keyCode);
+                        if (keyCode == "exit") {
+                            self.trigger("eraseUI");
+                            return true;
+                        }
+                        else
+                        {
+                            return self.navigate(keyCode);
+                        }
+                    }
+                    return false;
+                    // not handling enter / select yet
+                });
+
+                $(btnIdDeleteRecording).keydown(function (keyEvent) {
+                    var keyCode = keyEvent.which;
+                    if (typeof keyCode != "undefined") {
+                        if (keyCode == "exit") {
+                            self.trigger("eraseUI");
+                            return true;
+                        }
+                        else
+                        {
+                            return self.navigate(keyCode);
+                        }
                     }
                     return false;
                     // not handling enter / select yet

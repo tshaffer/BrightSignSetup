@@ -707,4 +707,51 @@ function printNow() {
     console.log("current dateTime is " + datetime);
 }
 
+var userMessageDisplayed = false;
+var userMessageTimer = null;
+
+displayUserMessage = function (userMessage) {
+
+    var htmlContents = '<p id="userMessage">' + userMessage + '</p>';
+
+    if (!$("#userMessage").length) {
+        $("#videoControlRegion").append(htmlContents);
+    }
+    else {
+        $("#userMessage").html(htmlContents);
+    }
+    $("#userMessage").stop(true);
+    $("#userMessage").fadeTo(0, 1);
+    $("#userMessage").show();
+    startUserMessageTimer();
+    userMessageDisplayed = true;
+}
+
+
+hideUserMessage = function () {
+
+    if ($("#userMessage").length) {
+        $("#userMessage").fadeOut(2000, userMessageFadedOut);
+    }
+}
+
+
+userMessageFadedOut = function () {
+    console.log("userMessageFadedOut invoked");
+    userMessageDisplayed = false;
+}
+
+
+startUserMessageTimer = function () {
+
+    if (userMessageTimer != null) {
+        clearTimeout(userMessageTimer);
+        userMessageTimer = null;
+    }
+
+    userMessageTimer = setTimeout(function () {
+        hideUserMessage();
+    }, 5000);
+}
+
 
