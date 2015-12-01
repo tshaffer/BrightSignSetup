@@ -1,7 +1,7 @@
 /**
  * Created by tedshaffer on 11/6/15.
  */
-define(['serverInterface'], function (serverInterface) {
+define(['serverInterface','settingsModel'], function (serverInterface,settingsModel) {
 
     console.log("creating ChannelGuideView module");
 
@@ -106,6 +106,10 @@ define(['serverInterface'], function (serverInterface) {
                         self.trigger("eraseUI");
                         return false;
                         break;
+                    case "record":
+                        self.invokeRecordSelectedProgram();
+                        return false;
+                        break;
                 }
 
                 self.navigateChannelGuide(command);
@@ -113,6 +117,47 @@ define(['serverInterface'], function (serverInterface) {
                 // not handling enter / select yet
             });
 
+        },
+
+        invokeRecordSelectedProgram: function() {
+
+            console.log("invokeRecordSelectedProgram");
+            var programData = this.getSelectedStationAndProgram();
+
+            var stationName = this.getStationFromId(programData.stationId);
+            stationName = stationName.replace(".", "-");
+
+            var commandData = {
+                "command": "addRecord",
+                "dateTime": programData.program.date,
+                "title": programData.program.title,
+                "duration": programData.program.duration,
+                "inputSource": "tuner",
+                "channel": stationName,
+                "recordingBitRate": settingsModel.getInstance().getRecordingBitRate(),
+                "segmentRecording": settingsModel.getInstance().getSegmentRecordings(),
+                "scheduledSeriesRecordingId": -1,
+                "startTimeOffset": 0,
+                "stopTimeOffset": 0
+            };
+
+            return serverInterface.browserCommand(commandData);
+        },
+
+        // duplicates cgPopupView
+        getStationFromId: function (stationId) {
+
+            var selectedStation = "";
+
+            // get stationIndex
+            $.each(this.stations, function (stationIndex, station) {
+                if (station.StationId == stationId) {
+                    selectedStation = station.AtscMajor + "." + station.AtscMinor;
+                    return false;
+                }
+            });
+
+            return selectedStation;
         },
 
         getSelectedStationAndProgram: function () {

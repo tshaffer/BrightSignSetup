@@ -326,7 +326,7 @@ define(['serverInterface','mainMenuController','recordedShowsController','record
                     else if (remoteCommand == "GUIDE") {
                         this.executeDisplayChannelGuide();
                     }
-                    else if (remoteCommand == "JUMP" || remoteCommand == "PAUSE" || remoteCommand == "PLAY" || remoteCommand == "FF" || remoteCommand == "RW" || remoteCommand == "INSTANT_REPLAY" || remoteCommand == "QUICK_SKIP" || remoteCommand == "STOP" || remoteCommand == "RECORD" || remoteCommand == "PROGRESS_BAR" || remoteCommand == "CLOCK") {
+                    else if (remoteCommand == "JUMP" || remoteCommand == "PAUSE" || remoteCommand == "PLAY" || remoteCommand == "FF" || remoteCommand == "RW" || remoteCommand == "INSTANT_REPLAY" || remoteCommand == "QUICK_SKIP" || remoteCommand == "STOP" || remoteCommand == "PROGRESS_BAR" || remoteCommand == "CLOCK") {
                         this.executeRemoteCommand(remoteCommand.toLowerCase());
                     }
                     else {
@@ -415,6 +415,9 @@ define(['serverInterface','mainMenuController','recordedShowsController','record
                                                     break;
                                                 case "exit":
                                                     event.which = "exit";
+                                                    break;
+                                                case "record":
+                                                    event.which = "record";
                                                     break;
                                             }
                                             //event.which = remoteCommand.toLowerCase();
