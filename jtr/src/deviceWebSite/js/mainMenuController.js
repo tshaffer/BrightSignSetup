@@ -97,6 +97,11 @@ define(['mainMenuView','manualRecordController', 'recordNowController', 'recorde
                 this.trigger("eraseUI");
                 return false;
             });
+            this.listenTo(scheduledRecordingsController, "eraseUI", function() {
+                console.log("manualRecordController:: eraseUI event received");
+                this.trigger("eraseUI");
+                return false;
+            });
             this.listenTo(settingsController, "eraseUI", function() {
                 console.log("MainMenuController:: eraseUI event received");
                 this.trigger("eraseUI");
