@@ -59,6 +59,10 @@ define(['serverInterface','mainMenuController','recordedShowsController','record
                     this.eraseUI();
                 });
 
+                this.listenTo(mainMenuController, "stop", function () {
+                    this.stop();
+                });
+
                 this.listenTo(recordNowController, "invokeHome", function () {
                     this.executeReturnToHome();
                 });
@@ -88,7 +92,11 @@ define(['serverInterface','mainMenuController','recordedShowsController','record
                     return false;
                 });
 
-                // taken from BrightSign.js
+                $("#cont").keydown(function (keyEvent) {
+                    console.log("key pressed: " + keyEvent.which)
+                });
+
+                        // taken from BrightSign.js
                 baseURL = "http://localHost:8080/";
 
                 console.log("JTR javascript .ready invoked");
@@ -326,7 +334,7 @@ define(['serverInterface','mainMenuController','recordedShowsController','record
                     else if (remoteCommand == "GUIDE") {
                         this.executeDisplayChannelGuide();
                     }
-                    else if (remoteCommand == "JUMP" || remoteCommand == "PAUSE" || remoteCommand == "PLAY" || remoteCommand == "FF" || remoteCommand == "RW" || remoteCommand == "INSTANT_REPLAY" || remoteCommand == "QUICK_SKIP" || remoteCommand == "STOP" || remoteCommand == "PROGRESS_BAR" || remoteCommand == "CLOCK") {
+                    else if (remoteCommand == "JUMP" || remoteCommand == "PAUSE" || remoteCommand == "PLAY" || remoteCommand == "FF" || remoteCommand == "RW" || remoteCommand == "INSTANT_REPLAY" || remoteCommand == "QUICK_SKIP" || remoteCommand == "PROGRESS_BAR" || remoteCommand == "CLOCK") {
                         this.executeRemoteCommand(remoteCommand.toLowerCase());
                     }
                     else {
@@ -379,7 +387,7 @@ define(['serverInterface','mainMenuController','recordedShowsController','record
                                     //        });
                                     //    }
                                     //}
-                                    else if (eventType == "keydown" && (remoteCommand == "EXIT" || remoteCommand == "RECORD" || remoteCommand == "UP" || remoteCommand == "DOWN" | remoteCommand == "LEFT" || remoteCommand == "RIGHT" || remoteCommand == "HIGHEST_SPEED_RW" || remoteCommand == "PREV" || remoteCommand == "NEXT" || remoteCommand ==  "HIGHEST_SPEED_FW")) {
+                                    else if (eventType == "keydown" && (remoteCommand == "STOP" || remoteCommand == "EXIT" || remoteCommand == "RECORD" || remoteCommand == "UP" || remoteCommand == "DOWN" | remoteCommand == "LEFT" || remoteCommand == "RIGHT" || remoteCommand == "HIGHEST_SPEED_RW" || remoteCommand == "PREV" || remoteCommand == "NEXT" || remoteCommand ==  "HIGHEST_SPEED_FW")) {
                                         //left = 37
                                         //up = 38
                                         //right = 39
@@ -401,24 +409,30 @@ define(['serverInterface','mainMenuController','recordedShowsController','record
                                                 case "right":
                                                     event.which = 39;
                                                     break;
-                                                case "highest_speed_rw":
-                                                    event.which = "highest_speed_rw";
+                                                default:
+                                                    event.which = remoteCommand.toLowerCase();
                                                     break;
-                                                case "highest_speed_fw":
-                                                    event.which = "highest_speed_fw";
-                                                    break;
-                                                case "prev":
-                                                    event.which = "prev";
-                                                    break;
-                                                case "next":
-                                                    event.which = "next";
-                                                    break;
-                                                case "exit":
-                                                    event.which = "exit";
-                                                    break;
-                                                case "record":
-                                                    event.which = "record";
-                                                    break;
+                                                //case "highest_speed_rw":
+                                                //    event.which = "highest_speed_rw";
+                                                //    break;
+                                                //case "highest_speed_fw":
+                                                //    event.which = "highest_speed_fw";
+                                                //    break;
+                                                //case "prev":
+                                                //    event.which = "prev";
+                                                //    break;
+                                                //case "next":
+                                                //    event.which = "next";
+                                                //    break;
+                                                //case "exit":
+                                                //    event.which = "exit";
+                                                //    break;
+                                                //case "record":
+                                                //    event.which = "record";
+                                                //    break;
+                                                //case "stop":
+                                                //    event.which = "stop";
+                                                //    break;
                                             }
                                             //event.which = remoteCommand.toLowerCase();
                                             //event.data = handlerForKey.data;
@@ -492,11 +506,11 @@ define(['serverInterface','mainMenuController','recordedShowsController','record
                     case "record":
                         cmd = "record";
                         break;
-                    case "btnRemoteStop":
-                    case "remoteStop":
-                    case "stop":
-                        cmd = "stop";
-                        break;
+                    //case "btnRemoteStop":
+                    //case "remoteStop":
+                    //case "stop":
+                    //    cmd = "stop";
+                    //    break;
                     case "btnRemoteRewind":
                     case "remoteRewind":
                     case "rw":
@@ -551,6 +565,65 @@ define(['serverInterface','mainMenuController','recordedShowsController','record
                 $("#cgRecordingOptionsDlg").modal('hide');
 
             },
+
+            stop: function() {
+                this.executeRemoteCommand("pause");
+
+                //var event = {};
+                //event["EventType"] = "DISPLAY_DELETE_SHOW_DLG";
+                //event["Title"] = this.stateMachine.currentRecording.Title;
+                //event["RecordingId"] = this.stateMachine.currentRecording.RecordingId;
+                //postMessage(event);
+
+                //var title = event["Title"];
+                //var recordingId = event["RecordingId"];
+                //displayDeleteShowDlg(title, recordingId);
+
+                this.eraseUI();
+
+                this.displayDeleteShowDlg("Pizza", 69);
+
+                return false;
+            },
+
+            displayDeleteShowDlg: function(showTitle, showRecordingId) {
+
+                console.log("displayDeleteShowDlg() invoked, showTitle=" + showTitle + ", showRecordingId=" + showRecordingId);
+
+                //_showRecordingId = showRecordingId;
+
+                var options = {
+                    "backdrop": "true"
+                }
+                $('#deleteShowDlg').modal(options);
+                $('#deleteShowDlgShowTitle').html("Delete '" + showTitle + "'?");
+
+                modalDialogDisplayed = true;
+                selectedDeleteShowDlgElement = "#deleteShowDlgDelete";
+                unselectedDeleteShowDlgElement = "#deleteShowDlgClose";
+
+                // when dialog is displayed, highlight Delete, unhighlight Close
+                $(selectedDeleteShowDlgElement).removeClass("btn-secondary");
+                $(selectedDeleteShowDlgElement).addClass("btn-primary");
+
+                $(unselectedDeleteShowDlgElement).removeClass("btn-primary");
+                $(unselectedDeleteShowDlgElement).addClass("btn-secondary");
+            },
+
+//function deleteShowDlgCloseInvoked() {
+//    consoleLog("deleteShowDlgCloseInvoked");
+//    $('#deleteShowDlg').modal('hide');
+//    modalDialogDisplayed = false;
+//    //switchToPage("homePage");
+//}
+//
+//function deleteShowDlgDeleteInvoked() {
+//    consoleLog("deleteShowDlgDeleteInvoked");
+//    $('#deleteShowDlg').modal('hide');
+//    modalDialogDisplayed = false;
+//    executeDeleteSelectedShow(_showRecordingId);
+//    //switchToPage("homePage");
+//}
 
             indicateReady: function() {
                 // post message indicating that initialization is complete ??

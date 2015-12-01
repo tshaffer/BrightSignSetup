@@ -79,6 +79,11 @@ define(function () {
                 if (event.which == "exit") {
                     self.trigger("eraseUI")
                 }
+                else if (event.which == "stop") {
+                    console.log("stop command received in mainMenuView");
+                    //this.executeRemoteCommand(remoteCommand.toLowerCase());
+                    self.trigger("stop");
+                }
                 else {
                     self.navigate(event.which);
                 }

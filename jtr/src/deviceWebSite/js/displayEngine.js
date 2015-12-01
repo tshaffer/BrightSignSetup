@@ -676,18 +676,18 @@ displayEngineStateMachine.prototype.STPlayingEventHandler = function (event, sta
                 TransportIconSingleton.getInstance().displayIcon(null, "quickSkip", this.stateMachine.miscIconDisplayTime);
                 executeRemoteCommand("quickSkip");
                 return "HANDLED";
-            case "stop":
-                console.log("STOP invoked when playing");
-                executeRemoteCommand("pause");
-
-                var event = {};
-                event["EventType"] = "DISPLAY_DELETE_SHOW_DLG";
-                event["Title"] = this.stateMachine.currentRecording.Title;
-                event["RecordingId"] = this.stateMachine.currentRecording.RecordingId;
-                postMessage(event);
-
-                stateData.nextState = this.stateMachine.stIdle;
-                return "TRANSITION";
+            //case "stop":
+            //    console.log("STOP invoked when playing");
+            //    executeRemoteCommand("pause");
+            //
+            //    var event = {};
+            //    event["EventType"] = "DISPLAY_DELETE_SHOW_DLG";
+            //    event["Title"] = this.stateMachine.currentRecording.Title;
+            //    event["RecordingId"] = this.stateMachine.currentRecording.RecordingId;
+            //    postMessage(event);
+            //
+            //    stateData.nextState = this.stateMachine.stIdle;
+            //    return "TRANSITION";
             case "jump":
                 this.jump();
                 return "HANDLED";

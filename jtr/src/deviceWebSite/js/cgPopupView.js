@@ -883,5 +883,5 @@ define(['serverInterface','settingsModel'], function (serverInterface, SettingsM
     });
 
     return cgPopupView;
-    });
+});
 
