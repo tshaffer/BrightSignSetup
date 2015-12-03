@@ -48,6 +48,13 @@ define(['mainMenuView','manualRecordController', 'recordNowController', 'recorde
                 manualRecordController.show();
             });
 
+            this.listenTo(this.mainMenuView, "invokeLiveVideo", function () {
+                console.log("MainMenuController:: invokeLiveVideo event received");
+                $(this.mainMenuView.el).hide();
+
+                this.trigger("invokeLiveVideo");
+            });
+
             this.listenTo(this.mainMenuView, "invokeChannelGuide", function () {
                 console.log("MainMenuController:: invokeChannelGuide event received");
                 $(this.mainMenuView.el).hide();

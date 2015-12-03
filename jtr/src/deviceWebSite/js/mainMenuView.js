@@ -47,6 +47,11 @@ define(function () {
             this.trigger("invokeManualRecord");
         },
 
+        liveVideoHandler: function (event) {
+            console.log("liveVideoHandler, trigger invokeLiveVideo");
+            this.trigger("invokeLiveVideo");
+        },
+
         channelGuideHandler: function (event) {
             console.log("channelGuideHandler, trigger invokeChannelGuide");
             this.trigger("invokeChannelGuide");
@@ -99,6 +104,10 @@ define(function () {
 
             $("#manualRecord").click(function (event) {
                 self.manualRecordHandler(event);
+            });
+
+            $("#liveVideo").click(function (event) {
+                self.liveVideoHandler(event);
             });
 
             $("#channelGuideId").click(function (event) {
