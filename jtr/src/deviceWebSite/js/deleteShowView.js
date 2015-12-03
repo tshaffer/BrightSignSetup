@@ -7,7 +7,7 @@ define(['serverInterface'], function (serverInterface) {
 
     var deleteShowView = Backbone.View.extend({
 
-        _showRecordingId: -1,
+        recordingId: -1,
         selectedDeleteShowDlgElement: "",
         unselectedDeleteShowDlgElement: "",
 
@@ -15,11 +15,11 @@ define(['serverInterface'], function (serverInterface) {
             console.log("cgDeleteShowView::initialize");
         },
 
-        show: function(showTitle, showRecordingId) {
+        show: function(showTitle, recordingId) {
 
-            consoleLog("displayDeleteShowDlg() invoked, showTitle=" + showTitle + ", showRecordingId=" + showRecordingId);
+            console.log("displayDeleteShowDlg() invoked, showTitle=" + showTitle + ", recordingId=" + recordingId);
 
-            this._showRecordingId = showRecordingId;
+            this.recordingId = recordingId;
 
             var options = {
                 "backdrop": "true"
@@ -36,24 +36,67 @@ define(['serverInterface'], function (serverInterface) {
 
             $(this.unselectedDeleteShowDlgElement).removeClass("btn-primary");
             $(this.unselectedDeleteShowDlgElement).addClass("btn-secondary");
+
+            // add handlers
+            var self = this;
+
+            $("#deleteShowDlgDelete").click(function (event) {
+                self.deleteShowDlgDeleteInvoked();
+            });
+
+            $("#deleteShowDlgClose").click(function (event) {
+                self.deleteShowDlgCloseInvoked();
+            });
+
+            $("#deleteShowDlg").keydown(function (keyEvent) {
+                self.toggleHighlightedButton(keyEvent.which);
+                return false;
+            });
+        },
+
+        toggleHighlightedButton: function(keycode) {
+
+            //switch (eventData.toLowerCase(keycode)) {
+            //    case "up":
+            //    case "down":
+            //    case "left":
+            //    case "right":
+            switch (keycode) {
+                case 37:
+                case 38:
+                case 39:
+                case 40:
+
+                    console.log("navigation key invoked while modal dialog displayed");
+
+                    // temporary code; make it more general purpose when a second dialog is added
+                    //console.log("selected element was: " + selectedDeleteShowDlgElement);
+
+                    $(this.selectedDeleteShowDlgElement).removeClass("btn-primary");
+                    $(this.selectedDeleteShowDlgElement).addClass("btn-secondary");
+
+                    $(this.unselectedDeleteShowDlgElement).removeClass("btn-secondary");
+                    $(this.unselectedDeleteShowDlgElement).addClass("btn-primary");
+
+                    $(this.unselectedDeleteShowDlgElement).focus();
+
+                    var tmp = this.unselectedDeleteShowDlgElement;
+                    this.unselectedDeleteShowDlgElement = this.selectedDeleteShowDlgElement;
+                    this.selectedDeleteShowDlgElement = tmp;
+            };
+        },
+
+        deleteShowDlgDeleteInvoked: function() {
+            console.log("deleteShowDlgDeleteInvoked");
+            $('#deleteShowDlg').modal('hide');
+            this.trigger("deleteSelectedShow", this.recordingId);
         },
 
         deleteShowDlgCloseInvoked: function() {
             console.log("deleteShowDlgCloseInvoked");
             $('#deleteShowDlg').modal('hide');
         },
-
-        deleteShowDlgDeleteInvoked: function() {
-            console.log("deleteShowDlgDeleteInvoked");
-            $('#deleteShowDlg').modal('hide');
-            executeDeleteSelectedShow(_showRecordingId);
-        },
-
-
-
-
-
-
     });
 
+    return deleteShowView;
 });
