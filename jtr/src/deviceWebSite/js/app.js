@@ -345,7 +345,7 @@ define(['serverInterface','mainMenuController','recordedShowsController','record
                     else if (remoteCommand == "GUIDE") {
                         this.executeDisplayChannelGuide();
                     }
-                    else if (remoteCommand == "0" || remoteCommand == "1" || remoteCommand == "2" || remoteCommand == "3" || remoteCommand == "4" || remoteCommand == "5" || remoteCommand == "6" || remoteCommand == "7" || remoteCommand == "8" || remoteCommand == "9" || remoteCommand == "-" || remoteCommand == "CHANNEL_UP" || remoteCommand == "CHANNEL_DOWN" || remoteCommand == "JUMP" || remoteCommand == "PAUSE" || remoteCommand == "PLAY" || remoteCommand == "FF" || remoteCommand == "RW" || remoteCommand == "INSTANT_REPLAY" || remoteCommand == "QUICK_SKIP" || remoteCommand == "PROGRESS_BAR" || remoteCommand == "CLOCK") {
+                    else if (remoteCommand == "0" || remoteCommand == "1" || remoteCommand == "2" || remoteCommand == "3" || remoteCommand == "4" || remoteCommand == "5" || remoteCommand == "6" || remoteCommand == "7" || remoteCommand == "8" || remoteCommand == "9" || remoteCommand == "-" || remoteCommand == "ENTER" || remoteCommand == "CHANNEL_UP" || remoteCommand == "CHANNEL_DOWN" || remoteCommand == "JUMP" || remoteCommand == "PAUSE" || remoteCommand == "PLAY" || remoteCommand == "FF" || remoteCommand == "RW" || remoteCommand == "INSTANT_REPLAY" || remoteCommand == "QUICK_SKIP" || remoteCommand == "PROGRESS_BAR" || remoteCommand == "CLOCK") {
                         this.executeRemoteCommand(remoteCommand.toLowerCase());
                     }
                     else {
@@ -536,6 +536,7 @@ define(['serverInterface','mainMenuController','recordedShowsController','record
                     case "-":
                     case "channel_up":
                     case "channel_down":
+                    case "enter":
                         cmd = id;
                         break;
                     case "clock":

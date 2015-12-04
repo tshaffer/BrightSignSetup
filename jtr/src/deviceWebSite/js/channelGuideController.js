@@ -62,6 +62,12 @@ define(['stationsModel', 'channelGuideModel','channelGuideView','cgPopupView'], 
                 self.trigger("eraseUI");
                 return false;
             });
+
+            this.listenTo(this.cgPopupView, "eraseCG", function() {
+                console.log("channelGuideController:: eraseCG event received");
+                $(this.channelGuideView.el).hide();
+                return false;
+            });
         },
 
         retrieveData: function() {

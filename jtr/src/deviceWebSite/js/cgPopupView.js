@@ -845,6 +845,9 @@ define(['serverInterface','settingsModel'], function (serverInterface, SettingsM
             this.cgTuneFromClient();
             this.cgProgramDlgCloseInvoked();
             this.reselectCurrentProgram();
+
+            // only do when executing on device
+            this.trigger("eraseCG");
         },
 
         invokeCloseDialog: function() {
