@@ -41,6 +41,7 @@
     this.stLiveVideo.startChannelEntryTimer = this.startChannelEntryTimer;
     this.stLiveVideo.tuneLiveVideoChannel = this.tuneLiveVideoChannel;
     this.stLiveVideo.getChannelIdFromChannel = this.getChannelIdFromChannel;
+    this.stLiveVideo.standardizeStationNumber = this.standardizeStationNumber;
     this.stLiveVideo.displayChannel = this.displayChannel;
     this.stLiveVideo.hideChannel = this.hideChannel;
     this.stLiveVideo.fadedOut = this.fadedOut;
@@ -583,12 +584,21 @@ displayEngineStateMachine.prototype.startChannelDisplayTimer = function () {
 
 displayEngineStateMachine.prototype.getChannelIdFromChannel = function (channel) {
 
-    channel = standardizeStationNumber2(channel);
+    channel = this.standardizeStationNumber(channel);
     for (i = 0; i < this.tunerChannels.length; i++) {
         if (this.tunerChannels[i] == channel) return i;
     }
     return 0;
 }
+
+displayEngineStateMachine.prototype.standardizeStationNumber = function(stationNumber) {
+    stationNumber = stationNumber.replace(".1", "");
+    stationNumber = stationNumber.replace("-1", "");
+    stationNumber = stationNumber.replace(".", "-");
+
+    return stationNumber;
+}
+
 
 displayEngineStateMachine.prototype.startChannelEntryTimer = function () {
     var thisObj = this;

@@ -345,7 +345,7 @@ define(['serverInterface','mainMenuController','recordedShowsController','record
                     else if (remoteCommand == "GUIDE") {
                         this.executeDisplayChannelGuide();
                     }
-                    else if (remoteCommand == "JUMP" || remoteCommand == "PAUSE" || remoteCommand == "PLAY" || remoteCommand == "FF" || remoteCommand == "RW" || remoteCommand == "INSTANT_REPLAY" || remoteCommand == "QUICK_SKIP" || remoteCommand == "PROGRESS_BAR" || remoteCommand == "CLOCK") {
+                    else if (remoteCommand == "0" || remoteCommand == "1" || remoteCommand == "2" || remoteCommand == "3" || remoteCommand == "4" || remoteCommand == "5" || remoteCommand == "6" || remoteCommand == "7" || remoteCommand == "8" || remoteCommand == "9" || remoteCommand == "-" || remoteCommand == "CHANNEL_UP" || remoteCommand == "CHANNEL_DOWN" || remoteCommand == "JUMP" || remoteCommand == "PAUSE" || remoteCommand == "PLAY" || remoteCommand == "FF" || remoteCommand == "RW" || remoteCommand == "INSTANT_REPLAY" || remoteCommand == "QUICK_SKIP" || remoteCommand == "PROGRESS_BAR" || remoteCommand == "CLOCK") {
                         this.executeRemoteCommand(remoteCommand.toLowerCase());
                     }
                     else {
@@ -523,6 +523,21 @@ define(['serverInterface','mainMenuController','recordedShowsController','record
                 var cmd;
 
                 switch (id) {
+                    case "0":
+                    case "1":
+                    case "2":
+                    case "3":
+                    case "4":
+                    case "5":
+                    case "6":
+                    case "7":
+                    case "8":
+                    case "9":
+                    case "-":
+                    case "channel_up":
+                    case "channel_down":
+                        cmd = id;
+                        break;
                     case "clock":
                         cmd = "clock";
                         break;
