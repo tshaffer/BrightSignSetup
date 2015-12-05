@@ -23,7 +23,7 @@ define(['hostInterface', 'serverInterface','mainMenuController','recordedShowsCo
 
                 this.serverInterface = serverInterface;
                 this.serverInterface.setBaseURL(baseURL);
-                
+
                 //initializeBrightSign();
 
                 mainMenuController.setAppController(this);
