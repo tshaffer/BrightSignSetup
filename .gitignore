@@ -238,3 +238,6 @@ $RECYCLE.BIN/
 .idea/modules.xml
 .idea/vcs.xml
 .idea/workspace.xml
+jtr/.idea
+jtr/src/.idea
+
