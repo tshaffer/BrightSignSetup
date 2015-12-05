@@ -178,20 +178,7 @@ Sub de_HandleHttpEvent(event)
 		if eventData.reason = "load-started" then
 		else if eventData.reason = "load-finished" then
 
-			' send device's IP address to site's javascript
-
-			' get ip address
-			nc = CreateObject("roNetworkConfiguration", 0)
-			networkConfig = nc.GetCurrentConfig()
-			ipAddress$ = networkConfig.ip4_address
-			print "ipAddress = ";ipAddress$
-
-			' send it via message port
-			aa = {}
-			aa.AddReplace("command", "setIPAddress")
-			aa.AddReplace("value", ipAddress$)
-
-			m.htmlWidget.PostJSMessage(aa)
+			print "load-finished"
 
 		else if eventData.reason = "load-error" then
 
@@ -201,6 +188,23 @@ Sub de_HandleHttpEvent(event)
 
 			if type(aa.message) = "roString" then
 				print "message from JS: ";aa.message
+				if aa.message = "javascriptReady" then
+
+					' send device's IP address to site's javascript
+
+					' get ip address
+					nc = CreateObject("roNetworkConfiguration", 0)
+					networkConfig = nc.GetCurrentConfig()
+					ipAddress$ = networkConfig.ip4_address
+					print "ipAddress = ";ipAddress$
+
+					' send it via message port
+					aa = {}
+					aa.AddReplace("command", "setIPAddress")
+					aa.AddReplace("value", ipAddress$)
+
+					m.htmlWidget.PostJSMessage(aa)
+				endif
 			else if type(aa.command) = "roString" then
 				command$ = aa.command
 				print "de_HandleHttpEvent: command=" + command$

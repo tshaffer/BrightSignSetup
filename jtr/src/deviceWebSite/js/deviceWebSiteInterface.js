@@ -3,7 +3,7 @@
  */
 define(function () {
 
-    console.log("creating deviceWebSiteInit module");
+    console.log("******************* - creating deviceWebSiteInit module");
 
     // ??
     // _currentRecordings
@@ -14,6 +14,8 @@ define(function () {
         lastRemoteEventTime:  0,
 
         init: function () {
+
+            console.log("******************* - deviceWebSiteInit.init()");
 
             // ir receiver
             try {
@@ -58,7 +60,7 @@ define(function () {
 
             bsMessage = new BSMessagePort();
             console.log("typeof bsMessage is " + typeof bsMessage);
-            bsMessage.PostBSMessage({message: "javascript ready"});
+            bsMessage.PostBSMessage({message: "javascriptReady"});
 
             bsMessage.onbsmessage = function (msg) {
                 console.log("onbsmessage invoked");
@@ -74,10 +76,13 @@ define(function () {
 
                 switch (message.command) {
                     case "setIPAddress":
+                        console.log("******************* - setIPAddress)");
                         var brightSignIPAddress = message.value;
                         $("#ipAddress").html("ip address: " + brightSignIPAddress);
                         baseURL = "http://" + brightSignIPAddress + ":8080/";
                         console.log("baseURL from BrightSign message is: " + baseURL);
+                        self.appController.serverInterface.setBaseURL(baseURL);
+                        console.log("baseURL sent to serverInterface");
 
                         // temporary location - JTRTODO
                         //initializeEpgData();

@@ -4,7 +4,7 @@
 define(['hostInterface', 'serverInterface','mainMenuController','recordedShowsController','recordNowController','manualRecordController','channelGuideController','scheduledRecordingsController','settingsController','footerController','deleteShowView'],
     function(hostInterface, serverInterface,mainMenuController,recordedShowsController,recordNowController,manualRecordController,channelGuideController,scheduledRecordingsController,settingsController,footerController,DeleteShowView) {
 
-        console.log("creating appController module");
+        console.log("******************* - creating appController module");
 
         var appController = {
 
@@ -19,6 +19,11 @@ define(['hostInterface', 'serverInterface','mainMenuController','recordedShowsCo
 
                 console.log("all controllers loaded");
 
+                hostInterface.init();
+
+                this.serverInterface = serverInterface;
+                this.serverInterface.setBaseURL(baseURL);
+                
                 //initializeBrightSign();
 
                 mainMenuController.setAppController(this);
@@ -40,8 +45,6 @@ define(['hostInterface', 'serverInterface','mainMenuController','recordedShowsCo
 
                 this.mainMenuController.show();
                 this.footerController.show();
-
-                this.serverInterface = serverInterface;
 
                 this.activePage = "homePage";
 
@@ -107,8 +110,6 @@ define(['hostInterface', 'serverInterface','mainMenuController','recordedShowsCo
                     console.log("key pressed: " + keyEvent.which)
                 });
 
-                baseURL = "http://localHost:8080/";
-
                 console.log("JTR javascript .ready invoked");
                 console.log("User Agent: " + navigator.userAgent);
 
@@ -128,7 +129,7 @@ define(['hostInterface', 'serverInterface','mainMenuController','recordedShowsCo
                     browserTypeIsSafari = false;
                 }
 
-                hostInterface.init();
+                //hostInterface.init();
             },
 
             executeReturnToHome: function() {
