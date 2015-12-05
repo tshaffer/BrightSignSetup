@@ -194,17 +194,17 @@ Sub de_HandleHttpEvent(event)
 					' send device's IP address to site's javascript
 
 					' get ip address
-'					nc = CreateObject("roNetworkConfiguration", 0)
-'					networkConfig = nc.GetCurrentConfig()
-'					ipAddress$ = networkConfig.ip4_address
-'					print "ipAddress = ";ipAddress$
+					nc = CreateObject("roNetworkConfiguration", 0)
+					networkConfig = nc.GetCurrentConfig()
+					ipAddress$ = networkConfig.ip4_address
+					print "ipAddress = ";ipAddress$
 
 					' send it via message port
-'					aa = {}
-'					aa.AddReplace("command", "setIPAddress")
-'					aa.AddReplace("value", ipAddress$)
+					aa = {}
+					aa.AddReplace("command", "setIPAddress")
+					aa.AddReplace("value", ipAddress$)
 
-'					m.htmlWidget.PostJSMessage(aa)
+					m.htmlWidget.PostJSMessage(aa)
 				endif
 			else if type(aa.command) = "roString" then
 				command$ = aa.command

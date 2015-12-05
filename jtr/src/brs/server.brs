@@ -192,18 +192,53 @@ Sub cssFetcher(userData, e as Object)
 
 	bsIndex = instr(1, userAgent, "BrightSign")
 	macIndex = instr(1, userAgent, "Mac")
-	chromeIndex = instr(1, userAgent, "CriOS")
-	
+	iPadIndex = instr(1, userAgent, "iPad")
+	criOSIndex = instr(1, userAgent, "CriOS")
+	macintoshIndex = instr(1, userAgent, "Macintosh")
+	windowsIndex = instr(1, userAgent, "Windows")
+	chromeIndex = instr(1, userAgent, "Chrome")
+
+	' need to enhance to support iPhone, Safari on Macintosh
+
+	cssPrefix = "/css/"
+	cssFileName = ""
+
+	brightSign = false
+
 	if bsIndex >= 1 then
 		brightSign = true
-		css = ReadAsciiFile("webSite/css/stylesBrightSign.css")
-	else
-		if macIndex >=1 and chromeIndex = 0 then
-			css = ReadAsciiFile("webSite/css/stylesBrowserSafari.css")
+		cssFileName = "stylesBrightSign.css"
+	else if windowsIndex >= 1 then
+		cssFileName = "stylesBrowserNotSafari.css"
+	else if iPadIndex >= 1 then
+		if criOSIndex = 0 then
+			cssFileName = "stylesBrowserSafari.css"
 		else
-			css = ReadAsciiFile("webSite/css/stylesBrowserNotSafari.css")
+			cssFileName = "stylesBrowserNotSafari.css"
 		endif
-	endif 
+	else
+		if macintoshIndex >= 1 then
+			if chromeIndex = 0 then
+				cssFileName = "stylesBrowserSafari.css"
+			else
+				cssFileName = "stylesBrowserNotSafari.css"
+			endif
+		endif
+	endif
+
+	if brightSign then
+		css = ReadAsciiFile("deviceWebSite/" + cssPrefix + cssFileName)
+	else
+		css = ReadAsciiFile("remoteWebSite/" + cssPrefix + cssFileName)
+	endif
+
+'	else
+'		if macIndex >=1 and chromeIndex = 0 then
+'			css = ReadAsciiFile("webSite/css/stylesBrowserSafari.css")
+'		else
+'			css = ReadAsciiFile("webSite/css/stylesBrowserNotSafari.css")
+'		endif
+'	endif
 
     e.AddResponseHeader("Content-type", "text/css")
     e.AddResponseHeader("Access-Control-Allow-Origin", "*")

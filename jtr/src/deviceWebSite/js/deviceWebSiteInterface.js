@@ -80,13 +80,13 @@ define(function () {
                         break;
                     case "setIPAddress":
 
-                        //console.log("******************* - setIPAddress)");
-                        //var brightSignIPAddress = message.value;
-                        //$("#ipAddress").html("ip address: " + brightSignIPAddress);
-                        //baseURL = "http://" + brightSignIPAddress + ":8080/";
-                        //console.log("baseURL from BrightSign message is: " + baseURL);
-                        //self.appController.serverInterface.setBaseURL(baseURL);
-                        //console.log("baseURL sent to serverInterface");
+                        console.log("******************* - setIPAddress)");
+                        var brightSignIPAddress = message.value;
+                        $("#ipAddress").html("ip address: " + brightSignIPAddress);
+                        baseURL = "http://" + brightSignIPAddress + ":8080/";
+                        console.log("baseURL from BrightSign message is: " + baseURL);
+                        self.appController.serverInterface.setBaseURL(baseURL);
+                        console.log("baseURL sent to serverInterface");
 
                         // temporary location - JTRTODO
                         //initializeEpgData();
