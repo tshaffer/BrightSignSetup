@@ -75,6 +75,54 @@ module.exports = function(grunt) {
                     },
 
                     {
+                        src: 'src/common/index.html',
+                        dest: 'staging/remoteWebSite/index.html'
+                    },
+
+                    {
+                        expand: true,                 // Enable dynamic expansion.
+                        cwd: 'src/common/js/',        // Src matches are relative to this path.
+                        src: ['*.js'],             // Actual pattern(s) to match.
+                        dest: 'staging/remoteWebSite/js',      // Destination path prefix.
+                    },
+
+                    {
+                        src: 'src/remoteWebSite/js/remoteWebSiteInterface.js',
+                        dest: 'staging/remoteWebSite/js/hostInterface.js'
+                    },
+
+                    {
+                        expand: true,                 // Enable dynamic expansion.
+                        cwd: 'src/common/css/',        // Src matches are relative to this path.
+                        src: ['*.css'],             // Actual pattern(s) to match.
+                        dest: 'staging/remoteWebSite/css',      // Destination path prefix.
+                    },
+
+                    {
+                        src: 'src/common/index.html',
+                        dest: 'staging/deviceWebSite/index.html'
+                    },
+
+                    {
+                        expand: true,                 // Enable dynamic expansion.
+                        cwd: 'src/common/js/',        // Src matches are relative to this path.
+                        src: ['*.js'],             // Actual pattern(s) to match.
+                        dest: 'staging/deviceWebSite/js',      // Destination path prefix.
+                    },
+
+                    {
+                        src: 'src/deviceWebSite/js/deviceWebSiteInterface.js',
+                        dest: 'staging/deviceWebSite/js/hostInterface.js'
+                    },
+
+                    {
+                        expand: true,                 // Enable dynamic expansion.
+                        cwd: 'src/common/css/',        // Src matches are relative to this path.
+                        src: ['*.css'],             // Actual pattern(s) to match.
+                        dest: 'staging/deviceWebSite/css',      // Destination path prefix.
+                    },
+
+                    {
                         expand: true,                 // Enable dynamic expansion.
                         cwd: 'src/remoteWebSite/js/',        // Src matches are relative to this path.
                         src: ['*.js'],             // Actual pattern(s) to match.
@@ -93,11 +141,6 @@ module.exports = function(grunt) {
                         cwd: 'src/remoteWebSite/css/',        // Src matches are relative to this path.
                         src: ['*.less'],             // Actual pattern(s) to match.
                         dest: 'staging/remoteWebSite/css',      // Destination path prefix.
-                    },
-
-                    {
-                        src: 'src/remoteWebSite/index.html',
-                        dest: 'staging/remoteWebSite/index.html'
                     },
 
                     {
@@ -121,10 +164,6 @@ module.exports = function(grunt) {
                         dest: 'staging/deviceWebSite/css',      // Destination path prefix.
                     },
 
-                    {
-                        src: 'src/deviceWebSite/index.html',
-                        dest: 'staging/deviceWebSite/index.html'
-                    },
                     {
                         expand: true,                               // Enable dynamic expansion.
                         cwd: 'bower_components/jquery/dist/',      // Src matches are relative to this path.
