@@ -75,6 +75,9 @@ define(function () {
                 var event = {};
 
                 switch (message.command) {
+                    case "serverLaunchedVideo":
+                        self.appController.serverLaunchedVideo();
+                        break;
                     case "setIPAddress":
 
                         //console.log("******************* - setIPAddress)");

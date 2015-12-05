@@ -847,7 +847,7 @@ define(['serverInterface','settingsModel'], function (serverInterface, SettingsM
             this.reselectCurrentProgram();
 
             // only do when executing on device
-            this.trigger("eraseCG");
+            //this.trigger("eraseCG");
         },
 
         invokeCloseDialog: function() {

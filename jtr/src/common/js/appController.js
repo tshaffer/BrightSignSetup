@@ -323,6 +323,10 @@ define(['hostInterface', 'serverInterface','mainMenuController','recordedShowsCo
 //    //switchToPage("homePage");
 //}
 
+            serverLaunchedVideo: function() {
+                // hack - taking advantage of knowledge that this is only invoked when running on the device
+                this.eraseUI();
+            }
         }
 
         appController.init();

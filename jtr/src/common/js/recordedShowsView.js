@@ -137,7 +137,7 @@ define(function () {
                     self.trigger("playSelectedShow", event.data.recordingId);
 
                     // only want to erase UI when this is invoked from device
-                    self.trigger("eraseUI");
+                    //self.trigger("eraseUI");
                 });
 
                 var btnIdDeleteRecording = "#delete" + recordingId;

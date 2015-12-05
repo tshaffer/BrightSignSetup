@@ -211,10 +211,22 @@ Sub de_HandleHttpEvent(event)
 				print "de_HandleHttpEvent: command=" + command$
 				if command$ = "tuneLiveVideo" then
 					m.TuneLiveVideo()
+
+					' tell client that video was launched
+					aa = {}
+					aa.AddReplace("command", "serverLaunchedVideo")
+					m.htmlWidget.PostJSMessage(aa)
+
 				else if command$ = "playRecordedShow" then
 					print "playRecordedShow: recordingId=";aa.recordingId
 					recording = m.jtr.GetDBRecording(aa.recordingId)
 					m.StartPlayback(recording)
+
+					' tell client that video was launched
+					aa = {}
+					aa.AddReplace("command", "serverLaunchedVideo")
+					m.htmlWidget.PostJSMessage(aa)
+
 				else if command$ = "deleteRecordedShow" then
 					print "deleteRecordedShow: recordingId=";aa.recordingId
 					m.DeleteRecording(aa.recordingId)
