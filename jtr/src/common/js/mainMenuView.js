@@ -217,19 +217,16 @@ define(function () {
 
             if (rowIndex >= 0 && colIndex >= 0) {
                 switch (direction) {
-                    //case "up":
-                    case 38:
+                    case constants.KEY_UP:
                         if (rowIndex > 0) rowIndex--;
                         break;
-                    //case "down":
-                    case 40:
+                    case constants.KEY_DOWN:
                         if (rowIndex < this.mainMenuIds.length) rowIndex++;
                         break;
-                    //case "left":
-                    case 37:
+                    case constants.KEY_LEFT:
                         if (colIndex > 0) colIndex--;
                         break;
-                    case 39:
+                    case constants.KEY_RIGHT:
                     //case "right":
                         if (colIndex < this.mainMenuIds[0].length) colIndex++;
                         break;

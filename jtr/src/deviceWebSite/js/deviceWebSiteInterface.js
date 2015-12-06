@@ -309,16 +309,16 @@ define(function () {
                                             var event = {};
                                             switch (remoteCommand.toLowerCase()) {
                                                 case "up":
-                                                    event.which = 38;
+                                                    event.which = constants.KEY_UP;
                                                     break;
                                                 case "down":
-                                                    event.which = 40;
+                                                    event.which = constants.KEY_DOWN;
                                                     break;
                                                 case "left":
-                                                    event.which = 37;
+                                                    event.which = constants.KEY_LEFT;
                                                     break;
                                                 case "right":
-                                                    event.which = 39;
+                                                    event.which = constants.KEY_RIGHT;
                                                     break;
                                                 default:
                                                     event.which = remoteCommand.toLowerCase();

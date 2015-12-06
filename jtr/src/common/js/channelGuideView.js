@@ -74,16 +74,16 @@ define(['serverInterface','settingsModel'], function (serverInterface,settingsMo
 
                 var keyCode = keyEvent.which;
                 switch (keyCode) {
-                    case 38:
+                    case constants.KEY_UP:
                         command = "up";
                         break;
-                    case 40:
+                    case constants.KEY_DOWN:
                         command = "down";
                         break;
-                    case 37:
+                    case constants.KEY_LEFT:
                         command = "left";
                         break;
-                    case 39:
+                    case constants.KEY_RIGHT:
                         command = "right";
                         break;
                     case "highest_speed_rw":

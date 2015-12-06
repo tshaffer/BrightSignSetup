@@ -299,16 +299,16 @@ define(function () {
                     }
 
                     switch (command) {
-                        case 38:
+                        case constants.KEY_UP:
                             if (rowIndex > 0) rowIndex--;
                             break;
-                        case 40:
+                        case constants.KEY_DOWN:
                             if (rowIndex < this.recordedPageIds.length) rowIndex++;
                             break;
-                        case 37:
+                        case constants.KEY_LEFT:
                             if (colIndex > 0) colIndex--;
                             break;
-                        case 39:
+                        case constants.KEY_RIGHT:
                             if (colIndex < 1) colIndex++;
                             break;
                         default:

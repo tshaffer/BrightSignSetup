@@ -62,10 +62,10 @@ define(['serverInterface'], function (serverInterface) {
             //    case "left":
             //    case "right":
             switch (keycode) {
-                case 37:
-                case 38:
-                case 39:
-                case 40:
+                case constants.KEY_LEFT:
+                case constants.KEY_UP:
+                case constants.KEY_RIGHT:
+                case constants.KEY_DOWN:
 
                     console.log("navigation key invoked while modal dialog displayed");
 

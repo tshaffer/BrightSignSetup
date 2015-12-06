@@ -684,7 +684,7 @@ define(['serverInterface','settingsModel'], function (serverInterface, SettingsM
 
                 var keyCode = keyEvent.which;
                 switch (keyCode) {
-                    case 37: // left
+                    case constants.KEY_LEFT:
                         if (self.cgPopupSelectedIndex == 0) {
                             self.cgRecordOptionsNextEarlyStartTime();
                         }
@@ -692,7 +692,7 @@ define(['serverInterface','settingsModel'], function (serverInterface, SettingsM
                             self.cgRecordOptionsNextEarlyStopTime();
                         }
                         break;
-                    case 39: // right
+                    case constants.KEY_RIGHT:
                         if (self.cgPopupSelectedIndex == 0) {
                             self.cgRecordOptionsNextLateStartTime();
                         }
@@ -700,10 +700,10 @@ define(['serverInterface','settingsModel'], function (serverInterface, SettingsM
                             self.cgRecordOptionsNextLateStopTime();
                         }
                         break;
-                    case 38:
+                    case constants.KEY_UP:
                         self.cgProgramDlgUp();
                         break;
-                    case 40:
+                    case constants.KEY_DOWN:
                         self.cgProgramDlgDown();
                         break;
                     case "exit":
