@@ -179,61 +179,61 @@ define(['serverInterface','settingsModel'], function (serverInterface, SettingsM
             }
 
             // setup handlers for browser
-            if (this.cgRecordEpisodeId) {
-                $(this.cgRecordEpisodeId).off();
-                $(this.cgRecordEpisodeId).click(function (event) {
-                    $(self.cgRecordEpisodeId).unbind("click");
-                    self.invokeRecordEpisode();
-                });
-            }
-            if (this.cgRecordSeriesId) {
-                $(this.cgRecordSeriesId).off();
-                $(this.cgRecordSeriesId).click(function (event) {
-                    self.invokeRecordSeries();
-                });
-            }
+            //if (this.cgRecordEpisodeId) {
+            //    $(this.cgRecordEpisodeId).off();
+            //    $(this.cgRecordEpisodeId).click(function (event) {
+            //        $(self.cgRecordEpisodeId).unbind("click");
+            //        self.invokeRecordEpisode();
+            //    });
+            //}
+            //if (this.cgRecordSeriesId) {
+            //    $(this.cgRecordSeriesId).off();
+            //    $(this.cgRecordSeriesId).click(function (event) {
+            //        self.invokeRecordSeries();
+            //    });
+            //}
 
-            if (this.cgTuneEpisodeId){
-                $(this.cgTuneEpisodeId).off();
-                $(this.cgTuneEpisodeId).click(function (event) {
-                    self.invokeTune();
-                });
-            }
+            //if (this.cgTuneEpisodeId){
+            //    $(this.cgTuneEpisodeId).off();
+            //    $(this.cgTuneEpisodeId).click(function (event) {
+            //        self.invokeTune();
+            //    });
+            //}
 
-            if (this.cgCancelRecordingId) {
-                $(this.cgCancelRecordingId).off();
-                $(this.cgCancelRecordingId).click(function (event) {
-                    self.invokeCancelRecording();
-                });
-            }
-
-            if (this.cgCancelSeriesId) {
-                $(this.cgCancelSeriesId).off();
-                $(this.cgCancelSeriesId).click(function (event) {
-                    self.invokeCancelSeries();
-                });
-            }
-
-            if (this.cgRecordSetOptionsId) {
-                $(this.cgRecordSetOptionsId).off();
-                $(this.cgRecordSetOptionsId).click(function (event) {
-                    self.invokeRecordProgramSetOptions();
-                });
-            }
-
-            if (this.cgRecordViewUpcomingEpisodesId) {
-                $(this.cgRecordViewUpcomingEpisodesId).off();
-                $(this.cgRecordViewUpcomingEpisodesId).click(function (event) {
-                    self.invokeViewUpcomingEpisodes();
-                });
-            }
-
-            if (this.cgCloseEpisodeId) {
-                $(this.cgCloseEpisodeId).off();
-                $(this.cgCloseEpisodeId).click(function (event) {
-                    self.invokeCloseDialog();
-                });
-            }
+            //if (this.cgCancelRecordingId) {
+            //    $(this.cgCancelRecordingId).off();
+            //    $(this.cgCancelRecordingId).click(function (event) {
+            //        self.invokeCancelRecording();
+            //    });
+            //}
+            //
+            //if (this.cgCancelSeriesId) {
+            //    $(this.cgCancelSeriesId).off();
+            //    $(this.cgCancelSeriesId).click(function (event) {
+            //        self.invokeCancelSeries();
+            //    });
+            //}
+            //
+            //if (this.cgRecordSetOptionsId) {
+            //    $(this.cgRecordSetOptionsId).off();
+            //    $(this.cgRecordSetOptionsId).click(function (event) {
+            //        self.invokeRecordProgramSetOptions();
+            //    });
+            //}
+            //
+            //if (this.cgRecordViewUpcomingEpisodesId) {
+            //    $(this.cgRecordViewUpcomingEpisodesId).off();
+            //    $(this.cgRecordViewUpcomingEpisodesId).click(function (event) {
+            //        self.invokeViewUpcomingEpisodes();
+            //    });
+            //}
+            //
+            //if (this.cgCloseEpisodeId) {
+            //    $(this.cgCloseEpisodeId).off();
+            //    $(this.cgCloseEpisodeId).click(function (event) {
+            //        self.invokeCloseDialog();
+            //    });
+            //}
 
             this.cgPopupSelectedIndex = 0;
 
@@ -256,85 +256,166 @@ define(['serverInterface','settingsModel'], function (serverInterface, SettingsM
             // event.target is 'this.cgPopupId', not the id of the button actually pressed (which is why the click handler is added to cgPopupId)
             $(this.cgPopupId).click(function (event) {
 
-                switch (self.cgPopupId) {
-                    case "#cgProgramDlg":
-                        switch (self.cgPopupSelectedIndex) {
-                            case 0:
-                                self.invokeRecordEpisode();
-                                break;
-                            case 1:
-                                self.invokeRecordProgramSetOptions();
-                                break;
-                            case 2:
-                                self.invokeViewUpcomingEpisodes();
-                                break;
-                            case 3:
-                                self.invokeTune();
-                                break;
-                            case 4:
-                                self.invokeCloseDialog();
-                                break;
-                        }
-                        break;
-                    case "#cgScheduledRecordingDlg":
-                        switch (self.cgPopupSelectedIndex) {
-                            case 0:
-                                self.invokeCancelRecording();
-                                break;
-                            case 1:
-                                self.invokeRecordProgramSetOptions();
-                                break;
-                            case 2:
-                                self.invokeViewUpcomingEpisodes();
-                                break;
-                            case 3:
-                                self.invokeTune();
-                                break;
-                            case 4:
-                                self.invokeCloseDialog();
-                                break;
-                        }
-                        break;
-                    case "#cgSeriesDlg":
-                        switch (self.cgPopupSelectedIndex) {
-                            case 0:
-                                self.invokeRecordEpisode();
-                                break;
-                            case 1:
-                                self.invokeRecordProgramSetOptions();
-                                break;
-                            case 2:
-                                self.invokeRecordSeries();
-                                break;
-                            case 3:
-                                self.invokeTune();
-                                break;
-                            case 4:
-                                self.invokeCloseDialog();
-                                break;
-                        }
-                        break;
-                    case "#cgScheduledSeriesDlg":
-                        switch (self.cgPopupSelectedIndex) {
-                            case 0:
-                                self.invokeCancelRecording();
-                                break;
-                            case 1:
-                                self.invokeCancelSeries();
-                                break;
-                            case 2:
-                                self.invokeViewUpcomingEpisodes();
-                                break;
-                            case 3:
-                                self.invokeTune();
-                                break;
-                            case 4:
-                                self.invokeCloseDialog();
-                                break;
-                        }
-                        break;
-                }
+                $(self.cgPopupId).off();
 
+                if (self.cgPopupId == event.target.id) {
+                    // remote control event
+                    switch (self.cgPopupId) {
+                        case "#cgProgramDlg":
+                            switch (self.cgPopupSelectedIndex) {
+                                case 0:
+                                    self.invokeRecordEpisode();
+                                    break;
+                                case 1:
+                                    self.invokeRecordProgramSetOptions();
+                                    break;
+                                case 2:
+                                    self.invokeViewUpcomingEpisodes();
+                                    break;
+                                case 3:
+                                    self.invokeTune();
+                                    break;
+                                case 4:
+                                    self.invokeCloseDialog();
+                                    break;
+                            }
+                            break;
+                        case "#cgScheduledRecordingDlg":
+                            switch (self.cgPopupSelectedIndex) {
+                                case 0:
+                                    self.invokeCancelRecording();
+                                    break;
+                                case 1:
+                                    self.invokeRecordProgramSetOptions();
+                                    break;
+                                case 2:
+                                    self.invokeViewUpcomingEpisodes();
+                                    break;
+                                case 3:
+                                    self.invokeTune();
+                                    break;
+                                case 4:
+                                    self.invokeCloseDialog();
+                                    break;
+                            }
+                            break;
+                        case "#cgSeriesDlg":
+                            switch (self.cgPopupSelectedIndex) {
+                                case 0:
+                                    self.invokeRecordEpisode();
+                                    break;
+                                case 1:
+                                    self.invokeRecordProgramSetOptions();
+                                    break;
+                                case 2:
+                                    self.invokeRecordSeries();
+                                    break;
+                                case 3:
+                                    self.invokeTune();
+                                    break;
+                                case 4:
+                                    self.invokeCloseDialog();
+                                    break;
+                            }
+                            break;
+                        case "#cgScheduledSeriesDlg":
+                            switch (self.cgPopupSelectedIndex) {
+                                case 0:
+                                    self.invokeCancelRecording();
+                                    break;
+                                case 1:
+                                    self.invokeCancelSeries();
+                                    break;
+                                case 2:
+                                    self.invokeViewUpcomingEpisodes();
+                                    break;
+                                case 3:
+                                    self.invokeTune();
+                                    break;
+                                case 4:
+                                    self.invokeCloseDialog();
+                                    break;
+                            }
+                            break;
+                    }
+                }
+                else {
+                    console.log("---------------------------" + event.target.id);
+                    // JTRTODO - once this is all working, combine some of the cases below
+                    switch (event.target.id) {
+                        case "cgProgramRecord":
+                        case "cgEpisodeRecord":
+                            self.invokeRecordEpisode();
+                            //this.cgRecordSelectedProgram();
+                            break;
+                        case "cgProgramRecordSetOptions":
+                        case "cgSeriesRecordSetProgramOptions":
+                            self.invokeRecordProgramSetOptions();
+                            //this.cgRecordProgramSetOptions();
+                            break;
+                        case "cgProgramViewUpcomingEpisodes":
+                            self.invokeViewUpcomingEpisodes();
+                            //this.cgRecordProgramViewUpcomingEpisodes();
+                            break;
+                        case "cgProgramTune":
+                        case "cgSeriesTune":
+                        case "cgSeriesRecordingTune":
+                            self.invokeTune();
+                            //this.cgTuneFromClient();
+                            break;
+                        case "cgProgramClose":
+                        case "cgSeriesClose":
+                        case "cgSeriesRecordingClose":
+                            self.invokeCloseDialog();
+                            //this.cgModalClose();
+                            break;
+                        case "cgCancelScheduledRecording":
+                        case "cgSeriesCancelEpisode":
+                            self.invokeCancelRecording();
+                            //this.cgCancelScheduledRecording();
+                            break;
+                        case "cgScheduledRecordChangeOptions":
+                            self.invokeRecordProgramSetOptions();
+                            //this.cgChangeScheduledRecordingOptions();
+                            break;
+                        case "cgScheduledRecordingViewUpcomingEpisodes":
+                            self.invokeViewUpcomingEpisodes();
+                            //this.cgScheduledRecordingViewUpcomingEpisodes();
+                            break;
+                        case "cgScheduledRecordingTune":
+                            self.invokeTune();
+                            //this.cgScheduledRecordingTune();
+                            break;
+                        case "cgScheduledRecordingClose":
+                            self.invokeCloseDialog();
+                            //this.cgScheduledRecordingClose();
+                            break;
+                        case "cgSeriesRecord":
+                            self.invokeRecordSeries();
+                            //this.cgRecordSelectedSeries();
+                            break;
+                        case "cgSeriesCancelSeries":
+                            self.invokeCancelSeries();
+                            //this.cgCancelScheduledSeries();
+                            break;
+                        case "cgSeriesViewUpcoming":
+                            self.invokeViewUpcomingEpisodes();
+                            //this.cgScheduledSeriesViewUpcoming();
+                            break;
+                        // these need to be handled separately
+                        //case "cgRecordOptionsStartTimeLabel":
+                        //case "cgRecordOptionsStopTimeLabel":
+                        //    break;
+                        //case "cgRecordOptionsSave":
+                        //    this.cgRecordOptionsSave();
+                        //    break;
+                        //case "cgRecordOptionsCancel":
+                        //    this.cgRecordOptionsCancel();
+                        //    break;
+                        default:
+                            break;
+                    }
+                }
             });
 
             $(this.cgPopupId).off("keydown");
@@ -639,17 +720,32 @@ define(['serverInterface','settingsModel'], function (serverInterface, SettingsM
 
             $("#cgRecordingOptionsDlg").click(function (event) {
                 console.log("click pressed");
-                switch (self.cgPopupSelectedIndex) {
-                    case 0:
-                        break;
-                    case 1:
-                        break;
-                    case 2:
-                        self.cgRecordOptionsSave(addRecordToDB);
-                        break;
-                    case 3:
-                        self.cgRecordOptionsCancel();
-                        break;
+
+                $("#cgRecordingOptionsDlg").off();
+
+                if (event.target.id == "cgRecordingOptionsDlg") {
+                    switch (self.cgPopupSelectedIndex) {
+                        case 0:
+                            break;
+                        case 1:
+                            break;
+                        case 2:
+                            self.cgRecordOptionsSave(addRecordToDB);
+                            break;
+                        case 3:
+                            self.cgRecordOptionsCancel();
+                            break;
+                    }
+                }
+                else {
+                    switch (event.target.id) {
+                        case "cgRecordOptionsSave":
+                            self.cgRecordOptionsSave(addRecordToDB);
+                            break;
+                        case "cgRecordOptionsCancel":
+                            self.cgRecordOptionsCancel();
+                            break;
+                    }
                 }
             });
 
@@ -688,25 +784,25 @@ define(['serverInterface','settingsModel'], function (serverInterface, SettingsM
             $("#cgRecordOptionsCancel").removeClass("btn-primary");
             $("#cgRecordOptionsCancel").addClass("btn-secondary");
 
-            $("#cgRecordOptionsSave").click(function (event) {
-                //$("#cgRecordOptionsSave").unbind("click");
-                //$("#cgRecordingOptionsDlg").modal('hide');
-                ////self.cgRecordProgramFromClient(addRecordToDB, self.channelGuide.retrieveScheduledRecordings);
-                //
-                //var promise = self.cgRecordProgramFromClient(addRecordToDB);
-                //promise.then(function() {
-                //    serverInterface.retrieveScheduledRecordings();
-                //})
-                //
-                //self.reselectCurrentProgram();
-                self.cgRecordOptionsSave(addRecordToDB);
-            });
-
-            $("#cgRecordOptionsCancel").click(function (event) {
-                //$("#cgRecordingOptionsDlg").modal('hide');
-                //self.reselectCurrentProgram();
-                self.cgRecordOptionsCancel();
-            });
+            //$("#cgRecordOptionsSave").click(function (event) {
+            //    //$("#cgRecordOptionsSave").unbind("click");
+            //    //$("#cgRecordingOptionsDlg").modal('hide');
+            //    ////self.cgRecordProgramFromClient(addRecordToDB, self.channelGuide.retrieveScheduledRecordings);
+            //    //
+            //    //var promise = self.cgRecordProgramFromClient(addRecordToDB);
+            //    //promise.then(function() {
+            //    //    serverInterface.retrieveScheduledRecordings();
+            //    //})
+            //    //
+            //    //self.reselectCurrentProgram();
+            //    self.cgRecordOptionsSave(addRecordToDB);
+            //});
+            //
+            //$("#cgRecordOptionsCancel").click(function (event) {
+            //    //$("#cgRecordingOptionsDlg").modal('hide');
+            //    //self.reselectCurrentProgram();
+            //    self.cgRecordOptionsCancel();
+            //});
 
             $("#cgRecordOptionsSave").focus();
         },
