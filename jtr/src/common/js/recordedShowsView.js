@@ -121,23 +121,10 @@ define(function () {
             // Add the compiled html to the page
             $("#recordedShowsTableBody").append(theCompiledHtml);
 
-            //$("#recordedShowsPage").keydown(function (event) {
-            //    if (event.which == 'menu') {
-            //        console.log("menu button pressed in recordedShowsPage");
-            //        self.trigger("invokeHome");
-            //        return true;
-            //    }
-            //    return false;
-            //});
-
             $.each(recordingIds, function (index, recordingId) {
                 var btnIdPlayRecording = "#recording" + recordingId;
                 $(btnIdPlayRecording).click({ recordingId: recordingId }, function (event) {
-                    //self.playSelectedShowCallback(event);
                     self.trigger("playSelectedShow", event.data.recordingId);
-
-                    // only want to erase UI when this is invoked from device
-                    //self.trigger("eraseUI");
                 });
 
                 var btnIdDeleteRecording = "#delete" + recordingId;
@@ -147,26 +134,7 @@ define(function () {
 
                 $(btnIdPlayRecording).keydown(function (keyEvent) {
 
-                    //var command = "";
-
                     var keyCode = keyEvent.which;
-                    //switch (keyCode) {
-                    //    case 38:
-                    //        command = "up";
-                    //        break;
-                    //    case 40:
-                    //        command = "down";
-                    //        break;
-                    //    case 37:
-                    //        command = "left";
-                    //        break;
-                    //    case 39:
-                    //        command = "right";
-                    //        break;
-                    //}
-                    //
-                    //self.navigate(command);
-
                     if (typeof keyCode != "undefined") {
                         if (keyCode == "exit") {
                             self.trigger("eraseUI");
@@ -206,64 +174,6 @@ define(function () {
 
             return this;
         },
-
-        //playSelectedShowCallback: function(event) {
-        //    console.log("playback recording with id = " + event.data.recordingId);
-        //}
-
-        //executeRemoteCommand: function(command) {
-        //    console.log("recordedShowsView:executeRemoteCommand:" + command);
-        //
-        //    switch (command.toLowerCase()) {
-        //        case "menu":
-        //            console.log("recordedShowsView::invokeHomeHandler invoked");
-        //            this.trigger("invokeHome");
-        //            break;
-        //        case "up":
-        //        case "down":
-        //        case "left":
-        //        case "right":
-        //            this.navigate(command.toLowerCase());
-        //            break;
-        //        case "select":
-        //            this.select(command);
-        //            break;
-        //    }
-        //},
-        //
-        //select: function (command) {
-        //
-        //    var currentElement = document.activeElement;
-        //    var currentElementId = currentElement.id;
-        //    console.log("active recorded shows page item is " + currentElementId);
-        //
-        //    var action = this.getAction(currentElementId);
-        //    if (action != "") {
-        //        var recordingId = currentElementId.substring(action.length);
-        //        switch (action) {
-        //            case "recording":
-        //                this.trigger("playSelectedShow", recordingId);
-        //                this.trigger("eraseUI");
-        //                break;
-        //            case "delete":
-        //                this.trigger("deleteSelectedShow", recordingId);
-        //                break;
-        //        }
-        //    }
-        //
-        //},
-
-        //getAction : function (actionButtonId) {
-        //
-        //    if (actionButtonId.lastIndexOf("recording") === 0) {
-        //        return "recording";
-        //    }
-        //    else if (actionButtonId.lastIndexOf("delete") === 0) {
-        //        return "delete";
-        //    }
-        //    console.log("getAction - no matching action found for " + actionButtonId);
-        //    return "";
-        //},
 
         navigate: function (command) {
 

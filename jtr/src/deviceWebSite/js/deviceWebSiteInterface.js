@@ -43,10 +43,6 @@ define(function () {
                 ir_receiver.onremotedown = function (e) {
                     self.processIRInput(e);
                 }
-
-                //ir_receiver.onremoteup = function (e) {
-                //    console.log('############ onremoteup: ' + e.irType + " - " + e.code);
-                //}
             }
 
             // ir transmitter
@@ -247,7 +243,6 @@ define(function () {
 
                     var inputHandled = false;
 
-                    //handlers = $._data( document.getElementById("recording1"), "events" )
                     var currentElement = document.activeElement;
                     var originalTarget = currentElement;
 
@@ -276,31 +271,9 @@ define(function () {
                                         });
                                     }
                                 }
-                                //else if (eventType == "keydown" && remoteCommand == "MENU") {
-                                //    if (handlers.hasOwnProperty(eventType)) {
-                                //        console.log("handlers eventType = " + eventType);
-                                //        var handlersForKey = handlers[eventType];
-                                //        $.each(handlersForKey, function (index, handlerForKey) {
-                                //            var event = {};
-                                //            event.which = "menu";
-                                //            event.data = handlerForKey.data;
-                                //            event.target = currentElement;
-                                //            var eventHandled = handlerForKey.handler(event);
-                                //            if (eventHandled) {
-                                //                inputHandled = true;
-                                //            }
-                                //            return false;
-                                //        });
-                                //    }
-                                //}
                                 else if (eventType == "keydown" && (remoteCommand == "STOP" || remoteCommand == "EXIT" || remoteCommand == "RECORD" || remoteCommand == "UP" || remoteCommand == "DOWN" | remoteCommand == "LEFT" || remoteCommand == "RIGHT" || remoteCommand == "HIGHEST_SPEED_RW" || remoteCommand == "PREV" || remoteCommand == "NEXT" || remoteCommand ==  "HIGHEST_SPEED_FW")) {
-                                    //left = 37
-                                    //up = 38
-                                    //right = 39
-                                    //down = 40
                                     console.log("handlers eventType = " + eventType);
                                     var handlersForKey = handlers[eventType];
-                                    //$.each(handlersForKey, function (index, handlerForKey) {
                                     for (index = 0; index < handlersForKey.length; index++) {
                                         handlerForKey = handlersForKey[index];
 
@@ -323,31 +296,7 @@ define(function () {
                                                 default:
                                                     event.which = remoteCommand.toLowerCase();
                                                     break;
-                                                //case "highest_speed_rw":
-                                                //    event.which = "highest_speed_rw";
-                                                //    break;
-                                                //case "highest_speed_fw":
-                                                //    event.which = "highest_speed_fw";
-                                                //    break;
-                                                //case "prev":
-                                                //    event.which = "prev";
-                                                //    break;
-                                                //case "next":
-                                                //    event.which = "next";
-                                                //    break;
-                                                //case "exit":
-                                                //    event.which = "exit";
-                                                //    break;
-                                                //case "record":
-                                                //    event.which = "record";
-                                                //    break;
-                                                //case "stop":
-                                                //    event.which = "stop";
-                                                //    break;
                                             }
-                                            //event.which = remoteCommand.toLowerCase();
-                                            //event.data = handlerForKey.data;
-                                            // set event.target to currentElement?
                                             event.target = currentElement;
                                             handlerForKey.handler(event);
                                             inputHandled = true;
@@ -357,11 +306,6 @@ define(function () {
                                 }
                             }
                         }
-
-                        //if (!inputHandled) {
-                        //    //debugger;
-                        //    //self.trigger("remoteCommand", self.activePage, remoteCommand);
-                        //}
 
                         if (inputHandled) {
                             return;

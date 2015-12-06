@@ -27,16 +27,11 @@ define(['manualRecordModel','manualRecordView'], function (ManualRecordModel, Ma
 
             var self = this;
 
-            //this.listenTo(this.manualRecordView, "executeManualRecord", function() {
-            //    console.log("ManualRecordController:: executeManualRecord event received");
-            //    return false;
-            //});
             this.listenTo(this.manualRecordView, "manualRecordModelUpdateComplete", function() {
                 console.log("ManualRecordController:: manualRecordModelUpdateComplete event received");
                 this.manualRecordModel.save();
                 return false;
             });
-
             this.listenTo(this.manualRecordView, "invokeHome", function() {
                 console.log("manualRecordController:: invokeHome event received");
                 self.trigger("invokeHome");

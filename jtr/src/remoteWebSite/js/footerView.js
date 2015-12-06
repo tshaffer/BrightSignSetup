@@ -20,29 +20,8 @@ define(function () {
             console.log("FooterView::render");
             this.$el.html(this.template()); // this.$el is a jQuery wrapped el var
 
-            // handlers
-            //var self = this;
-            //$("#rbManualRecordTuner").change(function () {
-            //    self.setElementVisibility("#manualRecordChannelDiv", true);
-            //});
-            //
-            //$("#rbManualRecordRoku").change(function () {
-            //    self.setElementVisibility("#manualRecordChannelDiv", false);
-            //});
-            //
-            //$("#rbManualRecordTivo").change(function () {
-            //    self.setElementVisibility("#manualRecordChannelDiv", false);
-            //});
-
             $("#FooterView").css("display", "block");
-
-            var self = this;
-
-            //$("#btnHome").click(function() {
-            //    console.log("FooterView::btnHome clicked");
-            //    self.trigger("invokeHome");
-            //    return false;
-            //})
+            
             return this;
         },
 

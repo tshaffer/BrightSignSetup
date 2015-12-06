@@ -56,11 +56,6 @@ define(['serverInterface'], function (serverInterface) {
 
         toggleHighlightedButton: function(keycode) {
 
-            //switch (eventData.toLowerCase(keycode)) {
-            //    case "up":
-            //    case "down":
-            //    case "left":
-            //    case "right":
             switch (keycode) {
                 case constants.KEY_LEFT:
                 case constants.KEY_UP:

@@ -16,10 +16,6 @@ define(function () {
             this.render();
         },
 
-        //setDefaultDateTime: function () {
-        //    this.model.set('dateTime', new Date());
-        //},
-
         render: function () {
 
             console.log("RecordNowView::render");
@@ -59,27 +55,6 @@ define(function () {
             $("#recordNowPage").css("display", "block");
 
             $("#recordNowTitle").focus();
-
-            // set visual elements based on values in model
-            //var title = this.model.get('title');
-            //$("#manualRecordTitle").val(title);
-            //
-            //var duration = this.model.get('duration');
-            //$("#manualRecordDuration").val(duration);
-            //
-            //var date = this.model.get('dateTime');
-            //
-            //var dateVal = date.getFullYear() + "-" + twoDigitFormat((date.getMonth() + 1)) + "-" + twoDigitFormat(date.getDate());
-            //$("#manualRecordDate").val(dateVal);
-            //
-            //var timeVal = twoDigitFormat(date.getHours()) + ":" + twoDigitFormat(date.getMinutes());
-            //$("#manualRecordTime").val(timeVal);
-            //
-            //var channel = this.model.get('channel');
-            //$("#manualRecordChannel").val(channel);
-            //
-            //var inputSource = this.model.get('inputSource');
-            //this.setElementVisibility("#manualRecordChannelDiv", inputSource == 'tuner');
 
             $("#recordNowTItle").focus();
 
@@ -155,27 +130,6 @@ define(function () {
 
             return title;
         },
-
-        //executeRemoteCommand: function(remoteCommand) {
-        //    console.log("recordNowView:executeRemoteCommand:" + remoteCommand);
-        //
-        //    switch (remoteCommand) {
-        //        case "MENU":
-        //            console.log("recordNowView::invokeHomeHandler invoked");
-        //            this.trigger("invokeHome");
-        //            break;
-        //        case "UP":
-        //        case "DOWN":
-        //        case "LEFT":
-        //        case "RIGHT":
-        //            //this.navigate(remoteCommand);
-        //            break;
-        //        case "SELECT":
-        //            //this.select(remoteCommand);
-        //            break;
-        //    }
-        //},
-
     });
 
     return RecordNowView;

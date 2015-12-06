@@ -128,8 +128,6 @@ define(['hostInterface', 'serverInterface','mainMenuController','recordedShowsCo
                 else {
                     browserTypeIsSafari = false;
                 }
-
-                //hostInterface.init();
             },
 
             executeReturnToHome: function() {
@@ -201,11 +199,6 @@ define(['hostInterface', 'serverInterface','mainMenuController','recordedShowsCo
                     case "record":
                         cmd = "record";
                         break;
-                    //case "btnRemoteStop":
-                    //case "remoteStop":
-                    //case "stop":
-                    //    cmd = "stop";
-                    //    break;
                     case "btnRemoteRewind":
                     case "remoteRewind":
                     case "rw":
@@ -287,43 +280,7 @@ define(['hostInterface', 'serverInterface','mainMenuController','recordedShowsCo
 
                 this.deleteShowView = new DeleteShowView();
                 this.deleteShowView.show("pizza", this.activeRecordingId);
-
-                //console.log("displayDeleteShowDlg() invoked, showTitle=" + showTitle + ", showRecordingId=" + showRecordingId);
-                //
-                ////_showRecordingId = showRecordingId;
-                //
-                //var options = {
-                //    "backdrop": "true"
-                //}
-                //$('#deleteShowDlg').modal(options);
-                //$('#deleteShowDlgShowTitle').html("Delete '" + showTitle + "'?");
-                //
-                //modalDialogDisplayed = true;
-                //selectedDeleteShowDlgElement = "#deleteShowDlgDelete";
-                //unselectedDeleteShowDlgElement = "#deleteShowDlgClose";
-                //
-                //// when dialog is displayed, highlight Delete, unhighlight Close
-                //$(selectedDeleteShowDlgElement).removeClass("btn-secondary");
-                //$(selectedDeleteShowDlgElement).addClass("btn-primary");
-                //
-                //$(unselectedDeleteShowDlgElement).removeClass("btn-primary");
-                //$(unselectedDeleteShowDlgElement).addClass("btn-secondary");
             },
-
-//function deleteShowDlgCloseInvoked() {
-//    consoleLog("deleteShowDlgCloseInvoked");
-//    $('#deleteShowDlg').modal('hide');
-//    modalDialogDisplayed = false;
-//    //switchToPage("homePage");
-//}
-//
-//function deleteShowDlgDeleteInvoked() {
-//    consoleLog("deleteShowDlgDeleteInvoked");
-//    $('#deleteShowDlg').modal('hide');
-//    modalDialogDisplayed = false;
-//    executeDeleteSelectedShow(_showRecordingId);
-//    //switchToPage("homePage");
-//}
 
             serverLaunchedVideo: function() {
                 // hack - taking advantage of knowledge that this is only invoked when running on the device

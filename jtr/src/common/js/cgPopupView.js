@@ -51,7 +51,6 @@ define(['serverInterface','settingsModel'], function (serverInterface, SettingsM
 
         initialize: function () {
             console.log("cgPopupView::initialize");
-            //this.template = _.template($('#channelGuideTemplate').html());
 
             this.settingsModel = SettingsModel.getInstance();
             this.listenTo(this.settingsModel, "settingsUpdated", function() {
@@ -177,63 +176,6 @@ define(['serverInterface','settingsModel'], function (serverInterface, SettingsM
                     this.cgCloseEpisodeId = "#cgScheduledRecordingClose";
                 }
             }
-
-            // setup handlers for browser
-            //if (this.cgRecordEpisodeId) {
-            //    $(this.cgRecordEpisodeId).off();
-            //    $(this.cgRecordEpisodeId).click(function (event) {
-            //        $(self.cgRecordEpisodeId).unbind("click");
-            //        self.invokeRecordEpisode();
-            //    });
-            //}
-            //if (this.cgRecordSeriesId) {
-            //    $(this.cgRecordSeriesId).off();
-            //    $(this.cgRecordSeriesId).click(function (event) {
-            //        self.invokeRecordSeries();
-            //    });
-            //}
-
-            //if (this.cgTuneEpisodeId){
-            //    $(this.cgTuneEpisodeId).off();
-            //    $(this.cgTuneEpisodeId).click(function (event) {
-            //        self.invokeTune();
-            //    });
-            //}
-
-            //if (this.cgCancelRecordingId) {
-            //    $(this.cgCancelRecordingId).off();
-            //    $(this.cgCancelRecordingId).click(function (event) {
-            //        self.invokeCancelRecording();
-            //    });
-            //}
-            //
-            //if (this.cgCancelSeriesId) {
-            //    $(this.cgCancelSeriesId).off();
-            //    $(this.cgCancelSeriesId).click(function (event) {
-            //        self.invokeCancelSeries();
-            //    });
-            //}
-            //
-            //if (this.cgRecordSetOptionsId) {
-            //    $(this.cgRecordSetOptionsId).off();
-            //    $(this.cgRecordSetOptionsId).click(function (event) {
-            //        self.invokeRecordProgramSetOptions();
-            //    });
-            //}
-            //
-            //if (this.cgRecordViewUpcomingEpisodesId) {
-            //    $(this.cgRecordViewUpcomingEpisodesId).off();
-            //    $(this.cgRecordViewUpcomingEpisodesId).click(function (event) {
-            //        self.invokeViewUpcomingEpisodes();
-            //    });
-            //}
-            //
-            //if (this.cgCloseEpisodeId) {
-            //    $(this.cgCloseEpisodeId).off();
-            //    $(this.cgCloseEpisodeId).click(function (event) {
-            //        self.invokeCloseDialog();
-            //    });
-            //}
 
             this.cgPopupSelectedIndex = 0;
 
@@ -404,16 +346,6 @@ define(['serverInterface','settingsModel'], function (serverInterface, SettingsM
                             self.invokeViewUpcomingEpisodes();
                             //this.cgScheduledSeriesViewUpcoming();
                             break;
-                        // these need to be handled separately
-                        //case "cgRecordOptionsStartTimeLabel":
-                        //case "cgRecordOptionsStopTimeLabel":
-                        //    break;
-                        //case "cgRecordOptionsSave":
-                        //    this.cgRecordOptionsSave();
-                        //    break;
-                        //case "cgRecordOptionsCancel":
-                        //    this.cgRecordOptionsCancel();
-                        //    break;
                         default:
                             break;
                     }
@@ -439,39 +371,7 @@ define(['serverInterface','settingsModel'], function (serverInterface, SettingsM
                 }
 
                 return false;
-
-                //var keyIdentifier = event.keyIdentifier;
-                //console.log("Key " + keyIdentifier.toString() + "pressed")
-                //if (keyIdentifier == "Up") {
-                //    self.cgProgramDlgUp();
-                //}
-                //else if (keyIdentifier == "Down") {
-                //    self.cgProgramDlgDown();
-                //}
-                //else if (keyIdentifier == "Enter") {
-                //    var func = self.cgPopupHandlers[self.cgPopupSelectedIndex];
-                //    func.call(self);
-                //    self.cgProgramDlgCloseInvoked();
-                //    // ?? JTRTODO - update scheduled recordings
-                //}
             });
-            // browser event handlers - browser.js - this approach didn't work - why?
-            //for (i = 0; i < this.cgPopupEpisodeElements.length; i++) {
-            //    var foo = this.cgPopupEpisodeHandlers[i];
-            //    var foo2 = this.cgPopupEpisodeElements[i];
-            //    $(foo2).click(function () {
-            //        foo();
-            //    });
-
-            //$(this.cgPopupEpisodeElements[i]).click(function () {
-            //    //this.cgPopupEpisodeHandlers[i]();
-            //    foo();
-            //    cgProgramDlgCloseInvoked();
-            //});
-
-            //click(this.cgPopupEpisodeHandlers[i]);
-            //}
-
         },
 
         programsMatch: function (scheduledRecording, cgProgram, cgStationId) {
@@ -784,26 +684,6 @@ define(['serverInterface','settingsModel'], function (serverInterface, SettingsM
             $("#cgRecordOptionsSave").addClass("btn-secondary");
             $("#cgRecordOptionsCancel").removeClass("btn-primary");
             $("#cgRecordOptionsCancel").addClass("btn-secondary");
-
-            //$("#cgRecordOptionsSave").click(function (event) {
-            //    //$("#cgRecordOptionsSave").unbind("click");
-            //    //$("#cgRecordingOptionsDlg").modal('hide');
-            //    ////self.cgRecordProgramFromClient(addRecordToDB, self.channelGuide.retrieveScheduledRecordings);
-            //    //
-            //    //var promise = self.cgRecordProgramFromClient(addRecordToDB);
-            //    //promise.then(function() {
-            //    //    serverInterface.retrieveScheduledRecordings();
-            //    //})
-            //    //
-            //    //self.reselectCurrentProgram();
-            //    self.cgRecordOptionsSave(addRecordToDB);
-            //});
-            //
-            //$("#cgRecordOptionsCancel").click(function (event) {
-            //    //$("#cgRecordingOptionsDlg").modal('hide');
-            //    //self.reselectCurrentProgram();
-            //    self.cgRecordOptionsCancel();
-            //});
 
             $("#cgRecordOptionsSave").focus();
         },

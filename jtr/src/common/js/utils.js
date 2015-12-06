@@ -23,7 +23,6 @@ function dayDate(dateTime)
 }
 
 function timeOfDay(dateTime) {
-    //return dateTime.toString("h:mmtt").toLowerCase();
 
     // hack to work around apparent date.js bug where hour shows up as 0 inappropriately
     var hour = dateTime.toString("h");

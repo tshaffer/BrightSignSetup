@@ -10,19 +10,6 @@ define(function () {
         initialize: function () {
             console.log("ManualRecordView::initialize");
             this.template = _.template($('#manualRecordTemplate').html());
-
-            //this.listenTo(this, "executeManualRecord", function() {
-            //    console.log("ManualRecordView:: executeManualRecord event received");
-            //    return false;
-            //});
-
-            // doesn't work
-
-            //this.on('click: #btnSetManualRecord', function() {
-            //    console.log("ManualRecordView:: executeManualRecord event received");
-            //    return false;
-            //});
-
         },
 
         show: function() {
@@ -107,25 +94,9 @@ define(function () {
             }
         },
 
-        // either of the two approaches below work
-        //events: {
-        //    "click #btnSetManualRecord": function (event) {
-        //        console.log("executeManualRecordHandler, trigger executeManualRecord");
-        //        this.trigger("executeManualRecord");
-        //        return false;
-        //    }
-        //}
-
         events: {
-            //"click #btnSetManualRecord": "executeManualRecordHandler"
             "click #btnSetManualRecord": "setManualRecordHandler"
         },
-
-        //executeManualRecordHandler: function (event) {
-        //    console.log("executeManualRecordHandler, trigger executeManualRecord");
-        //    this.trigger("executeManualRecord");
-        //    return false;
-        //}
 
         setManualRecordHandler: function(event) {
             var success = this.updateModelFromUI();

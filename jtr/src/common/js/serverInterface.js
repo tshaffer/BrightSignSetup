@@ -7,8 +7,6 @@ define(function () {
 
     var serverInterface = {
 
-        //baseURL : "http://192.168.0.108:8080/",
-        //baseURL : "http://10.1.0.241:8080/",
         baseURL: "http://localHost:8080/",
 
         lastTunedChannelResult: null,
@@ -151,21 +149,6 @@ define(function () {
                         //alert("recording transmission finished");
                     });
             })
-
-            //var self = this;
-            //$.get(aUrl, params)
-            //    .done( function (result) {
-            //        console.log("stopRecording successful");
-            //        self.common.getToDoList();
-            //    })
-            //    .fail( function (jqXHR, textStatus, errorThrown) {
-            //        debugger;
-            //        console.log("stopRecording failure");
-            //    })
-            //    .always( function () {
-            //        //alert("recording transmission finished");
-            //    });
-
         },
 
 

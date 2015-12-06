@@ -27,10 +27,6 @@ define(['recordNowModel','recordNowView'], function (recordNowModel, recordNowVi
 
             var self = this;
 
-            //this.listenTo(this.recordNowView, "executerecordNow", function() {
-            //    console.log("recordNowController:: executerecordNow event received");
-            //    return false;
-            //});
             this.listenTo(this.recordNowView, "recordNowModelUpdateComplete", function() {
                 console.log("recordNowController:: recordNowModelUpdateComplete event received");
                 this.recordNowModel.save();

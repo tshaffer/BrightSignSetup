@@ -136,24 +136,6 @@ define(['stationsModel'], function (StationsModel) {
                 // Add the compiled html to the page
                 $("#scheduledRecordingsTableBody").append(theCompiledHtml);
 
-                //$("#scheduledRecordingsPage").keydown(function (event) {
-                //    if (event.which == 'menu') {
-                //        console.log("menu button pressed in scheduledRecordingsPage");
-                //        self.trigger("invokeHome");
-                //        return true;
-                //    }
-                //    return false;
-                //});
-
-                //var self = this;
-                //$.each(recordingIds, function (index, recordingId) {
-                //
-                //    var btnIdDeleteRecording = "#delete" + recordingId;
-                //    $(btnIdDeleteRecording).click({ recordingId: recordingId }, function (event) {
-                //        self.trigger("deleteSelectedShow", event.data.recordingId);
-                //    });
-                //});
-
                 for (var i = 0; i < scheduledRecordingIds.length; i++) {
 
                     var scheduledRecordingId = scheduledRecordingIds[i].toString();
@@ -205,32 +187,6 @@ define(['stationsModel'], function (StationsModel) {
                     });
                 }
 
-                //self.scheduledRecordingIds.length = 0;
-                //
-                //// add button handlers for each recording - note, the handlers need to be added after the html has been added!!
-                //$.each(scheduledRecordings, function (index, scheduledRecording) {
-                //
-                //    var scheduledRecordingId = scheduledRecording.Id;
-                //
-                //    // only one of the next two handlers can be invoked - that is, either btnIdStop or btnIdDelete exists
-                //
-                //    // stop an active recording
-                //    var btnIdStop = "#stop" + scheduledRecordingId;
-                //    $(btnIdStop).click({ scheduledRecordingId: scheduledRecordingId }, function (event) {
-                //        self.browser.stopActiveRecording(event);
-                //    });
-                //
-                //    // delete a scheduled recording
-                //    var btnIdDelete = "#delete" + scheduledRecordingId;
-                //    $(btnIdDelete).click({ scheduledRecordingId: scheduledRecordingId }, function (event) {
-                //        self.browser.deleteScheduledRecordingHandler(event);
-                //    });
-                //
-                //    var scheduledRecordingRow = [];
-                //    scheduledRecordingRow.push(btnIdDelete);
-                //    self.scheduledRecordingIds.push(scheduledRecordingRow);
-                //});
-
                 $("#scheduledRecordingsPage").css("display", "block");
 
                 // will fail if there are no scheduled recordings
@@ -278,30 +234,6 @@ define(['stationsModel'], function (StationsModel) {
 
                 return true;
             }
-
-            //playSelectedShowCallback: function(event) {
-            //    console.log("playback recording with id = " + event.data.recordingId);
-            //}
-
-            //executeRemoteCommand: function(remoteCommand) {
-            //    console.log("scheduledRecordingsView:executeRemoteCommand:" + remoteCommand);
-            //
-            //    switch (remoteCommand) {
-            //        case "MENU":
-            //            console.log("scheduledRecordingsView::invokeHomeHandler invoked");
-            //            this.trigger("invokeHome");
-            //            break;
-            //        case "UP":
-            //        case "DOWN":
-            //        case "LEFT":
-            //        case "RIGHT":
-            //            //this.navigate(remoteCommand);
-            //            break;
-            //        case "SELECT":
-            //            //this.select(remoteCommand);
-            //            break;
-            //    }
-            //},
 
         });
 

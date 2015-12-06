@@ -21,6 +21,8 @@ define(function () {
                 this.template = _.template($('#homePageTemplate').html());
          },
 
+        // not using events because of incompatibilities with remote event handling.
+        // function used did not find eventHandlers when using this approach
         //events: {
         //    //"click #recordedShows": "recordedShowsHandler",
         //    "click #recordNow": "recordNowHandler",
@@ -152,49 +154,6 @@ define(function () {
 
             return this;
         },
-
-        //executeRemoteCommand: function(remoteCommand) {
-        //    console.log("mainMenuView:executeRemoteCommand:" + remoteCommand);
-        //
-        //    switch (remoteCommand) {
-        //        case "UP":
-        //        case "DOWN":
-        //        case "LEFT":
-        //        case "RIGHT":
-        //            this.navigate(remoteCommand);
-        //            break;
-        //        case "SELECT":
-        //            this.select(remoteCommand);
-        //            break;
-        //    }
-        //},
-        //
-        //select: function() {
-        //
-        //    var currentElement = document.activeElement;
-        //    var currentElementId = currentElement.id;
-        //
-        //    switch (currentElementId) {
-        //        case "recordedShows":
-        //            this.trigger("invokeRecordedShows");
-        //            break;
-        //        case "recordNow":
-        //            this.trigger("invokeRecordNow");
-        //            break;
-        //        case "manualRecord":
-        //            this.trigger("invokeManualRecord");
-        //            break;
-        //        case "channelGuideId":
-        //            this.trigger("invokeChannelGuide");
-        //            break;
-        //        case "scheduledRecordings":
-        //            this.trigger("invokeScheduledRecordings");
-        //            break;
-        //        case "settings":
-        //            this.trigger("invokeSettings");
-        //            break;
-        //    };
-        //},
 
         navigate: function(direction) {
 

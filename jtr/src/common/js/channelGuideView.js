@@ -56,18 +56,6 @@ define(['serverInterface','settingsModel'], function (serverInterface,settingsMo
                 self.navigateForwardOneDay();
             });
 
-            //$("#cgData").keydown(function (keyEvent) {
-            //    var keyIdentifier = event.keyIdentifier;
-            //    if (keyIdentifier == "Right" || keyIdentifier == "Left" || keyIdentifier == "Up" || keyIdentifier == "Down") {
-            //        self.navigateChannelGuide(keyIdentifier.toLowerCase());
-            //        return false;
-            //    }
-            //    else if (keyIdentifier == "Enter") {
-            //        var programData = self.getSelectedStationAndProgram();
-            //        self.trigger("displayCGPopup", programData);
-            //        return false;
-            //    }
-            //});
             $("#cgData").keydown(function (keyEvent) {
 
                 var command = "";
@@ -181,20 +169,6 @@ define(['serverInterface','settingsModel'], function (serverInterface,settingsMo
             this.addHandlers();
 
             this.renderChannelGuide();
-
-            // handlers
-            //var self = this;
-            //$("#rbManualRecordTuner").change(function () {
-            //    self.setElementVisibility("#manualRecordChannelDiv", true);
-            //});
-            //
-            //$("#rbManualRecordRoku").change(function () {
-            //    self.setElementVisibility("#manualRecordChannelDiv", false);
-            //});
-            //
-            //$("#rbManualRecordTivo").change(function () {
-            //    self.setElementVisibility("#manualRecordChannelDiv", false);
-            //});
 
             $("#channelGuidePage").css("display", "block");
 
@@ -809,34 +783,6 @@ define(['serverInterface','settingsModel'], function (serverInterface,settingsMo
 
             return stationNumber;
         },
-
-        //executeRemoteCommand: function(remoteCommand) {
-        //    console.log("channelGuideView:executeRemoteCommand:" + remoteCommand);
-        //
-        //    switch (remoteCommand) {
-        //        case "MENU":
-        //            console.log("channelGuideView::invokeHomeHandler invoked");
-        //            this.trigger("invokeHome");
-        //            break;
-        //        case "UP":
-        //        case "DOWN":
-        //        case "LEFT":
-        //        case "RIGHT":
-        //            this.navigate(remoteCommand);
-        //            break;
-        //        case "SELECT":
-        //            this.select(remoteCommand);
-        //            break;
-        //    }
-        //},
-
-        //navigate: function(command) {
-        //
-        //},
-        //
-        //select: function() {
-        //
-        //}
     });
 
     return ChannelGuideView;

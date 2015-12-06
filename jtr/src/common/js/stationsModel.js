@@ -13,8 +13,6 @@ define(['serverInterface'], function (serverInterface) {
 
         sync: function(method, model, options) {
             options = options || {};
-            //options.url = "http://10.1.0.241:8080/getStations";
-            //options.url = "http://192.168.2.8:8080/getStations";
             options.url = serverInterface.getBaseUrl() + "getStations";
             Backbone.sync(method, model, options);
         },
