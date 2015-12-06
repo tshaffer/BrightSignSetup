@@ -107,7 +107,7 @@ define(['hostInterface', 'serverInterface','mainMenuController','recordedShowsCo
                 });
 
                 $("#cont").keydown(function (keyEvent) {
-                    console.log("key pressed: " + keyEvent.which)
+                    //console.log("key pressed: " + keyEvent.which)
                 });
 
                 console.log("JTR javascript .ready invoked");
@@ -251,6 +251,8 @@ define(['hostInterface', 'serverInterface','mainMenuController','recordedShowsCo
                 $("#recordedShowsPage").css("display", "none");
                 $("#scheduledRecordingsPage").css("display", "none");
                 $("#settingsPage").css("display", "none");
+
+                $("#IPAddressLabel").hide();
 
                 $("#cgSeriesDlg").modal('hide');
                 $("#cgScheduledSeriesDlg").modal('hide');

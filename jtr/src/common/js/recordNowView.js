@@ -40,19 +40,21 @@ define(function () {
             // Add the compiled html to the page
             $("#recordNowPage").append(theCompiledHtml);
 
-            $("#recordNowPage").keydown(function (event) {
-                if (event.which == 'menu') {
-                    console.log("menu button pressed in recordNowPage");
-                    self.trigger("invokeHome");
-                    return true;
-                }
-                else if (event.which == "exit") {
-                    console.log("exit button pressed in recordNowPage");
-                    self.trigger("eraseUI");
-                    return true;
-                }
-                return false;
-            });
+            // will need to fix this to support from this screen on device
+            // with this code in, text entry doesn't work as keydown swallows keystrokes
+            //$("#recordNowPage").keydown(function (event) {
+            //    if (event.which == 'menu') {
+            //        console.log("menu button pressed in recordNowPage");
+            //        self.trigger("invokeHome");
+            //        return true;
+            //    }
+            //    else if (event.which == "exit") {
+            //        console.log("exit button pressed in recordNowPage");
+            //        self.trigger("eraseUI");
+            //        return true;
+            //    }
+            //    return false;
+            //});
 
             $("#recordNowPage").css("display", "block");
 

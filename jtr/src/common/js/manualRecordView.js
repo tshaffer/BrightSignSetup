@@ -38,19 +38,21 @@ define(function () {
             console.log("ManualRecordView::render");
             this.$el.html(this.template()); // this.$el is a jQuery wrapped el var
 
-            $("#manualRecordPage").keydown(function (event) {
-                if (event.which == 'menu') {
-                    console.log("menu button pressed in manualRecordPage");
-                    self.trigger("invokeHome");
-                    return true;
-                }
-                else if (event.which == "exit") {
-                    console.log("exit button pressed in manualRecordPage");
-                    self.trigger("eraseUI");
-                    return true;
-                }
-                return false;
-            });
+            // will need to fix this to support from this screen on device
+            // with this code in, text entry doesn't work as keydown swallows keystrokes
+            //$("#manualRecordPage").keydown(function (event) {
+            //    if (event.which == 'menu') {
+            //        console.log("menu button pressed in manualRecordPage");
+            //        self.trigger("invokeHome");
+            //        return true;
+            //    }
+            //    else if (event.which == "exit") {
+            //        console.log("exit button pressed in manualRecordPage");
+            //        self.trigger("eraseUI");
+            //        return true;
+            //    }
+            //    return false;
+            //});
 
             // set visual elements based on values in model
             var title = this.model.get('title');
