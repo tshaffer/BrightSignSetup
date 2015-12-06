@@ -258,7 +258,9 @@ define(['serverInterface','settingsModel'], function (serverInterface, SettingsM
 
                 $(self.cgPopupId).off();
 
-                if (self.cgPopupId == event.target.id) {
+                var popupId = self.cgPopupId.substring(1);
+
+                if (popupId == event.target.id) {
                     // remote control event
                     switch (self.cgPopupId) {
                         case "#cgProgramDlg":
@@ -721,8 +723,6 @@ define(['serverInterface','settingsModel'], function (serverInterface, SettingsM
             $("#cgRecordingOptionsDlg").click(function (event) {
                 console.log("click pressed");
 
-                $("#cgRecordingOptionsDlg").off();
-
                 if (event.target.id == "cgRecordingOptionsDlg") {
                     switch (self.cgPopupSelectedIndex) {
                         case 0:
@@ -747,6 +747,7 @@ define(['serverInterface','settingsModel'], function (serverInterface, SettingsM
                             break;
                     }
                 }
+                return false;
             });
 
             this.cgPopupSelectedIndex = 0;
