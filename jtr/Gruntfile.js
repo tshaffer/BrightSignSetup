@@ -26,91 +26,99 @@ module.exports = function(grunt) {
                 ]
             },
 
-            copyWebSites: {
+            copyCommonIndex: {
                 files: [
                     {
                         src: 'src/common/index.html',
                         dest: 'staging/remoteWebSite/index.html'
                     },
+                    {
+                        src: 'src/common/index.html',
+                        dest: 'staging/deviceWebSite/index.html'
+                    },
+                ]
+            },
 
+            copyCommonJS: {
+                files: [
                     {
                         expand: true,                 // Enable dynamic expansion.
                         cwd: 'src/common/js/',        // Src matches are relative to this path.
                         src: ['*.js'],             // Actual pattern(s) to match.
                         dest: 'staging/remoteWebSite/js',      // Destination path prefix.
                     },
-
-                    {
-                        src: 'src/remoteWebSite/js/remoteWebSiteInterface.js',
-                        dest: 'staging/remoteWebSite/js/hostInterface.js'
-                    },
-
-                    {
-                        expand: true,                 // Enable dynamic expansion.
-                        cwd: 'src/common/css/',        // Src matches are relative to this path.
-                        src: ['*.css'],             // Actual pattern(s) to match.
-                        dest: 'staging/remoteWebSite/css',      // Destination path prefix.
-                    },
-
-                    {
-                        src: 'src/common/index.html',
-                        dest: 'staging/deviceWebSite/index.html'
-                    },
-
                     {
                         expand: true,                 // Enable dynamic expansion.
                         cwd: 'src/common/js/',        // Src matches are relative to this path.
                         src: ['*.js'],             // Actual pattern(s) to match.
                         dest: 'staging/deviceWebSite/js',      // Destination path prefix.
                     },
+                ]
+            },
 
+            copyDeviceWebSite: {
+                files: [
                     {
                         src: 'src/deviceWebSite/js/deviceWebSiteInterface.js',
                         dest: 'staging/deviceWebSite/js/hostInterface.js'
                     },
-
-                    {
-                        expand: true,                 // Enable dynamic expansion.
-                        cwd: 'src/common/css/',        // Src matches are relative to this path.
-                        src: ['*.css'],             // Actual pattern(s) to match.
-                        dest: 'staging/deviceWebSite/css',      // Destination path prefix.
-                    },
-
-                    {
-                        expand: true,                 // Enable dynamic expansion.
-                        cwd: 'src/remoteWebSite/js/',        // Src matches are relative to this path.
-                        src: ['*.js'],             // Actual pattern(s) to match.
-                        dest: 'staging/remoteWebSite/js',      // Destination path prefix.
-                    },
-
-                    {
-                        expand: true,                 // Enable dynamic expansion.
-                        cwd: 'src/remoteWebSite/css/',        // Src matches are relative to this path.
-                        src: ['*.css'],             // Actual pattern(s) to match.
-                        dest: 'staging/remoteWebSite/css',      // Destination path prefix.
-                    },
-
-                    {
-                        expand: true,                 // Enable dynamic expansion.
-                        cwd: 'src/remoteWebSite/css/',        // Src matches are relative to this path.
-                        src: ['*.less'],             // Actual pattern(s) to match.
-                        dest: 'staging/remoteWebSite/css',      // Destination path prefix.
-                    },
-
                     {
                         expand: true,                 // Enable dynamic expansion.
                         cwd: 'src/deviceWebSite/js/',        // Src matches are relative to this path.
                         src: ['*.js'],             // Actual pattern(s) to match.
                         dest: 'staging/deviceWebSite/js',      // Destination path prefix.
                     },
+                ]
+            },
 
+            copyRemoteWebSite: {
+                files: [
+                    {
+                        src: 'src/remoteWebSite/js/remoteWebSiteInterface.js',
+                        dest: 'staging/remoteWebSite/js/hostInterface.js'
+                    },
+                    {
+                        expand: true,                 // Enable dynamic expansion.
+                        cwd: 'src/remoteWebSite/js/',        // Src matches are relative to this path.
+                        src: ['*.js'],             // Actual pattern(s) to match.
+                        dest: 'staging/remoteWebSite/js',      // Destination path prefix.
+                    },
+                ]
+            },
+
+
+            copyCSS: {
+                files: [
+                    {
+                        expand: true,                 // Enable dynamic expansion.
+                        cwd: 'src/common/css/',        // Src matches are relative to this path.
+                        src: ['*.css'],             // Actual pattern(s) to match.
+                        dest: 'staging/remoteWebSite/css',      // Destination path prefix.
+                    },
+                    {
+                        expand: true,                 // Enable dynamic expansion.
+                        cwd: 'src/common/css/',        // Src matches are relative to this path.
+                        src: ['*.css'],             // Actual pattern(s) to match.
+                        dest: 'staging/deviceWebSite/css',      // Destination path prefix.
+                    },
+                    {
+                        expand: true,                 // Enable dynamic expansion.
+                        cwd: 'src/remoteWebSite/css/',        // Src matches are relative to this path.
+                        src: ['*.css'],             // Actual pattern(s) to match.
+                        dest: 'staging/remoteWebSite/css',      // Destination path prefix.
+                    },
+                    {
+                        expand: true,                 // Enable dynamic expansion.
+                        cwd: 'src/remoteWebSite/css/',        // Src matches are relative to this path.
+                        src: ['*.less'],             // Actual pattern(s) to match.
+                        dest: 'staging/remoteWebSite/css',      // Destination path prefix.
+                    },
                     {
                         expand: true,                 // Enable dynamic expansion.
                         cwd: 'src/deviceWebSite/css/',        // Src matches are relative to this path.
                         src: ['*.css'],             // Actual pattern(s) to match.
                         dest: 'staging/deviceWebSite/css',      // Destination path prefix.
                     },
-
                     {
                         expand: true,                 // Enable dynamic expansion.
                         cwd: 'src/deviceWebSite/css/',        // Src matches are relative to this path.
@@ -227,9 +235,25 @@ module.exports = function(grunt) {
                 files: ["src/brs/*.brs"],
                 tasks: ['copy:copyBRS']
             },
-            webSiteFiles: {
-                files: ["src/common/**/*","src/deviceWebSite/**/*","src/remoteWebSite/**/*"],
-                tasks: ['copy:copyWebSites']
+            commonIndexFiles: {
+                files: ["src/common/index.html"],
+                tasks: ['copy:copyCommonIndex']
+            },
+            commonJSFiles: {
+                files: ["src/common/js/*.js"],
+                tasks: ['copy:copyCommonJS']
+            },
+            deviceWebSiteFiles: {
+                files: ["src/deviceWebSite/js/*.js"],
+                tasks: ['copy:copyDeviceWebSite']
+            },
+            remoteWebSiteFiles: {
+                files: ["src/remoteWebSite/js/*.js"],
+                tasks: ['copy:copyRemoteWebSite']
+            },
+            cssFiles: {
+                files: ["src/common/css/*.css","src/remoteWebSite/css/*.css","src/remoteWebSite/css/*.less","src/deviceWebSite/css/*.css","src/deviceWebSite/css/*.less"],
+                tasks: ['copy:copyCSS']
             },
             libraryFiles: {
                 files: ["bower_components/**"],
