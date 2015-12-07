@@ -341,17 +341,17 @@ displayEngineStateMachine.prototype.toggleProgressBar = function () {
 
 displayEngineStateMachine.prototype.updateProgressBarGraphics = function () {
 
-    console.log("updateProgressBarGraphics");
+    //console.log("updateProgressBarGraphics");
 
     // currentOffset in seconds
-    console.log('### currentOffset : ' + this.stateMachine.currentOffset);
+    //console.log('### currentOffset : ' + this.stateMachine.currentOffset);
 
     // duration in seconds
-    console.log('### recordingDuration : ' + this.stateMachine.recordingDuration);
+    //console.log('### recordingDuration : ' + this.stateMachine.recordingDuration);
 
     var percentCompleteVal = (this.stateMachine.currentOffset / this.stateMachine.recordingDuration * 100);
     var percentComplete = percentCompleteVal.toString() + "%";
-    console.log("percentComplete = " + percentComplete);
+    //console.log("percentComplete = " + percentComplete);
 
     $("#progressBarSpan").width(percentComplete);
 
@@ -359,7 +359,7 @@ displayEngineStateMachine.prototype.updateProgressBarGraphics = function () {
     var leftOffset = 5.5;
     var rightOffset = 89.6;
     var offset = leftOffset + (rightOffset - leftOffset) * (this.stateMachine.currentOffset / this.stateMachine.recordingDuration);
-    console.log("offset = " + offset);
+    //console.log("offset = " + offset);
 
     // update progress bar position (width is 4%)
     var labelOffset = offset - 4.0 / 2;
@@ -678,11 +678,11 @@ displayEngineStateMachine.prototype.STPlayingEventHandler = function (event, sta
                 TransportIconSingleton.getInstance().displayIcon(null, "rw");
                 stateData.nextState = this.stateMachine.stRewinding
                 return "TRANSITION";
-            case "instant_replay":
+            case "instantreplay":
                 TransportIconSingleton.getInstance().displayIcon(null, "instantReplay", this.stateMachine.miscIconDisplayTime);
                 executeRemoteCommand("instantReplay");
                 return "HANDLED";
-            case "quick_skip":
+            case "quickskip":
                 TransportIconSingleton.getInstance().displayIcon(null, "quickSkip", this.stateMachine.miscIconDisplayTime);
                 executeRemoteCommand("quickSkip");
                 return "HANDLED";
@@ -704,7 +704,7 @@ displayEngineStateMachine.prototype.STPlayingEventHandler = function (event, sta
         }
     }
     else {
-        console.log(this.id + ": signal type = " + event["EventType"]);
+        //console.log(this.id + ": signal type = " + event["EventType"]);
     }
 
     stateData.nextState = this.superState;
@@ -764,18 +764,18 @@ displayEngineStateMachine.prototype.STPausedEventHandler = function (event, stat
                 TransportIconSingleton.getInstance().displayIcon(null, "play", this.stateMachine.playIconDisplayTime);
                 stateData.nextState = this.stateMachine.stPlaying
                 return "TRANSITION";
-            case "quick_skip":
+            case "quickskip":
                 executeRemoteCommand("quickSkip");
                 TransportIconSingleton.getInstance().displayIcon(null, "quickSkip", this.stateMachine.miscIconDisplayTime);
                 return "HANDLED";
-            case "instant_replay":
+            case "instantreplay":
                 executeRemoteCommand("instantReplay");
                 TransportIconSingleton.getInstance().displayIcon(null, "instantReplay", this.stateMachine.miscIconDisplayTime);
                 return "HANDLED";
         }
     }
     else {
-        console.log(this.id + ": signal type = " + event["EventType"]);
+        //console.log(this.id + ": signal type = " + event["EventType"]);
     }
 
     stateData.nextState = this.superState;
@@ -836,11 +836,11 @@ displayEngineStateMachine.prototype.STFastForwardingEventHandler = function (eve
                 }
                 TransportIconSingleton.getInstance().displayIcon(prefix, "ff");
                 return "HANDLED"
-            case "instant_replay":
+            case "instantreplay":
                 // TODO
                 //executeRemoteCommand("instantReplay");
                 //return "HANDLED";
-            case "quick_skip":
+            case "quickskip":
                 console.log("-------------------------------------------------------------------------------- invoked FORWARD_TO_TICK");
                 console.log("numTicks=" + this.stateMachine.numTicks);
                 console.log("minutesPerTick=" + this.stateMachine.minutesPerTick);
@@ -917,11 +917,11 @@ displayEngineStateMachine.prototype.STRewindingEventHandler = function (event, s
                 }
                 TransportIconSingleton.getInstance().displayIcon(prefix, "rw");
                 return "HANDLED"
-            case "instant_replay":
+            case "instantreplay":
                 bsMessage.PostBSMessage({ command: "backToTick", "offset": this.stateMachine.currentOffset, "duration": this.stateMachine.recordingDuration, "numTicks": this.stateMachine.numTicks, "minutesPerTick": this.stateMachine.minutesPerTick });
                 TransportIconSingleton.getInstance().displayIcon(null, "instantReplay", this.stateMachine.miscIconDisplayTime);
                 return "HANDLED";
-            case "quick_skip":
+            case "quickskip":
                 // TODO
                 //executeRemoteCommand("quickSkip");
                 //return "HANDLED";
