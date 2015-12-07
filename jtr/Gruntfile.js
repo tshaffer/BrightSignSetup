@@ -14,66 +14,20 @@ module.exports = function(grunt) {
     pkg: grunt.file.readJSON('package.json'),
 
         copy: {
-            main: {
 
-
+            copyBRS: {
                 files: [
                     {
-                      expand: true,                 // Enable dynamic expansion.
-                      cwd: 'src/brs/',              // Src matches are relative to this path.
-                      src: ['*.brs'],               // Actual pattern(s) to match.
-                      dest: 'staging/',             // Destination path prefix.
-                    },
-
-                    {
-                        expand: true,                               // Enable dynamic expansion.
-                        cwd: 'bower_components/jquery/dist/',      // Src matches are relative to this path.
-                        src: ['jquery.min.js'],                   // Actual pattern(s) to match.
-                        dest: 'staging/remoteWebSite/lib',                        // Destination path prefix.
-                    },
-
-                    {
-                        expand: true,                               // Enable dynamic expansion.
-                        cwd: 'bower_components/handlebars/',      // Src matches are relative to this path.
-                        src: ['handlebars.js'],                   // Actual pattern(s) to match.
-                        dest: 'staging/remoteWebSite/lib',                        // Destination path prefix.
-                    },
-
-                    {
-                        expand: true,                               // Enable dynamic expansion.
-                        cwd: 'bower_components/underscore/',      // Src matches are relative to this path.
-                        src: ['underscore-min.js'],                   // Actual pattern(s) to match.
-                        dest: 'staging/remoteWebSite/lib',                        // Destination path prefix.
-                    },
-
-                    {
-                        expand: true,                               // Enable dynamic expansion.
-                        cwd: 'bower_components/backbone-amd/',      // Src matches are relative to this path.
-                        src: ['backbone-min.js'],                   // Actual pattern(s) to match.
-                        dest: 'staging/remoteWebSite/lib',                        // Destination path prefix.
-                    },
-
-                    {
                         expand: true,                 // Enable dynamic expansion.
-                        cwd: 'bower_components/bootstrap/dist/',        // Src matches are relative to this path.
-                        src: ['**/*.*'],             // Actual pattern(s) to match.
-                        dest: 'staging/remoteWebSite/lib/bootstrap',                        // Destination path prefix.
+                        cwd: 'src/brs/',              // Src matches are relative to this path.
+                        src: ['*.brs'],               // Actual pattern(s) to match.
+                        dest: 'staging/',             // Destination path prefix.
                     },
+                ]
+            },
 
-                    {
-                        expand: true,                               // Enable dynamic expansion.
-                        cwd: 'bower_components/DateJS/build/',      // Src matches are relative to this path.
-                        src: ['date.js'],                   // Actual pattern(s) to match.
-                        dest: 'staging/remoteWebSite/lib',                        // Destination path prefix.
-                    },
-
-                    {
-                        expand: true,                               // Enable dynamic expansion.
-                        cwd: 'bower_components/requirejs/',      // Src matches are relative to this path.
-                        src: ['require.js'],                   // Actual pattern(s) to match.
-                        dest: 'staging/remoteWebSite/lib',                        // Destination path prefix.
-                    },
-
+            copyWebSites: {
+                files: [
                     {
                         src: 'src/common/index.html',
                         dest: 'staging/remoteWebSite/index.html'
@@ -163,7 +117,59 @@ module.exports = function(grunt) {
                         src: ['*.less'],             // Actual pattern(s) to match.
                         dest: 'staging/deviceWebSite/css',      // Destination path prefix.
                     },
+                ]
+            },
 
+            copyLibraries: {
+                files: [
+                    {
+                        expand: true,                               // Enable dynamic expansion.
+                        cwd: 'bower_components/jquery/dist/',      // Src matches are relative to this path.
+                        src: ['jquery.min.js'],                   // Actual pattern(s) to match.
+                        dest: 'staging/remoteWebSite/lib',                        // Destination path prefix.
+                    },
+
+                    {
+                        expand: true,                               // Enable dynamic expansion.
+                        cwd: 'bower_components/handlebars/',      // Src matches are relative to this path.
+                        src: ['handlebars.js'],                   // Actual pattern(s) to match.
+                        dest: 'staging/remoteWebSite/lib',                        // Destination path prefix.
+                    },
+
+                    {
+                        expand: true,                               // Enable dynamic expansion.
+                        cwd: 'bower_components/underscore/',      // Src matches are relative to this path.
+                        src: ['underscore-min.js'],                   // Actual pattern(s) to match.
+                        dest: 'staging/remoteWebSite/lib',                        // Destination path prefix.
+                    },
+
+                    {
+                        expand: true,                               // Enable dynamic expansion.
+                        cwd: 'bower_components/backbone-amd/',      // Src matches are relative to this path.
+                        src: ['backbone-min.js'],                   // Actual pattern(s) to match.
+                        dest: 'staging/remoteWebSite/lib',                        // Destination path prefix.
+                    },
+
+                    {
+                        expand: true,                 // Enable dynamic expansion.
+                        cwd: 'bower_components/bootstrap/dist/',        // Src matches are relative to this path.
+                        src: ['**/*.*'],             // Actual pattern(s) to match.
+                        dest: 'staging/remoteWebSite/lib/bootstrap',                        // Destination path prefix.
+                    },
+
+                    {
+                        expand: true,                               // Enable dynamic expansion.
+                        cwd: 'bower_components/DateJS/build/',      // Src matches are relative to this path.
+                        src: ['date.js'],                   // Actual pattern(s) to match.
+                        dest: 'staging/remoteWebSite/lib',                        // Destination path prefix.
+                    },
+
+                    {
+                        expand: true,                               // Enable dynamic expansion.
+                        cwd: 'bower_components/requirejs/',      // Src matches are relative to this path.
+                        src: ['require.js'],                   // Actual pattern(s) to match.
+                        dest: 'staging/remoteWebSite/lib',                        // Destination path prefix.
+                    },
                     {
                         expand: true,                               // Enable dynamic expansion.
                         cwd: 'bower_components/jquery/dist/',      // Src matches are relative to this path.
@@ -213,13 +219,27 @@ module.exports = function(grunt) {
                         dest: 'staging/deviceWebSite/lib',                        // Destination path prefix.
                     },
                 ]
-            }
-        }
+            },
+        },
 
+        watch: {
+            brsFiles: {
+                files: ["src/brs/*.brs"],
+                tasks: ['copy:copyBRS']
+            },
+            webSiteFiles: {
+                files: ["src/common/**/*","src/deviceWebSite/**/*","src/remoteWebSite/**/*"],
+                tasks: ['copy:copyWebSites']
+            },
+            libraryFiles: {
+                files: ["bower_components/**"],
+                tasks: ['copy:copyLibraries']
+            },
+        }
 
   });
 
-  grunt.registerTask('default', ['copy']);
+  grunt.registerTask('default', ['copy', "watch"]);
 
     // ===========================================================================
   // LOAD GRUNT PLUGINS ========================================================
@@ -227,5 +247,5 @@ module.exports = function(grunt) {
   // we can only load these if they are in our package.json
   // make sure you have run npm install so our app can find these
   grunt.loadNpmTasks('grunt-contrib-copy');
-
+  grunt.loadNpmTasks('grunt-contrib-watch');
 };
