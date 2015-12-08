@@ -1,4 +1,4 @@
-/** best pizza ever sausage pizza pepperoni salami mushrooms mozzarella
+/**
  * Created by tedshaffer on 11/11/15.
  */
 define(['serverInterface','settingsModel'], function (serverInterface, SettingsModel) {
@@ -297,7 +297,7 @@ define(['serverInterface','settingsModel'], function (serverInterface, SettingsM
 
             // JTRTODO - what other criteria should be used?
             var channelGuide = this.channelGuide;
-            var channel = this.getChannelFromStationIndex(cgStationId);
+            var channel = this.stationsModel.getChannelFromStationIndex(cgStationId);
             if (channel != scheduledRecording.Channel) return false;
 
             if (scheduledRecording.Title != this.cgSelectedProgram.title) return false;
@@ -305,20 +305,6 @@ define(['serverInterface','settingsModel'], function (serverInterface, SettingsM
             if (new Date(scheduledRecording.DateTime).getTime() != this.cgSelectedProgram.date.getTime()) return false;
 
             return true;
-        },
-
-        getChannelFromStationIndex: function (stationId) {
-
-            var channel = "";
-
-            $.each(this.stations, function (index, station) {
-                if (stationId == station.StationId) {
-                    channel = station.AtscMajor + "-" + station.AtscMinor;
-                    return false;
-                }
-            });
-
-            return channel;
         },
 
         cgRecordProgramFromClient: function (addRecording) {
@@ -329,7 +315,7 @@ define(['serverInterface','settingsModel'], function (serverInterface, SettingsM
             this.cgSelectedProgram.stopTimeOffset = this.stopTimeOffsets[this.stopTimeIndex];
 
             if (addRecording) {
-                var stationName = this.getStationFromId(this.cgSelectedStationId);
+                var stationName = this.stationsModel.getStationFromId(this.cgSelectedStationId);
                 stationName = stationName.replace(".", "-");
 
                 var commandData = {
@@ -360,7 +346,7 @@ define(['serverInterface','settingsModel'], function (serverInterface, SettingsM
 
         cgRecordSelectedSeriesFromClient: function () {
 
-            var stationName = this.getStationFromId(this.cgSelectedStationId);
+            var stationName = this.stationsModel.getStationFromId(this.cgSelectedStationId);
             stationName = stationName.replace(".", "-");
 
             var commandData = {
@@ -375,21 +361,6 @@ define(['serverInterface','settingsModel'], function (serverInterface, SettingsM
             return serverInterface.browserCommand(commandData);
         },
 
-        getStationFromId: function (stationId) {
-
-            var selectedStation = "";
-
-            // get stationIndex
-            $.each(this.stations, function (stationIndex, station) {
-                if (station.StationId == stationId) {
-                    selectedStation = station.AtscMajor + "." + station.AtscMinor;
-                    return false;
-                }
-            });
-
-            return selectedStation;
-        },
-
         cgProgramDlgCloseInvoked: function () {
             $(this.cgPopupId).modal('hide');
         },
@@ -400,7 +371,7 @@ define(['serverInterface','settingsModel'], function (serverInterface, SettingsM
 
         cgTuneFromClient: function () {
 
-            var stationName = this.getStationFromId(this.cgSelectedStationId);
+            var stationName = this.stationsModel.getStationFromId(this.cgSelectedStationId);
             stationName = stationName.replace(".", "-");
 
             var commandData = { "command": "tuneLiveVideoChannel", "enteredChannel": stationName };

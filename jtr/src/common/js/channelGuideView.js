@@ -112,7 +112,7 @@ define(['serverInterface','settingsModel'], function (serverInterface,settingsMo
             console.log("invokeRecordSelectedProgram");
             var programData = this.getSelectedStationAndProgram();
 
-            var stationName = this.getStationFromId(programData.stationId);
+            var stationName = this.stationsModel.getStationFromId(programData.stationId);
             stationName = stationName.replace(".", "-");
 
             var commandData = {
@@ -130,22 +130,6 @@ define(['serverInterface','settingsModel'], function (serverInterface,settingsMo
             };
 
             return serverInterface.browserCommand(commandData);
-        },
-
-        // duplicates cgPopupView
-        getStationFromId: function (stationId) {
-
-            var selectedStation = "";
-
-            // get stationIndex
-            $.each(this.stations, function (stationIndex, station) {
-                if (station.StationId == stationId) {
-                    selectedStation = station.AtscMajor + "." + station.AtscMinor;
-                    return false;
-                }
-            });
-
-            return selectedStation;
         },
 
         getSelectedStationAndProgram: function () {
@@ -315,19 +299,27 @@ define(['serverInterface','settingsModel'], function (serverInterface,settingsMo
                     var programList = self.model.getProgramList(programInfo.stationId);
                     self.selectProgramTime = programList[programInfo.programIndex].date;
 
-                    // JTRTODO - linear search
-                    // get stationIndex
-                    $.each(self.stations, function (stationIndex, station) {
-                        if (station.StationId == programInfo.stationId) {
+                    var stationIndex = self.stationsModel.getStationIndex(programInfo.stationId);
+                    if (stationIndex >= 0) {
+                        self._currentStationIndex = stationIndex;
+                        self.selectProgram(self._currentSelectedProgramButton, event.target);
+                        var programData = self.getSelectedStationAndProgram();
+                        self.trigger("displayCGPopup", programData);
+                    }
 
-                            self._currentStationIndex = stationIndex;
-                            self.selectProgram(self._currentSelectedProgramButton, event.target);
-                            var programData = self.getSelectedStationAndProgram();
-                            self.trigger("displayCGPopup", programData);
-
-                            return false;
-                        }
-                    });
+                    //// JTRTODO - linear search
+                    //// get stationIndex
+                    //$.each(self.stations, function (stationIndex, station) {
+                    //    if (station.StationId == programInfo.stationId) {
+                    //
+                    //        self._currentStationIndex = stationIndex;
+                    //        self.selectProgram(self._currentSelectedProgramButton, event.target);
+                    //        var programData = self.getSelectedStationAndProgram();
+                    //        self.trigger("displayCGPopup", programData);
+                    //
+                    //        return false;
+                    //    }
+                    //});
                 }
             });
 
@@ -337,7 +329,7 @@ define(['serverInterface','settingsModel'], function (serverInterface,settingsMo
             promise.then(function() {
                 console.log("ChannelGuideView:: lastTunedChannel promise fulfilled");
                 var stationNumber = serverInterface.getLastTunedChannel();
-                var stationIndex = self.getStationIndexFromName(stationNumber)
+                var stationIndex = self.stationsModel.getStationIndexFromName(stationNumber)
                 var stationRow = $("#cgData").children()[stationIndex + 1];
                 self._currentSelectedProgramButton = $(stationRow).children()[0];
                 self.selectProgram(null, self._currentSelectedProgramButton, 0);
@@ -742,47 +734,6 @@ define(['serverInterface','settingsModel'], function (serverInterface,settingsMo
             });
         },
 
-
-        getStationIndexFromName: function (stationNumber) {
-
-            var stationIndex = -1;
-
-            //var self = this;
-            //$.each(this.stations, function (index, station) {
-            //    if (self.stationNumbersEqual(stationNumber, station.AtscMajor.toString() + '-' + station.AtscMinor.toString())) {
-            //        stationIndex = Number(index);
-            //        return false;
-            //    }
-            //});
-
-            var self = this;
-            this.stations.forEach(function(station, index, stations) {
-                if (self.stationNumbersEqual(stationNumber, station.AtscMajor.toString() + '-' + station.AtscMinor.toString())) {
-                    stationIndex = index;
-                    return false;
-                }
-            });
-
-            return stationIndex;
-        },
-
-        stationNumbersEqual: function (stationNumber1, stationNumber2) {
-
-            if (stationNumber1 == stationNumber2) return true;
-
-            stationNumber1 = this.standardizeStationNumber(stationNumber1);
-            stationNumber2 = this.standardizeStationNumber(stationNumber2);
-            return (stationNumber1 == stationNumber2);
-        },
-
-        standardizeStationNumber: function (stationNumber) {
-
-            stationNumber = stationNumber.replace(".1", "");
-            stationNumber = stationNumber.replace("-1", "");
-            stationNumber = stationNumber.replace("-", ".");
-
-            return stationNumber;
-        },
     });
 
     return ChannelGuideView;

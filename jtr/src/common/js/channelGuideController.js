@@ -27,11 +27,13 @@ define(['stationsModel', 'channelGuideModel','channelGuideView','cgPopupView'], 
             this.channelGuideView = new ChannelGuideView({
                 el: $("#channelGuidePage"),
                 model: this.channelGuideModel,
-                stationsModel: this.stationsModel
+                //stationsModel: this.stationsModel
             });
+            this.channelGuideView.stationsModel = this.stationsModel;
 
             this.cgPopupView = new CGPopUpView({
                 model: this.channelGuideModel,
+                //stationsModel: this.stationsModel
             });
             this.cgPopupView.stationsModel = this.stationsModel;
 
@@ -86,8 +88,8 @@ define(['stationsModel', 'channelGuideModel','channelGuideView','cgPopupView'], 
 
             if (this.channelGuideRetrieveEpgDataPromise != null && this.retrieveStationsPromise != null) {
                 Promise.all([this.retrieveStationsPromise, this.channelGuideRetrieveEpgDataPromise]).then(function() {
-                    self.channelGuideView.stations = self.stationsModel.getStations();
-                    self.cgPopupView.stations = self.stationsModel.getStations();
+                    self.channelGuideView.stations = self.stationsModel.getStations(); // JTRTODO - still required? probably
+                    self.cgPopupView.stations = self.stationsModel.getStations();   // JTRTODO - still required? probably
                     self.channelGuideView.show();
                 });
             }
