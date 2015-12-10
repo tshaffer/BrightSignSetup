@@ -75,7 +75,7 @@ define(function () {
                         self.appController.serverLaunchedVideo();
                         break;
                     case "setIPAddress":
-
+                        // this is for the ip address on the deviceWebSite (not on the remoteWebSite)
                         console.log("******************* - setIPAddress)");
                         var brightSignIPAddress = message.value;
                         $("#ipAddress").html("ip address: " + brightSignIPAddress);
@@ -83,11 +83,6 @@ define(function () {
                         console.log("baseURL from BrightSign message is: " + baseURL);
                         self.appController.serverInterface.setBaseURL(baseURL);
                         console.log("baseURL sent to serverInterface");
-
-                        // temporary location - JTRTODO
-                        //initializeEpgData();
-
-                        //retrieveSettings(indicateReady);
                         break;
                     case "remoteCommand":
                         var event = {};
