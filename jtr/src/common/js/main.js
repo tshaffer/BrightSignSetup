@@ -6,10 +6,11 @@ $(document).ready(function () {
     baseURL = "http://localHost:8080/";
 
     constants = {};
-    constants.KEY_DOWN = 40;
+    constants.KEY_ENTER = 13;
+    constants.KEY_LEFT= 37;
     constants.KEY_UP = 38;
     constants.KEY_RIGHT = 39;
-    constants.KEY_LEFT= 37;
+    constants.KEY_DOWN = 40;
 
     requirejs(['appController']);
 });

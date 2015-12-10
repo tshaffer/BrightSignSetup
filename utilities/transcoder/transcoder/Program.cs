@@ -13,8 +13,8 @@ namespace transcoder
         //private static string _bsIPAddress = "192.168.2.6:8080";
         //private static string _bsIPAddress = "10.1.0.244:8080";
         //private static string _bsIPAddress = "192.168.2.6:8080";
-        private static string _bsIPAddress = "192.168.0.107:8080";
-        //private static string _bsIPAddress = "10.10.212.44:8080";
+        //private static string _bsIPAddress = "192.168.0.107:8080";
+        private static string _bsIPAddress = "10.1.0.241:8080";
         private static StreamWriter _writer = null;
 
         private static int _timeToDelayAfterConversion = 60000;

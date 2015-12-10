@@ -857,7 +857,7 @@ displayEngineStateMachine.prototype.STFastForwardingEventHandler = function (eve
         }
     }
     else {
-        console.log(this.id + ": signal type = " + event["EventType"]);
+        //console.log(this.id + ": signal type = " + event["EventType"]);
     }
 
     stateData.nextState = this.superState;

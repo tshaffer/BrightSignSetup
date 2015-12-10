@@ -3,7 +3,7 @@
  */
 define(['serverInterface','settingsModel'], function (serverInterface, SettingsModel) {
 
-    console.log("creating cgPopUpView module");
+    //console.log("creating cgPopUpView module");
 
     var cgPopupView = Backbone.View.extend({
 
@@ -39,12 +39,12 @@ define(['serverInterface','settingsModel'], function (serverInterface, SettingsM
         startTimeIndex: null,
 
         initialize: function () {
-            console.log("cgPopupView::initialize");
+            //console.log("cgPopupView::initialize");
 
             this.settingsModel = SettingsModel.getInstance();
             // cgToDo - any reason for this?
             this.listenTo(this.settingsModel, "settingsUpdated", function() {
-               console.log("settingsUpdated");
+               //console.log("settingsUpdated");
             });
         },
 
@@ -80,7 +80,7 @@ define(['serverInterface','settingsModel'], function (serverInterface, SettingsM
                         return false;
                     }
                 });
-                console.log("cgSelectedProgramScheduledToRecord=" + cgSelectedProgramScheduledToRecord.toString());
+                //console.log("cgSelectedProgramScheduledToRecord=" + cgSelectedProgramScheduledToRecord.toString());
             }
 
             // JTRTODO - optimize the logic here - I think I can make it simpler
@@ -141,134 +141,8 @@ define(['serverInterface','settingsModel'], function (serverInterface, SettingsM
             $(this.cgPopupId).click(function (event) {
 
                 $(self.cgPopupId).off();
+                self.processSelect();
 
-                // remove "#" to get the element id
-                var popupId = self.cgPopupId.substring(1);
-
-                if (popupId == event.target.id) {
-                    // remote control event
-                    switch (self.cgPopupId) {
-                        case "#cgProgramDlg":
-                            switch (self.cgPopupSelectedIndex) {
-                                case 0:
-                                    self.invokeRecordEpisode();
-                                    break;
-                                case 1:
-                                    self.invokeRecordProgramSetOptions();
-                                    break;
-                                case 2:
-                                    self.invokeViewUpcomingEpisodes();
-                                    break;
-                                case 3:
-                                    self.invokeTune();
-                                    break;
-                                case 4:
-                                    self.invokeCloseDialog();
-                                    break;
-                            }
-                            break;
-                        case "#cgScheduledRecordingDlg":
-                            switch (self.cgPopupSelectedIndex) {
-                                case 0:
-                                    self.invokeCancelRecording();
-                                    break;
-                                case 1:
-                                    self.invokeRecordProgramSetOptions();
-                                    break;
-                                case 2:
-                                    self.invokeViewUpcomingEpisodes();
-                                    break;
-                                case 3:
-                                    self.invokeTune();
-                                    break;
-                                case 4:
-                                    self.invokeCloseDialog();
-                                    break;
-                            }
-                            break;
-                        case "#cgSeriesDlg":
-                            switch (self.cgPopupSelectedIndex) {
-                                case 0:
-                                    self.invokeRecordEpisode();
-                                    break;
-                                case 1:
-                                    self.invokeRecordProgramSetOptions();
-                                    break;
-                                case 2:
-                                    self.invokeRecordSeries();
-                                    break;
-                                case 3:
-                                    self.invokeTune();
-                                    break;
-                                case 4:
-                                    self.invokeCloseDialog();
-                                    break;
-                            }
-                            break;
-                        case "#cgScheduledSeriesDlg":
-                            switch (self.cgPopupSelectedIndex) {
-                                case 0:
-                                    self.invokeCancelRecording();
-                                    break;
-                                case 1:
-                                    self.invokeCancelSeries();
-                                    break;
-                                case 2:
-                                    self.invokeViewUpcomingEpisodes();
-                                    break;
-                                case 3:
-                                    self.invokeTune();
-                                    break;
-                                case 4:
-                                    self.invokeCloseDialog();
-                                    break;
-                            }
-                            break;
-                    }
-                }
-                else {
-                    console.log("---------------------------" + event.target.id);
-                    switch (event.target.id) {
-                        case "cgProgramRecord":
-                        case "cgEpisodeRecord":
-                            self.invokeRecordEpisode();
-                            break;
-                        case "cgProgramRecordSetOptions":
-                        case "cgSeriesRecordSetProgramOptions":
-                        case "cgScheduledRecordChangeOptions":
-                            self.invokeRecordProgramSetOptions();
-                            break;
-                        case "cgProgramViewUpcomingEpisodes":
-                        case "cgScheduledRecordingViewUpcomingEpisodes":
-                        case "cgSeriesViewUpcoming":
-                            self.invokeViewUpcomingEpisodes();
-                            break;
-                        case "cgProgramTune":
-                        case "cgSeriesTune":
-                        case "cgSeriesRecordingTune":
-                        case "cgScheduledRecordingTune":
-                            self.invokeTune();
-                            break;
-                        case "cgProgramClose":
-                        case "cgSeriesClose":
-                        case "cgSeriesRecordingClose":
-                        case "cgScheduledRecordingClose":
-                            self.invokeCloseDialog();
-                            break;
-                        case "cgCancelScheduledRecording":
-                        case "cgSeriesCancelEpisode":
-                            self.invokeCancelRecording();
-                            break;
-                        case "cgSeriesRecord":
-                            self.invokeRecordSeries();
-                            break;
-                        case "cgSeriesCancelSeries":
-                            self.invokeCancelSeries();
-                            break;
-                        default:
-                            break;
-                    }
-                }
             });
 
             $(this.cgPopupId).off("keydown");
@@ -277,6 +151,12 @@ define(['serverInterface','settingsModel'], function (serverInterface, SettingsM
 
                 var keyCode = keyEvent.which;
                 switch (keyCode) {
+                    case constants.KEY_ENTER:
+                        var popupId = self.cgPopupId.substring(1);
+                        console.log("popupId: " + popupId);
+                        console.log("cgPopupSelectedIndex: " + self.cgPopupSelectedIndex);
+                        self.processSelect();
+                        break;
                     case constants.KEY_UP:
                         self.cgProgramDlgUp();
                         break;
@@ -292,6 +172,142 @@ define(['serverInterface','settingsModel'], function (serverInterface, SettingsM
                 return false;
             });
         },
+
+
+        processSelect: function() {
+
+            var self = this;
+
+            // remove "#" to get the element id
+            var popupId = self.cgPopupId.substring(1);
+
+            if (popupId == event.target.id) {
+                // remote control event
+                switch (self.cgPopupId) {
+                    case "#cgProgramDlg":
+                        switch (self.cgPopupSelectedIndex) {
+                            case 0:
+                                self.invokeRecordEpisode();
+                                break;
+                            case 1:
+                                self.invokeRecordProgramSetOptions();
+                                break;
+                            case 2:
+                                self.invokeViewUpcomingEpisodes();
+                                break;
+                            case 3:
+                                self.invokeTune();
+                                break;
+                            case 4:
+                                self.invokeCloseDialog();
+                                break;
+                        }
+                        break;
+                    case "#cgScheduledRecordingDlg":
+                        switch (self.cgPopupSelectedIndex) {
+                            case 0:
+                                self.invokeCancelRecording();
+                                break;
+                            case 1:
+                                self.invokeRecordProgramSetOptions();
+                                break;
+                            case 2:
+                                self.invokeViewUpcomingEpisodes();
+                                break;
+                            case 3:
+                                self.invokeTune();
+                                break;
+                            case 4:
+                                self.invokeCloseDialog();
+                                break;
+                        }
+                        break;
+                    case "#cgSeriesDlg":
+                        switch (self.cgPopupSelectedIndex) {
+                            case 0:
+                                self.invokeRecordEpisode();
+                                break;
+                            case 1:
+                                self.invokeRecordProgramSetOptions();
+                                break;
+                            case 2:
+                                self.invokeRecordSeries();
+                                break;
+                            case 3:
+                                self.invokeTune();
+                                break;
+                            case 4:
+                                self.invokeCloseDialog();
+                                break;
+                        }
+                        break;
+                    case "#cgScheduledSeriesDlg":
+                        switch (self.cgPopupSelectedIndex) {
+                            case 0:
+                                self.invokeCancelRecording();
+                                break;
+                            case 1:
+                                self.invokeCancelSeries();
+                                break;
+                            case 2:
+                                self.invokeViewUpcomingEpisodes();
+                                break;
+                            case 3:
+                                self.invokeTune();
+                                break;
+                            case 4:
+                                self.invokeCloseDialog();
+                                break;
+                        }
+                        break;
+                }
+            }
+            else {
+                //console.log("---------------------------" + event.target.id);
+                switch (event.target.id) {
+                    case "cgProgramRecord":
+                    case "cgEpisodeRecord":
+                        self.invokeRecordEpisode();
+                        break;
+                    case "cgProgramRecordSetOptions":
+                    case "cgSeriesRecordSetProgramOptions":
+                    case "cgScheduledRecordChangeOptions":
+                        self.invokeRecordProgramSetOptions();
+                        break;
+                    case "cgProgramViewUpcomingEpisodes":
+                    case "cgScheduledRecordingViewUpcomingEpisodes":
+                    case "cgSeriesViewUpcoming":
+                        self.invokeViewUpcomingEpisodes();
+                        break;
+                    case "cgProgramTune":
+                    case "cgSeriesTune":
+                    case "cgSeriesRecordingTune":
+                    case "cgScheduledRecordingTune":
+                        self.invokeTune();
+                        break;
+                    case "cgProgramClose":
+                    case "cgSeriesClose":
+                    case "cgSeriesRecordingClose":
+                    case "cgScheduledRecordingClose":
+                        self.invokeCloseDialog();
+                        break;
+                    case "cgCancelScheduledRecording":
+                    case "cgSeriesCancelEpisode":
+                        self.invokeCancelRecording();
+                        break;
+                    case "cgSeriesRecord":
+                        self.invokeRecordSeries();
+                        break;
+                    case "cgSeriesCancelSeries":
+                        self.invokeCancelSeries();
+                        break;
+                    default:
+                        break;
+                }
+            }
+
+        },
+
 
         programsMatch: function (scheduledRecording, cgProgram, cgStationId) {
 
@@ -309,7 +325,7 @@ define(['serverInterface','settingsModel'], function (serverInterface, SettingsM
 
         cgRecordProgramFromClient: function (addRecording) {
 
-            console.log("cgRecordProgramFromClient invoked");
+            //console.log("cgRecordProgramFromClient invoked");
 
             this.cgSelectedProgram.startTimeOffset = this.startTimeOffsets[this.startTimeIndex];
             this.cgSelectedProgram.stopTimeOffset = this.stopTimeOffsets[this.stopTimeIndex];
@@ -380,13 +396,13 @@ define(['serverInterface','settingsModel'], function (serverInterface, SettingsM
         },
 
         cgCancelScheduledRecordingFromClient: function () {
-            console.log("cgCancelScheduledRecordingFromClient invoked");
+            //console.log("cgCancelScheduledRecordingFromClient invoked");
 
             return serverInterface.deleteScheduledRecording(this.cgSelectedProgram.scheduledRecordingId);
         },
 
         cgCancelScheduledSeriesFromClient: function () {
-            console.log("cgCancelScheduledSeriesFromClient invoked");
+            //console.log("cgCancelScheduledSeriesFromClient invoked");
             return serverInterface.deleteScheduledSeries(this.cgSelectedProgram.scheduledSeriesRecordingId);
         },
 
@@ -423,7 +439,7 @@ define(['serverInterface','settingsModel'], function (serverInterface, SettingsM
 
             var self = this;
 
-            console.log("cgRecordProgramSetOptions invoked");
+            //console.log("cgRecordProgramSetOptions invoked");
 
             // erase existing dialog, show new one
             this.cgProgramDlgCloseInvoked();
@@ -466,6 +482,21 @@ define(['serverInterface','settingsModel'], function (serverInterface, SettingsM
 
                 var keyCode = keyEvent.which;
                 switch (keyCode) {
+                    case constants.KEY_ENTER:
+                        switch (self.cgPopupSelectedIndex) {
+                            case 0:
+                                break;
+                            case 1:
+                                break;
+                            case 2:
+                                self.cgRecordOptionsSave(addRecordToDB);
+                                break;
+                            case 3:
+                                self.cgRecordOptionsCancel();
+                                break;
+                        }
+                        return;
+                        break;
                     case constants.KEY_LEFT:
                         if (self.cgPopupSelectedIndex == 0) {
                             self.cgRecordOptionsNextEarlyStartTime();
@@ -503,7 +534,8 @@ define(['serverInterface','settingsModel'], function (serverInterface, SettingsM
             }
 
             $("#cgRecordingOptionsDlg").click(function (event) {
-                console.log("click pressed");
+                $("#cgRecordingOptionsDlg").off();
+                //("click pressed");
 
                 if (event.target.id == "cgRecordingOptionsDlg") {
                     switch (self.cgPopupSelectedIndex) {
@@ -589,7 +621,7 @@ define(['serverInterface','settingsModel'], function (serverInterface, SettingsM
         },
 
         cgRecordOptionsNextEarlyStartTime: function () {
-            console.log("cgRecordOptionsNextEarlyStartTime invoked");
+            //console.log("cgRecordOptionsNextEarlyStartTime invoked");
 
             if (this.startTimeIndex > 0) {
                 this.startTimeIndex--;
@@ -602,7 +634,7 @@ define(['serverInterface','settingsModel'], function (serverInterface, SettingsM
         },
 
         cgRecordOptionsNextLateStartTime: function () {
-            console.log("cgRecordOptionsNextLateStartTime invoked");
+            //console.log("cgRecordOptionsNextLateStartTime invoked");
 
             if (this.startTimeIndex < (this.startTimeOptions.length-1)) {
                 this.startTimeIndex++;
@@ -611,7 +643,7 @@ define(['serverInterface','settingsModel'], function (serverInterface, SettingsM
         },
 
         cgRecordOptionsNextEarlyStopTime: function () {
-            console.log("cgRecordOptionsNextEarlyStopTime invoked");
+            //console.log("cgRecordOptionsNextEarlyStopTime invoked");
 
             if (this.stopTimeIndex > 0) {
                 this.stopTimeIndex--;
@@ -620,7 +652,7 @@ define(['serverInterface','settingsModel'], function (serverInterface, SettingsM
         },
 
         cgRecordOptionsNextLateStopTime: function () {
-            console.log("cgRecordOptionsNextLateStopTime invoked");
+            //console.log("cgRecordOptionsNextLateStopTime invoked");
 
             if (this.stopTimeIndex < (this.stopTimeOptions.length-1)) {
                 this.stopTimeIndex++;
@@ -643,7 +675,7 @@ define(['serverInterface','settingsModel'], function (serverInterface, SettingsM
         },
 
         invokeRecordProgramSetOptions: function() {
-            console.log("recordSetOptions invoked");
+            //console.log("recordSetOptions invoked");
             this.cgRecordProgramSetOptions();
             this.cgProgramDlgCloseInvoked();
             this.reselectCurrentProgram();
@@ -670,13 +702,13 @@ define(['serverInterface','settingsModel'], function (serverInterface, SettingsM
         },
 
         invokeViewUpcomingEpisodes: function() {
-            console.log("ViewUpcomingEpisodes invoked")
+            //console.log("ViewUpcomingEpisodes invoked")
             this.cgProgramDlgCloseInvoked();
             this.reselectCurrentProgram();
         },
 
         invokeCancelRecording: function() {
-            console.log("CancelRecording invoked");
+            //console.log("CancelRecording invoked");
             //self.cgCancelScheduledRecordingFromClient(self.channelGuide.retrieveScheduledRecordings);
 
             var promise = this.cgCancelScheduledRecordingFromClient();
@@ -689,7 +721,7 @@ define(['serverInterface','settingsModel'], function (serverInterface, SettingsM
         },
 
         invokeCancelSeries: function () {
-            console.log("CancelSeriesRecording invoked");
+            //console.log("CancelSeriesRecording invoked");
             var promise = this.cgCancelScheduledSeriesFromClient();
             promise.then(function() {
                 serverInterface.retrieveScheduledRecordings();

@@ -29,7 +29,7 @@ function getSchedulesDirectToken(nextFunction) {
     //http://www.html5rocks.com/en/tutorials/cors/
 
     $(document).ajaxError(function () {
-        console.log("Triggered ajaxError handler.");
+        //console.log("Triggered ajaxError handler.");
     });
     postData = {}
 
@@ -40,15 +40,15 @@ function getSchedulesDirectToken(nextFunction) {
     var url = "https://json.schedulesdirect.org/20141201/token";
 
     $.post(url, postDataStr, function (data) {
-        console.log("returned from token (get from schedules direct) post");
-        console.log(JSON.stringify(data, null, 4));
-        //console.log(retVal);
-        //console.log(data);
+        //console.log("returned from token (get from schedules direct) post");
+        //console.log(JSON.stringify(data, null, 4));
+        ////console.log(retVal);
+        ////console.log(data);
         //{"code":0,"message":"OK","serverID":"20141201.web.1","token":"5801004984e3ccb3f9289232b745f797"}
-        console.log("code: " + data.code);
-        console.log("message: " + data.message);
-        console.log("serverID: " + data.serverID);
-        console.log("token: " + data.token);
+        //console.log("code: " + data.code);
+        //console.log("message: " + data.message);
+        //console.log("serverID: " + data.serverID);
+        //console.log("token: " + data.token);
 
         schedulesDirectToken = data.token;
 
@@ -64,7 +64,7 @@ function retrieveEpgData() {
     // retrieve epg data for all stations and 'n' days
     // at end of update, db should be up to date and epg data should be in memory
 
-    console.log("retrieveEpgData() invoked");
+    //console.log("retrieveEpgData() invoked");
 
     // step 1 retrieve users stations
     getStations(retrieveEpgDataStep2);
@@ -73,7 +73,7 @@ function retrieveEpgData() {
 
 function getStations(nextFunction) {
 
-    console.log("getStations() invoked");
+    //console.log("getStations() invoked");
 
     //baseURL = "http://localHost:8080/";
     var url = baseURL + "getStations";
@@ -85,7 +85,7 @@ function getStations(nextFunction) {
     })
         // JTRTODO - can I just put stations here?
         .done(function (stationsFromServer) {
-            console.log("successful return from getStations");
+            //console.log("successful return from getStations");
             stations = stationsFromServer;
 
             if (nextFunction != null) {
@@ -137,7 +137,7 @@ function retrieveEpgDataStep2() {
     });
 
     // dump initialized data structure
-    //console.log(JSON.stringify(scheduleValidityByStationDate, null, 4));
+    ////console.log(JSON.stringify(scheduleValidityByStationDate, null, 4));
 
     // retrieve last fetched station schedules from db
     var url = baseURL + "getStationSchedulesForSingleDay";
@@ -148,10 +148,10 @@ function retrieveEpgDataStep2() {
         dataType: "json",
     })
     .done(function (stationSchedulesForSingleDay) {
-        console.log("successful return from getStationSchedulesForSingleDay");
+        //console.log("successful return from getStationSchedulesForSingleDay");
 
         // dump StationSchedulesForSingleDay table from db
-        //console.log(JSON.stringify(result, null, 4));
+        ////console.log(JSON.stringify(result, null, 4));
 
         // fill in scheduleValidityByStationDate with appropriate data from db
 // JTR TODO
@@ -171,7 +171,7 @@ function retrieveEpgDataStep2() {
         });
 
         // dump StationSchedulesForSingleDay as updated based on db data
-        //console.log(JSON.stringify(scheduleValidityByStationDate, null, 4));
+        ////console.log(JSON.stringify(scheduleValidityByStationDate, null, 4));
 
         // fetch data from Schedules Direct that will indicate the last changed date/information for relevant station/dates.
         getSchedulesDirectScheduleModificationData(stationIds, dates, retrieveEpgDataStep3);
@@ -188,7 +188,7 @@ function retrieveEpgDataStep2() {
 
 function getSchedulesDirectScheduleModificationData(stationIds, dates, nextFunction) {
 
-    console.log("getSchedulesDirectScheduleModificationData");
+    //console.log("getSchedulesDirectScheduleModificationData");
 
     // JTR TODO
     // same as in getSchedulesDirectProgramSchedules - make common? is this still true?
@@ -211,7 +211,7 @@ function getSchedulesDirectScheduleModificationData(stationIds, dates, nextFunct
 
     var url = "https://json.schedulesdirect.org/20141201/schedules/md5";
 
-    console.log("getSchedulesDirectScheduleModificationData - invoke post");
+    //console.log("getSchedulesDirectScheduleModificationData - invoke post");
 
     var jqxhr = $.ajax({
         type: "POST",
@@ -221,10 +221,10 @@ function getSchedulesDirectScheduleModificationData(stationIds, dates, nextFunct
         headers: { "token": schedulesDirectToken }
     })
         .done(function (result) {
-            console.log("successful return in getSchedulesDirectScheduleModificationData");
+            //console.log("successful return in getSchedulesDirectScheduleModificationData");
 
             // dump schedule modification data results from server call
-            //console.log(JSON.stringify(result, null, 4));
+            ////console.log(JSON.stringify(result, null, 4));
 
             scheduleModificationData = result;
 
@@ -251,10 +251,10 @@ function retrieveEpgDataStep3() {
             var scheduleDate = scheduleValidity.scheduleDate;
             if (stationId in scheduleModificationData) {
                 var scheduleModifiedDataForStation = scheduleModificationData[stationId];
-                //console.log(JSON.stringify(scheduleModifiedDataForStation, null, 4));
+                ////console.log(JSON.stringify(scheduleModifiedDataForStation, null, 4));
                 if (scheduleDate in scheduleModifiedDataForStation) {
                     var scheduleModifiedDataForStationDate = scheduleModifiedDataForStation[scheduleDate];
-                    //console.log(JSON.stringify(scheduleModifiedDataForStationDate, null, 4));
+                    ////console.log(JSON.stringify(scheduleModifiedDataForStationDate, null, 4));
                     if (scheduleModifiedDataForStationDate.md5 != scheduleValidity.md5) {
                         scheduleValidity.status = "dataObsolete";
                     }
@@ -262,13 +262,13 @@ function retrieveEpgDataStep3() {
                 }
             }
             else {
-                console.log("WARNING!!!!!!!!!!!!!!!! - scheduleModificationData missing record for " + stationId + ", " + scheduleDate);
+                //console.log("WARNING!!!!!!!!!!!!!!!! - scheduleModificationData missing record for " + stationId + ", " + scheduleDate);
             }
         }
     });
 
     // dump StationSchedulesForSingleDay after getting updated using last modified data from Schedules Direct
-    //console.log(JSON.stringify(scheduleValidityByStationDate, null, 4));
+    ////console.log(JSON.stringify(scheduleValidityByStationDate, null, 4));
 
     // at this point, the system knows which station/date records need updates from the service - scheduleValidityByStationDate
     // it knows which station/dates have no data vs. which ones need to have their data updated
@@ -317,12 +317,12 @@ function retrieveEpgDataStep3() {
 
 
     // dump list of stationId/date(s) combinations to retrieve and then add/replace in db
-    //console.log(JSON.stringify(stationIdDatesToRetrieve, null, 4));
-    //console.log(JSON.stringify(stationIdDatesNeedingInserts, null, 4));
-    //console.log(JSON.stringify(stationIdDatesNeedingUpdates, null, 4));
+    ////console.log(JSON.stringify(stationIdDatesToRetrieve, null, 4));
+    ////console.log(JSON.stringify(stationIdDatesNeedingInserts, null, 4));
+    ////console.log(JSON.stringify(stationIdDatesNeedingUpdates, null, 4));
 
     if (stationIdDatesToRetrieve.length == 0) {
-        console.log("All data up to date, return");
+        //console.log("All data up to date, return");
         return;
     }
     // at this point, there is a list of stationId/date(s) to retrieve from server as well as which to insert in the db vs. update in the db
@@ -332,7 +332,7 @@ function retrieveEpgDataStep3() {
 
 function getSchedulesDirectProgramSchedules(stationIdDatesToRetrieve, stationIdDatesNeedingInserts, stationIdDatesNeedingUpdates, nextFunction) {
 
-    console.log("getSchedulesDirectProgramSchedules");
+    //console.log("getSchedulesDirectProgramSchedules");
 
     var postDataStr = JSON.stringify(stationIdDatesToRetrieve);
 
@@ -346,10 +346,10 @@ function getSchedulesDirectProgramSchedules(stationIdDatesToRetrieve, stationIdD
         headers: { "token": schedulesDirectToken }
     })
         .done(function (result) {
-            console.log("successful return from json.schedulesdirect.org/20141201/schedules");
+            //console.log("successful return from json.schedulesdirect.org/20141201/schedules");
 
             // dump list of updated station/dates from server
-            //console.log(JSON.stringify(result, null, 4));
+            ////console.log(JSON.stringify(result, null, 4));
 
             var jtrStationSchedulesForSingleDayToInsert = [];
             var jtrStationSchedulesForSingleDayToUpdate = [];
@@ -361,7 +361,7 @@ function getSchedulesDirectProgramSchedules(stationIdDatesToRetrieve, stationIdD
 
             // JTR TODO - convert to $.each
             for (index in result) {
-                //console.log("index=" + index);
+                ////console.log("index=" + index);
                 var jtrStationScheduleForSingleDay = {};
                 var stationScheduleForSingleDay = result[index];
 
@@ -386,7 +386,7 @@ function getSchedulesDirectProgramSchedules(stationIdDatesToRetrieve, stationIdD
                     jtrStationSchedulesForSingleDayToUpdate.push(jtrStationScheduleForSingleDay);
                 }
                 else {
-                    console.log("WARNING!!!!!!!!!!!!!!!!!!!!!!!!!! - key not found in either insert or updates data structure");
+                    //console.log("WARNING!!!!!!!!!!!!!!!!!!!!!!!!!! - key not found in either insert or updates data structure");
                     // JTR TODO - just skip this record?
                     return;
                 }
@@ -401,7 +401,7 @@ function getSchedulesDirectProgramSchedules(stationIdDatesToRetrieve, stationIdD
                 // capture all the programs for the station/date.
                 // this is supposedly only the program data relevant for this showing. a programId is provided to get the detailed program information
                 // common to all showings of the program
-                //console.log("stationScheduleForSingleDay.programs.length=" + stationScheduleForSingleDay.programs.length);
+                ////console.log("stationScheduleForSingleDay.programs.length=" + stationScheduleForSingleDay.programs.length);
                 for (programIndex in stationScheduleForSingleDay.programs) {
                     var program = stationScheduleForSingleDay.programs[programIndex];
                     var jtrProgramForStation = {};
@@ -435,7 +435,7 @@ function getSchedulesDirectProgramSchedules(stationIdDatesToRetrieve, stationIdD
             var jtrStationSchedulesForSingleDayToUpdateStr = JSON.stringify(jtrStationSchedulesForSingleDayToUpdate);
             bsMessage.PostBSMessage({ command: "addDBStationSchedulesForSingleDay", "schedulesToInsert": jtrStationSchedulesForSingleDayToInsertStr, "schedulesToUpdate": jtrStationSchedulesForSingleDayToUpdateStr });
 
-            //console.log(JSON.stringify(jtrProgramsForStations, null, 4));
+            ////console.log(JSON.stringify(jtrProgramsForStations, null, 4));
 
             // next step is to update the programs for the station/date(s)
             // that will be done by first eliminating all the current station/date data for all updated station/date(s),
@@ -480,7 +480,7 @@ function GetProgramsFromDB(nextFunction) {
     }
 
     // dump initialized data structure for programs to retrieve from SchedulesDirect
-    //console.log(JSON.stringify(programsValidity, null, 4));
+    ////console.log(JSON.stringify(programsValidity, null, 4));
 
     // retrieve programs from db
     var url = baseURL + "getPrograms";
@@ -491,12 +491,12 @@ function GetProgramsFromDB(nextFunction) {
         dataType: "json",
     })
         .done(function (programs) {
-            console.log("successful return from getPrograms");
+            //console.log("successful return from getPrograms");
 
             // dump programs retrieved from db
-            //console.log(JSON.stringify(programs, null, 4));
-            console.log("number of programs in database is " + programs.length);
-            console.log("number of programs in out of date station/dates is " + Object.keys(programsValidity).length);
+            ////console.log(JSON.stringify(programs, null, 4));
+            //console.log("number of programs in database is " + programs.length);
+            //console.log("number of programs in out of date station/dates is " + Object.keys(programsValidity).length);
 
             // move these programs from the db into an associative array
             var programsInDB = {};
@@ -540,21 +540,21 @@ function GetProgramsFromDB(nextFunction) {
             }
 
             // dump updated programValidity
-            //console.log(JSON.stringify(programsValidity, null, 4));
+            ////console.log(JSON.stringify(programsValidity, null, 4));
 
-            console.log("number of programs current=" + numCurrent);
-            console.log("number of programs obsolete=" + numObsolete);
-            console.log("number of programs missing=" + numMissing);
+            //console.log("number of programs current=" + numCurrent);
+            //console.log("number of programs obsolete=" + numObsolete);
+            //console.log("number of programs missing=" + numMissing);
 
             // dump ids of programs to retrieve from SchedulesDirect
-            //console.log("programs to retrieve");
-            //console.log(JSON.stringify(programIdsToRetrieve, null, 4));
+            ////console.log("programs to retrieve");
+            ////console.log(JSON.stringify(programIdsToRetrieve, null, 4));
 
             // dump ids of programs to insert or update in the database
-            //console.log("programs to update");
-            //console.log(JSON.stringify(programIdsNeedingUpdates, null, 4));
-            //console.log("programs to insert");
-            //console.log(JSON.stringify(programIdsNeedingInserts, null, 4));
+            ////console.log("programs to update");
+            ////console.log(JSON.stringify(programIdsNeedingUpdates, null, 4));
+            ////console.log("programs to insert");
+            ////console.log(JSON.stringify(programIdsNeedingInserts, null, 4));
 
             getSchedulesDirectPrograms(nextFunction);
         })
@@ -570,7 +570,7 @@ function GetProgramsFromDB(nextFunction) {
 
 function getSchedulesDirectPrograms(nextFunction) {
 
-    console.log("getSchedulesDirectPrograms");
+    //console.log("getSchedulesDirectPrograms");
 
     var postDataStr = JSON.stringify(programIdsToRetrieve);
 
@@ -584,9 +584,9 @@ function getSchedulesDirectPrograms(nextFunction) {
         headers: { "token": schedulesDirectToken }
     })
         .done(function (result) {
-            console.log("done in getSchedulesDirectPrograms");
+            //console.log("done in getSchedulesDirectPrograms");
             // dump list of programs retrieved from SchedulesDirect
-            //console.log(JSON.stringify(result, null, 4));
+            ////console.log(JSON.stringify(result, null, 4));
 
             // determine which programs get added to db vs. which are already in db and need to get updated
             var jtrProgramsToInsert = [];
@@ -617,7 +617,7 @@ function getSchedulesDirectPrograms(nextFunction) {
 
                 if ("genres" in program) {
                     $.each(program.genres, function (genreIndex, genre) {
-                        //console.log("genre is " + genre);
+                        ////console.log("genre is " + genre);
                     });
                 }
 
@@ -700,16 +700,16 @@ function getSchedulesDirectPrograms(nextFunction) {
                     jtrProgramsToUpdate.push(jtrProgram);
                 }
                 else {
-                    console.log("WARNING: retrieved program unaccounted for");
+                    //console.log("WARNING: retrieved program unaccounted for");
                     return;
                 }
             });
 
             // dump list of programs to insert / update in db
-            //console.log("programs to insert");
-            //console.log(JSON.stringify(jtrProgramsToInsert, null, 4));
-            //console.log("programs to update");
-            //console.log(JSON.stringify(jtrProgramsToUpdate, null, 4));
+            ////console.log("programs to insert");
+            ////console.log(JSON.stringify(jtrProgramsToInsert, null, 4));
+            ////console.log("programs to update");
+            ////console.log(JSON.stringify(jtrProgramsToUpdate, null, 4));
 
             var jtrProgramsToInsertStr = JSON.stringify(jtrProgramsToInsert);
             var jtrProgramsToUpdateStr = JSON.stringify(jtrProgramsToUpdate);
@@ -750,7 +750,7 @@ function getSchedulesDirectPrograms(nextFunction) {
                 }
             }
 
-            console.log("All DONE");
+            //console.log("All DONE");
 
             bsMessage.PostBSMessage({ command: "epgUpdatesComplete" });
         })
@@ -779,7 +779,7 @@ function updateScheduledRecordings() {
 
     getScheduledSeriesRecordingsPromise.then(function(scheduledSeriesRecordings) {
 
-        console.log("getScheduledSeriesRecordingsPromise resolved");
+        //console.log("getScheduledSeriesRecordingsPromise resolved");
 
         var promises = [];
 
@@ -808,7 +808,7 @@ function updateScheduledRecordings() {
 
                         $.get(url, getEpgMatchingProgramsDataOnDate)
                             .done(function (result) {
-                                console.log("getEpgMatchingProgramsDataOnDate successfully received");
+                                //console.log("getEpgMatchingProgramsDataOnDate successfully received");
 
                                 var seriesEpisodesFound = result.length;
                                 var seriesEpisodesAdded = 0;
@@ -852,16 +852,16 @@ function updateScheduledRecordings() {
                                             if (seriesEpisodesAdded == seriesEpisodesFound) {
                                                 resolve();
                                             }
-                                            console.log("addScheduledRecording successfully sent");
+                                            //console.log("addScheduledRecording successfully sent");
                                         }, function () {
                                             reject();
-                                            console.log("addScheduledRecording failure");
+                                            //console.log("addScheduledRecording failure");
                                         });
                                 }
                             })
                             .fail(function (jqXHR, textStatus, errorThrown) {
                                 debugger;
-                                console.log("getEpgMatchingProgramsDataOnDate failure");
+                                //console.log("getEpgMatchingProgramsDataOnDate failure");
                             })
                             .always(function () {
                                 //alert("recording transmission finished");
@@ -872,22 +872,22 @@ function updateScheduledRecordings() {
             }));
 
             //promises[index].then(function() {
-            //    console.log("resolved");
+            //    //console.log("resolved");
             //}, function() {
-            //    console.log("error");
+            //    //console.log("error");
             //});
 
         });
 
         Promise.all(promises).then(function() {
-            console.log("all promises completed");
+            //console.log("all promises completed");
             var event = {};
             event["EventType"] = "SCHEDULED_RECORDINGS_UPDATED";
             postMessage(event);
         });
 
     }, function() {
-        console.log("error");
+        //console.log("error");
     });
 
 
@@ -904,7 +904,7 @@ function getSchedulesDirectStation(stations, atscMajor, atscMinor) {
     for (var key in stations) {
         if (stations.hasOwnProperty(key)) {
             var station = stations[key];
-            //console.log(JSON.stringify(station, null, 4));
+            ////console.log(JSON.stringify(station, null, 4));
             if (station.atscMajor == atscMajor && station.atscMinor == atscMinor) {
                 return station;
             }
@@ -924,8 +924,8 @@ function getSchedulesDirectLineupMappings(token, lineup) {
         headers: { "token": token }
     })
     .done(function (result) {
-        //console.log("done in getSchedulesDirectLineupMappings");
-        //console.log(JSON.stringify(result, null, 4));
+        ////console.log("done in getSchedulesDirectLineupMappings");
+        ////console.log(JSON.stringify(result, null, 4));
 
         var stations = {};
         for (mapIndex in result.map) {
@@ -938,38 +938,38 @@ function getSchedulesDirectLineupMappings(token, lineup) {
         }
         for (stationIndex in result.stations) {
             var stationDescription = result.stations[stationIndex];
-            //console.log(JSON.stringify(stationDescription, null, 4));
+            ////console.log(JSON.stringify(stationDescription, null, 4));
             var matchingStation = stations[stationDescription.stationID];
             matchingStation.name = stationDescription.name;
             matchingStation.callsign = stationDescription.callsign;
-            //console.log(JSON.stringify(matchingStation, null, 4));
+            ////console.log(JSON.stringify(matchingStation, null, 4));
         }
         //for (var key in stations) {
         //    if (stations.hasOwnProperty(key))
-        //        console.log(JSON.stringify(stations[key], null, 4));
+        //        //console.log(JSON.stringify(stations[key], null, 4));
         //}
 
         // get jtr stations
         //var channel2 = getSchedulesDirectStation(stations, 2, 1);
-        //console.log(JSON.stringify(channel2, null, 4));
+        ////console.log(JSON.stringify(channel2, null, 4));
         //var channel4 = getSchedulesDirectStation(stations, 4, 1);
-        //console.log(JSON.stringify(channel4, null, 4));
+        ////console.log(JSON.stringify(channel4, null, 4));
         //var channel5 = getSchedulesDirectStation(stations, 5, 1);
-        //console.log(JSON.stringify(channel5, null, 4));
+        ////console.log(JSON.stringify(channel5, null, 4));
         //var channel7 = getSchedulesDirectStation(stations, 7, 1);
-        //console.log(JSON.stringify(channel7, null, 4));
+        ////console.log(JSON.stringify(channel7, null, 4));
         //var channel91 = getSchedulesDirectStation(stations, 9, 1);
-        //console.log(JSON.stringify(channel91, null, 4));
+        ////console.log(JSON.stringify(channel91, null, 4));
         //var channel92 = getSchedulesDirectStation(stations, 9, 2);
-        //console.log(JSON.stringify(channel92, null, 4));
+        ////console.log(JSON.stringify(channel92, null, 4));
         //var channel93 = getSchedulesDirectStation(stations, 9, 3);
-        //console.log(JSON.stringify(channel93, null, 4));
+        ////console.log(JSON.stringify(channel93, null, 4));
         //var channel11 = getSchedulesDirectStation(stations, 11, 1);
-        //console.log(JSON.stringify(channel11, null, 4));
+        ////console.log(JSON.stringify(channel11, null, 4));
         //var channel36 = getSchedulesDirectStation(stations, 36, 1);
-        //console.log(JSON.stringify(channel36, null, 4));
+        ////console.log(JSON.stringify(channel36, null, 4));
         //var channel44 = getSchedulesDirectStation(stations, 44, 1);
-        //console.log(JSON.stringify(channel44, null, 4));
+        ////console.log(JSON.stringify(channel44, null, 4));
 
         var stations = [];
         //stations.push(ktvu);
@@ -1000,17 +1000,17 @@ function getSchedulesDirectUsersLineups(token, desiredLineup) {
         headers: { "token": token }
     })
     .done(function (result) {
-        //console.log("done in getSchedulesDirectUsersLineups");
-        //console.log(JSON.stringify(result, null, 4));
+        ////console.log("done in getSchedulesDirectUsersLineups");
+        ////console.log(JSON.stringify(result, null, 4));
         var lineup = parseScheduledDirectHeadends(result)
-        //console.log("parseScheduledDirectHeadends returned lineup " + lineup);
+        ////console.log("parseScheduledDirectHeadends returned lineup " + lineup);
 
         // ensure that desired lineup is subscribed to - if not add the new lineup (TBD)
         var lineupResults = result;
         for (lineUpIndex in lineupResults.lineups) {
             var lineup = lineupResults.lineups[lineUpIndex];
             if (lineup.lineup == desiredLineup) {
-                console.log("found desired lineup");
+                //console.log("found desired lineup");
                 getSchedulesDirectLineupMappings(token, desiredLineup);
             }
         }
@@ -1048,10 +1048,10 @@ function getSchedulesDirectHeadends(token) {
         headers: { "token": token }
     })
     .done(function (result) {
-        //console.log("done in getSchedulesDirectHeadends");
-        //console.log(JSON.stringify(result, null, 4));
+        ////console.log("done in getSchedulesDirectHeadends");
+        ////console.log(JSON.stringify(result, null, 4));
         var lineup = parseScheduledDirectHeadends(result)
-        console.log("parseScheduledDirectHeadends returned lineup " + lineup);
+        //console.log("parseScheduledDirectHeadends returned lineup " + lineup);
         getSchedulesDirectUsersLineups(token, lineup);
     })
     .fail(function () {
@@ -1065,7 +1065,7 @@ function getSchedulesDirectHeadends(token) {
 
 function getSchedulesDirectStatus(token) {
 
-    console.log("getSchedulesDirectStatus");
+    //console.log("getSchedulesDirectStatus");
 
     var url = "https://json.schedulesdirect.org/20141201/status";
 
@@ -1076,10 +1076,10 @@ function getSchedulesDirectStatus(token) {
         headers: { "token": token }
     })
     .done(function (result) {
-        console.log("done in getSchedulesDirectStatus");
-        console.log(JSON.stringify(result, null, 4));
+        //console.log("done in getSchedulesDirectStatus");
+        //console.log(JSON.stringify(result, null, 4));
         var systemStatus = result.systemStatus[0].status;
-        console.log("status = " + systemStatus);
+        //console.log("status = " + systemStatus);
     })
     .fail(function () {
         alert("getSchedulesDirectStatus failure");

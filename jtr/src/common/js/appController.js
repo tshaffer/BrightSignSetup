@@ -4,7 +4,7 @@
 define(['hostInterface', 'serverInterface','mainMenuController','recordedShowsController','recordNowController','manualRecordController','channelGuideController','scheduledRecordingsController','settingsController','footerController','deleteShowView'],
     function(hostInterface, serverInterface,mainMenuController,recordedShowsController,recordNowController,manualRecordController,channelGuideController,scheduledRecordingsController,settingsController,footerController,DeleteShowView) {
 
-        console.log("******************* - creating appController module");
+        //console.log("******************* - creating appController module");
 
         var appController = {
 
@@ -17,7 +17,7 @@ define(['hostInterface', 'serverInterface','mainMenuController','recordedShowsCo
 
                 var self = this;
 
-                console.log("all controllers loaded");
+                //console.log("all controllers loaded");
 
                 hostInterface.init();
 
@@ -110,8 +110,8 @@ define(['hostInterface', 'serverInterface','mainMenuController','recordedShowsCo
                     //console.log("key pressed: " + keyEvent.which)
                 });
 
-                console.log("JTR javascript .ready invoked");
-                console.log("User Agent: " + navigator.userAgent);
+                //console.log("JTR javascript .ready invoked");
+                //console.log("User Agent: " + navigator.userAgent);
 
                 // get client from user agent
                 var userAgent = navigator.userAgent;
@@ -164,7 +164,7 @@ define(['hostInterface', 'serverInterface','mainMenuController','recordedShowsCo
 
             executeRemoteCommand: function(id) {
 
-                console.log("app.js:: invokeRemote event received, id = " + id);
+                //console.log("app.js:: invokeRemote event received, id = " + id);
 
                 var cmd;
 

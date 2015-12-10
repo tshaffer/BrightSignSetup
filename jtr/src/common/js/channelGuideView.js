@@ -3,7 +3,7 @@
  */
 define(['serverInterface','settingsModel'], function (serverInterface,settingsModel) {
 
-    console.log("creating ChannelGuideView module");
+    //console.log("creating ChannelGuideView module");
 
     var ChannelGuideView = Backbone.View.extend({
 
@@ -19,27 +19,28 @@ define(['serverInterface','settingsModel'], function (serverInterface,settingsMo
         channelGuideHoursDisplayed: 3,
 
         initialize: function () {
-            console.log("ChannelGuideView::initialize");
+            //console.log("ChannelGuideView::initialize");
             this.template = _.template($('#channelGuideTemplate').html());
         },
 
         addHandlers: function() {
 
+            var self = this;
+
             $("#channelGuidePage").keydown(function (event) {
                 if (event.which == 'menu') {
-                    console.log("menu button pressed in channelGuidePage");
+                    //console.log("menu button pressed in channelGuidePage");
                     self.trigger("invokeHome");
                     return true;
                 }
                 else if (event.which == "exit") {
-                    console.log("exit button pressed in channelGuidePage");
+                    //console.log("exit button pressed in channelGuidePage");
                     self.trigger("eraseUI");
                     return true;
                 }
                 return false;
             });
 
-            var self = this;
             $("#btnNavigateBackwardOneDay").click(function (event) {
                 self.navigateBackwardOneDay();
             });
@@ -62,6 +63,11 @@ define(['serverInterface','settingsModel'], function (serverInterface,settingsMo
 
                 var keyCode = keyEvent.which;
                 switch (keyCode) {
+                    case constants.KEY_ENTER:
+                        var programData = self.getSelectedStationAndProgram();
+                        self.trigger("displayCGPopup", programData);
+                        return false;
+                        break;
                     case constants.KEY_UP:
                         command = "up";
                         break;
@@ -109,7 +115,7 @@ define(['serverInterface','settingsModel'], function (serverInterface,settingsMo
 
         invokeRecordSelectedProgram: function() {
 
-            console.log("invokeRecordSelectedProgram");
+            //console.log("invokeRecordSelectedProgram");
             var programData = this.getSelectedStationAndProgram();
 
             var stationName = this.stationsModel.getStationFromId(programData.stationId);
@@ -148,7 +154,7 @@ define(['serverInterface','settingsModel'], function (serverInterface,settingsMo
         },
 
         render: function () {
-            console.log("ChannelGuideView::render");
+            //console.log("ChannelGuideView::render");
             this.$el.html(this.template()); // this.$el is a jQuery wrapped el var
             this.addHandlers();
 
@@ -327,7 +333,7 @@ define(['serverInterface','settingsModel'], function (serverInterface,settingsMo
 
             var promise = serverInterface.retrieveLastTunedChannel();
             promise.then(function() {
-                console.log("ChannelGuideView:: lastTunedChannel promise fulfilled");
+                //console.log("ChannelGuideView:: lastTunedChannel promise fulfilled");
                 var stationNumber = serverInterface.getLastTunedChannel();
                 var stationIndex = self.stationsModel.getStationIndexFromName(stationNumber)
                 var stationRow = $("#cgData").children()[stationIndex + 1];

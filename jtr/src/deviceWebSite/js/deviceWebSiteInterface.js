@@ -59,12 +59,12 @@ define(function () {
             bsMessage.PostBSMessage({message: "javascriptReady"});
 
             bsMessage.onbsmessage = function (msg) {
-                console.log("onbsmessage invoked");
+                //console.log("onbsmessage invoked");
 
                 var message = {};
 
                 for (name in msg.data) {
-                    console.log('### ' + name + ': ' + msg.data[name]);
+                    //console.log('### ' + name + ': ' + msg.data[name]);
                     message[name] = msg.data[name];
                 }
 
