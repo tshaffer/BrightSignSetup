@@ -141,7 +141,7 @@ define(['serverInterface','settingsModel'], function (serverInterface, SettingsM
             $(this.cgPopupId).click(function (event) {
 
                 $(self.cgPopupId).off();
-                self.processSelect();
+                self.processSelect(event);
 
             });
 
@@ -155,7 +155,7 @@ define(['serverInterface','settingsModel'], function (serverInterface, SettingsM
                         var popupId = self.cgPopupId.substring(1);
                         console.log("popupId: " + popupId);
                         console.log("cgPopupSelectedIndex: " + self.cgPopupSelectedIndex);
-                        self.processSelect();
+                        self.processSelect(keyEvent);
                         break;
                     case constants.KEY_UP:
                         self.cgProgramDlgUp();
@@ -174,7 +174,7 @@ define(['serverInterface','settingsModel'], function (serverInterface, SettingsM
         },
 
 
-        processSelect: function() {
+        processSelect: function(event) {
 
             var self = this;
 
@@ -478,6 +478,7 @@ define(['serverInterface','settingsModel'], function (serverInterface, SettingsM
 
             $("#cgRecordingOptionsDlg").off("keydown");
             $("#cgRecordingOptionsDlg").keydown(function (keyEvent) {
+
                 var command = "";
 
                 var keyCode = keyEvent.which;
