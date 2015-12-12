@@ -77,6 +77,26 @@ myApp.controller('recordingsController', ['$scope', '$log', '$http', function($s
         return promise;
     };
 
+    $scope.playRecordedShow = function(id) {
+        console.log("playRecordedShow: " + id);
+    }
+
+    $scope.deleteRecordedShow = function(id) {
+        console.log("deleteRecordedShow: " + id);
+    }
+
+    $scope.repeatRecordedShow = function(id) {
+        console.log("repeatRecordedShow: " + id);
+    }
+
+    $scope.streamRecordedShow = function(id) {
+        console.log("streamRecordedShow: " + id);
+    }
+
+    $scope.infoRecordedShow = function(id) {
+        console.log("infoRecordedShow: " + id);
+    }
+
     console.log($scope.name + " screen displayed");
 
     $scope.name = 'Recordings';
