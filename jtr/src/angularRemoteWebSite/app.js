@@ -64,11 +64,66 @@ myApp.controller('FooterCtrl', ['$scope', '$log', function($scope, $log) {
 
 }]);
 
-myApp.controller('recordingsController', ['$scope', '$log', function($scope, $log) {
+myApp.controller('recordingsController', ['$scope', '$log', '$http', function($scope, $log, $http) {
 
-    $scope.name = 'Recordings';
+    $scope.getRecordings = function() {
+
+        var baseURL= "http://192.168.0.101:8080/";
+        var aUrl = baseURL + "getRecordings";
+
+        var promise = $http.get(aUrl, {
+        });
+
+        return promise;
+    };
+
     console.log($scope.name + " screen displayed");
 
+    $scope.name = 'Recordings';
+    $scope.recordings = [];
+
+    promise = $scope.getRecordings();
+    promise.then(function(result) {
+        console.log("getRecordings success");
+
+        // recordings are in result.data.recordings
+        console.log("number of recordings is: " +  result.data.recordings.length);
+
+        //recordingId: -1,
+        //title: '',
+        //startDateTime: '',
+        //duration: 0,
+        //fileName: '',
+        //lastViewedPosition: 0,
+        //transcodeComplete: 0,
+        //hlsSegmentationComplete: 0,
+        //hlsUrl: ''
+
+        $scope.recordings = [];
+
+        //for (recording of result.data.recordings)
+        for (var i = 0; i < result.data.recordings.length; i++) {
+            var jtrRecording = result.data.recordings[i];
+
+            recording = {};
+            recording.duration = jtrRecording.Duration;
+            recording.fileName = jtrRecording.FileName;
+            recording.hlsSegmentationComplete = jtrRecording.HLSSegmentationComplete;
+            recording.hlsUrl = jtrRecording.HLSUrl;
+            recording.lastViewedPosition = jtrRecording.LastViewedPosition;
+            recording.recordingId = jtrRecording.RecordingId;
+            recording.startDateTime = jtrRecording.StartDateTime;
+            recording.title = jtrRecording.Title;
+            recording.transcodeComplete = jtrRecording.TranscodeComplete;
+            recording.path = jtrRecording.path;
+
+            $scope.recordings.push(recording);
+        }
+
+        return;
+    }, function(reason) {
+        console.log("getRecordings failure");
+    });
 }]);
 
 myApp.controller('channelGuideController', ['$scope', '$log', '$routeParams', function($scope, $log, $routeParams) {
