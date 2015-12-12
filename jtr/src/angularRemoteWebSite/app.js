@@ -5,35 +5,75 @@ myApp.config(function ($routeProvider) {
     $routeProvider
 
     .when('/', {
-        templateUrl: 'pages/main.html',
-        controller: 'mainController'
+        templateUrl: 'screens/recordings.html',
+        controller: 'recordingsController'
     })
 
-    //.when('/home', {
-    //    templateUrl: 'pages/main.html',
-    //    controller: 'mainController'
-    //})
-    
-    .when('/second', {
-        templateUrl: 'pages/second.html',
-        controller: 'secondController'
+    .when('/recordings', {
+        templateUrl: 'screens/recordings.html',
+        controller: 'recordingsController'
     })
-    
-    .when('/second/:num', {
-        templateUrl: 'pages/second.html',
-        controller: 'secondController'
+
+    .when('/channelGuide', {
+        templateUrl: 'screens/channelGuide.html',
+        controller: 'channelGuideController'
     })
-    
+
+    .when('/scheduledRecordings', {
+        templateUrl: 'screens/scheduledRecordings.html',
+        controller: 'scheduledRecordingsController'
+    })
+
+    .when('/manualRecord', {
+        templateUrl: 'screens/manualRecord.html',
+        controller: 'manualRecordController'
+    })
+
+    .when('/recordNow', {
+        templateUrl: 'screens/channelGuide.html',
+        controller: 'recordNowController'
+    })
+
+    .when('/settings', {
+        templateUrl: 'screens/settings.html',
+        controller: 'settingsController'
+    })
+
 });
 
-myApp.controller('mainController', ['$scope', '$log', function($scope, $log) {
+myApp.controller('recordingsController', ['$scope', '$log', function($scope, $log) {
     
-    $scope.name = 'Main';
+    $scope.name = 'Recordings';
     
 }]);
 
-myApp.controller('secondController', ['$scope', '$log', '$routeParams', function($scope, $log, $routeParams) {
-    
-    $scope.num = $routeParams.num || 1;
-    
+myApp.controller('channelGuideController', ['$scope', '$log', '$routeParams', function($scope, $log, $routeParams) {
+
+    $scope.name = 'Channel Guide';
+
 }]);
+
+myApp.controller('scheduledRecordingsController', ['$scope', '$log', '$routeParams', function($scope, $log, $routeParams) {
+
+    $scope.name = 'Scheduled Recordings';
+
+}]);
+
+myApp.controller('manualRecordController', ['$scope', '$log', '$routeParams', function($scope, $log, $routeParams) {
+
+    $scope.name = 'Manual Record';
+
+}]);
+
+myApp.controller('recordNowController', ['$scope', '$log', '$routeParams', function($scope, $log, $routeParams) {
+
+    $scope.name = 'Record Now';
+
+}]);
+
+myApp.controller('settingsController', ['$scope', '$log', '$routeParams', function($scope, $log, $routeParams) {
+
+    $scope.name = 'Settings';
+
+}]);
+
