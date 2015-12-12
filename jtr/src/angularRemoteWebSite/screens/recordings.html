@@ -16,14 +16,14 @@
         </thead>
         <tbody id="recordedShowsTableBody">
             <tr ng-repeat="recording in recordings">
-                <td><button type='button' class='btn btn-default recorded-shows-icon' aria-label='Left Align'><span class='glyphicon glyphicon-play' aria-hidden='true'></span></button></td>
-                <td><button type='button' class='btn btn-default recorded-shows-icon' aria-label='Left Align'><span class='glyphicon glyphicon-remove' aria-hidden='true'></span></button></td>
-                <td><button type='button' class='btn btn-default recorded-shows-icon' aria-label='Left Align'><span class='glyphicon glyphicon-repeat' aria-hidden='true'></span></button></td>
-                <td><button type='button' class='btn btn-default recorded-shows-icon streamIcon' aria-label='Left Align'><span class='glyphicon glyphicon-random' aria-hidden='true'></span></button></td>
+                <td><button type='button' class='btn btn-default recorded-shows-icon' id='{{recording.playRecordingId}}' aria-label='Left Align'><span class='glyphicon glyphicon-play' aria-hidden='true'></span></button></td>
+                <td><button type='button' class='btn btn-default recorded-shows-icon' id='{{recording.deleteRecordingId}}' aria-label='Left Align'><span class='glyphicon glyphicon-remove' aria-hidden='true'></span></button></td>
+                <td><button type='button' class='btn btn-default recorded-shows-icon' id='{{recording.repeatRecordingId}}' aria-label='Left Align'><span class='glyphicon glyphicon-repeat' aria-hidden='true'></span></button></td>
+                <td><button type='button' class='btn btn-default recorded-shows-icon streamIcon' id='{{recording.streamRecordingId}}' aria-label='Left Align'><span class='glyphicon glyphicon-random' aria-hidden='true'></span></button></td>
                 <td><a class='downloadIcon' id='download' href='{{recording.path}}' download='{{recording.title}}'><span class='glyphicon glyphicon-cloud-download' aria-hidden='true'></span></a></td>
                 <td>{{recording.title}}</td>
                 <td>{{recording.startDateTime}}</td>
-                <td><button type='button' class='btn btn-default recorded-shows-icon' aria-label='Left Align'><span class='glyphicon glyphicon-info-sign' aria-hidden='true'></span></button></td>
+                <td><button type='button' class='btn btn-default recorded-shows-icon' id='{{recording.infoRecordingId}}' aria-label='Left Align'><span class='glyphicon glyphicon-info-sign' aria-hidden='true'></span></button></td>
                 <!--<td>{{Position}}</td>-->
                 <td>{{recording.position}}</td>
             </tr>

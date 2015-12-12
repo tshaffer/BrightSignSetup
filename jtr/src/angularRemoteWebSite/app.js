@@ -107,7 +107,16 @@ myApp.controller('recordingsController', ['$scope', '$log', '$http', function($s
             recording.transcodeComplete = jtrRecording.TranscodeComplete;
             recording.path = jtrRecording.path;
 
-            // implement the following in filters?
+// implement the following in filters?
+
+            // IDs
+            var recordingIdStr = recording.recordingId.toString();
+            recording.playRecordingId = "recording" + recordingIdStr;
+            recording.deleteRecordingId = "delete" + recordingIdStr;
+            recording.repeatRecordingId = "repeat" + recordingIdStr;
+            recording.streamRecordingId = "stream" + recordingIdStr;
+            recording.infoRecordingId = "info" + recordingIdStr;
+
             // RECORDING DATE
             var weekday = new Array(7);
             weekday[0] = "Sun";
