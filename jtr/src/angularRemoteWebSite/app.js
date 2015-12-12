@@ -1,6 +1,6 @@
 var myApp = angular.module('myApp', ['ngRoute']);
 
-myApp.config(function ($routeProvider) {
+myApp.config(['$routeProvider', function ($routeProvider) {
     
     $routeProvider
 
@@ -39,41 +39,47 @@ myApp.config(function ($routeProvider) {
         controller: 'settingsController'
     })
 
-});
+}]);
 
 myApp.controller('recordingsController', ['$scope', '$log', function($scope, $log) {
     
     $scope.name = 'Recordings';
+    console.log($scope.name + " screen displayed");
     
 }]);
 
 myApp.controller('channelGuideController', ['$scope', '$log', '$routeParams', function($scope, $log, $routeParams) {
 
     $scope.name = 'Channel Guide';
+    console.log($scope.name + " screen displayed");
 
 }]);
 
 myApp.controller('scheduledRecordingsController', ['$scope', '$log', '$routeParams', function($scope, $log, $routeParams) {
 
     $scope.name = 'Scheduled Recordings';
+    console.log($scope.name + " screen displayed");
 
 }]);
 
 myApp.controller('manualRecordController', ['$scope', '$log', '$routeParams', function($scope, $log, $routeParams) {
 
     $scope.name = 'Manual Record';
+    console.log($scope.name + " screen displayed");
 
 }]);
 
 myApp.controller('recordNowController', ['$scope', '$log', '$routeParams', function($scope, $log, $routeParams) {
 
     $scope.name = 'Record Now';
+    console.log($scope.name + " screen displayed");
 
 }]);
 
 myApp.controller('settingsController', ['$scope', '$log', '$routeParams', function($scope, $log, $routeParams) {
 
     $scope.name = 'Settings';
+    console.log($scope.name + " screen displayed");
 
 }]);
 
