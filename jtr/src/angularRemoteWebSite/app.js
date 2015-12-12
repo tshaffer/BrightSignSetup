@@ -71,14 +71,48 @@ myApp.controller('recordingsController', ['$scope', '$log', '$http', function($s
         var baseURL= "http://192.168.0.101:8080/";
         var aUrl = baseURL + "getRecordings";
 
-        var promise = $http.get(aUrl, {
-        });
+        var promise = $http.get(aUrl, {});
 
         return promise;
     };
 
+    $scope.browserCommand = function(commandData) {
+
+        var baseURL= "http://192.168.0.101:8080/";
+        var url = baseURL + "browserCommand";
+
+        var promise = $http.get(url, {
+            params: commandData
+        });
+
+        return promise;
+
+        //return new Promise(function(resolve, reject) {
+        //    $.get(url, commandData)
+        //        .done(function (result) {
+        //            console.log("browserCommand successfully sent");
+        //            resolve();
+        //        })
+        //        .fail(function (jqXHR, textStatus, errorThrown) {
+        //            reject();
+        //            debugger;
+        //            console.log("browserCommand failure");
+        //        })
+        //        .always(function () {
+        //            //alert("recording transmission finished");
+        //        });
+        //})
+    }
+
+
     $scope.playRecordedShow = function(id) {
         console.log("playRecordedShow: " + id);
+
+        var commandData = { "command": "playRecordedShow", "recordingId": id };
+        var promise = $scope.browserCommand(commandData);
+        promise.then(function() {
+            console.log("browserCommand successfully sent");
+        })
     }
 
     $scope.deleteRecordedShow = function(id) {
