@@ -1,7 +1,7 @@
 var myApp = angular.module('myApp', ['ngRoute']);
 
 myApp.config(['$routeProvider', function ($routeProvider) {
-    
+
     $routeProvider
 
     .when('/', {
@@ -38,14 +38,19 @@ myApp.config(['$routeProvider', function ($routeProvider) {
         templateUrl: 'screens/settings.html',
         controller: 'settingsController'
     })
+}]);
 
+myApp.controller('FooterCtrl', ['$scope', '$log', function($scope, $log) {
+     $scope.invokeTrickMode = function(trickMode) {
+            console.log("trickMode invoked: " + trickMode);
+     };
 }]);
 
 myApp.controller('recordingsController', ['$scope', '$log', function($scope, $log) {
-    
+
     $scope.name = 'Recordings';
     console.log($scope.name + " screen displayed");
-    
+
 }]);
 
 myApp.controller('channelGuideController', ['$scope', '$log', '$routeParams', function($scope, $log, $routeParams) {
