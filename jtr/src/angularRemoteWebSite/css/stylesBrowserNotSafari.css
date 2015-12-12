@@ -1,0 +1,44 @@
+#footerContainer {
+  display: block;
+}
+#IPAddressLabel {
+  display: none;
+}
+.tv-words {
+  /* use default font size */
+}
+body {
+  /* use default font size */
+}
+.btn-secondary {
+  /* use default font size */
+}
+/* Container class */
+/* footer class */
+/* controlIcon class */
+.controlIcon {
+  top: 50px;
+  left: 2%;
+}
+/* recordedShowsTitle element */
+#recordedShowsTitle {
+  font-size: 30px;
+}
+@media (min-width: 768px) {
+  .container {
+    /*max-width: 730px;*/
+    max-width: 1900px;
+    width: 1900px;
+  }
+}
+
+@media (min-width: 1200px) {
+  .container {
+    width: 1900px;
+  }
+}
+
+.streamIcon {
+  display: none;
+  visibility: collapse;
+}

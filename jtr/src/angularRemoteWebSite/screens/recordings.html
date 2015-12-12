@@ -1,1 +1,33 @@
-<h1>This will be the {{ name }} screen</h1>
+<h1>{{ name }}</h1>
+<div id="recordedShowsPage">
+    <table class="table">
+        <thead>
+        <tr>
+            <th class="play"></th>
+            <th class="delete"></th>
+            <th class="repeat"></th>
+            <th class="stream"></th>
+            <th class="download"></th>
+            <th class="replayGuideTitle">Title</th>
+            <th class="recorded">Recorded</th>
+            <th class="showInfo">Info</th>
+            <th class="position">Position</th>
+        </tr>
+        </thead>
+        <tbody id="recordedShowsTableBody">
+            <tr ng-repeat="recording in recordings">
+                <td><button type='button' class='btn btn-default recorded-shows-icon' aria-label='Left Align'><span class='glyphicon glyphicon-play' aria-hidden='true'></span></button></td>
+                <td><button type='button' class='btn btn-default recorded-shows-icon' aria-label='Left Align'><span class='glyphicon glyphicon-remove' aria-hidden='true'></span></button></td>
+                <td><button type='button' class='btn btn-default recorded-shows-icon' aria-label='Left Align'><span class='glyphicon glyphicon-repeat' aria-hidden='true'></span></button></td>
+                <td><button type='button' class='btn btn-default recorded-shows-icon streamIcon' aria-label='Left Align'><span class='glyphicon glyphicon-random' aria-hidden='true'></span></button></td>
+                <td><a class='downloadIcon' id='download' href='{{recording.path}}' download='{{recording.title}}'><span class='glyphicon glyphicon-cloud-download' aria-hidden='true'></span></a></td>
+                <td>{{recording.title}}</td>
+                <td>{{recording.startDateTime}}</td>
+                <td><button type='button' class='btn btn-default recorded-shows-icon' aria-label='Left Align'><span class='glyphicon glyphicon-info-sign' aria-hidden='true'></span></button></td>
+                <!--<td>{{Position}}</td>-->
+                <td>{{recording.position}}</td>
+            </tr>
+        </tbody>
+    </table>
+</div>
+

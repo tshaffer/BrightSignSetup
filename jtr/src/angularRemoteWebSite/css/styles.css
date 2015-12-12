@@ -1,0 +1,46 @@
+#footerContainer {
+  display: none;
+}
+#IPAddressLabel {
+  display: block;
+}
+.tv-words {
+  font-size: 36px;
+}
+body {
+  font-size: 36px;
+  background-color: rgba(0, 0, 0, 0);
+}
+.btn-secondary {
+  color: white;
+  background-color: #777;
+  border-color: #555;
+}
+/* Container class */
+.container {
+  background-color: #c8c8c8;
+  /*width: 80%;*/
+}
+/* footer class */
+.footer {
+  background-color: #c8c8c8;
+  padding-top: 19px;
+  color: #777;
+  border-top: 1px solid #e5e5e5;
+}
+/* controlIcon class */
+.controlIcon {
+  color: white;
+  position: fixed;
+  top: 1000px;
+  left: 50%;
+}
+/* recordedShowsTitle element */
+.streamIcon {
+  display: none;
+  visibility: collapse;
+}
+.downloadIcon {
+  display: none;
+  visibility: collapse;
+}
