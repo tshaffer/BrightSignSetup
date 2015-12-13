@@ -191,10 +191,117 @@ myApp.controller('recordingsController', ['$scope', '$log', '$http', function($s
     });
 }]);
 
-myApp.controller('channelGuideController', ['$scope', '$log', '$routeParams', function($scope, $log, $routeParams) {
+myApp.controller('channelGuideController', ['$scope', '$log', '$routeParams', '$http', function($scope, $log, $routeParams, $http) {
+
+    $scope.getEpgData = function() {
+
+        var baseURL= "http://192.168.0.111:8080/";
+        var url = baseURL + "getEpg";
+
+        var epgStartDate = new Date().toString("yyyy-MM-dd");
+
+        var promise = $http.get(url, {
+            params: { startDate: epgStartDate }
+        });
+
+        return promise;
+    };
+
 
     $scope.name = 'Channel Guide';
     console.log($scope.name + " screen displayed");
+
+    // initialize epg data
+    $scope.epgProgramSchedule = {};
+    $scope.epgProgramScheduleStartDateTime = Date.today().set({year: 2100, month: 0, day: 1, hour: 0});
+
+    promise = $scope.getEpgData();
+    promise.then(function(result) {
+        console.log("getEpgData success");
+
+        angular.forEach(result.data, function(sdProgram, index) {
+
+            console.log("program title is: " + sdProgram.Title);
+
+            // convert to local time zone
+            var localDate = new Date(sdProgram.AirDateTime);
+
+            // capture the earliest date in the epg data (in local time, so may be earlier than date passed to db)
+            if (localDate < $scope.epgProgramScheduleStartDateTime) {
+                $scope.epgProgramScheduleStartDateTime = localDate;
+            }
+
+            // create program from data in db
+            var program = {}
+            program.date = localDate;
+            program.endDateTime = sdProgram.endDateTime;
+            program.title = sdProgram.Title;
+            program.duration = sdProgram.Duration;
+            program.episodeTitle = sdProgram.EpisodeTitle;
+            program.shortDescription = sdProgram.ShortDescription;
+            program.longDescription = sdProgram.LongDescription;
+            program.showType = sdProgram.ShowType;
+
+            if (sdProgram.NewShow == undefined) {
+                program.newShow = 1;
+            }
+            else {
+                program.newShow = sdProgram.NewShow;
+            }
+            if (sdProgram.OriginalAirDate == undefined) {
+                program.originalAirDate = "";
+            }
+            else {
+                program.originalAirDate = sdProgram.OriginalAirDate;
+            }
+            if (sdProgram.SeasonEpisode == undefined) {
+                program.seasonEpisode = "";
+            }
+            else {
+                program.seasonEpisode = sdProgram.SeasonEpisode;
+            }
+
+            program.movieYear = sdProgram.movieYear;
+            program.movieRating = sdProgram.movieRating;
+            program.movieMinRating = sdProgram.movieMinRating;
+            program.movieMaxRating = sdProgram.movieMaxRating;
+            program.movieRatingIncrement = sdProgram.movieRatingIncrement;
+
+            var aggregatedCastMembers = sdProgram.CastMembers;
+            var castMembersArray = aggregatedCastMembers.split(',');
+            var castMembers = "";
+            angular.forEach(castMembersArray, function (castMemberEntry, index) {
+                if (index > 0) {
+                    castMembers += ", ";
+                }
+                castMembers += castMemberEntry.substring(2);
+            });
+            program.castMembers = castMembers;
+
+            // append to program list for  this station (create new station object if necessary)
+            var stationId = sdProgram.StationId;
+            if (stationId == "undefined") {
+                debugger;
+            }
+            if (!(stationId in $scope.epgProgramSchedule)) {
+                var programStationData = {};
+                programStationData.station = sdProgram.AtscMajor.toString() + "." + sdProgram.AtscMinor.toString();
+                programStationData.programList = [];
+                $scope.epgProgramSchedule[stationId] = programStationData;
+            }
+
+            // append program to list of programs for this station
+            var programList = $scope.epgProgramSchedule[stationId].programList;
+            programList.push(program);
+
+
+
+
+
+        });
+    }, function(reason) {
+        console.log("getEpgData failure");
+    });
 
 }]);
 
