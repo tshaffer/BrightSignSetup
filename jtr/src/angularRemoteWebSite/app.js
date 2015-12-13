@@ -30,7 +30,7 @@ myApp.config(['$routeProvider', function ($routeProvider) {
     })
 
     .when('/recordNow', {
-        templateUrl: 'screens/channelGuide.html',
+        templateUrl: 'screens/recordNow.html',
         controller: 'recordNowController'
     })
 
@@ -374,22 +374,89 @@ myApp.controller('channelGuideController', ['$scope', '$log', '$routeParams', '$
 
     $scope.getProgramScheduleStartDateTime = function() {
         return $scope.epgProgramScheduleStartDateTime;
-    },
+    };
 
     $scope.getProgramStationData = function(stationId) {
         return $scope.epgProgramSchedule[stationId];
-    },
+    };
 
     $scope.getProgramSlotIndices = function(stationId) {
         var programStationData = $scope.epgProgramSchedule[stationId];
         var programSlotIndices = programStationData.initialShowsByTimeSlot;
         return programSlotIndices;
-    },
+    };
 
     $scope.getProgramList = function(stationId) {
         var programStationData = $scope.epgProgramSchedule[stationId];
         return programStationData.programList;
-    },
+    };
+
+    $scope.updateTextAlignment = function () {
+
+        angular.forEach($scope.stations, function(station, stationIndex) {
+            var cgProgramLineName = "#cgStation" + stationIndex.toString() + "Data";
+            var cgProgramsOnStation = $(cgProgramLineName).children();
+            angular.forEach(cgProgramsOnStation, function(cgProgramButton, buttonIndex) {
+                var programStartIsVisible = $scope.isProgramStartVisible(cgProgramButton);
+                var programEndIsVisible = $scope.isProgramEndVisible(cgProgramButton);
+                if (programStartIsVisible && programEndIsVisible) {
+                    $(cgProgramButton).css('text-align', 'center');
+                }
+                else if (programStartIsVisible) {
+                    $(cgProgramButton).css('text-align', 'left');
+                }
+                else if (programEndIsVisible) {
+                    $(cgProgramButton).css('text-align', 'right');
+                }
+                else {
+                    $(cgProgramButton).css('text-align', 'center');
+                }
+            });
+        });
+    };
+
+    $scope.parseProgramId = function (programUIElement) {
+
+        var programInfo = {};
+
+        var programId = programUIElement.id;
+        var idParts = programId.split("-");
+        programInfo.stationId = idParts[1];
+        programInfo.programIndex = idParts[2];
+
+        return programInfo;
+    };
+
+    $scope.getProgramFromUIElement = function (element) {
+
+        var programInfo = $scope.parseProgramId($(element)[0]);
+
+        var programList = $scope.getProgramList(programInfo.stationId);
+        var selectedProgram = programList[programInfo.programIndex];
+        return selectedProgram;
+    };
+
+    $scope.isProgramStartVisible = function (element) {
+
+        var program = $scope.getProgramFromUIElement(element);
+        var programDate = program.date;
+
+        if (($scope.channelGuideDisplayCurrentDateTime <= programDate) && (programDate < $scope.channelGuideDisplayCurrentEndDateTime)) return true;
+
+        return false;
+    };
+    
+    $scope.isProgramEndVisible = function (element) {
+
+        var program = $scope.getProgramFromUIElement(element);
+        var programStartDateTime = program.date;
+        var programEndDateTime = new Date(programStartDateTime.getTime() + program.duration * 60000);
+
+        if (programEndDateTime > $scope.channelGuideDisplayCurrentEndDateTime) return false;
+        if (programEndDateTime <= $scope.channelGuideDisplayCurrentDateTime) return false;
+
+        return true;
+    };
 
     $scope.show = function() {
         
@@ -495,6 +562,28 @@ myApp.controller('channelGuideController', ['$scope', '$log', '$routeParams', '$
                 maxMinutesToDisplay = minutesToDisplay;
             }
         });
+
+        $scope.updateTextAlignment();
+
+        // build and display timeline
+        var toAppend = "";
+        $("#cgTimeLine").empty();
+        var timeLineCurrentValue = $scope.channelGuideDisplayStartDateTime;
+        var minutesDisplayed = 0;
+        while (minutesDisplayed < maxMinutesToDisplay) {
+
+            var timeLineTime = timeOfDay(timeLineCurrentValue);
+
+            toAppend += "<button class='thirtyMinuteTime'>" + timeLineTime + "</button>";
+            timeLineCurrentValue = new Date(timeLineCurrentValue.getTime() + minutesToMsec(30));
+            minutesDisplayed += 30;
+        }
+        $scope.channelGuideDisplayEndDateTime = timeLineCurrentValue;
+
+        $("#cgTimeLine").append(toAppend);
+
+        // setup handlers on children for browser - when user clicks on program to record, etc.
+
     }
 
     $scope.name = 'Channel Guide';
@@ -509,6 +598,18 @@ myApp.controller('channelGuideController', ['$scope', '$log', '$routeParams', '$
     // initialize epg data
     $scope.numDaysEpgData = 3;
     $scope.retrieveEpgData();
+
+    // from view
+    $scope.channelGuideDisplayStartDateTime = null;
+    $scope.channelGuideDisplayEndDateTime = null;
+    $scope.channelGuideDisplayCurrentDateTime = null;
+    $scope.channelGuideDisplayCurrentEndDateTime = null;
+
+    $scope._currentSelectedProgramButton = null;
+    $scope._currentStationIndex = null;
+
+    $scope.widthOfThirtyMinutes = 240;    // pixels
+    $scope.channelGuideHoursDisplayed = 3;
 
     // display channel guide data
     if ($scope.getStationsPromise != null && $scope.getEpgDataPromise != null) {
