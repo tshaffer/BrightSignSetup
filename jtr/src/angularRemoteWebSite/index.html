@@ -21,11 +21,20 @@
         <script src="js/utils.js"></script>
         <script src="lib/jquery.min.js"></script>
         <script src="lib/date.js"></script>
-        <!--<script src="lib/angular.min.js"></script>-->
         <script src="lib/angular.js"></script>
         <script src="lib/angular-route.min.js"></script>
 
+
         <script src="app.js"></script>
+        <script src="js/jtrServerService.js"></script>
+        <script src="recordings/recordings.js"></script>
+        <script src="channelGuide/channelGuide.js"></script>
+        <script src="scheduledRecordings/scheduledRecordings.js"></script>
+        <script src="manualRecord/manualRecord.js"></script>
+        <script src="recordNow/recordNow.js"></script>
+        <script src="settings/settings.js"></script>
+        <script src="footer/footer.js"></script>
+
     </head>
     <body>
 
@@ -51,7 +60,7 @@
             
 		</div>
 
-        <div id="footerArea" ng-controller="FooterCtrl">
+        <div id="footerArea" ng-controller="footer">
             <p id="homeButton" class="footerAlignLeft">
                 <button id="btnHome" class="btn btn-primary" ng-click='invokeHome();'>Home</button><br><br>
             </p>
