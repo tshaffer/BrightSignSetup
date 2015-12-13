@@ -275,15 +275,9 @@ myApp.controller('manualRecordController', ['$scope', '$log', '$routeParams', '$
     $scope.title = "";
     $scope.duration = "";
 
-    var date = new Date();
-
-    var dateVal = date.getFullYear() + "-" + twoDigitFormat((date.getMonth() + 1)) + "-" + twoDigitFormat(date.getDate());
-    //$scope.date = dateVal;
-    $scope.date = new Date();
-
-    var timeVal = twoDigitFormat(date.getHours()) + ":" + twoDigitFormat(date.getMinutes());
-    //$scope.time = timeVal;
-    $scope.time = new Date();
+    date = new Date();
+    $scope.date = date;
+    $scope.time = new Date(2015, 0, 1, date.getHours(), date.getMinutes(), 0);
 
     $scope.inputSource = "tuner";
     $scope.channel = "5";
