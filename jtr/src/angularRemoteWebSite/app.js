@@ -211,6 +211,24 @@ myApp.controller('manualRecordController', ['$scope', '$log', '$routeParams', '$
         return $scope.inputSource == "tuner";
     }
 
+    $scope.getRecordingTitle = function (titleId, dateObj, inputSource, channel) {
+
+        var title = $scope.title;
+        if (!title) {
+            title = 'MR ' + dateObj.getFullYear() + "-" + twoDigitFormat((dateObj.getMonth() + 1)) + "-" + twoDigitFormat(dateObj.getDate()) + " " + twoDigitFormat(dateObj.getHours()) + ":" + twoDigitFormat(dateObj.getMinutes());
+            if ($scope.inputSource == "tuner") {
+                title += " Channel " + channel;
+            } else if ($scope.inputSource == "tivo") {
+                title += " Tivo";
+            } else {
+                title += " Roku";
+            }
+        }
+
+        return title;
+    },
+
+
     $scope.invokeManualRecord = function() {
 
         console.log("invokeManualRecord");
@@ -221,7 +239,6 @@ myApp.controller('manualRecordController', ['$scope', '$log', '$routeParams', '$
         console.log("Input source: " + $scope.inputSource);
         console.log("Channel: " + $scope.channel);
 
-        // retrieve date/time from html elements and convert to a format that works on all devices
         var date = $scope.date;
         var time = $scope.time;
 
@@ -233,18 +250,8 @@ myApp.controller('manualRecordController', ['$scope', '$log', '$routeParams', '$
             hour: time.getHours()
         });
 
-        var duration = $scope.duration;
-
-        var inputSource = $scope.inputSource
-
-        var channel = $scope.channel;
-
-        //var title = this.getRecordingTitle("#manualRecordTitle", dateObj, inputSource, channel);
-        var title = $scope.title;
-
         // check to see if recording is in the past
-        //var dtEndOfRecording = addMinutes(dateObj, duration);
-        var dtEndOfRecording = new Date(dateObj).addMinutes(duration);
+        var dtEndOfRecording = new Date(dateObj).addMinutes($scope.duration);
         var now = new Date();
 
         var millisecondsUntilEndOfRecording = dtEndOfRecording - now;
@@ -252,13 +259,12 @@ myApp.controller('manualRecordController', ['$scope', '$log', '$routeParams', '$
             alert("Recording time is in the past - change the date/time and try again.");
         }
 
-        // this seems silly - should be a better way to do this
         $scope.manualRecordingParameters = {}
-        $scope.manualRecordingParameters.title = title;
+        $scope.manualRecordingParameters.title = $scope.getRecordingTitle("#manualRecordTitle", dateObj, $scope.inputSource, $scope.channel);
         $scope.manualRecordingParameters.dateTime = dateObj;
-        $scope.manualRecordingParameters.duration = duration;
-        $scope.manualRecordingParameters.inputSource = inputSource;
-        $scope.manualRecordingParameters.channel = channel;
+        $scope.manualRecordingParameters.duration = $scope.duration;
+        $scope.manualRecordingParameters.inputSource = $scope.inputSource;
+        $scope.manualRecordingParameters.channel = $scope.channel;
 
         var baseURL= "http://192.168.0.111:8080/";
         var url = baseURL + "manualRecording";
@@ -266,7 +272,6 @@ myApp.controller('manualRecordController', ['$scope', '$log', '$routeParams', '$
         var promise = $http.post(url, {
             params: $scope.manualRecordingParameters
         });
-
     };
 
     $scope.name = 'Manual Record';
