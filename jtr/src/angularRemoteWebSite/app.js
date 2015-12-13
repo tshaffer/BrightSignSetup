@@ -434,7 +434,7 @@ myApp.controller('channelGuideController', ['$scope', '$log', '$routeParams', '$
 
             // calculate the time delta between the time of the channel guide display start and the start of the first show to display
             // reduce the duration of the first show by this amount (time the show would have already been airing as of this time)
-            timeDiffInMinutes = msecToMinutes(self.channelGuideDisplayStartDateTime - new Date(showToDisplay.date));
+            timeDiffInMinutes = msecToMinutes($scope.channelGuideDisplayStartDateTime - new Date(showToDisplay.date));
 
             var programStationData = $scope.getProgramStationData(station.StationId);
             programStationData.programUIElementIndices = [];
@@ -466,7 +466,7 @@ myApp.controller('channelGuideController', ['$scope', '$log', '$routeParams', '$
                 }
                 else {
                     cssClasses = "'btn-secondary variableButton'";
-                    var width = (durationInMinutes / 30) * self.widthOfThirtyMinutes;
+                    var width = (durationInMinutes / 30) * $scope.widthOfThirtyMinutes;
                     widthSpec = " style='width:" + width.toString() + "px'";
                 }
                 var id = "show-" + station.StationId + "-" + indexIntoProgramList.toString();
