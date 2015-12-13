@@ -193,6 +193,29 @@ myApp.controller('recordingsController', ['$scope', '$log', '$http', function($s
 
 myApp.controller('channelGuideController', ['$scope', '$log', '$routeParams', '$http', function($scope, $log, $routeParams, $http) {
 
+    $scope.getStations = function() {
+        var baseURL= "http://192.168.0.111:8080/";
+        var url = baseURL + "getStations";
+
+        var epgStartDate = new Date().toString("yyyy-MM-dd");
+
+        $scope.getStationsPromise = $http.get(url, {});
+    };
+
+    $scope.retrieveStations = function() {
+        $scope.getStations();
+        $scope.getStationsPromise.then(function(result) {
+            console.log("getStations success");
+
+            angular.forEach(result.data, function(station, index) {
+                $scope.stations[index] = station;
+            });
+            return;
+        }, function(reason) {
+            console.log("getStations failure");
+        });
+    };
+
     $scope.getEpgData = function() {
 
         var baseURL= "http://192.168.0.111:8080/";
@@ -200,25 +223,20 @@ myApp.controller('channelGuideController', ['$scope', '$log', '$routeParams', '$
 
         var epgStartDate = new Date().toString("yyyy-MM-dd");
 
-        var promise = $http.get(url, {
+        $scope.getEpgDataPromise = $http.get(url, {
             params: { startDate: epgStartDate }
         });
-
-        return promise;
     };
-
 
     $scope.retrieveEpgData = function() {
         $scope.epgProgramSchedule = {};
         $scope.epgProgramScheduleStartDateTime = Date.today().set({year: 2100, month: 0, day: 1, hour: 0});
 
-        promise = $scope.getEpgData();
-        promise.then(function(result) {
+        $scope.getEpgData();
+        $scope.getEpgDataPromise.then(function(result) {
             console.log("getEpgData success");
 
             angular.forEach(result.data, function(sdProgram, index) {
-
-                console.log("program title is: " + sdProgram.Title);
 
                 // convert to local time zone
                 var localDate = new Date(sdProgram.AirDateTime);
@@ -347,19 +365,157 @@ myApp.controller('channelGuideController', ['$scope', '$log', '$routeParams', '$
                     }
                 }
             });
+            console.log("retrieveEpgData complete");
             return;
         }, function(reason) {
             console.log("getEpgData failure");
         });
-
     };
+
+    $scope.getProgramScheduleStartDateTime = function() {
+        return $scope.epgProgramScheduleStartDateTime;
+    },
+
+    $scope.getProgramStationData = function(stationId) {
+        return $scope.epgProgramSchedule[stationId];
+    },
+
+    $scope.getProgramSlotIndices = function(stationId) {
+        var programStationData = $scope.epgProgramSchedule[stationId];
+        var programSlotIndices = programStationData.initialShowsByTimeSlot;
+        return programSlotIndices;
+    },
+
+    $scope.getProgramList = function(stationId) {
+        var programStationData = $scope.epgProgramSchedule[stationId];
+        return programStationData.programList;
+    },
+
+    $scope.show = function() {
+        
+        console.log("channelGuide::show()");
+        var currentDate = new Date();
+        var startMinute = (parseInt(currentDate.getMinutes() / 30) * 30) % 60;
+        var startHour = currentDate.getHours();
+        
+        $scope.channelGuideDisplayStartDateTime = new Date(currentDate.getFullYear(), currentDate.getMonth(), currentDate.getDate(), startHour, startMinute, 0, 0);
+        $scope.channelGuideDisplayCurrentDateTime = new Date($scope.channelGuideDisplayStartDateTime);
+        $scope.channelGuideDisplayCurrentEndDateTime = new Date($scope.channelGuideDisplayCurrentDateTime).addHours(3);
+
+        // start date/time of data structure containing channel guide data
+        var channelGuideDataStructureStartDateTime = $scope.getProgramScheduleStartDateTime();
+
+        // time difference between start of channel guide display and start of channel guide data
+        var timeDiffInMinutes = msecToMinutes($scope.channelGuideDisplayStartDateTime - channelGuideDataStructureStartDateTime);
+
+        // index into the data structure (time slots) that contains the first show to display in the channel guide based on the time offset into channel guide data
+        var currentChannelGuideOffsetIndex = parseInt(timeDiffInMinutes / 30);
+
+        var maxMinutesToDisplay = 0;
+        var minutesToDisplay;
+
+        angular.forEach($scope.stations, function(station, stationIndex) {
+
+            // iterate through initialShowsByTimeSlot to get programs to display
+            var programSlotIndices = $scope.getProgramSlotIndices(station.StationId);
+
+            var programList = $scope.getProgramList(station.StationId);
+
+            var indexIntoProgramList = programSlotIndices[currentChannelGuideOffsetIndex];
+
+            var minutesAlreadyDisplayed = 0;
+
+            // build id of div containing the UI elements of the programs for the current station
+            var cgProgramLineName = "#cgStation" + stationIndex.toString() + "Data";
+            $(cgProgramLineName).empty();
+
+            // first show to display for this station
+            showToDisplay = programList[indexIntoProgramList];
+
+            // calculate the time delta between the time of the channel guide display start and the start of the first show to display
+            // reduce the duration of the first show by this amount (time the show would have already been airing as of this time)
+            timeDiffInMinutes = msecToMinutes(self.channelGuideDisplayStartDateTime - new Date(showToDisplay.date));
+
+            var programStationData = $scope.getProgramStationData(station.StationId);
+            programStationData.programUIElementIndices = [];
+
+            var slotIndex = 0;
+            var uiElementCount = 0;
+
+            var toAppend = "";
+            minutesToDisplay = 0;
+
+            while (indexIntoProgramList < programList.length) {
+
+                var durationInMinutes = Number(showToDisplay.duration);
+
+                // perform reduction for only the first show in case it's already in progress at the beginning of this station's display
+                if (toAppend == "") {
+                    durationInMinutes -= timeDiffInMinutes;
+                }
+
+                minutesToDisplay += durationInMinutes;
+
+                var cssClasses = "";
+                var widthSpec = "";
+                if (durationInMinutes == 30) {
+                    cssClasses = "'btn-secondary thirtyMinuteButton'";
+                }
+                else if (durationInMinutes == 60) {
+                    cssClasses = "'btn-secondary sixtyMinuteButton'";
+                }
+                else {
+                    cssClasses = "'btn-secondary variableButton'";
+                    var width = (durationInMinutes / 30) * self.widthOfThirtyMinutes;
+                    widthSpec = " style='width:" + width.toString() + "px'";
+                }
+                var id = "show-" + station.StationId + "-" + indexIntoProgramList.toString();
+                var title = showToDisplay.title;
+                toAppend +=
+                    "<button id='" + id + "' class=" + cssClasses + widthSpec + ">" + title + "</button>";
+
+                var programStartTime = minutesAlreadyDisplayed;                     // offset in minutes
+                var programEndTime = minutesAlreadyDisplayed + durationInMinutes;   // offset in minutes
+                var slotTime = slotIndex * 30;
+                while (programStartTime <= slotTime && slotTime < programEndTime) {
+                    programStationData.programUIElementIndices[slotIndex] = uiElementCount;
+                    slotIndex++;
+                    slotTime = slotIndex * 30;
+                }
+
+                minutesAlreadyDisplayed += durationInMinutes;
+                indexIntoProgramList++;
+                showToDisplay = programList[indexIntoProgramList];
+
+                uiElementCount++;
+            }
+            $(cgProgramLineName).append(toAppend);
+
+            if (minutesToDisplay > maxMinutesToDisplay) {
+                maxMinutesToDisplay = minutesToDisplay;
+            }
+        });
+    }
 
     $scope.name = 'Channel Guide';
     console.log($scope.name + " screen displayed");
 
+    $scope.getStationsPromise = null;
+    $scope.getEpgDataPromise = null;
+
+    $scope.stations = [];
+    $scope.retrieveStations();
+
     // initialize epg data
     $scope.numDaysEpgData = 3;
     $scope.retrieveEpgData();
+
+    // display channel guide data
+    if ($scope.getStationsPromise != null && $scope.getEpgDataPromise != null) {
+        Promise.all([$scope.getStationsPromise, $scope.getEpgDataPromise]).then(function() {
+            $scope.show();
+        });
+    }
 
 }]);
 
