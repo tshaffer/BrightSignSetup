@@ -25,7 +25,7 @@ angular.module('myApp').controller('recordings', ['$scope', '$http', function($s
         });
 
         return promise;
-    }
+    };
 
 
     $scope.playRecordedShow = function(id) {
