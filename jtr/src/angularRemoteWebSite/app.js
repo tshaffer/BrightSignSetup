@@ -207,6 +207,10 @@ myApp.controller('scheduledRecordingsController', ['$scope', '$log', '$routePara
 
 myApp.controller('manualRecordController', ['$scope', '$log', '$routeParams', '$http', function($scope, $log, $routeParams, $http) {
 
+    $scope.showChannel = function() {
+        return $scope.inputSource == "tuner";
+    }
+
     $scope.invokeManualRecord = function() {
 
         console.log("invokeManualRecord");
@@ -283,6 +287,9 @@ myApp.controller('manualRecordController', ['$scope', '$log', '$routeParams', '$
 
     $scope.inputSource = "tuner";
     $scope.channel = "5";
+
+    $("#manualRecordTitle").focus();
+
 }]);
 
 myApp.controller('recordNowController', ['$scope', '$log', '$routeParams', function($scope, $log, $routeParams) {

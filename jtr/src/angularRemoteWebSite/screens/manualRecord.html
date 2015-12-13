@@ -32,7 +32,7 @@
             <label class="radio-inline"><input type="radio" id="rbManualRecordTivo" name="manualRecordInputSource" ng-model="inputSource" value="tivo">Tivo</label>
         </div>
     </div>
-    <div id="manualRecordChannelDiv" class="form-group">
+    <div id="manualRecordChannelDiv" class="form-group" ng-show=showChannel();>
         <label for="manualRecordChannel" class="col-sm-4 control-label">Channel</label>
         <div class="col-sm-4">
             <input type="text" class="form-control input-sm" ng-model="channel" id="manualRecordChannel" value="5">
