@@ -212,6 +212,7 @@ myApp.controller('channelGuideController', ['$scope', '$log', '$routeParams', '$
     console.log($scope.name + " screen displayed");
 
     // initialize epg data
+    $scope.numDaysEpgData = 3;
     $scope.epgProgramSchedule = {};
     $scope.epgProgramScheduleStartDateTime = Date.today().set({year: 2100, month: 0, day: 1, hour: 0});
 
@@ -294,15 +295,66 @@ myApp.controller('channelGuideController', ['$scope', '$log', '$routeParams', '$
             var programList = $scope.epgProgramSchedule[stationId].programList;
             programList.push(program);
 
+            // generate data for each time slot in the schedule - indicator of the first program to display at any given time slot
+            for (var stationId in $scope.epgProgramSchedule) {
+                if ($scope.epgProgramSchedule.hasOwnProperty(stationId)) {
+                    var programStationData = $scope.epgProgramSchedule[stationId];
+                    var programList = programStationData.programList;
+                    var programIndex = 0;
 
+                    var programSlotIndices = [];
 
+                    var lastProgram = null;
 
+                    // 48 slots per day as each slot is 1/2 hour
+                    for (var slotIndex = 0; slotIndex < 48 * $scope.numDaysEpgData; slotIndex++) {
 
+                        var slotTimeOffsetSinceStartOfEpgData = slotIndex * 30;     // offset in minutes
+
+                        while (true) {
+
+                            // check for the case where we're at the end of the list of programs - occurs when the last show in the schedule is > 30 minutes
+                            if (programIndex >= programList.length) {
+                                programSlotIndices.push(programIndex - 1);
+                                break;
+                            }
+
+                            var program = programList[programIndex];
+
+                            var programTimeOffsetSinceStartOfEPGData = msecToMinutes(program.date - $scope.epgProgramScheduleStartDateTime);
+
+                            if (programTimeOffsetSinceStartOfEPGData == slotTimeOffsetSinceStartOfEpgData) {
+                                // program starts at exactly this time slot
+                                programSlotIndices.push(programIndex);
+                                programIndex++;
+                                lastProgram = program;
+                                break;
+                            }
+                            else if (programTimeOffsetSinceStartOfEPGData > slotTimeOffsetSinceStartOfEpgData) {
+                                // this program starts at some time after the current time slot - use prior show when navigating to this timeslot
+                                if (lastProgram != null) {
+                                    lastProgram.indexIntoProgramList = programIndex - 1;
+                                }
+                                programSlotIndices.push(programIndex - 1);
+                                // leave program index as it is - wait for timeslot to catch up
+                                break;
+                            }
+                            else if (programTimeOffsetSinceStartOfEPGData < slotTimeOffsetSinceStartOfEpgData) {
+                                // this program starts at sometime before the current time slot - continue to look for the last show that starts before the current time slot (or == to the current time slot)
+                                programIndex++;
+                                lastProgram = program;
+                            }
+                        }
+                    }
+
+                    programStationData.initialShowsByTimeSlot = programSlotIndices;
+                }
+            }
         });
+        return;
     }, function(reason) {
         console.log("getEpgData failure");
     });
-
 }]);
 
 myApp.controller('scheduledRecordingsController', ['$scope', '$log', '$routeParams', function($scope, $log, $routeParams) {
