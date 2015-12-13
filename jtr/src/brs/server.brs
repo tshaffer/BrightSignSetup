@@ -255,12 +255,17 @@ Sub setManualRecording(userData as Object, e as Object)
     mVar = userData.mVar
 
 	requestParams = ParseJson(e.GetRequestBodyString())
+	if type(requestParams.params) = "roAssociativeArray" then
+		recordingParams = requestParams.params
+	else
+		recordingParams = requestParams
+	endif
 
-	title$ = requestParams["title"]
-	channel$ = requestParams["channel"]
-	dateTime = requestParams["dateTime"]
-	duration% = int(val(requestParams["duration"]))
-	inputSource$ = requestParams["inputSource"]
+	title$ = recordingParams["title"]
+	channel$ = recordingParams["channel"]
+	dateTime = recordingParams["dateTime"]
+	duration% = int(val(recordingParams["duration"]))
+	inputSource$ = recordingParams["inputSource"]
 
 	addManualRecordMessage = CreateObject("roAssociativeArray")
 	addManualRecordMessage["command"] = "addRecord"

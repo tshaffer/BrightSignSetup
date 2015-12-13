@@ -68,7 +68,7 @@ myApp.controller('recordingsController', ['$scope', '$log', '$http', function($s
 
     $scope.getRecordings = function() {
 
-        var baseURL= "http://192.168.0.101:8080/";
+        var baseURL= "http://192.168.0.111:8080/";
         var aUrl = baseURL + "getRecordings";
 
         var promise = $http.get(aUrl, {});
@@ -78,7 +78,7 @@ myApp.controller('recordingsController', ['$scope', '$log', '$http', function($s
 
     $scope.browserCommand = function(commandData) {
 
-        var baseURL= "http://192.168.0.101:8080/";
+        var baseURL= "http://192.168.0.111:8080/";
         var url = baseURL + "browserCommand";
 
         var promise = $http.get(url, {
@@ -86,22 +86,6 @@ myApp.controller('recordingsController', ['$scope', '$log', '$http', function($s
         });
 
         return promise;
-
-        //return new Promise(function(resolve, reject) {
-        //    $.get(url, commandData)
-        //        .done(function (result) {
-        //            console.log("browserCommand successfully sent");
-        //            resolve();
-        //        })
-        //        .fail(function (jqXHR, textStatus, errorThrown) {
-        //            reject();
-        //            debugger;
-        //            console.log("browserCommand failure");
-        //        })
-        //        .always(function () {
-        //            //alert("recording transmission finished");
-        //        });
-        //})
     }
 
 
@@ -221,11 +205,84 @@ myApp.controller('scheduledRecordingsController', ['$scope', '$log', '$routePara
 
 }]);
 
-myApp.controller('manualRecordController', ['$scope', '$log', '$routeParams', function($scope, $log, $routeParams) {
+myApp.controller('manualRecordController', ['$scope', '$log', '$routeParams', '$http', function($scope, $log, $routeParams, $http) {
+
+    $scope.invokeManualRecord = function() {
+
+        console.log("invokeManualRecord");
+        console.log("Title: " + $scope.title);
+        console.log("Duration: " + $scope.duration);
+        console.log("Date: " + $scope.date);
+        console.log("Time: " + $scope.time);
+        console.log("Input source: " + $scope.inputSource);
+        console.log("Channel: " + $scope.channel);
+
+        // retrieve date/time from html elements and convert to a format that works on all devices
+        var date = $scope.date;
+        var time = $scope.time;
+
+        date.clearTime();
+        var dateObj = date.set({
+            millisecond: 0,
+            second: 0,
+            minute: time.getMinutes(),
+            hour: time.getHours()
+        });
+
+        var duration = $scope.duration;
+
+        var inputSource = $scope.inputSource
+
+        var channel = $scope.channel;
+
+        //var title = this.getRecordingTitle("#manualRecordTitle", dateObj, inputSource, channel);
+        var title = $scope.title;
+
+        // check to see if recording is in the past
+        //var dtEndOfRecording = addMinutes(dateObj, duration);
+        var dtEndOfRecording = new Date(dateObj).addMinutes(duration);
+        var now = new Date();
+
+        var millisecondsUntilEndOfRecording = dtEndOfRecording - now;
+        if (millisecondsUntilEndOfRecording < 0) {
+            alert("Recording time is in the past - change the date/time and try again.");
+        }
+
+        // this seems silly - should be a better way to do this
+        $scope.manualRecordingParameters = {}
+        $scope.manualRecordingParameters.title = title;
+        $scope.manualRecordingParameters.dateTime = dateObj;
+        $scope.manualRecordingParameters.duration = duration;
+        $scope.manualRecordingParameters.inputSource = inputSource;
+        $scope.manualRecordingParameters.channel = channel;
+
+        var baseURL= "http://192.168.0.111:8080/";
+        var url = baseURL + "manualRecording";
+
+        var promise = $http.post(url, {
+            params: $scope.manualRecordingParameters
+        });
+
+    };
 
     $scope.name = 'Manual Record';
     console.log($scope.name + " screen displayed");
 
+    $scope.title = "";
+    $scope.duration = "";
+
+    var date = new Date();
+
+    var dateVal = date.getFullYear() + "-" + twoDigitFormat((date.getMonth() + 1)) + "-" + twoDigitFormat(date.getDate());
+    //$scope.date = dateVal;
+    $scope.date = new Date();
+
+    var timeVal = twoDigitFormat(date.getHours()) + ":" + twoDigitFormat(date.getMinutes());
+    //$scope.time = timeVal;
+    $scope.time = new Date();
+
+    $scope.inputSource = "tuner";
+    $scope.channel = "5";
 }]);
 
 myApp.controller('recordNowController', ['$scope', '$log', '$routeParams', function($scope, $log, $routeParams) {
