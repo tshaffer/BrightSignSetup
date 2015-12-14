@@ -56,4 +56,14 @@ angular.module('myApp').service('jtrServerService', ['$http', function($http){
         });
         return promise;
     };
+
+    this.recordNow = function(recordNowParameters) {
+
+        var url = self.baseUrl + "manualRecording";
+
+        var promise = $http.post(url, {
+            params: recordNowParameters
+        });
+        return promise;
+    };
 }]);
