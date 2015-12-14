@@ -1,19 +1,10 @@
 /**
  * Created by tedshaffer on 12/13/15.
  */
-angular.module('myApp').controller('channelGuide', ['$scope', '$http', function($scope, $http) {
-
-    $scope.getStations = function() {
-        var baseURL= "http://192.168.0.111:8080/";
-        var url = baseURL + "getStations";
-
-        var epgStartDate = new Date().toString("yyyy-MM-dd");
-
-        $scope.getStationsPromise = $http.get(url, {});
-    };
+angular.module('myApp').controller('channelGuide', ['$scope', '$http', 'jtrServerService', function($scope, $http, $jtrServerService) {
 
     $scope.retrieveStations = function() {
-        $scope.getStations();
+        $scope.getStationsPromise = $jtrServerService.getStations();
         $scope.getStationsPromise.then(function(result) {
             console.log("getStations success");
 
@@ -26,23 +17,11 @@ angular.module('myApp').controller('channelGuide', ['$scope', '$http', function(
         });
     };
 
-    $scope.getEpgData = function() {
-
-        var baseURL= "http://192.168.0.111:8080/";
-        var url = baseURL + "getEpg";
-
-        var epgStartDate = new Date().toString("yyyy-MM-dd");
-
-        $scope.getEpgDataPromise = $http.get(url, {
-            params: { startDate: epgStartDate }
-        });
-    };
-
     $scope.retrieveEpgData = function() {
         $scope.epgProgramSchedule = {};
         $scope.epgProgramScheduleStartDateTime = Date.today().set({year: 2100, month: 0, day: 1, hour: 0});
 
-        $scope.getEpgData();
+        $scope.getEpgDataPromise = $jtrServerService.getEpgData();
         $scope.getEpgDataPromise.then(function(result) {
             console.log("getEpgData success");
 

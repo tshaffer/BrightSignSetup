@@ -1,38 +1,13 @@
 /**
  * Created by tedshaffer on 12/13/15.
  */
-angular.module('myApp').controller('recordings', ['$scope', '$http', function($scope, $http){
-
-//myApp.controller('recordingsController', ['$scope', '$log', '$http', function($scope, $log, $http) {
-
-    $scope.getRecordings = function() {
-
-        var baseURL= "http://192.168.0.111:8080/";
-        var aUrl = baseURL + "getRecordings";
-
-        var promise = $http.get(aUrl, {});
-
-        return promise;
-    };
-
-    $scope.browserCommand = function(commandData) {
-
-        var baseURL= "http://192.168.0.111:8080/";
-        var url = baseURL + "browserCommand";
-
-        var promise = $http.get(url, {
-            params: commandData
-        });
-
-        return promise;
-    };
-
+angular.module('myApp').controller('recordings', ['$scope', '$http', 'jtrServerService', function($scope, $http, $jtrServerService) {
 
     $scope.playRecordedShow = function(id) {
         console.log("playRecordedShow: " + id);
 
         var commandData = { "command": "playRecordedShow", "recordingId": id };
-        var promise = $scope.browserCommand(commandData);
+        var promise = $jtrServerService.browserCommand(commandData);
         promise.then(function() {
             console.log("browserCommand successfully sent");
         })
@@ -54,12 +29,12 @@ angular.module('myApp').controller('recordings', ['$scope', '$http', function($s
         console.log("infoRecordedShow: " + id);
     }
 
-    console.log($scope.name + " screen displayed");
+    console.log("baseUrl = " + $jtrServerService.baseUrl);
 
     $scope.name = 'Recordings';
     $scope.recordings = [];
 
-    promise = $scope.getRecordings();
+    promise = $jtrServerService.getRecordings();
     promise.then(function(result) {
         console.log("getRecordings success");
 
