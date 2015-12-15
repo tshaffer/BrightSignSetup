@@ -29,8 +29,6 @@ angular.module('myApp').controller('recordings', ['$scope', '$http', 'jtrServerS
         console.log("infoRecordedShow: " + id);
     }
 
-    console.log("baseUrl = " + $jtrServerService.baseUrl);
-
     $scope.name = 'Recordings';
     $scope.recordings = [];
 

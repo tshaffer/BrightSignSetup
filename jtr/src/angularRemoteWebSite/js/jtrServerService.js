@@ -5,7 +5,7 @@ angular.module('myApp').service('jtrServerService', ['$http', function($http){
 
     var self = this;
 
-    this.baseUrl = "http://192.168.0.111:8080/";
+    this.baseUrl = "http://192.168.0.102:8080/";
 
     this.browserCommand = function(commandData) {
 
@@ -22,6 +22,16 @@ angular.module('myApp').service('jtrServerService', ['$http', function($http){
         var aUrl = self.baseUrl + "getRecordings";
 
         var promise = $http.get(aUrl, {});
+        return promise;
+    };
+
+    this.getScheduledRecordings = function(currentDateTime) {
+
+        var url = self.baseUrl + "scheduledRecordings";
+
+        var promise = $http.get(url, {
+            params: currentDateTime
+        });
         return promise;
     };
 
