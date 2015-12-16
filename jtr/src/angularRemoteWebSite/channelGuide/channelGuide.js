@@ -372,6 +372,107 @@ angular.module('myApp').controller('channelGuide', ['$scope', '$http', 'jtrServe
     }
 
 
+    $scope.getSlotIndex = function (dateTime) {
+
+        // compute the time difference between the new time and where the channel guide data begins (and could be displayed)
+        var timeDiffInMinutes = msecToMinutes(dateTime.getTime() - $scope.channelGuideDisplayStartDateTime.getTime());
+
+        // compute number of 30 minute slots to scroll
+        var slotIndex = parseInt(timeDiffInMinutes / 30);
+        if (slotIndex < 0) {
+            slotIndex = 0;
+        }
+        return slotIndex;
+    }
+
+    $scope.scrollToTime = function (newScrollToTime) {
+
+        var slotsToScroll = $scope.getSlotIndex(newScrollToTime);
+
+        $("#cgData").scrollLeft(slotsToScroll * $scope.widthOfThirtyMinutes)
+
+        $scope.channelGuideDisplayCurrentDateTime = newScrollToTime;
+        $scope.channelGuideDisplayCurrentEndDateTime = new Date($scope.channelGuideDisplayCurrentDateTime).addHours($scope.channelGuideHoursDisplayed);
+    },
+
+
+    $scope.selectProgramAtTimeOnStation = function (selectProgramTime, stationIndex, currentUIElement) {
+
+        $scope._currentStationIndex = stationIndex;
+
+        var slotIndex = $scope.getSlotIndex(selectProgramTime);
+
+        var station = $scope.stations[stationIndex];
+        var stationId = station.StationId;
+
+        var programStationData = $scope.getProgramStationData(stationId);
+        var buttonIndex = programStationData.programUIElementIndices[slotIndex];
+
+        // get the array of program buttons for this station
+        var cgProgramsInStationRowElement = "#cgStation" + stationIndex.toString() + "Data";
+        var programUIElementsInStation = $(cgProgramsInStationRowElement).children();       // programs in that row
+
+        var nextActiveUIElement = programUIElementsInStation[buttonIndex];
+
+        $scope.selectProgram(currentUIElement, nextActiveUIElement);
+    }
+
+
+    $scope.navigateBackwardOneScreen = function () {
+
+        newScrollToTime = new Date($scope.channelGuideDisplayCurrentDateTime).addHours(-$scope.channelGuideHoursDisplayed);
+        if (newScrollToTime < $scope.channelGuideDisplayStartDateTime) {
+            newScrollToTime = new Date($scope.channelGuideDisplayStartDateTime);
+        }
+
+        $scope.scrollToTime(newScrollToTime)
+        $scope.updateTextAlignment();
+
+        $scope.selectProgramAtTimeOnStation(newScrollToTime, $scope._currentStationIndex, $scope._currentSelectedProgramButton);
+    }
+
+
+    $scope.navigateBackwardOneDay = function () {
+
+        newScrollToTime = new Date($scope.channelGuideDisplayCurrentDateTime).addHours(-24);
+        if (newScrollToTime < $scope.channelGuideDisplayStartDateTime) {
+            newScrollToTime = new Date($scope.channelGuideDisplayStartDateTime);
+        }
+        $scope.scrollToTime(newScrollToTime)
+        $scope.updateTextAlignment();
+
+        $scope.selectProgramAtTimeOnStation(newScrollToTime, $scope._currentStationIndex, $scope._currentSelectedProgramButton);
+    }
+
+
+    $scope.navigateForwardOneScreen = function () {
+
+        newScrollToTime = new Date($scope.channelGuideDisplayCurrentDateTime).addHours($scope.channelGuideHoursDisplayed);
+        var proposedEndTime = new Date(newScrollToTime).addHours($scope.channelGuideHoursDisplayed);
+        if (proposedEndTime > $scope.channelGuideDisplayEndDateTime) {
+            newScrollToTime = new Date($scope.channelGuideDisplayEndDateTime).addHours(-$scope.channelGuideHoursDisplayed);
+        }
+        $scope.scrollToTime(newScrollToTime)
+        $scope.updateTextAlignment();
+
+        $scope.selectProgramAtTimeOnStation(newScrollToTime, $scope._currentStationIndex, $scope._currentSelectedProgramButton);
+    }
+
+
+    $scope.navigateForwardOneDay = function () {
+
+        newScrollToTime = new Date($scope.channelGuideDisplayCurrentDateTime).addHours(24);
+        var proposedEndTime = new Date(newScrollToTime).addHours($scope.channelGuideHoursDisplayed);
+        if (proposedEndTime > $scope.channelGuideDisplayEndDateTime) {
+            newScrollToTime = new Date($scope.channelGuideDisplayEndDateTime).addHours(-$scope.channelGuideHoursDisplayed);
+        }
+        $scope.scrollToTime(newScrollToTime)
+        $scope.updateTextAlignment();
+
+        $scope.selectProgramAtTimeOnStation(newScrollToTime, $scope._currentStationIndex, $scope._currentSelectedProgramButton);
+    }
+
+
     $scope.show = function() {
 
         console.log("channelGuide::show()");

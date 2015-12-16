@@ -6,8 +6,8 @@
 <div id="episodeInfo"></div>
 
 <div id="cgBackward">
-    <button id="btnNavigateBackwardOneDay" type='button' class='btn btn-default' aria-label='Left Align'><span class='glyphicon glyphicon-step-backward' aria-hidden='true'></span></button>
-    <button id="btnNavigateBackwardOneScreen" type='button' class='btn btn-default' aria-label='Left Align'><span class='glyphicon glyphicon-backward' aria-hidden='true'></span></button>
+    <button id="btnNavigateBackwardOneDay" type='button' class='btn btn-default' aria-label='Left Align' ng-click="navigateBackwardOneDay()"><span class='glyphicon glyphicon-step-backward' aria-hidden='true'></span></button>
+    <button id="btnNavigateBackwardOneScreen" type='button' class='btn btn-default' aria-label='Left Align' ng-click="navigateBackwardOneScreen()"><span class='glyphicon glyphicon-backward' aria-hidden='true'></span></button>
 </div>
 
 <div id="stationLabelDiv">
@@ -39,6 +39,6 @@
 </div>
 
 <div id="cgForward">
-    <button id="btnNavigateForwardOneScreen" type='button' class='btn btn-default' aria-label='Left Align'><span class='glyphicon glyphicon-forward' aria-hidden='true'></span></button>
-    <button id="btnNavigateForwardOneDay" type='button' class='btn btn-default' aria-label='Left Align'><span class='glyphicon glyphicon-step-forward' aria-hidden='true'></span></button>
+    <button id="btnNavigateForwardOneScreen" type='button' class='btn btn-default' aria-label='Left Align' ng-click="navigateForwardOneScreen()"><span class='glyphicon glyphicon-forward' aria-hidden='true'></span></button>
+    <button id="btnNavigateForwardOneDay" type='button' class='btn btn-default' aria-label='Left Align' ng-click="navigateForwardOneDay()"><span class='glyphicon glyphicon-step-forward' aria-hidden='true'></span></button>
 </div>
