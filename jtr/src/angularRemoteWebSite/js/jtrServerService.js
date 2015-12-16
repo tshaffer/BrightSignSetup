@@ -5,7 +5,10 @@ angular.module('myApp').service('jtrServerService', ['$http', function($http){
 
     var self = this;
 
-    this.baseUrl = "http://192.168.0.102:8080/";
+    this.baseUrl = "http://192.168.0.107:8080/";
+    //this.baseUrl = "http://10.1.0.241:8080/";
+
+    this.lastTunedChannelResult = null;
 
     this.browserCommand = function(commandData) {
 
@@ -51,8 +54,6 @@ angular.module('myApp').service('jtrServerService', ['$http', function($http){
 
         var url = self.baseUrl + "getStations";
 
-        var epgStartDate = new Date().toString("yyyy-MM-dd");
-
         var promise = $http.get(url, {});
         return promise;
     };
@@ -76,4 +77,13 @@ angular.module('myApp').service('jtrServerService', ['$http', function($http){
         });
         return promise;
     };
+
+    this.retrieveLastTunedChannel =  function() {
+
+        var url = this.baseUrl + "lastTunedChannel";
+
+        var promise = $http.get(url, {});
+        return promise;
+    };
+
 }]);

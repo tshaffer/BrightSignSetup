@@ -3,6 +3,39 @@
  */
 angular.module('myApp').controller('channelGuide', ['$scope', '$http', 'jtrServerService', function($scope, $http, $jtrServerService) {
 
+    $scope.getStationIndexFromName = function(stationNumber) {
+
+        var stationIndex = -1;
+
+        var self = this;
+        $scope.stations.forEach(function(station, index, stations) {
+            if ($scope.stationNumbersEqual(stationNumber, station.AtscMajor.toString() + '-' + station.AtscMinor.toString())) {
+                stationIndex = index;
+                return false;
+            }
+        });
+
+        return stationIndex;
+    }
+
+    $scope.stationNumbersEqual = function (stationNumber1, stationNumber2) {
+
+        if (stationNumber1 == stationNumber2) return true;
+
+        stationNumber1 = $scope.standardizeStationNumber(stationNumber1);
+        stationNumber2 = $scope.standardizeStationNumber(stationNumber2);
+        return (stationNumber1 == stationNumber2);
+    }
+
+    $scope.standardizeStationNumber = function (stationNumber) {
+
+        stationNumber = stationNumber.replace(".1", "");
+        stationNumber = stationNumber.replace("-1", "");
+        stationNumber = stationNumber.replace("-", ".");
+
+        return stationNumber;
+    }
+
     $scope.retrieveStations = function() {
         $scope.getStationsPromise = $jtrServerService.getStations();
         $scope.getStationsPromise.then(function(result) {
@@ -247,6 +280,98 @@ angular.module('myApp').controller('channelGuide', ['$scope', '$http', 'jtrServe
         return true;
     };
 
+    $scope.selectProgram = function (activeProgramUIElement, newActiveProgramUIElement) {
+
+        $scope.updateActiveProgramUIElement(activeProgramUIElement, newActiveProgramUIElement);
+
+        $scope.updateProgramInfo(newActiveProgramUIElement)
+    };
+
+    $scope.updateActiveProgramUIElement = function (activeProgramUIElement, newActiveProgramUIElement) {
+
+        if (activeProgramUIElement != null) {
+            $(activeProgramUIElement).removeClass("btn-primary");
+            $(activeProgramUIElement).addClass("btn-secondary");
+        }
+
+        $(newActiveProgramUIElement).removeClass("btn-secondary");
+        $(newActiveProgramUIElement).addClass("btn-primary");
+
+        $(newActiveProgramUIElement).focus();
+
+        $scope._currentSelectedProgramButton = newActiveProgramUIElement;
+    }
+
+    $scope.getProgramList = function(stationId) {
+        var programStationData = $scope.epgProgramSchedule[stationId];
+        return programStationData.programList;
+    }
+
+    $scope.updateProgramInfo = function (programUIElement) {
+
+        var programInfo = $scope.parseProgramId($(programUIElement)[0]);
+
+        var programList = $scope.getProgramList(programInfo.stationId);
+        var selectedProgram = programList[programInfo.programIndex];
+
+        // display title (prominently)
+        $("#cgProgramName").text(selectedProgram.title);
+
+        // display day/date of selected program in upper left of channel guide
+        var programDayDate = dayDate(selectedProgram.date);
+        $("#cgDayDate").text(programDayDate);
+
+        $("#programInfo").empty();
+
+        // day, date, and time
+        var startTime = timeOfDay(selectedProgram.date);
+
+        var endDate = new Date(selectedProgram.date.getTime()).addMinutes(selectedProgram.duration);
+        var endTime = timeOfDay(endDate);
+
+        var dateTimeInfo = programDayDate + " " + startTime + " - " + endTime;
+
+        var episodeInfo = "";
+        if (selectedProgram.showType == "Series" && selectedProgram.newShow == 0) {
+            episodeInfo = "Rerun";
+            if (selectedProgram.originalAirDate != "") {
+                episodeInfo += ": original air date was " + selectedProgram.originalAirDate;
+                if (selectedProgram.seasonEpisode != "") {
+                    episodeInfo += ", " + selectedProgram.seasonEpisode;
+                }
+            }
+        }
+
+        $("#cgDateTimeInfo").html(dateTimeInfo)
+
+        var episodeTitle = selectedProgram.episodeTitle;
+        if (episodeTitle == "") {
+            episodeTitle = "<br/>";
+        }
+        $("#cgEpisodeTitle").html(episodeTitle)
+
+        var programDescription = selectedProgram.longDescription;
+        if (programDescription == "") {
+            programDescription = selectedProgram.shortDescription;
+        }
+        if (programDescription == "") {
+            programDescription = "<br/>";
+        }
+        $("#cgDescription").html(programDescription)
+
+        var castMembers = selectedProgram.castMembers;
+        if (castMembers == "") {
+            castMembers = "<br/>";
+        }
+        $("#cgCastMembers").html(castMembers)
+
+        if (episodeInfo == "") {
+            episodeInfo = "<br/>";
+        }
+        $("#episodeInfo").html(episodeInfo)
+    }
+
+
     $scope.show = function() {
 
         console.log("channelGuide::show()");
@@ -372,6 +497,19 @@ angular.module('myApp').controller('channelGuide', ['$scope', '$http', 'jtrServe
         $("#cgTimeLine").append(toAppend);
 
         // setup handlers on children for browser - when user clicks on program to record, etc.
+        // TBD
+
+        var promise = $jtrServerService.retrieveLastTunedChannel();
+        promise.then(function(result) {
+            console.log("serverInterface::lastTunedChannel successfully retrieved");
+            //self.lastTunedChannelResult = result;
+            var stationNumber = result.data;
+            var stationIndex = $scope.getStationIndexFromName(stationNumber)
+            var stationRow = $("#cgData").children()[stationIndex + 1];
+            $scope._currentSelectedProgramButton = $(stationRow).children()[0];
+            $scope.selectProgram(null, $scope._currentSelectedProgramButton, 0);
+            $scope._currentStationIndex = stationIndex;
+        });
 
     }
 
