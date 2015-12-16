@@ -3,14 +3,58 @@
  */
 angular.module('myApp').controller('channelGuide', ['$scope', '$http', 'jtrServerService', function($scope, $http, $jtrServerService) {
 
+    $scope.getStationIndex = function (stationId) {
+
+        var selectedStationIndex = -1;
+
+        $.each($scope.stations, function (stationIndex, station) {
+            if (station.StationId == stationId) {
+                selectedStationIndex = stationIndex;
+                return false;
+            }
+        });
+
+        return selectedStationIndex;
+    }
+
+    $scope.getStationIndexFromName = function(stationNumber) {
+
+        var stationIndex = -1;
+
+        var self = this;
+        $scope.stations.forEach(function(station, index, stations) {
+            if ($scope.stationNumbersEqual(stationNumber, station.AtscMajor.toString() + '-' + station.AtscMinor.toString())) {
+                stationIndex = index;
+                return false;
+            }
+        });
+
+        return stationIndex;
+    }
+
+    $scope.stationNumbersEqual = function (stationNumber1, stationNumber2) {
+
+        if (stationNumber1 == stationNumber2) return true;
+
+        stationNumber1 = $scope.standardizeStationNumber(stationNumber1);
+        stationNumber2 = $scope.standardizeStationNumber(stationNumber2);
+        return (stationNumber1 == stationNumber2);
+    }
+
+    $scope.standardizeStationNumber = function (stationNumber) {
+
+        stationNumber = stationNumber.replace(".1", "");
+        stationNumber = stationNumber.replace("-1", "");
+        stationNumber = stationNumber.replace("-", ".");
+
+        return stationNumber;
+    }
+
     $scope.retrieveStations = function() {
         $scope.getStationsPromise = $jtrServerService.getStations();
-        $scope.getStationsPromise.then(function(result) {
+        $scope.getStationsPromise.then(function() {
             console.log("getStations success");
-
-            angular.forEach(result.data, function(station, index) {
-                $scope.stations[index] = station;
-            });
+            $scope.stations = $jtrServerService.getStationsResult();
             return;
         }, function(reason) {
             console.log("getStations failure");
@@ -175,11 +219,6 @@ angular.module('myApp').controller('channelGuide', ['$scope', '$http', 'jtrServe
         return programSlotIndices;
     };
 
-    $scope.getProgramList = function(stationId) {
-        var programStationData = $scope.epgProgramSchedule[stationId];
-        return programStationData.programList;
-    };
-
     $scope.updateTextAlignment = function () {
 
         angular.forEach($scope.stations, function(station, stationIndex) {
@@ -246,6 +285,209 @@ angular.module('myApp').controller('channelGuide', ['$scope', '$http', 'jtrServe
 
         return true;
     };
+
+    $scope.selectProgram = function (activeProgramUIElement, newActiveProgramUIElement) {
+
+        $scope.updateActiveProgramUIElement(activeProgramUIElement, newActiveProgramUIElement);
+
+        $scope.updateProgramInfo(newActiveProgramUIElement)
+    };
+
+    $scope.updateActiveProgramUIElement = function (activeProgramUIElement, newActiveProgramUIElement) {
+
+        if (activeProgramUIElement != null) {
+            $(activeProgramUIElement).removeClass("btn-primary");
+            $(activeProgramUIElement).addClass("btn-secondary");
+        }
+
+        $(newActiveProgramUIElement).removeClass("btn-secondary");
+        $(newActiveProgramUIElement).addClass("btn-primary");
+
+        $(newActiveProgramUIElement).focus();
+
+        $scope._currentSelectedProgramButton = newActiveProgramUIElement;
+    }
+
+    $scope.getProgramList = function(stationId) {
+        var programStationData = $scope.epgProgramSchedule[stationId];
+        return programStationData.programList;
+    }
+
+    $scope.updateProgramInfo = function (programUIElement) {
+
+        var programInfo = $scope.parseProgramId($(programUIElement)[0]);
+
+        var programList = $scope.getProgramList(programInfo.stationId);
+        var selectedProgram = programList[programInfo.programIndex];
+
+        // display title (prominently)
+        $("#cgProgramName").text(selectedProgram.title);
+
+        // display day/date of selected program in upper left of channel guide
+        var programDayDate = dayDate(selectedProgram.date);
+        $("#cgDayDate").text(programDayDate);
+
+        $("#programInfo").empty();
+
+        // day, date, and time
+        var startTime = timeOfDay(selectedProgram.date);
+
+        var endDate = new Date(selectedProgram.date.getTime()).addMinutes(selectedProgram.duration);
+        var endTime = timeOfDay(endDate);
+
+        var dateTimeInfo = programDayDate + " " + startTime + " - " + endTime;
+
+        var episodeInfo = "";
+        if (selectedProgram.showType == "Series" && selectedProgram.newShow == 0) {
+            episodeInfo = "Rerun";
+            if (selectedProgram.originalAirDate != "") {
+                episodeInfo += ": original air date was " + selectedProgram.originalAirDate;
+                if (selectedProgram.seasonEpisode != "") {
+                    episodeInfo += ", " + selectedProgram.seasonEpisode;
+                }
+            }
+        }
+
+        $("#cgDateTimeInfo").html(dateTimeInfo)
+
+        var episodeTitle = selectedProgram.episodeTitle;
+        if (episodeTitle == "") {
+            episodeTitle = "<br/>";
+        }
+        $("#cgEpisodeTitle").html(episodeTitle)
+
+        var programDescription = selectedProgram.longDescription;
+        if (programDescription == "") {
+            programDescription = selectedProgram.shortDescription;
+        }
+        if (programDescription == "") {
+            programDescription = "<br/>";
+        }
+        $("#cgDescription").html(programDescription)
+
+        var castMembers = selectedProgram.castMembers;
+        if (castMembers == "") {
+            castMembers = "<br/>";
+        }
+        $("#cgCastMembers").html(castMembers)
+
+        if (episodeInfo == "") {
+            episodeInfo = "<br/>";
+        }
+        $("#episodeInfo").html(episodeInfo)
+    }
+
+
+    $scope.getSlotIndex = function (dateTime) {
+
+        // compute the time difference between the new time and where the channel guide data begins (and could be displayed)
+        var timeDiffInMinutes = msecToMinutes(dateTime.getTime() - $scope.channelGuideDisplayStartDateTime.getTime());
+
+        // compute number of 30 minute slots to scroll
+        var slotIndex = parseInt(timeDiffInMinutes / 30);
+        if (slotIndex < 0) {
+            slotIndex = 0;
+        }
+        return slotIndex;
+    }
+
+    $scope.scrollToTime = function (newScrollToTime) {
+
+        var slotsToScroll = $scope.getSlotIndex(newScrollToTime);
+
+        $("#cgData").scrollLeft(slotsToScroll * $scope.widthOfThirtyMinutes)
+
+        $scope.channelGuideDisplayCurrentDateTime = newScrollToTime;
+        $scope.channelGuideDisplayCurrentEndDateTime = new Date($scope.channelGuideDisplayCurrentDateTime).addHours($scope.channelGuideHoursDisplayed);
+    },
+
+
+    $scope.selectProgramAtTimeOnStation = function (selectProgramTime, stationIndex, currentUIElement) {
+
+        $scope._currentStationIndex = stationIndex;
+
+        var slotIndex = $scope.getSlotIndex(selectProgramTime);
+
+        var station = $scope.stations[stationIndex];
+        var stationId = station.StationId;
+
+        var programStationData = $scope.getProgramStationData(stationId);
+        var buttonIndex = programStationData.programUIElementIndices[slotIndex];
+
+        // get the array of program buttons for this station
+        var cgProgramsInStationRowElement = "#cgStation" + stationIndex.toString() + "Data";
+        var programUIElementsInStation = $(cgProgramsInStationRowElement).children();       // programs in that row
+
+        var nextActiveUIElement = programUIElementsInStation[buttonIndex];
+
+        $scope.selectProgram(currentUIElement, nextActiveUIElement);
+    }
+
+    $scope.getSelectedStationAndProgram = function () {
+
+        var programInfo = $scope.parseProgramId($scope._currentSelectedProgramButton);
+        var programList = $scope.getProgramList(programInfo.stationId);
+
+        var programData = {};
+        programData.stationId = programInfo.stationId;
+        programData.program = programList[programInfo.programIndex];
+        return programData;
+    }
+
+    $scope.navigateBackwardOneScreen = function () {
+
+        newScrollToTime = new Date($scope.channelGuideDisplayCurrentDateTime).addHours(-$scope.channelGuideHoursDisplayed);
+        if (newScrollToTime < $scope.channelGuideDisplayStartDateTime) {
+            newScrollToTime = new Date($scope.channelGuideDisplayStartDateTime);
+        }
+
+        $scope.scrollToTime(newScrollToTime)
+        $scope.updateTextAlignment();
+
+        $scope.selectProgramAtTimeOnStation(newScrollToTime, $scope._currentStationIndex, $scope._currentSelectedProgramButton);
+    }
+
+
+    $scope.navigateBackwardOneDay = function () {
+
+        newScrollToTime = new Date($scope.channelGuideDisplayCurrentDateTime).addHours(-24);
+        if (newScrollToTime < $scope.channelGuideDisplayStartDateTime) {
+            newScrollToTime = new Date($scope.channelGuideDisplayStartDateTime);
+        }
+        $scope.scrollToTime(newScrollToTime)
+        $scope.updateTextAlignment();
+
+        $scope.selectProgramAtTimeOnStation(newScrollToTime, $scope._currentStationIndex, $scope._currentSelectedProgramButton);
+    }
+
+
+    $scope.navigateForwardOneScreen = function () {
+
+        newScrollToTime = new Date($scope.channelGuideDisplayCurrentDateTime).addHours($scope.channelGuideHoursDisplayed);
+        var proposedEndTime = new Date(newScrollToTime).addHours($scope.channelGuideHoursDisplayed);
+        if (proposedEndTime > $scope.channelGuideDisplayEndDateTime) {
+            newScrollToTime = new Date($scope.channelGuideDisplayEndDateTime).addHours(-$scope.channelGuideHoursDisplayed);
+        }
+        $scope.scrollToTime(newScrollToTime)
+        $scope.updateTextAlignment();
+
+        $scope.selectProgramAtTimeOnStation(newScrollToTime, $scope._currentStationIndex, $scope._currentSelectedProgramButton);
+    }
+
+
+    $scope.navigateForwardOneDay = function () {
+
+        newScrollToTime = new Date($scope.channelGuideDisplayCurrentDateTime).addHours(24);
+        var proposedEndTime = new Date(newScrollToTime).addHours($scope.channelGuideHoursDisplayed);
+        if (proposedEndTime > $scope.channelGuideDisplayEndDateTime) {
+            newScrollToTime = new Date($scope.channelGuideDisplayEndDateTime).addHours(-$scope.channelGuideHoursDisplayed);
+        }
+        $scope.scrollToTime(newScrollToTime)
+        $scope.updateTextAlignment();
+
+        $scope.selectProgramAtTimeOnStation(newScrollToTime, $scope._currentStationIndex, $scope._currentSelectedProgramButton);
+    }
+
 
     $scope.show = function() {
 
@@ -372,6 +614,44 @@ angular.module('myApp').controller('channelGuide', ['$scope', '$http', 'jtrServe
         $("#cgTimeLine").append(toAppend);
 
         // setup handlers on children for browser - when user clicks on program to record, etc.
+        $("#cgData").click(function (event) {
+            var buttonClicked = event.target;
+            if (event.target.id != "") {
+                // presence of an id means that it's not a timeline button
+                var programInfo = $scope.parseProgramId($(event.target)[0]);
+                var programList = $scope.getProgramList(programInfo.stationId);
+                $scope.selectProgramTime = programList[programInfo.programIndex].date;
+
+                var stationIndex = $scope.getStationIndex(programInfo.stationId);
+                if (stationIndex >= 0) {
+                    $scope._currentStationIndex = stationIndex;
+                    $scope.selectProgram($scope._currentSelectedProgramButton, event.target);
+                    var programData = $scope.getSelectedStationAndProgram();
+                    //self.trigger("displayCGPopup", programData);
+
+                    // from cgPopupView
+                    $scope.cgSelectedProgram = programData.program;
+                    // display modal
+                    var options = {
+                        "backdrop": "true"
+                    }
+                    $("#cgProgramDlg").modal(options);
+                    $("#cgProgramDlgShowTitle").html($scope.cgSelectedProgram.title);
+                }
+            }
+        });
+
+        var promise = $jtrServerService.retrieveLastTunedChannel();
+        promise.then(function(result) {
+            console.log("lastTunedChannel successfully retrieved");
+            //self.lastTunedChannelResult = result;
+            var stationNumber = result.data;
+            var stationIndex = $scope.getStationIndexFromName(stationNumber)
+            var stationRow = $("#cgData").children()[stationIndex + 1];
+            $scope._currentSelectedProgramButton = $(stationRow).children()[0];
+            $scope.selectProgram(null, $scope._currentSelectedProgramButton, 0);
+            $scope._currentStationIndex = stationIndex;
+        });
 
     }
 
