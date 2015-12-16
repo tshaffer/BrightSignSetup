@@ -3,6 +3,20 @@
  */
 angular.module('myApp').controller('channelGuide', ['$scope', '$http', 'jtrServerService', function($scope, $http, $jtrServerService) {
 
+    $scope.getStationIndex = function (stationId) {
+
+        var selectedStationIndex = -1;
+
+        $.each($scope.stations, function (stationIndex, station) {
+            if (station.StationId == stationId) {
+                selectedStationIndex = stationIndex;
+                return false;
+            }
+        });
+
+        return selectedStationIndex;
+    }
+
     $scope.getStationIndexFromName = function(stationNumber) {
 
         var stationIndex = -1;
@@ -208,11 +222,11 @@ angular.module('myApp').controller('channelGuide', ['$scope', '$http', 'jtrServe
         return programSlotIndices;
     };
 
-    $scope.getProgramList = function(stationId) {
-        var programStationData = $scope.epgProgramSchedule[stationId];
-        return programStationData.programList;
-    };
-
+    //$scope.getProgramList = function(stationId) {
+    //    var programStationData = $scope.epgProgramSchedule[stationId];
+    //    return programStationData.programList;
+    //};
+    //
     $scope.updateTextAlignment = function () {
 
         angular.forEach($scope.stations, function(station, stationIndex) {
@@ -417,6 +431,16 @@ angular.module('myApp').controller('channelGuide', ['$scope', '$http', 'jtrServe
         $scope.selectProgram(currentUIElement, nextActiveUIElement);
     }
 
+    $scope.getSelectedStationAndProgram = function () {
+
+        var programInfo = $scope.parseProgramId($scope._currentSelectedProgramButton);
+        var programList = $scope.getProgramList(programInfo.stationId);
+
+        var programData = {};
+        programData.stationId = programInfo.stationId;
+        programData.program = programList[programInfo.programIndex];
+        return programData;
+    }
 
     $scope.navigateBackwardOneScreen = function () {
 
@@ -598,7 +622,23 @@ angular.module('myApp').controller('channelGuide', ['$scope', '$http', 'jtrServe
         $("#cgTimeLine").append(toAppend);
 
         // setup handlers on children for browser - when user clicks on program to record, etc.
-        // TBD
+        $("#cgData").click(function (event) {
+            var buttonClicked = event.target;
+            if (event.target.id != "") {
+                // presence of an id means that it's not a timeline button
+                var programInfo = $scope.parseProgramId($(event.target)[0]);
+                var programList = $scope.getProgramList(programInfo.stationId);
+                $scope.selectProgramTime = programList[programInfo.programIndex].date;
+
+                var stationIndex = $scope.getStationIndex(programInfo.stationId);
+                if (stationIndex >= 0) {
+                    $scope._currentStationIndex = stationIndex;
+                    $scope.selectProgram($scope._currentSelectedProgramButton, event.target);
+                    var programData = $scope.getSelectedStationAndProgram();
+                    //self.trigger("displayCGPopup", programData);
+                }
+            }
+        });
 
         var promise = $jtrServerService.retrieveLastTunedChannel();
         promise.then(function(result) {
