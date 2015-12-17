@@ -3,130 +3,155 @@
  */
 angular.module('myApp').controller('scheduledRecordings', ['$scope', '$http', 'jtrServerService', function($scope, $http, $jtrServerService){
 
+    $scope.getStationFromAtsc = function (atscMajor, atscMinor) {
+        var foundStation = null;
+
+        if (typeof atscMinor == 'undefined') {
+            atscMinor = '1';
+        }
+
+        // for now, leave stations AtscMajor and AtscMinor properties as numbers
+        var atscMajorNum = Number(atscMajor);
+        var atscMinorNum = Number(atscMinor);
+
+        $.each($scope.stations, function (stationIndex, station) {
+            if (station.AtscMajor == atscMajorNum && station.AtscMinor == atscMinorNum) {
+                foundStation = station;
+                return false;
+            }
+        });
+
+        return foundStation;
+    }
+
     $scope.name = 'Scheduled Recordings';
     console.log($scope.name + " screen displayed");
 
     var currentDateTimeIso = new Date().toISOString();
     var currentDateTime = {"currentDateTime": currentDateTimeIso};
 
-    promise = $jtrServerService.getScheduledRecordings(currentDateTime);
-    promise.then(function(result) {
-        console.log("getScheduledRecordings success");
+    var getStationsPromise = $jtrServerService.getStations();
+    getStationsPromise.then(function() {
 
-        // scheduledRecordings are in result.data?
-        console.log("number of scheduled recordings is: " + result.data.length);
-        
-        $scope.scheduledRecordings = [];
+        console.log("getStations success");
+        $scope.stations = $jtrServerService.getStationsResult();
 
-        for (var i = 0; i < result.data.length; i++) {
-            
-            var jtrScheduledRecording = result.data[i];
+        promise = $jtrServerService.getScheduledRecordings(currentDateTime);
+        promise.then(function(result) {
+            console.log("getScheduledRecordings success");
 
-            scheduledRecording = {};
-            scheduledRecording.channel = jtrScheduledRecording.Channel;
-            scheduledRecording.dateTime = jtrScheduledRecording.DateTime;
-            scheduledRecording.duration = jtrScheduledRecording.Duration;
-            scheduledRecording.endDateTime = jtrScheduledRecording.EndDateTime;
-            scheduledRecording.recordingId = jtrScheduledRecording.Id;
-            scheduledRecording.inputSource = jtrScheduledRecording.InputSource;
-            scheduledRecording.recordingBitRate = jtrScheduledRecording.RecordingBitRate;
-            scheduledRecording.scheduledSeriesRecordingId = jtrScheduledRecording.ScheduledSeriesRecordingId;
-            scheduledRecording.segmentRecording = jtrScheduledRecording.SegmentRecording;
-            scheduledRecording.startTimeOffset = jtrScheduledRecording.StartTimeOffset;
-            scheduledRecording.startTimeOffset = jtrScheduledRecording.StopTimeOffset;
-            scheduledRecording.title = jtrScheduledRecording.Title;
+            // scheduledRecordings are in result.data?
+            console.log("number of scheduled recordings is: " + result.data.length);
 
-// implement the following in filters?
-            /*
-             Delete / Stop icon
-             DayOfWeek
-             Date
-             Time
-             Channel
-             Station Name
-             Title
-             */
+            $scope.scheduledRecordings = [];
 
-            var weekday = new Array(7);
-            weekday[0] = "Sun";
-            weekday[1] = "Mon";
-            weekday[2] = "Tue";
-            weekday[3] = "Wed";
-            weekday[4] = "Thu";
-            weekday[5] = "Fri";
-            weekday[6] = "Sat";
+            for (var i = 0; i < result.data.length; i++) {
 
-            var currentDateTime = new Date();
-            var date = new Date(scheduledRecording.dateTime);
-            var endDateTime = new Date(scheduledRecording.endDateTime);
+                var jtrScheduledRecording = result.data[i];
 
-            var clickAction = "delete";
-            var icon = 'glyphicon-remove';
-            if (date <= currentDateTime && currentDateTime < endDateTime) {
-                clickAction = "stop";
-                icon = 'glyphicon-stop';
+                scheduledRecording = {};
+                scheduledRecording.channel = jtrScheduledRecording.Channel;
+                scheduledRecording.dateTime = jtrScheduledRecording.DateTime;
+                scheduledRecording.duration = jtrScheduledRecording.Duration;
+                scheduledRecording.endDateTime = jtrScheduledRecording.EndDateTime;
+                scheduledRecording.recordingId = jtrScheduledRecording.Id;
+                scheduledRecording.inputSource = jtrScheduledRecording.InputSource;
+                scheduledRecording.recordingBitRate = jtrScheduledRecording.RecordingBitRate;
+                scheduledRecording.scheduledSeriesRecordingId = jtrScheduledRecording.ScheduledSeriesRecordingId;
+                scheduledRecording.segmentRecording = jtrScheduledRecording.SegmentRecording;
+                scheduledRecording.startTimeOffset = jtrScheduledRecording.StartTimeOffset;
+                scheduledRecording.startTimeOffset = jtrScheduledRecording.StopTimeOffset;
+                scheduledRecording.title = jtrScheduledRecording.Title;
+
+    // implement the following in filters?
+                /*
+                 Delete / Stop icon
+                 DayOfWeek
+                 Date
+                 Time
+                 Channel
+                 Station Name
+                 Title
+                 */
+
+                var weekday = new Array(7);
+                weekday[0] = "Sun";
+                weekday[1] = "Mon";
+                weekday[2] = "Tue";
+                weekday[3] = "Wed";
+                weekday[4] = "Thu";
+                weekday[5] = "Fri";
+                weekday[6] = "Sat";
+
+                var currentDateTime = new Date();
+                var date = new Date(scheduledRecording.dateTime);
+                var endDateTime = new Date(scheduledRecording.endDateTime);
+
+                var clickAction = "delete";
+                var icon = 'glyphicon-remove';
+                if (date <= currentDateTime && currentDateTime < endDateTime) {
+                    clickAction = "stop";
+                    icon = 'glyphicon-stop';
+                }
+                $scope.icon = icon;
+
+                var dayOfWeek = weekday[date.getDay()];
+
+                var monthDay = (date.getMonth() + 1).toString() + "/" + date.getDate().toString();
+
+                var amPM = "am";
+
+                var numHours = date.getHours();
+                if (numHours == 0)
+                {
+                    numHours = 12;
+                }
+                else if (numHours > 12) {
+                    numHours -= 12;
+                    amPM = "pm";
+                }
+                else if (numHours == 12) {
+                    amPM = "pm";
+                }
+                var hoursLbl = numHours.toString();
+
+                //if (hoursLbl.length == 1) hoursLbl = "&nbsp" + hoursLbl;
+                //if (hoursLbl.length == 1) hoursLbl = hoursLbl;
+
+                var minutesLbl = twoDigitFormat(date.getMinutes().toString());
+
+                var timeOfDay = hoursLbl + ":" + minutesLbl + amPM;
+
+                var channel = scheduledRecording.channel;
+                var channelParts = channel.split('-');
+                if (channelParts.length == 2 && channelParts[1] == "1") {
+                    channel = channelParts[0];
+                }
+
+                var station = $scope.getStationFromAtsc(channelParts[0], channelParts[1]);
+                var stationName = "TBD";
+                if (station != null) {
+                    stationName = station.CommonName;
+                }
+
+                var scheduledRecordingAttributes = {};
+                scheduledRecording.dayOfWeek = dayOfWeek;
+                scheduledRecording.monthDay = monthDay;
+                scheduledRecording.timeOfDay = timeOfDay;
+                scheduledRecording.channel = channel;
+                scheduledRecording.stationName = stationName;
+                //scheduledRecording.recordingId = clickAction + id;
+                scheduledRecording.icon = icon;
+
+                $scope.scheduledRecordings.push(scheduledRecording);
             }
-            $scope.icon = icon;
 
-            var dayOfWeek = weekday[date.getDay()];
+            return;
+        }, function(reason) {
+            console.log("getRecordings failure");
+        });
 
-            var monthDay = (date.getMonth() + 1).toString() + "/" + date.getDate().toString();
-
-            var amPM = "am";
-
-            var numHours = date.getHours();
-            if (numHours == 0)
-            {
-                numHours = 12;
-            }
-            else if (numHours > 12) {
-                numHours -= 12;
-                amPM = "pm";
-            }
-            else if (numHours == 12) {
-                amPM = "pm";
-            }
-            var hoursLbl = numHours.toString();
-
-            //if (hoursLbl.length == 1) hoursLbl = "&nbsp" + hoursLbl;
-            //if (hoursLbl.length == 1) hoursLbl = hoursLbl;
-
-            var minutesLbl = twoDigitFormat(date.getMinutes().toString());
-
-            var timeOfDay = hoursLbl + ":" + minutesLbl + amPM;
-
-            var channel = scheduledRecording.channel;
-            var channelParts = channel.split('-');
-            if (channelParts.length == 2 && channelParts[1] == "1") {
-                channel = channelParts[0];
-            }
-
-            //self.stationsModel = StationsModel.getInstance();
-            //var stations = self.stationsModel.getStations();
-            //var station = self.stationsModel.getStationFromAtsc(channelParts[0], channelParts[1]);
-            //
-            //var stationName = "TBD";
-            //if (station != null) {
-            //    stationName = station.CommonName;
-            //}
-
-
-            var scheduledRecordingAttributes = {};
-            scheduledRecording.dayOfWeek = dayOfWeek;
-            scheduledRecording.monthDay = monthDay;
-            scheduledRecording.timeOfDay = timeOfDay;
-            scheduledRecording.channel = channel;
-            //scheduledRecording.stationName = stationName;
-            scheduledRecording.stationName = "KPIX";
-            //scheduledRecording.recordingId = clickAction + id;
-            scheduledRecording.icon = icon;
-
-            $scope.scheduledRecordings.push(scheduledRecording);
-        }
-
-        return;
     }, function(reason) {
-        console.log("getRecordings failure");
-
+        console.log("getStations failure");
     });
 }])

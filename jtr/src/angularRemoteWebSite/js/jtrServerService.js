@@ -5,10 +5,38 @@ angular.module('myApp').service('jtrServerService', ['$http', function($http){
 
     var self = this;
 
-    this.baseUrl = "http://192.168.0.107:8080/";
+    this.baseUrl = "http://192.168.0.109:8080/";
     //this.baseUrl = "http://10.1.0.241:8080/";
 
     this.lastTunedChannelResult = null;
+
+    this.stations = [];
+
+    this.getStationsResult = function() {
+        return this.stations;
+    }
+
+    this.getStations = function() {
+
+        var self = this;
+
+        if (self.stations.length > 0) {
+            var promise = new Promise(function(resolve, reject) {
+                console.log("create getStations promise");
+                resolve();
+            });
+            return promise;
+        }
+        else {
+            var url = self.baseUrl + "getStations";
+            var promise = $http.get(url, {});
+            promise.then(function(result) {
+                console.log("getStations value returned");
+                self.stations = result.data;
+            });
+            return promise;
+        }
+    };
 
     this.browserCommand = function(commandData) {
 
@@ -47,14 +75,6 @@ angular.module('myApp').service('jtrServerService', ['$http', function($http){
         var promise = $http.get(url, {
             params: { startDate: epgStartDate }
         });
-        return promise;
-    };
-
-    this.getStations = function() {
-
-        var url = self.baseUrl + "getStations";
-
-        var promise = $http.get(url, {});
         return promise;
     };
 

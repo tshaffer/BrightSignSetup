@@ -52,12 +52,9 @@ angular.module('myApp').controller('channelGuide', ['$scope', '$http', 'jtrServe
 
     $scope.retrieveStations = function() {
         $scope.getStationsPromise = $jtrServerService.getStations();
-        $scope.getStationsPromise.then(function(result) {
+        $scope.getStationsPromise.then(function() {
             console.log("getStations success");
-
-            angular.forEach(result.data, function(station, index) {
-                $scope.stations[index] = station;
-            });
+            $scope.stations = $jtrServerService.getStationsResult();
             return;
         }, function(reason) {
             console.log("getStations failure");
@@ -222,11 +219,6 @@ angular.module('myApp').controller('channelGuide', ['$scope', '$http', 'jtrServe
         return programSlotIndices;
     };
 
-    //$scope.getProgramList = function(stationId) {
-    //    var programStationData = $scope.epgProgramSchedule[stationId];
-    //    return programStationData.programList;
-    //};
-    //
     $scope.updateTextAlignment = function () {
 
         angular.forEach($scope.stations, function(station, stationIndex) {
