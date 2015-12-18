@@ -519,3 +519,8 @@ body {
   color: white;
 }
 
+/*does not do what I want*/
+.middle-align-vertical {
+    vertical-align: middle;
+    display: inline-block;
+}
