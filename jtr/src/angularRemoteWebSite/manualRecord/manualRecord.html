@@ -15,21 +15,27 @@
     <div class="form-group">
         <label for="manualRecordDateId" class="col-sm-4 control-label">Date</label>
         <div class="col-sm-4" id="manualRecordDateDiv">
-            <input type="date" class="form-control input-sm" ng-model="date" id="manualRecordDate"  value="">
+            <input type="date" class="form-control input-sm" ng-model="date" id="manualRecordDateId"  value="">
         </div>
     </div>
     <div class="form-group">
-        <label for="manualRecordTimeId" class="col-sm-4 control-label">Time</label>
-        <div class="col-sm-4" id="manualRecordTimeDiv">
-            <input type="time" class="form-control input-sm" ng-model="time" id="manualRecordTime" value="">
+        <label for="manualRecordTimeId" class="col-sm-4 control-label middle-align-vertical">Time</label>
+        <div class="col-sm-4 middle-align-vertical" id="manualRecordTimeDiv">
+            <!--<input type="time" class="form-control input-sm" ng-model="time" id="manualRecordTime" value="">-->
+            <uib-timepicker ng-model="time" ng-change="changed()" hour-step="hstep" minute-step="mstep" show-meridian="ismeridian" id="manualRecordTimeId"></uib-timepicker>
+
         </div>
     </div>
     <div class="form-group">
         <label class="col-sm-4 control-label">Input source</label>
         <div class="col-sm-4 btn-group">
-            <label class="radio-inline"><input type="radio" id="rbManualRecordTuner" name="manualRecordInputSource" ng-model="inputSource" value="tuner" checked>Tuner</label>
-            <label class="radio-inline"><input type="radio" id="rbManualRecordRoku" name="manualRecordInputSource" ng-model="inputSource" value="roku">Roku</label>
-            <label class="radio-inline"><input type="radio" id="rbManualRecordTivo" name="manualRecordInputSource" ng-model="inputSource" value="tivo">Tivo</label>
+            <!--<label class="radio-inline"><input type="radio" id="rbManualRecordTuner" name="manualRecordInputSource" ng-model="inputSource" value="tuner" checked>Tuner</label>-->
+            <!--<label class="radio-inline"><input type="radio" id="rbManualRecordRoku" name="manualRecordInputSource" ng-model="inputSource" value="roku">Roku</label>-->
+            <!--<label class="radio-inline"><input type="radio" id="rbManualRecordTivo" name="manualRecordInputSource" ng-model="inputSource" value="tivo">Tivo</label>-->
+            <label class="btn btn-primary" ng-model="inputSource" uib-btn-radio="'tuner'">Tuner</label>
+            <label class="btn btn-primary" ng-model="inputSource" uib-btn-radio="'roku'">Roku</label>
+            <label class="btn btn-primary" ng-model="inputSource" uib-btn-radio="'tivo'">Tivo</label>
+
         </div>
     </div>
     <div id="manualRecordChannelDiv" class="form-group" ng-show=showChannel();>

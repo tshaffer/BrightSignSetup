@@ -74,6 +74,18 @@ angular.module('myApp').controller('manualRecord', ['$scope', '$http', 'jtrServe
     $scope.date = date;
     $scope.time = new Date(2015, 0, 1, date.getHours(), date.getMinutes(), 0);
 
+    $scope.hstep = 1;
+    $scope.mstep = 1;
+
+    $scope.ismeridian = true;
+    $scope.toggleMode = function() {
+        $scope.ismeridian = ! $scope.ismeridian;
+    };
+
+    $scope.changed = function () {
+        console.log('Time changed to: ' + $scope.time);
+    };
+
     $scope.inputSource = "tuner";
     $scope.channel = "5";
 
