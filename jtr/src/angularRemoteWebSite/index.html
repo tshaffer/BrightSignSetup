@@ -34,6 +34,7 @@
         <script src="js/jtrModal.js"></script>
         <script src="recordings/recordings.js"></script>
         <script src="channelGuide/channelGuide.js"></script>
+        <script src="cgRecordingsMgr/cgRecordingsMgr.js"></script>
         <script src="scheduledRecordings/scheduledRecordings.js"></script>
         <script src="manualRecord/manualRecord.js"></script>
         <script src="recordNow/recordNow.js"></script>
@@ -42,21 +43,6 @@
 
     </head>
     <body>
-
-    <!--<div class="modal fade" id="cgProgramDlg" tabindex="-1" role="dialog" aria-labelledby="cgProgramDlg" aria-hidden="true">-->
-        <!--<div class="modal-dialog">-->
-            <!--<div class="modal-content">-->
-                <!--<div class="modal-body">-->
-                    <!--<h3 id="cgProgramDlgShowTitle">Pizza for everyone</h3>-->
-                    <!--<button type="button" class="btn btn-primary modalButton" id="cgProgramRecord">Record</button><br/>-->
-                    <!--<button type="button" class="btn btn-default btn-secondary modalButton" id="cgProgramRecordSetOptions">Record, set options</button> <br />-->
-                    <!--<button type="button" class="btn btn-default btn-secondary modalButton" id="cgProgramViewUpcomingEpisodes">View upcoming episodes</button> <br />-->
-                    <!--<button type="button" class="btn btn-default btn-secondary modalButton" id="cgProgramTune">Tune</button> <br />-->
-                    <!--<button type="button" class="btn btn-default btn-secondary modalButton" id="cgProgramClose">Close</button> <br />-->
-                <!--</div>-->
-            <!--</div>-->
-        <!--</div>-->
-    <!--</div>-->
 
     <header>
 			<nav class="navbar navbar-default">
@@ -98,6 +84,9 @@
         </div>
 
         <div style="clear: both;"></div>​
+
+        <div ng-controller="cgRecordingsMgr">
+        </div>
 
     <script type="text/ng-template" id="myModalContent.html">
         <div class="modal-header">
