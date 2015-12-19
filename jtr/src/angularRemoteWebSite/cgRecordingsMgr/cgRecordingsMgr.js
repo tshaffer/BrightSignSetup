@@ -73,6 +73,19 @@ angular.module('myApp').controller('cgRecordingsMgr', ['$scope', '$http', 'jtrSe
         return true;
     }
 
+    $scope.retrieveScheduledRecordings = function() {
+
+        var currentDateTimeIso = new Date().toISOString();
+        var currentDateTime = {"currentDateTime": currentDateTimeIso};
+        var promise = $jtrServerService.getScheduledRecordings(currentDateTime);
+        promise.then(function(scheduledRecordings) {
+            $scope.scheduledRecordings = [];
+            $.each(scheduledRecordings, function (index, scheduledRecording) {
+                $scope.scheduledRecordings.push(scheduledRecording);
+            });
+        });
+    }
+
     $scope.show = function(programData) {
 
         console.log("cgRecordingsMgr.show invoked");
@@ -216,8 +229,7 @@ angular.module('myApp').controller('cgRecordingsMgr', ['$scope', '$http', 'jtrSe
     $scope.invokeRecordEpisode = function() {
         var promise = $scope.cgRecordProgramFromClient(true);
         promise.then(function() {
-            // why is this called? If necessary, fix it!!
-            //var retrieveScheduledRecordingsPromise =  $jtrBroadcastService.retrieveScheduledRecordings();
+            $scope.retrieveScheduledRecordings();
         })
     }
 
@@ -228,8 +240,7 @@ angular.module('myApp').controller('cgRecordingsMgr', ['$scope', '$http', 'jtrSe
     $scope.invokeRecordSeries = function() {
         var promise = $scope.cgRecordSelectedSeriesFromClient();
         promise.then(function() {
-            // why is this called? If necessary, fix it!!
-            //serverInterface.retrieveScheduledRecordings();
+            $scope.retrieveScheduledRecordings();
         })
     }
 
@@ -245,8 +256,7 @@ angular.module('myApp').controller('cgRecordingsMgr', ['$scope', '$http', 'jtrSe
 
         var promise = $scope.cgCancelScheduledRecordingFromClient();
         promise.then(function() {
-            // why is this called? If necessary, fix it!!
-            //serverInterface.retrieveScheduledRecordings();
+            $scope.retrieveScheduledRecordings();
         })
 
         //$scope.reselectCurrentProgram();
@@ -256,8 +266,7 @@ angular.module('myApp').controller('cgRecordingsMgr', ['$scope', '$http', 'jtrSe
 
         var promise = $scope.cgCancelScheduledSeriesFromClient();
         promise.then(function() {
-            // why is this called? If necessary, fix it!!
-            //serverInterface.retrieveScheduledRecordings();
+            $scope.retrieveScheduledRecordings();
         })
     }
 
