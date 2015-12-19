@@ -315,13 +315,17 @@ angular.module('myApp').controller('cgRecordingsMgr', ['$scope', '$http', 'jtrSe
                 modalTitle: function() {
                     return $scope.modalTitle;
                 },
-                //items: function () {
-                //    return $scope.items;
-                //}
+                startTimeIndex: function() {
+                    return $scope.startTimeIndex;
+                },
+                stopTimeIndex: function() {
+                    return $scope.stopTimeIndex;
+                }
             }
         });
 
         modalInstance.result.then(function (selectedItem, args) {
+            console.log("recordingOptionsDlg - save invoked");
             //$scope.selected = selectedItem;
             //$scope.dialogHandler(selectedItem);
         }, function () {
@@ -331,7 +335,31 @@ angular.module('myApp').controller('cgRecordingsMgr', ['$scope', '$http', 'jtrSe
     };
 
     $scope.cgRecordProgramSetOptions = function() {
+        
         $scope.animationsEnabled = true;
+
+        var addRecordToDB = true;
+        if ($scope.cgSelectedProgram.scheduledRecordingId > 0) {
+            addRecordToDB = false;
+        }
+
+        $scope.startTimeIndex = $scope.startTimeOnTimeIndex;
+        $scope.stopTimeIndex = $scope.stopTimeOnTimeIndex;
+
+        $.each($scope.startTimeOffsets, function (index, startTimeOffset) {
+            if (startTimeOffset == $scope.cgSelectedProgram.startTimeOffset) {
+                $scope.startTimeIndex = index;
+                return false;
+            }
+        });
+
+        $.each($scope.stopTimeOffsets, function (index, stopTimeOffset) {
+            if (stopTimeOffset == $scope.cgSelectedProgram.stopTimeOffset) {
+                $scope.stopTimeIndex = index;
+                return false;
+            }
+        });
+
         $scope.openRecordingOptionsDlg('md');
     }
 
