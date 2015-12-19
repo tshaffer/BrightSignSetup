@@ -5,25 +5,38 @@ angular.module('myApp').controller('cgRecordingsMgr', ['$scope', '$http', 'jtrSe
 
     console.log("cgRecordingsMgr launched");
 
+    $scope.dialogHandler = null;
+
     $scope.recordEpisodeItems = [ 'Record', 'Record, set options', 'View upcoming episodes', 'Tune', 'Close' ];
     $scope.scheduledRecordingItems = [ 'Cancel recording', 'Change options', 'View upcoming episodes', 'Tune', 'Close' ];
     $scope.recordSeriesItems = [ 'Record episode', 'Record episode, set options', 'Record series', 'Tune', 'Close' ];
     $scope.scheduledSeriesItems = [ 'Cancel recording', 'Cancel series', 'View upcoming episodes', 'Tune', 'Close' ];
 
 
+    $scope.stopTimeOptions = ["30 minutes early", "15 minutes early", "10 minutes early", "5 minutes early", "On time", "5 minutes late", "10 minutes late", "15 minutes late", "30 minute late", "1 hour late", "1 1/2 hours late", "2 hours late", "3 hours late"];
+    $scope.stopTimeOffsets = [-30, -15, -10, -5, 0, 5, 10, 15, 30, 60, 90, 120, 180];
     $scope.stopTimeOnTimeIndex = 4;
     $scope.stopTimeIndex = null;
+
     $scope.startTimeOptions = ["15 minutes early", "10 minutes early", "5 minutes early", "On time", "5 minutes late", "10 minutes late", "15 minutes late"];
     $scope.startTimeOnTimeIndex = 3;
+    $scope.startTimeOffsets = [-15, -10, -5, 0, 5, 10, 15];
+    $scope.startTimeIndex = null;
 
+    $scope.getStationFromId = function (stationId) {
 
-    $scope.$on('handleBroadcast', function(eventName, broadcastEventData) {
-        console.log("handleBroadcast invoked, received data is: " + broadcastEventData);
+        var selectedStation = "";
 
-        if (broadcastEventData.message == "cgRecordings") {
-            $scope.show(broadcastEventData.args);
-        }
-    });
+        // get stationIndex
+        $.each($scope.stations, function (stationIndex, station) {
+            if (station.StationId == stationId) {
+                selectedStation = station.AtscMajor + "." + station.AtscMinor;
+                return false;
+            }
+        });
+
+        return selectedStation;
+    }
 
     $scope.getChannelFromStationIndex = function (stationId) {
 
@@ -38,6 +51,14 @@ angular.module('myApp').controller('cgRecordingsMgr', ['$scope', '$http', 'jtrSe
 
         return channel;
     }
+
+    $scope.$on('handleBroadcast', function(eventName, broadcastEventData) {
+        console.log("handleBroadcast invoked, received data is: " + broadcastEventData);
+
+        if (broadcastEventData.message == "cgRecordings") {
+            $scope.show(broadcastEventData.args);
+        }
+    });
 
     $scope.programsMatch = function (scheduledRecording, cgProgram, cgStationId) {
 
@@ -129,9 +150,6 @@ angular.module('myApp').controller('cgRecordingsMgr', ['$scope', '$http', 'jtrSe
                 }
             }
 
-
-
-
             $scope.openModal = function (size) {
 
                 var modalInstance = $uibModal.open({
@@ -149,10 +167,12 @@ angular.module('myApp').controller('cgRecordingsMgr', ['$scope', '$http', 'jtrSe
                     }
                 });
 
-                modalInstance.result.then(function (selectedItem) {
-                    $scope.selected = selectedItem;
+                modalInstance.result.then(function (selectedItem, args) {
+                    //$scope.selected = selectedItem;
+                    $scope.dialogHandler(selectedItem);
                 }, function () {
                     console.log('Modal dismissed at: ' + new Date());
+                    return;
                 });
             };
 
@@ -162,5 +182,138 @@ angular.module('myApp').controller('cgRecordingsMgr', ['$scope', '$http', 'jtrSe
 
         });
     }
+
+    $scope.dialogHandler = function (dialogChoice) {
+
+        switch (dialogChoice) {
+            case 'Record':
+            case 'Record episode':
+                $scope.invokeRecordEpisode();
+                break;
+            case 'Record, set options':
+            case 'Change options':
+            case 'Record episode, set options':
+                $scope.invokeRecordProgramSetOptions();
+                break;
+            case 'View upcoming episodes':
+                $scope.invokeViewUpcomingEpisodes();
+                break;
+            case 'Tune':
+                $scope.invokeTune();
+                break;
+            case 'Cancel recording':
+                $scope.invokeCancelRecording();
+                break;
+            case 'Record series':
+                $scope.invokeRecordSeries();
+                break;
+            case 'Cancel series':
+                $scope.invokeCancelSeries();
+                break;
+        }
+    }
+
+    $scope.invokeRecordEpisode = function() {
+        var promise = $scope.cgRecordProgramFromClient(true);
+        promise.then(function() {
+            // why is this called? If necessary, fix it!!
+            //var retrieveScheduledRecordingsPromise =  $jtrBroadcastService.retrieveScheduledRecordings();
+        })
+    }
+
+    $scope.invokeRecordProgramSetOptions = function() {
+        $scope.cgRecordProgramSetOptions();
+    }
+
+    $scope.invokeRecordSeries = function() {
+        var promise = $scope.cgRecordSelectedSeriesFromClient();
+        promise.then(function() {
+            // why is this called? If necessary, fix it!!
+            //serverInterface.retrieveScheduledRecordings();
+        })
+    }
+
+    $scope.invokeTune = function() {
+        $scope.cgTuneFromClient();
+    }
+
+    $scope.invokeCloseDialog = function() {
+    }
+
+    $scope.invokeViewUpcomingEpisodes = function() {
+        //console.log("ViewUpcomingEpisodes invoked")
+    }
+
+    $scope.invokeCancelRecording = function() {
+
+        var promise = $scope.cgCancelScheduledRecordingFromClient();
+        promise.then(function() {
+            // why is this called? If necessary, fix it!!
+            //serverInterface.retrieveScheduledRecordings();
+        })
+
+        //$scope.reselectCurrentProgram();
+    }
+
+    $scope.invokeCancelSeries = function () {
+
+        var promise = $scope.cgCancelScheduledSeriesFromClient();
+        promise.then(function() {
+            // why is this called? If necessary, fix it!!
+            //serverInterface.retrieveScheduledRecordings();
+        })
+    }
+
+    $scope.cgRecordProgramFromClient = function (addRecording) {
+
+        $scope.cgSelectedProgram.startTimeOffset = $scope.startTimeOffsets[$scope.startTimeIndex];
+        $scope.cgSelectedProgram.stopTimeOffset = $scope.stopTimeOffsets[$scope.stopTimeIndex];
+
+        if (addRecording) {
+            var stationName = $scope.getStationFromId($scope.cgSelectedStationId);
+            stationName = stationName.replace(".", "-");
+
+            var commandData = {
+                "command": "addRecord",
+                "dateTime": $scope.cgSelectedProgram.date,
+                "title": $scope.cgSelectedProgram.title,
+                "duration": $scope.cgSelectedProgram.duration,
+                "inputSource": "tuner",
+                "channel": stationName,
+                //"recordingBitRate": $scope.settingsModel.getRecordingBitRate(),
+                "recordingBitRate": 6,
+                //"segmentRecording": $scope.settingsModel.getSegmentRecordings(),
+                "segmentRecording": 0,
+                "scheduledSeriesRecordingId": $scope.cgSelectedProgram.scheduledSeriesRecordingId,
+                "startTimeOffset": $scope.cgSelectedProgram.startTimeOffset,
+                "stopTimeOffset": $scope.cgSelectedProgram.stopTimeOffset
+            };
+        }
+        else {
+            var commandData = {
+                "command": "updateScheduledRecording",
+                "id": $scope.cgSelectedProgram.scheduledRecordingId,
+                "startTimeOffset": $scope.cgSelectedProgram.startTimeOffset,
+                "stopTimeOffset": $scope.cgSelectedProgram.stopTimeOffset
+            };
+        }
+
+        return $jtrServerService.browserCommand(commandData);
+    }
+
+    $scope.cgRecordProgramSetOptions = function() {}
+
+    $scope.cgRecordSelectedSeriesFromClient = function() {}
+
+    $scope.cgTuneFromClient = function () {
+
+        var stationName = this.stationsModel.getStationFromId(this.cgSelectedStationId);
+        stationName = stationName.replace(".", "-");
+
+        var commandData = { "command": "tuneLiveVideoChannel", "enteredChannel": stationName };
+
+        serverInterface.browserCommand(commandData);
+    }
+
 }]);
 
