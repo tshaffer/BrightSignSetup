@@ -15,7 +15,7 @@ angular.module('myApp').controller('cgRecording', function($scope, $uibModalInst
     $scope.cancel = function () {
         $uibModalInstance.dismiss('cancel');
     };
-});
+})
 
 angular.module('myApp').controller('channelGuide', ['$scope', '$http', 'jtrServerService', '$uibModal', function($scope, $http, $jtrServerService, $uibModal) {
 
@@ -671,7 +671,7 @@ angular.module('myApp').controller('channelGuide', ['$scope', '$http', 'jtrServe
                         modalInstance.result.then(function (selectedItem) {
                             $scope.selected = selectedItem;
                         }, function () {
-                            $log.info('Modal dismissed at: ' + new Date());
+                            console.log('Modal dismissed at: ' + new Date());
                         });
                     };
 

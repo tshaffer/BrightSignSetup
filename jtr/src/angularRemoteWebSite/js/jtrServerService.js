@@ -5,7 +5,7 @@ angular.module('myApp').service('jtrServerService', ['$http', function($http){
 
     var self = this;
 
-    this.baseUrl = "http://192.168.0.109:8080/";
+    this.baseUrl = "http://192.168.0.105:8080/";
     //this.baseUrl = "http://10.1.0.241:8080/";
 
     this.lastTunedChannelResult = null;
