@@ -30,6 +30,7 @@
 
         <script src="app.js"></script>
         <script src="js/jtrServerService.js"></script>
+        <script src="js/jtrBroadcastService.js"></script>
         <script src="js/jtrModal.js"></script>
         <script src="recordings/recordings.js"></script>
         <script src="channelGuide/channelGuide.js"></script>
@@ -86,18 +87,10 @@
 
             <p id="trickModeKeys" class="footerAlignCenter">
 
-            <button ng-repeat="trickMode in trickModes"
-                type='button' ng-click='invokeTrickMode(trickMode.command);' class='btn btn-default' aria-label='Left Align'><span class='glyphicon {{trickMode.font}}' aria-hidden='true'></span>
-            </button>
+                <button ng-repeat="trickMode in trickModes"
+                    type='button' ng-click='invokeTrickMode(trickMode.command);' class='btn btn-default' aria-label='Left Align'><span class='glyphicon {{trickMode.font}}' aria-hidden='true'></span>
+                </button>
 
-                <!--<button id='btnRemoteRecord' type='button' ng-click="invokeTrickMode('record');" class='btn btn-default' aria-label='Left Align'><span id="remoteRecord" class='glyphicon glyphicon-record' aria-hidden='true'></span></button>-->
-                <!--<button id='btnRemoteStop' type='button' ng-click="invokeTrickMode('stop');" class='btn btn-default' aria-label='Left Align'><span id="remoteStop" class='glyphicon glyphicon-stop' aria-hidden='true'></span></button>-->
-                <!--<button id='btnRemoteRewind' type='button' ng-click="invokeTrickMode('rewind');" class='btn btn-default' aria-label='Left Align'><span id="remoteRewind" class='glyphicon glyphicon-backward' aria-hidden='true'></span></button>-->
-                <!--<button id='btnRemoteInstantReplay' type='button' ng-click="invokeTrickMode('replay');" class='btn btn-default' aria-label='Left Align'><span id="remoteInstantReplay" class='glyphicon glyphicon-step-backward' aria-hidden='true'></span></button>-->
-                <!--<button id='btnRemotePause' type='button' ng-click="invokeTrickMode('pause');" class='btn btn-default' aria-label='Left Align'><span id="remotePause" class='glyphicon glyphicon-pause' aria-hidden='true'></span></button>-->
-                <!--<button id='btnRemotePlay' type='button' ng-click="invokeTrickMode('play');" class='btn btn-default' aria-label='Left Align'><span id="remotePlay" class='glyphicon glyphicon-play' aria-hidden='true'></span></button>-->
-                <!--<button id='btnRemoteQuickSkip' type='button' ng-click="invokeTrickMode('quickSkip');" class='btn btn-default' aria-label='Left Align'><span id="remoteQuickSkip" class='glyphicon glyphicon-step-forward' aria-hidden='true'></span></button>-->
-                <!--<button id='btnRemoteFastForward' type='button' ng-click="invokeTrickMode('fastForward');" class='btn btn-default' aria-label='Left Align'><span id="remoteFastForward" class='glyphicon glyphicon-forward' aria-hidden='true'></span></button>-->
             </p>
 
             <p class="footerAlignRight" />

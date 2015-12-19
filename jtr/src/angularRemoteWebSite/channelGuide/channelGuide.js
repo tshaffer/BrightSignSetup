@@ -1,7 +1,7 @@
 /**
  * Created by tedshaffer on 12/13/15.
  */
-angular.module('myApp').controller('channelGuide', ['$scope', '$http', 'jtrServerService', '$uibModal', function($scope, $http, $jtrServerService, $uibModal) {
+angular.module('myApp').controller('channelGuide', ['$scope', '$http', 'jtrServerService', 'jtrBroadcastService', '$uibModal', function($scope, $http, $jtrServerService, $jtrBroadcastService, $uibModal) {
 
     $scope.getStationIndex = function (stationId) {
 
@@ -637,6 +637,12 @@ angular.module('myApp').controller('channelGuide', ['$scope', '$http', 'jtrServe
                     //}
                     //$("#cgProgramDlg").modal(options);
                     //$("#cgProgramDlgShowTitle").html($scope.cgSelectedProgram.title);
+
+                    $scope.$on('handleBroadcast', function(eventName, message) {
+                        console.log("handleBroadcast invoked, message is: " + message);
+                    });
+
+                    $jtrBroadcastService.broadcastMsg("pizza is tasty");
 
                     $scope.openModal = function (size) {
 
