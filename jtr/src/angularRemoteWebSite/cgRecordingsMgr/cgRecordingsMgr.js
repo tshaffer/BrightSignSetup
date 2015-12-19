@@ -237,9 +237,6 @@ angular.module('myApp').controller('cgRecordingsMgr', ['$scope', '$http', 'jtrSe
         $scope.cgTuneFromClient();
     }
 
-    $scope.invokeCloseDialog = function() {
-    }
-
     $scope.invokeViewUpcomingEpisodes = function() {
         //console.log("ViewUpcomingEpisodes invoked")
     }
@@ -307,13 +304,21 @@ angular.module('myApp').controller('cgRecordingsMgr', ['$scope', '$http', 'jtrSe
 
     $scope.cgTuneFromClient = function () {
 
-        var stationName = this.stationsModel.getStationFromId(this.cgSelectedStationId);
+        var stationName = $scope.getStationFromId($scope.cgSelectedStationId);
         stationName = stationName.replace(".", "-");
 
         var commandData = { "command": "tuneLiveVideoChannel", "enteredChannel": stationName };
 
-        serverInterface.browserCommand(commandData);
+        $jtrServerService.browserCommand(commandData);
     }
 
+    $scope.cgCancelScheduledRecordingFromClient = function () {
+
+        return $jtrServerService.deleteScheduledRecording($scope.cgSelectedProgram.scheduledRecordingId);
+    }
+
+    $scope.cgCancelScheduledSeriesFromClient = function () {
+        return $jtrServerService.deleteScheduledSeries($scope.cgSelectedProgram.scheduledSeriesRecordingId);
+    }
 }]);
 
