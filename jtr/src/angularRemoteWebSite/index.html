@@ -21,7 +21,7 @@
 
         <script src="js/utils.js"></script>
         <script src="lib/jquery.min.js"></script>
-        <script src="lib/bootstrap/js/bootstrap.js"></script>
+        <!--<script src="lib/bootstrap/js/bootstrap.js"></script>-->
         <script src="lib/date.js"></script>
         <script src="lib/angular.js"></script>
         <script src="lib/ui-bootstrap-tpls.js"></script>
@@ -30,8 +30,11 @@
 
         <script src="app.js"></script>
         <script src="js/jtrServerService.js"></script>
+        <script src="js/jtrBroadcastService.js"></script>
+        <script src="js/jtrModal.js"></script>
         <script src="recordings/recordings.js"></script>
         <script src="channelGuide/channelGuide.js"></script>
+        <script src="cgRecordingsMgr/cgRecordingsMgr.js"></script>
         <script src="scheduledRecordings/scheduledRecordings.js"></script>
         <script src="manualRecord/manualRecord.js"></script>
         <script src="recordNow/recordNow.js"></script>
@@ -40,21 +43,6 @@
 
     </head>
     <body>
-
-    <div class="modal fade" id="cgProgramDlg" tabindex="-1" role="dialog" aria-labelledby="cgProgramDlg" aria-hidden="true">
-        <div class="modal-dialog">
-            <div class="modal-content">
-                <div class="modal-body">
-                    <h3 id="cgProgramDlgShowTitle">Pizza for everyone</h3>
-                    <button type="button" class="btn btn-primary modalButton" id="cgProgramRecord">Record</button><br/>
-                    <button type="button" class="btn btn-default btn-secondary modalButton" id="cgProgramRecordSetOptions">Record, set options</button> <br />
-                    <button type="button" class="btn btn-default btn-secondary modalButton" id="cgProgramViewUpcomingEpisodes">View upcoming episodes</button> <br />
-                    <button type="button" class="btn btn-default btn-secondary modalButton" id="cgProgramTune">Tune</button> <br />
-                    <button type="button" class="btn btn-default btn-secondary modalButton" id="cgProgramClose">Close</button> <br />
-                </div>
-            </div>
-        </div>
-    </div>
 
     <header>
 			<nav class="navbar navbar-default">
@@ -85,18 +73,10 @@
 
             <p id="trickModeKeys" class="footerAlignCenter">
 
-            <button ng-repeat="trickMode in trickModes"
-                type='button' ng-click='invokeTrickMode(trickMode.command);' class='btn btn-default' aria-label='Left Align'><span class='glyphicon {{trickMode.font}}' aria-hidden='true'></span>
-            </button>
+                <button ng-repeat="trickMode in trickModes"
+                    type='button' ng-click='invokeTrickMode(trickMode.command);' class='btn btn-default' aria-label='Left Align'><span class='glyphicon {{trickMode.font}}' aria-hidden='true'></span>
+                </button>
 
-                <!--<button id='btnRemoteRecord' type='button' ng-click="invokeTrickMode('record');" class='btn btn-default' aria-label='Left Align'><span id="remoteRecord" class='glyphicon glyphicon-record' aria-hidden='true'></span></button>-->
-                <!--<button id='btnRemoteStop' type='button' ng-click="invokeTrickMode('stop');" class='btn btn-default' aria-label='Left Align'><span id="remoteStop" class='glyphicon glyphicon-stop' aria-hidden='true'></span></button>-->
-                <!--<button id='btnRemoteRewind' type='button' ng-click="invokeTrickMode('rewind');" class='btn btn-default' aria-label='Left Align'><span id="remoteRewind" class='glyphicon glyphicon-backward' aria-hidden='true'></span></button>-->
-                <!--<button id='btnRemoteInstantReplay' type='button' ng-click="invokeTrickMode('replay');" class='btn btn-default' aria-label='Left Align'><span id="remoteInstantReplay" class='glyphicon glyphicon-step-backward' aria-hidden='true'></span></button>-->
-                <!--<button id='btnRemotePause' type='button' ng-click="invokeTrickMode('pause');" class='btn btn-default' aria-label='Left Align'><span id="remotePause" class='glyphicon glyphicon-pause' aria-hidden='true'></span></button>-->
-                <!--<button id='btnRemotePlay' type='button' ng-click="invokeTrickMode('play');" class='btn btn-default' aria-label='Left Align'><span id="remotePlay" class='glyphicon glyphicon-play' aria-hidden='true'></span></button>-->
-                <!--<button id='btnRemoteQuickSkip' type='button' ng-click="invokeTrickMode('quickSkip');" class='btn btn-default' aria-label='Left Align'><span id="remoteQuickSkip" class='glyphicon glyphicon-step-forward' aria-hidden='true'></span></button>-->
-                <!--<button id='btnRemoteFastForward' type='button' ng-click="invokeTrickMode('fastForward');" class='btn btn-default' aria-label='Left Align'><span id="remoteFastForward" class='glyphicon glyphicon-forward' aria-hidden='true'></span></button>-->
             </p>
 
             <p class="footerAlignRight" />
@@ -105,6 +85,26 @@
 
         <div style="clear: both;"></div>​
 
+        <div ng-controller="cgRecordingsMgr">
+        </div>
+
+    <script type="text/ng-template" id="myModalContent.html">
+        <div class="modal-header">
+            <h3 class="modal-title">{{modalTitle}}</h3>
+        </div>
+        <div class="modal-body">
+            <ul>
+                <li ng-repeat="item in items">
+                    <a href="#" ng-click="$event.preventDefault(); selected.item = item">{{ item }}</a>
+                </li>
+            </ul>
+            Selected: <b>{{ selected.item }}</b>
+        </div>
+        <div class="modal-footer">
+            <button class="btn btn-primary" type="button" ng-click="ok()">OK</button>
+            <button class="btn btn-warning" type="button" ng-click="cancel()">Cancel</button>
+        </div>
+    </script>
 
     </body>
 </html>

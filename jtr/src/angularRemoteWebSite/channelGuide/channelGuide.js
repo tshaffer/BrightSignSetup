@@ -1,7 +1,7 @@
 /**
  * Created by tedshaffer on 12/13/15.
  */
-angular.module('myApp').controller('channelGuide', ['$scope', '$http', 'jtrServerService', function($scope, $http, $jtrServerService) {
+angular.module('myApp').controller('channelGuide', ['$scope', '$http', 'jtrServerService', 'jtrBroadcastService', '$uibModal', function($scope, $http, $jtrServerService, $jtrBroadcastService, $uibModal) {
 
     $scope.getStationIndex = function (stationId) {
 
@@ -630,13 +630,15 @@ angular.module('myApp').controller('channelGuide', ['$scope', '$http', 'jtrServe
                     //self.trigger("displayCGPopup", programData);
 
                     // from cgPopupView
-                    $scope.cgSelectedProgram = programData.program;
+                    //$scope.cgSelectedProgram = programData.program;
                     // display modal
-                    var options = {
-                        "backdrop": "true"
-                    }
-                    $("#cgProgramDlg").modal(options);
-                    $("#cgProgramDlgShowTitle").html($scope.cgSelectedProgram.title);
+                    //var options = {
+                    //    "backdrop": "true"
+                    //}
+                    //$("#cgProgramDlg").modal(options);
+                    //$("#cgProgramDlgShowTitle").html($scope.cgSelectedProgram.title);
+
+                    $jtrBroadcastService.broadcastMsg("cgRecordings", programData);
                 }
             }
         });

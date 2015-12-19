@@ -5,7 +5,7 @@ angular.module('myApp').service('jtrServerService', ['$http', function($http){
 
     var self = this;
 
-    this.baseUrl = "http://192.168.0.109:8080/";
+    this.baseUrl = "http://192.168.0.105:8080/";
     //this.baseUrl = "http://10.1.0.241:8080/";
 
     this.lastTunedChannelResult = null;
@@ -50,9 +50,9 @@ angular.module('myApp').service('jtrServerService', ['$http', function($http){
 
     this.getRecordings = function() {
 
-        var aUrl = self.baseUrl + "getRecordings";
+        var url = self.baseUrl + "getRecordings";
 
-        var promise = $http.get(aUrl, {});
+        var promise = $http.get(url, {});
         return promise;
     };
 
@@ -62,6 +62,28 @@ angular.module('myApp').service('jtrServerService', ['$http', function($http){
 
         var promise = $http.get(url, {
             params: currentDateTime
+        });
+        return promise;
+    };
+
+    this.deleteScheduledRecording = function (scheduledRecordingId) {
+
+        var url = self.baseURL + "deleteScheduledRecording";
+        var commandData = { "scheduledRecordingId": scheduledRecordingId };
+
+        var promise = $http.get(url, {
+            params: commandData
+        });
+        return promise;
+    };
+
+    this.deleteScheduledSeries = function (scheduledSeriesRecordingId) {
+
+        var url = self.baseURL + "deleteScheduledSeries";
+        var commandData = {"scheduledSeriesRecordingId": scheduledSeriesRecordingId};
+
+        var promise = $http.get(url, {
+            params: commandData
         });
         return promise;
     };

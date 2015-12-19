@@ -39,6 +39,9 @@ angular
             templateUrl: 'settings/settings.html',
             controller: 'settings'
         })
-    }]);
+    }]
+);
+
+
 
 
