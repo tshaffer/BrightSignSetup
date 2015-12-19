@@ -630,7 +630,7 @@ angular.module('myApp').controller('channelGuide', ['$scope', '$http', 'jtrServe
                     //self.trigger("displayCGPopup", programData);
 
                     // from cgPopupView
-                    $scope.cgSelectedProgram = programData.program;
+                    //$scope.cgSelectedProgram = programData.program;
                     // display modal
                     //var options = {
                     //    "backdrop": "true"
@@ -638,35 +638,7 @@ angular.module('myApp').controller('channelGuide', ['$scope', '$http', 'jtrServe
                     //$("#cgProgramDlg").modal(options);
                     //$("#cgProgramDlgShowTitle").html($scope.cgSelectedProgram.title);
 
-                    $jtrBroadcastService.broadcastMsg("cgRecordings", $scope.cgSelectedProgram);
-
-                    $scope.openModal = function (size) {
-
-                            var modalInstance = $uibModal.open({
-                            animation: $scope.animationsEnabled,
-                            templateUrl: 'myModalContent.html',
-                            controller: 'jtrModal',
-                            size: size,
-                            resolve: {
-                                items: function () {
-                                    return $scope.items;
-                                }
-                            }
-                        });
-
-                        modalInstance.result.then(function (selectedItem) {
-                            $scope.selected = selectedItem;
-                        }, function () {
-                            console.log('Modal dismissed at: ' + new Date());
-                        });
-                    };
-
-                    $scope.items = ['item1', 'item2', 'item3'];
-
-                    $scope.animationsEnabled = true;
-
-                    $scope.openModal('lg');
-
+                    $jtrBroadcastService.broadcastMsg("cgRecordings", programData);
                 }
             }
         });

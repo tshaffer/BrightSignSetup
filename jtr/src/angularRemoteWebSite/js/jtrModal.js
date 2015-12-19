@@ -1,8 +1,9 @@
 /**
  * Created by tedshaffer on 12/19/15.
  */
-angular.module('myApp').controller('jtrModal', function($scope, $uibModalInstance, items) {
+angular.module('myApp').controller('jtrModal', function($scope, $uibModalInstance, modalTitle, items) {
 
+    $scope.modalTitle = modalTitle;
     $scope.items = items;
     $scope.selected = {
         item: $scope.items[0]
