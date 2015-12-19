@@ -1,22 +1,6 @@
 /**
  * Created by tedshaffer on 12/13/15.
  */
-angular.module('myApp').controller('cgRecording', function($scope, $uibModalInstance, items) {
-
-    $scope.items = items;
-    $scope.selected = {
-        item: $scope.items[0]
-    };
-
-    $scope.ok = function () {
-        $uibModalInstance.close($scope.selected.item);
-    };
-
-    $scope.cancel = function () {
-        $uibModalInstance.dismiss('cancel');
-    };
-})
-
 angular.module('myApp').controller('channelGuide', ['$scope', '$http', 'jtrServerService', '$uibModal', function($scope, $http, $jtrServerService, $uibModal) {
 
     $scope.getStationIndex = function (stationId) {
@@ -659,7 +643,7 @@ angular.module('myApp').controller('channelGuide', ['$scope', '$http', 'jtrServe
                             var modalInstance = $uibModal.open({
                             animation: $scope.animationsEnabled,
                             templateUrl: 'myModalContent.html',
-                            controller: 'cgRecording',
+                            controller: 'jtrModal',
                             size: size,
                             resolve: {
                                 items: function () {
