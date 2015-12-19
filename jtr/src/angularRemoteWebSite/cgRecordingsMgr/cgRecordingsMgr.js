@@ -23,6 +23,8 @@ angular.module('myApp').controller('cgRecordingsMgr', ['$scope', '$http', 'jtrSe
     $scope.startTimeOffsets = [-15, -10, -5, 0, 5, 10, 15];
     $scope.startTimeIndex = null;
 
+    $scope.addRecordToDB = true;
+
     $scope.getStationFromId = function (stationId) {
 
         var selectedStation = "";
@@ -324,10 +326,16 @@ angular.module('myApp').controller('cgRecordingsMgr', ['$scope', '$http', 'jtrSe
             }
         });
 
-        modalInstance.result.then(function (selectedItem, args) {
+        modalInstance.result.then(function (args) {
             console.log("recordingOptionsDlg - save invoked");
-            //$scope.selected = selectedItem;
-            //$scope.dialogHandler(selectedItem);
+            $scope.startTimeIndex = args.startTimeIndex;
+            $scope.stopTimeIndex = args.stopTimeIndex;
+
+            var promise = $scope.cgRecordProgramFromClient($scope.addRecordToDB);
+            promise.then(function() {
+                $scope.retrieveScheduledRecordings();
+            })
+
         }, function () {
             console.log('recordingOptionsDlg dismissed at: ' + new Date());
             return;
@@ -338,9 +346,9 @@ angular.module('myApp').controller('cgRecordingsMgr', ['$scope', '$http', 'jtrSe
         
         $scope.animationsEnabled = true;
 
-        var addRecordToDB = true;
+        $scope.addRecordToDB = true;
         if ($scope.cgSelectedProgram.scheduledRecordingId > 0) {
-            addRecordToDB = false;
+            $scope.addRecordToDB = false;
         }
 
         $scope.startTimeIndex = $scope.startTimeOnTimeIndex;
