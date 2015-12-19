@@ -638,7 +638,7 @@ angular.module('myApp').controller('channelGuide', ['$scope', '$http', 'jtrServe
                     //$("#cgProgramDlg").modal(options);
                     //$("#cgProgramDlgShowTitle").html($scope.cgSelectedProgram.title);
 
-                    $jtrBroadcastService.broadcastMsg("pizza is tasty");
+                    $jtrBroadcastService.broadcastMsg("cgRecordings", $scope.cgSelectedProgram);
 
                     $scope.openModal = function (size) {
 

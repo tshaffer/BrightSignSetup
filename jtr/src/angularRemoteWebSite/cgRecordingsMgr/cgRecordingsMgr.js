@@ -5,10 +5,16 @@ angular.module('myApp').controller('cgRecordingsMgr', ['$scope', '$http', 'jtrSe
 
     console.log("cgRecordingsMgr launched");
 
-    $scope.$on('handleBroadcast', function(eventName, message) {
-        console.log("handleBroadcast invoked, received message is: " + message);
+    $scope.$on('handleBroadcast', function(eventName, broadcastEventData) {
+        console.log("handleBroadcast invoked, received data is: " + broadcastEventData);
+
+        if (broadcastEventData.message == "cgRecordings") {
+            $scope.show(broadcastEventData.args);
+        }
     });
 
-
+    $scope.show = function(programData) {
+        console.log("cgRecordingsMgr.show invoked");
+    }
 }]);
 
