@@ -1,7 +1,23 @@
 /**
  * Created by tedshaffer on 12/13/15.
  */
-angular.module('myApp').controller('channelGuide', ['$scope', '$http', 'jtrServerService', function($scope, $http, $jtrServerService) {
+angular.module('myApp').controller('cgRecording', function($scope, $uibModalInstance, items) {
+
+    $scope.items = items;
+    $scope.selected = {
+        item: $scope.items[0]
+    };
+
+    $scope.ok = function () {
+        $uibModalInstance.close($scope.selected.item);
+    };
+
+    $scope.cancel = function () {
+        $uibModalInstance.dismiss('cancel');
+    };
+});
+
+angular.module('myApp').controller('channelGuide', ['$scope', '$http', 'jtrServerService', '$uibModal', function($scope, $http, $jtrServerService, $uibModal) {
 
     $scope.getStationIndex = function (stationId) {
 
@@ -632,11 +648,39 @@ angular.module('myApp').controller('channelGuide', ['$scope', '$http', 'jtrServe
                     // from cgPopupView
                     $scope.cgSelectedProgram = programData.program;
                     // display modal
-                    var options = {
-                        "backdrop": "true"
-                    }
-                    $("#cgProgramDlg").modal(options);
-                    $("#cgProgramDlgShowTitle").html($scope.cgSelectedProgram.title);
+                    //var options = {
+                    //    "backdrop": "true"
+                    //}
+                    //$("#cgProgramDlg").modal(options);
+                    //$("#cgProgramDlgShowTitle").html($scope.cgSelectedProgram.title);
+
+                    $scope.openModal = function (size) {
+
+                            var modalInstance = $uibModal.open({
+                            animation: $scope.animationsEnabled,
+                            templateUrl: 'myModalContent.html',
+                            controller: 'cgRecording',
+                            size: size,
+                            resolve: {
+                                items: function () {
+                                    return $scope.items;
+                                }
+                            }
+                        });
+
+                        modalInstance.result.then(function (selectedItem) {
+                            $scope.selected = selectedItem;
+                        }, function () {
+                            $log.info('Modal dismissed at: ' + new Date());
+                        });
+                    };
+
+                    $scope.items = ['item1', 'item2', 'item3'];
+
+                    $scope.animationsEnabled = true;
+
+                    $scope.openModal('lg');
+
                 }
             }
         });
