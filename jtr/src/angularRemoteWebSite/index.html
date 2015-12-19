@@ -32,6 +32,7 @@
         <script src="js/jtrServerService.js"></script>
         <script src="js/jtrBroadcastService.js"></script>
         <script src="js/jtrModal.js"></script>
+        <script src="cgRecordingsMgr/cgRecordingOptionsDlg.js"></script>
         <script src="recordings/recordings.js"></script>
         <script src="channelGuide/channelGuide.js"></script>
         <script src="cgRecordingsMgr/cgRecordingsMgr.js"></script>
@@ -44,7 +45,7 @@
     </head>
     <body>
 
-    <header>
+        <header>
 			<nav class="navbar navbar-default">
 			<div class="container">
 
@@ -88,23 +89,52 @@
         <div ng-controller="cgRecordingsMgr">
         </div>
 
-    <script type="text/ng-template" id="myModalContent.html">
-        <div class="modal-header">
-            <h3 class="modal-title">{{modalTitle}}</h3>
-        </div>
-        <div class="modal-body">
-            <ul>
-                <li ng-repeat="item in items">
-                    <a href="#" ng-click="$event.preventDefault(); selected.item = item">{{ item }}</a>
-                </li>
-            </ul>
-            Selected: <b>{{ selected.item }}</b>
-        </div>
-        <div class="modal-footer">
-            <button class="btn btn-primary" type="button" ng-click="ok()">OK</button>
-            <button class="btn btn-warning" type="button" ng-click="cancel()">Cancel</button>
-        </div>
-    </script>
+        <script type="text/ng-template" id="myModalContent.html">
+            <div class="modal-header">
+                <h3 class="modal-title">{{modalTitle}}</h3>
+            </div>
+            <div class="modal-body">
+                <ul>
+                    <li ng-repeat="item in items">
+                        <a href="#" ng-click="$event.preventDefault(); selected.item = item">{{ item }}</a>
+                    </li>
+                </ul>
+                Selected: <b>{{ selected.item }}</b>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-primary" type="button" ng-click="ok()">OK</button>
+                <button class="btn btn-warning" type="button" ng-click="cancel()">Cancel</button>
+            </div>
+        </script>
+
+
+        <script type="text/ng-template" id="recordingOptionsDlg.html">
+            <div class="modal-header">
+                <h3 class="modal-title">{{modalTitle}}</h3>
+            </div>
+            <div class="modal-body">
+                <h3 id="cgRecordingOptionsTitle">Recording Options</h3>
+
+                <span class="modalButton">Start Time:</span>
+                <button type='button' class='btn btn-default modalLeftArrow modalButton' ng-click="cgRecordOptionsNextEarlyStartTime()" aria-label='Left Align'><span class='glyphicon glyphicon-arrow-left modalButton' aria-hidden='true'></span></button>
+                <button type='button' class='btn btn-default modalButton' id="cgRecordOptionsStartTimeLabel">{{startTime}}</button>
+                <button type='button' class='btn btn-default modalRightArrow modalButton' ng-click="cgRecordOptionsNextLateStartTime()" aria-label='Left Align'><span class='glyphicon glyphicon-arrow-right' aria-hidden='true'></span></button>
+                <br/>
+
+                <span class="modalButton">Stop Time:</span>
+                <button type='button' class='btn btn-default modalLeftArrow modalButton' ng-click="cgRecordOptionsNextEarlyStopTime()" aria-label='Left Align'><span class='glyphicon glyphicon-arrow-left' aria-hidden='true'></span></button>
+                <button type='button' class='btn btn-default modalButton' id="cgRecordOptionsStopTimeLabel">{{stopTime}}</button>
+                <button type='button' class='btn btn-default modalRightArrow modalButton' ng-click="cgRecordOptionsNextLateStopTime()" aria-label='Left Align'><span class='glyphicon glyphicon-arrow-right' aria-hidden='true'></span></button>
+                <br/>
+
+                <button type="button" class="btn btn-default btn-secondary modalButton" ng-click="ok()">Record with these options</button> <br />
+                <button type="button" class="btn btn-default btn-secondary modalButton" ng-click="cancel()">Cancel</button> <br />
+            </div>
+            <!--<div class="modal-footer">-->
+                <!--<button class="btn btn-primary" type="button" ng-click="ok()">OK</button>-->
+                <!--<button class="btn btn-warning" type="button" ng-click="cancel()">Cancel</button>-->
+            <!--</div>-->
+        </script>
 
     </body>
 </html>

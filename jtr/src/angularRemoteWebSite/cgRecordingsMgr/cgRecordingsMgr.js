@@ -191,7 +191,7 @@ angular.module('myApp').controller('cgRecordingsMgr', ['$scope', '$http', 'jtrSe
 
             $scope.animationsEnabled = true;
 
-            $scope.openModal('lg');
+            $scope.openModal('sm');
 
         });
     }
@@ -249,7 +249,6 @@ angular.module('myApp').controller('cgRecordingsMgr', ['$scope', '$http', 'jtrSe
     }
 
     $scope.invokeViewUpcomingEpisodes = function() {
-        //console.log("ViewUpcomingEpisodes invoked")
     }
 
     $scope.invokeCancelRecording = function() {
@@ -258,8 +257,6 @@ angular.module('myApp').controller('cgRecordingsMgr', ['$scope', '$http', 'jtrSe
         promise.then(function() {
             $scope.retrieveScheduledRecordings();
         })
-
-        //$scope.reselectCurrentProgram();
     }
 
     $scope.invokeCancelSeries = function () {
@@ -307,7 +304,36 @@ angular.module('myApp').controller('cgRecordingsMgr', ['$scope', '$http', 'jtrSe
         return $jtrServerService.browserCommand(commandData);
     }
 
-    $scope.cgRecordProgramSetOptions = function() {}
+    $scope.openRecordingOptionsDlg = function (size) {
+
+        var modalInstance = $uibModal.open({
+            animation: $scope.animationsEnabled,
+            templateUrl: 'recordingOptionsDlg.html',
+            controller: 'cgRecordingOptionsDlg',
+            size: size,
+            resolve: {
+                modalTitle: function() {
+                    return $scope.modalTitle;
+                },
+                //items: function () {
+                //    return $scope.items;
+                //}
+            }
+        });
+
+        modalInstance.result.then(function (selectedItem, args) {
+            //$scope.selected = selectedItem;
+            //$scope.dialogHandler(selectedItem);
+        }, function () {
+            console.log('recordingOptionsDlg dismissed at: ' + new Date());
+            return;
+        });
+    };
+
+    $scope.cgRecordProgramSetOptions = function() {
+        $scope.animationsEnabled = true;
+        $scope.openRecordingOptionsDlg('md');
+    }
 
     $scope.cgRecordSelectedSeriesFromClient = function() {}
 
@@ -322,7 +348,6 @@ angular.module('myApp').controller('cgRecordingsMgr', ['$scope', '$http', 'jtrSe
     }
 
     $scope.cgCancelScheduledRecordingFromClient = function () {
-
         return $jtrServerService.deleteScheduledRecording($scope.cgSelectedProgram.scheduledRecordingId);
     }
 
