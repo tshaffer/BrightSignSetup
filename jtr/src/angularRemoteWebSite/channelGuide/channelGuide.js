@@ -627,16 +627,6 @@ angular.module('myApp').controller('channelGuide', ['$scope', '$http', 'jtrServe
                     $scope._currentStationIndex = stationIndex;
                     $scope.selectProgram($scope._currentSelectedProgramButton, event.target);
                     var programData = $scope.getSelectedStationAndProgram();
-                    //self.trigger("displayCGPopup", programData);
-
-                    // from cgPopupView
-                    //$scope.cgSelectedProgram = programData.program;
-                    // display modal
-                    //var options = {
-                    //    "backdrop": "true"
-                    //}
-                    //$("#cgProgramDlg").modal(options);
-                    //$("#cgProgramDlgShowTitle").html($scope.cgSelectedProgram.title);
 
                     $jtrBroadcastService.broadcastMsg("cgRecordings", programData);
                 }
@@ -646,7 +636,6 @@ angular.module('myApp').controller('channelGuide', ['$scope', '$http', 'jtrServe
         var promise = $jtrServerService.retrieveLastTunedChannel();
         promise.then(function(result) {
             console.log("lastTunedChannel successfully retrieved");
-            //self.lastTunedChannelResult = result;
             var stationNumber = result.data;
             var stationIndex = $scope.getStationIndexFromName(stationNumber)
             var stationRow = $("#cgData").children()[stationIndex + 1];
