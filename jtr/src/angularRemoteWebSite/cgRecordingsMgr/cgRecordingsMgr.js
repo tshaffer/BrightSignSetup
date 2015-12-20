@@ -229,47 +229,6 @@ angular.module('myApp').controller('cgRecordingsMgr', ['$scope', '$http', 'jtrSe
     }
 
     $scope.invokeRecordEpisode = function() {
-        var promise = $scope.cgRecordProgramFromClient(true);
-        promise.then(function() {
-            $scope.retrieveScheduledRecordings();
-        })
-    }
-
-    $scope.invokeRecordProgramSetOptions = function() {
-        $scope.cgRecordProgramSetOptions();
-    }
-
-    $scope.invokeRecordSeries = function() {
-        var promise = $scope.cgRecordSelectedSeriesFromClient();
-        promise.then(function() {
-            $scope.retrieveScheduledRecordings();
-        })
-    }
-
-    $scope.invokeTune = function() {
-        $scope.cgTuneFromClient();
-    }
-
-    $scope.invokeViewUpcomingEpisodes = function() {
-    }
-
-    $scope.invokeCancelRecording = function() {
-
-        var promise = $scope.cgCancelScheduledRecordingFromClient();
-        promise.then(function() {
-            $scope.retrieveScheduledRecordings();
-        })
-    }
-
-    $scope.invokeCancelSeries = function () {
-
-        var promise = $scope.cgCancelScheduledSeriesFromClient();
-        promise.then(function() {
-            $scope.retrieveScheduledRecordings();
-        })
-    }
-
-    $scope.cgRecordProgramFromClient = function (addRecording) {
 
         $scope.cgSelectedProgram.startTimeOffset = $scope.startTimeOffsets[$scope.startTimeIndex];
         $scope.cgSelectedProgram.stopTimeOffset = $scope.stopTimeOffsets[$scope.stopTimeIndex];
@@ -303,7 +262,90 @@ angular.module('myApp').controller('cgRecordingsMgr', ['$scope', '$http', 'jtrSe
             };
         }
 
-        return $jtrServerService.browserCommand(commandData);
+        var promise = $jtrServerService.browserCommand(commandData);
+        promise.then(function() {
+            $scope.retrieveScheduledRecordings();
+        })
+    }
+
+    $scope.invokeRecordProgramSetOptions = function() {
+
+        $scope.animationsEnabled = true;
+
+        $scope.addRecordToDB = true;
+        if ($scope.cgSelectedProgram.scheduledRecordingId > 0) {
+            $scope.addRecordToDB = false;
+        }
+
+        $scope.startTimeIndex = $scope.startTimeOnTimeIndex;
+        $scope.stopTimeIndex = $scope.stopTimeOnTimeIndex;
+
+        $.each($scope.startTimeOffsets, function (index, startTimeOffset) {
+            if (startTimeOffset == $scope.cgSelectedProgram.startTimeOffset) {
+                $scope.startTimeIndex = index;
+                return false;
+            }
+        });
+
+        $.each($scope.stopTimeOffsets, function (index, stopTimeOffset) {
+            if (stopTimeOffset == $scope.cgSelectedProgram.stopTimeOffset) {
+                $scope.stopTimeIndex = index;
+                return false;
+            }
+        });
+
+        $scope.openRecordingOptionsDlg('md');
+    }
+
+    $scope.invokeRecordSeries = function() {
+
+        var stationName = $scope.getStationFromId($scope.cgSelectedStationId);
+        stationName = stationName.replace(".", "-");
+
+        var commandData = {
+            "command": "addSeries",
+            "title": $scope.cgSelectedProgram.title,
+            "inputSource": "tuner",
+            "channel": stationName,
+            //"recordingBitRate": $scope.getRecordingBitRate(),
+            //"segmentRecording": $scope.getSegmentRecordings()
+            "recordingBitRate": 6,
+            "segmentRecording": 0
+        };
+
+        var promise = serverInterface.browserCommand(commandData);
+        promise.then(function() {
+            $scope.retrieveScheduledRecordings();
+        })
+    }
+
+    $scope.invokeTune = function() {
+
+        var stationName = $scope.getStationFromId($scope.cgSelectedStationId);
+        stationName = stationName.replace(".", "-");
+
+        var commandData = { "command": "tuneLiveVideoChannel", "enteredChannel": stationName };
+
+        $jtrServerService.browserCommand(commandData);
+    }
+
+    $scope.invokeViewUpcomingEpisodes = function() {
+    }
+
+    $scope.invokeCancelRecording = function() {
+
+        var promise = $jtrServerService.deleteScheduledRecording($scope.cgSelectedProgram.scheduledRecordingId);
+        promise.then(function() {
+            $scope.retrieveScheduledRecordings();
+        })
+    }
+
+    $scope.invokeCancelSeries = function () {
+
+        var promise = $jtrServerService.deleteScheduledSeries($scope.cgSelectedProgram.scheduledSeriesRecordingId);
+        promise.then(function() {
+            $scope.retrieveScheduledRecordings();
+        })
     }
 
     $scope.openRecordingOptionsDlg = function (size) {
@@ -341,54 +383,5 @@ angular.module('myApp').controller('cgRecordingsMgr', ['$scope', '$http', 'jtrSe
             return;
         });
     };
-
-    $scope.cgRecordProgramSetOptions = function() {
-        
-        $scope.animationsEnabled = true;
-
-        $scope.addRecordToDB = true;
-        if ($scope.cgSelectedProgram.scheduledRecordingId > 0) {
-            $scope.addRecordToDB = false;
-        }
-
-        $scope.startTimeIndex = $scope.startTimeOnTimeIndex;
-        $scope.stopTimeIndex = $scope.stopTimeOnTimeIndex;
-
-        $.each($scope.startTimeOffsets, function (index, startTimeOffset) {
-            if (startTimeOffset == $scope.cgSelectedProgram.startTimeOffset) {
-                $scope.startTimeIndex = index;
-                return false;
-            }
-        });
-
-        $.each($scope.stopTimeOffsets, function (index, stopTimeOffset) {
-            if (stopTimeOffset == $scope.cgSelectedProgram.stopTimeOffset) {
-                $scope.stopTimeIndex = index;
-                return false;
-            }
-        });
-
-        $scope.openRecordingOptionsDlg('md');
-    }
-
-    $scope.cgRecordSelectedSeriesFromClient = function() {}
-
-    $scope.cgTuneFromClient = function () {
-
-        var stationName = $scope.getStationFromId($scope.cgSelectedStationId);
-        stationName = stationName.replace(".", "-");
-
-        var commandData = { "command": "tuneLiveVideoChannel", "enteredChannel": stationName };
-
-        $jtrServerService.browserCommand(commandData);
-    }
-
-    $scope.cgCancelScheduledRecordingFromClient = function () {
-        return $jtrServerService.deleteScheduledRecording($scope.cgSelectedProgram.scheduledRecordingId);
-    }
-
-    $scope.cgCancelScheduledSeriesFromClient = function () {
-        return $jtrServerService.deleteScheduledSeries($scope.cgSelectedProgram.scheduledSeriesRecordingId);
-    }
 }]);
 
