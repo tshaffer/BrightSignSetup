@@ -10,34 +10,6 @@ angular.module('myApp').service('jtrServerService', ['$http', function($http){
 
     this.lastTunedChannelResult = null;
 
-    this.stations = [];
-
-    this.getStationsResult = function() {
-        return this.stations;
-    }
-
-    this.getStations = function() {
-
-        var self = this;
-
-        if (self.stations.length > 0) {
-            var promise = new Promise(function(resolve, reject) {
-                console.log("create getStations promise");
-                resolve();
-            });
-            return promise;
-        }
-        else {
-            var url = self.baseUrl + "getStations";
-            var promise = $http.get(url, {});
-            promise.then(function(result) {
-                console.log("getStations value returned");
-                self.stations = result.data;
-            });
-            return promise;
-        }
-    };
-
     this.browserCommand = function(commandData) {
 
         var url = self.baseUrl + "browserCommand";
@@ -47,6 +19,15 @@ angular.module('myApp').service('jtrServerService', ['$http', function($http){
         });
         return promise;
     };
+
+    this.getStations = function() {
+
+        var url = self.baseUrl + "getStations";
+
+        var promise = $http.get(url, {});
+        return promise;
+    };
+
 
     this.getRecordings = function() {
 

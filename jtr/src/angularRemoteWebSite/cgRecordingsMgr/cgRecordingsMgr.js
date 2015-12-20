@@ -1,7 +1,7 @@
 /**
  * Created by tedshaffer on 12/19/15.
  */
-angular.module('myApp').controller('cgRecordingsMgr', ['$scope', '$http', 'jtrServerService', 'jtrBroadcastService', '$uibModal', function($scope, $http, $jtrServerService, $jtrBroadcastService, $uibModal) {
+angular.module('myApp').controller('cgRecordingsMgr', ['$scope', '$http', 'jtrServerService', 'jtrStationsService', 'jtrBroadcastService', '$uibModal', function($scope, $http, $jtrServerService, $jtrStationsService, $jtrBroadcastService, $uibModal) {
 
     console.log("cgRecordingsMgr launched");
 
@@ -25,35 +25,6 @@ angular.module('myApp').controller('cgRecordingsMgr', ['$scope', '$http', 'jtrSe
 
     $scope.addRecordToDB = true;
 
-    $scope.getStationFromId = function (stationId) {
-
-        var selectedStation = "";
-
-        // get stationIndex
-        $.each($scope.stations, function (stationIndex, station) {
-            if (station.StationId == stationId) {
-                selectedStation = station.AtscMajor + "." + station.AtscMinor;
-                return false;
-            }
-        });
-
-        return selectedStation;
-    }
-
-    $scope.getChannelFromStationIndex = function (stationId) {
-
-        var channel = "";
-
-        $.each($scope.stations, function (index, station) {
-            if (stationId == station.StationId) {
-                channel = station.AtscMajor + "-" + station.AtscMinor;
-                return false;
-            }
-        });
-
-        return channel;
-    }
-
     $scope.$on('handleBroadcast', function(eventName, broadcastEventData) {
         console.log("handleBroadcast invoked, received data is: " + broadcastEventData);
 
@@ -65,7 +36,7 @@ angular.module('myApp').controller('cgRecordingsMgr', ['$scope', '$http', 'jtrSe
     $scope.programsMatch = function (scheduledRecording, cgProgram, cgStationId) {
 
         // JTRTODO - what other criteria should be used?
-        var channel = $scope.getChannelFromStationIndex(cgStationId);
+        var channel = $jtrStationsService.getChannelFromStationIndex(cgStationId);
         if (channel != scheduledRecording.Channel) return false;
 
         if (scheduledRecording.Title != this.cgSelectedProgram.title) return false;
@@ -98,15 +69,12 @@ angular.module('myApp').controller('cgRecordingsMgr', ['$scope', '$http', 'jtrSe
         var currentDateTime = {"currentDateTime": currentDateTimeIso};
 
         $scope.scheduledRecordings = [];
-        $scope.stations = [];
 
-        var getStationsPromise = $jtrServerService.getStations();
+        var getStationsPromise = $jtrStationsService.getStations();
         var getScheduledRecordingsPromise = $jtrServerService.getScheduledRecordings(currentDateTime);
 
         Promise.all([getStationsPromise, getScheduledRecordingsPromise]).then(function(args) {
             console.log("examine arg2, arg2, arg3");
-
-            $scope.stations = $jtrServerService.getStationsResult();
 
             // no result from getStationsPromise so getScheduledRecordings is in args[1]
             $scope.scheduledRecordings =  args[1].data;
@@ -234,7 +202,7 @@ angular.module('myApp').controller('cgRecordingsMgr', ['$scope', '$http', 'jtrSe
         $scope.cgSelectedProgram.stopTimeOffset = $scope.stopTimeOffsets[$scope.stopTimeIndex];
 
         if (addRecording) {
-            var stationName = $scope.getStationFromId($scope.cgSelectedStationId);
+            var stationName = $jtrStationsService.getStationFromId($scope.cgSelectedStationId);
             stationName = stationName.replace(".", "-");
 
             var commandData = {
@@ -299,7 +267,7 @@ angular.module('myApp').controller('cgRecordingsMgr', ['$scope', '$http', 'jtrSe
 
     $scope.invokeRecordSeries = function() {
 
-        var stationName = $scope.getStationFromId($scope.cgSelectedStationId);
+        var stationName = $jtrStationsService.getStationFromId($scope.cgSelectedStationId);
         stationName = stationName.replace(".", "-");
 
         var commandData = {
@@ -321,7 +289,7 @@ angular.module('myApp').controller('cgRecordingsMgr', ['$scope', '$http', 'jtrSe
 
     $scope.invokeTune = function() {
 
-        var stationName = $scope.getStationFromId($scope.cgSelectedStationId);
+        var stationName = $jtrStationsService.getStationFromId($scope.cgSelectedStationId);
         stationName = stationName.replace(".", "-");
 
         var commandData = { "command": "tuneLiveVideoChannel", "enteredChannel": stationName };

@@ -1,28 +1,7 @@
 /**
  * Created by tedshaffer on 12/13/15.
  */
-angular.module('myApp').controller('scheduledRecordings', ['$scope', '$http', 'jtrServerService', function($scope, $http, $jtrServerService){
-
-    $scope.getStationFromAtsc = function (atscMajor, atscMinor) {
-        var foundStation = null;
-
-        if (typeof atscMinor == 'undefined') {
-            atscMinor = '1';
-        }
-
-        // for now, leave stations AtscMajor and AtscMinor properties as numbers
-        var atscMajorNum = Number(atscMajor);
-        var atscMinorNum = Number(atscMinor);
-
-        $.each($scope.stations, function (stationIndex, station) {
-            if (station.AtscMajor == atscMajorNum && station.AtscMinor == atscMinorNum) {
-                foundStation = station;
-                return false;
-            }
-        });
-
-        return foundStation;
-    }
+angular.module('myApp').controller('scheduledRecordings', ['$scope', '$http', 'jtrServerService', 'jtrStationsService', function($scope, $http, $jtrServerService, $jtrStationsService){
 
     $scope.name = 'Scheduled Recordings';
     console.log($scope.name + " screen displayed");
@@ -30,11 +9,10 @@ angular.module('myApp').controller('scheduledRecordings', ['$scope', '$http', 'j
     var currentDateTimeIso = new Date().toISOString();
     var currentDateTime = {"currentDateTime": currentDateTimeIso};
 
-    var getStationsPromise = $jtrServerService.getStations();
+    var getStationsPromise = $jtrStationsService.getStations();
     getStationsPromise.then(function() {
 
         console.log("getStations success");
-        $scope.stations = $jtrServerService.getStationsResult();
 
         promise = $jtrServerService.getScheduledRecordings(currentDateTime);
         promise.then(function(result) {
@@ -128,7 +106,7 @@ angular.module('myApp').controller('scheduledRecordings', ['$scope', '$http', 'j
                     channel = channelParts[0];
                 }
 
-                var station = $scope.getStationFromAtsc(channelParts[0], channelParts[1]);
+                var station = $jtrStationsService.getStationFromAtsc(channelParts[0], channelParts[1]);
                 var stationName = "TBD";
                 if (station != null) {
                     stationName = station.CommonName;
