@@ -29,9 +29,9 @@ angular.module('myApp').controller('settings', ['$scope', 'jtrSettingsService', 
     }
 
     var promise = $jtrSettingsService.getSettings();
-    promise.then(function(result) {
+    promise.then(function() {
         console.log("received settings");
-        $scope.settings = result.data;
+        $scope.settings = $jtrSettingsService.getSettingsResult();
         // RecordingBitRate
         // SegmentRecordings
 

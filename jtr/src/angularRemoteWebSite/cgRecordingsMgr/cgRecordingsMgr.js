@@ -1,7 +1,7 @@
 /**
  * Created by tedshaffer on 12/19/15.
  */
-angular.module('myApp').controller('cgRecordingsMgr', ['$scope', '$http', 'jtrServerService', 'jtrStationsService', 'jtrBroadcastService', '$uibModal', function($scope, $http, $jtrServerService, $jtrStationsService, $jtrBroadcastService, $uibModal) {
+angular.module('myApp').controller('cgRecordingsMgr', ['$scope', '$http', 'jtrServerService', 'jtrStationsService', 'jtrSettingsService', 'jtrBroadcastService', '$uibModal', function($scope, $http, $jtrServerService, $jtrStationsService, $jtrSettingsService, $jtrBroadcastService, $uibModal) {
 
     console.log("cgRecordingsMgr launched");
 
@@ -11,7 +11,6 @@ angular.module('myApp').controller('cgRecordingsMgr', ['$scope', '$http', 'jtrSe
     $scope.scheduledRecordingItems = [ 'Cancel recording', 'Change options', 'View upcoming episodes', 'Tune', 'Close' ];
     $scope.recordSeriesItems = [ 'Record episode', 'Record episode, set options', 'Record series', 'Tune', 'Close' ];
     $scope.scheduledSeriesItems = [ 'Cancel recording', 'Cancel series', 'View upcoming episodes', 'Tune', 'Close' ];
-
 
     $scope.stopTimeOptions = ["30 minutes early", "15 minutes early", "10 minutes early", "5 minutes early", "On time", "5 minutes late", "10 minutes late", "15 minutes late", "30 minute late", "1 hour late", "1 1/2 hours late", "2 hours late", "3 hours late"];
     $scope.stopTimeOffsets = [-30, -15, -10, -5, 0, 5, 10, 15, 30, 60, 90, 120, 180];
@@ -29,7 +28,12 @@ angular.module('myApp').controller('cgRecordingsMgr', ['$scope', '$http', 'jtrSe
         console.log("handleBroadcast invoked, received data is: " + broadcastEventData);
 
         if (broadcastEventData.message == "cgRecordings") {
-            $scope.show(broadcastEventData.args);
+
+            var promise = $jtrSettingsService.getSettings();
+            promise.then( function() {
+                $scope.show(broadcastEventData.args);
+            });
+
         }
     });
 
@@ -201,7 +205,7 @@ angular.module('myApp').controller('cgRecordingsMgr', ['$scope', '$http', 'jtrSe
         $scope.cgSelectedProgram.startTimeOffset = $scope.startTimeOffsets[$scope.startTimeIndex];
         $scope.cgSelectedProgram.stopTimeOffset = $scope.stopTimeOffsets[$scope.stopTimeIndex];
 
-        if (addRecording) {
+        if ($scope.addRecordToDB) {
             var stationName = $jtrStationsService.getStationFromId($scope.cgSelectedStationId);
             stationName = stationName.replace(".", "-");
 
@@ -212,10 +216,8 @@ angular.module('myApp').controller('cgRecordingsMgr', ['$scope', '$http', 'jtrSe
                 "duration": $scope.cgSelectedProgram.duration,
                 "inputSource": "tuner",
                 "channel": stationName,
-                //"recordingBitRate": $scope.settingsModel.getRecordingBitRate(),
-                "recordingBitRate": 6,
-                //"segmentRecording": $scope.settingsModel.getSegmentRecordings(),
-                "segmentRecording": 0,
+                "recordingBitRate": $jtrSettingsService.getSettingsResult().RecordingBitRate,
+                "segmentRecording": $jtrSettingsService.getSettingsResult().SegmentRecordings,
                 "scheduledSeriesRecordingId": $scope.cgSelectedProgram.scheduledSeriesRecordingId,
                 "startTimeOffset": $scope.cgSelectedProgram.startTimeOffset,
                 "stopTimeOffset": $scope.cgSelectedProgram.stopTimeOffset

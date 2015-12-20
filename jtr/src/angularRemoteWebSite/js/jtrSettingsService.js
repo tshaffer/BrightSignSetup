@@ -23,7 +23,7 @@ angular.module('myApp').service('jtrSettingsService', ['jtrServerService', funct
         else {
             var promise = $jtrServerService.getSettings();
             promise.then(function(result) {
-                self.settings = result;
+                self.settings = result.data;
             });
             return promise;
         }
