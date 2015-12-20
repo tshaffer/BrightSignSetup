@@ -230,8 +230,8 @@ text-overflow:    ellipsis;    /* IE, Safari (WebKit), Opera >= 11, FF > 6 */
 }
 
 .footerAlignCenter {
-  float: left;
-  width:60%;
+  /*float: left;*/
+  /*width:60%;*/
   text-align:center;
 }
 

@@ -2,9 +2,6 @@
  * Created by tedshaffer on 12/13/15.
  */
 angular.module('myApp').controller('footer', ['$scope', '$http', function($scope, $http){
-    $scope.invokeHome = function() {
-        console.log("home invoked");
-    }
 
     $scope.invokeTrickMode = function(trickMode) {
         console.log("trickMode invoked: " + trickMode);
