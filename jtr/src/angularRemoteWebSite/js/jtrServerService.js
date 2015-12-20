@@ -20,6 +20,24 @@ angular.module('myApp').service('jtrServerService', ['$http', function($http){
         return promise;
     };
 
+    this.getSettings = function() {
+
+        var url = self.baseUrl + "getSettings";
+
+        var promise = $http.get(url, {});
+        return promise;
+    };
+
+    this.setSettings = function(settings) {
+
+        var url = self.baseUrl + "setSettings";
+
+        var promise = $http.get(url, {
+            params: settings
+        });
+        return promise;
+    };
+
     this.getStations = function() {
 
         var url = self.baseUrl + "getStations";

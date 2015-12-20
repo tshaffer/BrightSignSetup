@@ -1021,6 +1021,7 @@ Sub setSettings(userData as Object, e as Object)
 
 	mVar.SetDBSettings(int(val(requestParams.recordingBitRate)), int(val(requestParams.segmentRecordings)))
 
+    e.AddResponseHeader("Access-Control-Allow-Origin", "*")
 	e.SetResponseBodyString("OK")
 	e.SendResponse(200)
 

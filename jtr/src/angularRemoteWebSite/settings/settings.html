@@ -1,1 +1,33 @@
-<h1>This will be the {{ name }} screen</h1>
+<h3>Settings</h3>
+<form class="form-horizontal">
+    <div class="form-group">
+
+        <label class="col-sm-4 control-label">Recording Quality</label>
+
+        <div class="col-sm-4 btn-group">
+            <label>
+                <input type="radio" ng-model="recordingBitRateStr" ng-click="recordingBitRateSet()" value="4">Low
+            </label>
+            <label>
+                <input type="radio" ng-model="recordingBitRateStr" ng-click="recordingBitRateSet()" value="6">Medium
+            </label>
+            <label>
+                <input type="radio" ng-model="recordingBitRateStr" ng-click="recordingBitRateSet()" value="10">High
+            </label>
+        </div>
+
+        <!--<div class="col-sm-4 btn-group">-->
+            <!--<label class="btn btn-primary" ng-model="settings.RecordingBitRate" ng-click="recordingBitRateSet()" uib-btn-radio="4">Low</label>-->
+            <!--<label class="btn btn-primary" ng-model="settings.RecordingBitRate" ng-click="recordingBitRateSet()" uib-btn-radio="6">Medium</label>-->
+            <!--<label class="btn btn-primary" ng-model="settings.RecordingBitRate" ng-click="recordingBitRateSet()" uib-btn-radio="10">High</label>-->
+        <!--</div>-->
+
+    </div>
+
+    <div class="form-group">
+        <label class="col-sm-4 control-label">Segment Recordings</label>
+        <div class="col-sm-4">
+            <input type="checkbox" ng-model="segmentRecordingsOn" ng-click="segmentRecordingsSet()">
+        </div>
+    </div>
+</form>
