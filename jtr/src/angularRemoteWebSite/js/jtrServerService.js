@@ -127,4 +127,24 @@ angular.module('myApp').service('jtrServerService', ['$http', function($http){
         return promise;
     };
 
+    this.deleteScheduledRecording = function (scheduledRecordingId) {
+
+        var url = this.baseUrl + "deleteScheduledRecording";
+        var commandData = { "scheduledRecordingId": scheduledRecordingId };
+        var promise = $http.get(url, {
+            params: commandData
+        });
+        return promise;
+    },
+
+    this.stopActiveRecording = function (scheduledRecordingId) {
+
+        var url = this.baseUrl + "stopRecording";
+        var commandData = { "scheduledRecordingId": scheduledRecordingId };
+        var promise = $http.get(url, {
+            params: commandData
+        });
+        return promise;
+    }
+
 }]);
