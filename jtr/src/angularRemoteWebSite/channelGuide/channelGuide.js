@@ -1,60 +1,13 @@
 /**
  * Created by tedshaffer on 12/13/15.
  */
-angular.module('myApp').controller('channelGuide', ['$scope', '$http', 'jtrServerService', 'jtrBroadcastService', '$uibModal', function($scope, $http, $jtrServerService, $jtrBroadcastService, $uibModal) {
-
-    $scope.getStationIndex = function (stationId) {
-
-        var selectedStationIndex = -1;
-
-        $.each($scope.stations, function (stationIndex, station) {
-            if (station.StationId == stationId) {
-                selectedStationIndex = stationIndex;
-                return false;
-            }
-        });
-
-        return selectedStationIndex;
-    }
-
-    $scope.getStationIndexFromName = function(stationNumber) {
-
-        var stationIndex = -1;
-
-        var self = this;
-        $scope.stations.forEach(function(station, index, stations) {
-            if ($scope.stationNumbersEqual(stationNumber, station.AtscMajor.toString() + '-' + station.AtscMinor.toString())) {
-                stationIndex = index;
-                return false;
-            }
-        });
-
-        return stationIndex;
-    }
-
-    $scope.stationNumbersEqual = function (stationNumber1, stationNumber2) {
-
-        if (stationNumber1 == stationNumber2) return true;
-
-        stationNumber1 = $scope.standardizeStationNumber(stationNumber1);
-        stationNumber2 = $scope.standardizeStationNumber(stationNumber2);
-        return (stationNumber1 == stationNumber2);
-    }
-
-    $scope.standardizeStationNumber = function (stationNumber) {
-
-        stationNumber = stationNumber.replace(".1", "");
-        stationNumber = stationNumber.replace("-1", "");
-        stationNumber = stationNumber.replace("-", ".");
-
-        return stationNumber;
-    }
+angular.module('myApp').controller('channelGuide', ['$scope', '$http', 'jtrServerService', 'jtrStationsService', 'jtrBroadcastService', '$uibModal', function($scope, $http, $jtrServerService, $jtrStationsService, $jtrBroadcastService, $uibModal) {
 
     $scope.retrieveStations = function() {
-        $scope.getStationsPromise = $jtrServerService.getStations();
+        $scope.getStationsPromise = $jtrStationsService.getStations();
         $scope.getStationsPromise.then(function() {
             console.log("getStations success");
-            $scope.stations = $jtrServerService.getStationsResult();
+            $scope.stations = $jtrStationsService.getStationsResult();
             return;
         }, function(reason) {
             console.log("getStations failure");
@@ -622,7 +575,7 @@ angular.module('myApp').controller('channelGuide', ['$scope', '$http', 'jtrServe
                 var programList = $scope.getProgramList(programInfo.stationId);
                 $scope.selectProgramTime = programList[programInfo.programIndex].date;
 
-                var stationIndex = $scope.getStationIndex(programInfo.stationId);
+                var stationIndex = $jtrStationsService.getStationIndex(programInfo.stationId);
                 if (stationIndex >= 0) {
                     $scope._currentStationIndex = stationIndex;
                     $scope.selectProgram($scope._currentSelectedProgramButton, event.target);
@@ -637,7 +590,7 @@ angular.module('myApp').controller('channelGuide', ['$scope', '$http', 'jtrServe
         promise.then(function(result) {
             console.log("lastTunedChannel successfully retrieved");
             var stationNumber = result.data;
-            var stationIndex = $scope.getStationIndexFromName(stationNumber)
+            var stationIndex = $jtrStationsService.getStationIndexFromName(stationNumber)
             var stationRow = $("#cgData").children()[stationIndex + 1];
             $scope._currentSelectedProgramButton = $(stationRow).children()[0];
             $scope.selectProgram(null, $scope._currentSelectedProgramButton, 0);
