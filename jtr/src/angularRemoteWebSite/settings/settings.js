@@ -1,7 +1,7 @@
 /**
  * Created by tedshaffer on 12/13/15.
  */
-angular.module('myApp').controller('settings', ['$scope', 'jtrSettingsService', function($scope, $jtrSettingsService){
+angular.module('jtr').controller('settings', ['$scope', 'jtrSettingsService', function($scope, $jtrSettingsService){
 
     $scope.name = 'Settings';
     console.log($scope.name + " screen displayed");

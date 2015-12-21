@@ -1,7 +1,7 @@
 /**
  * Created by tedshaffer on 12/19/15.
  */
-angular.module('myApp').controller('cgRecordingsMgr', ['$scope', '$http', 'jtrServerService', 'jtrStationsService', 'jtrSettingsService', 'jtrBroadcastService', '$uibModal', function($scope, $http, $jtrServerService, $jtrStationsService, $jtrSettingsService, $jtrBroadcastService, $uibModal) {
+angular.module('jtr').controller('cgRecordingsMgr', ['$scope', '$http', 'jtrServerService', 'jtrStationsService', 'jtrSettingsService', 'jtrBroadcastService', '$uibModal', function($scope, $http, $jtrServerService, $jtrStationsService, $jtrSettingsService, $jtrBroadcastService, $uibModal) {
 
     console.log("cgRecordingsMgr launched");
 
@@ -133,7 +133,7 @@ angular.module('myApp').controller('cgRecordingsMgr', ['$scope', '$http', 'jtrSe
 
                 var modalInstance = $uibModal.open({
                     animation: $scope.animationsEnabled,
-                    templateUrl: 'myModalContent.html',
+                    templateUrl: 'jtr.html',
                     controller: 'jtrModal',
                     size: size,
                     resolve: {

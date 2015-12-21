@@ -1,7 +1,7 @@
 /**
  * Created by tedshaffer on 12/20/15.
  */
-angular.module('myApp').service('jtrSettingsService', ['jtrServerService', function($jtrServerService){
+angular.module('jtr').service('jtrSettingsService', ['jtrServerService', function($jtrServerService){
 
     this.settings = {};
     this.settingsLoaded = false;

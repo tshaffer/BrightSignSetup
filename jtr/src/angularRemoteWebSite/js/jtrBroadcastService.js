@@ -1,7 +1,7 @@
 /**
  * Created by tedshaffer on 12/19/15.
  */
-angular.module('myApp').service('jtrBroadcastService', function($rootScope){
+angular.module('jtr').service('jtrBroadcastService', function($rootScope){
 
     var self = this;
 

@@ -1,7 +1,7 @@
 /**
  * Created by tedshaffer on 12/13/15.
  */
-angular.module('myApp').service('jtrServerService', ['$http', function($http){
+angular.module('jtr').service('jtrServerService', ['$http', function($http){
 
     var self = this;
 

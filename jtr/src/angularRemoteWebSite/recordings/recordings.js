@@ -1,7 +1,7 @@
 /**
  * Created by tedshaffer on 12/13/15.
  */
-angular.module('myApp').controller('recordings', ['$scope', '$http', 'jtrServerService', 'jtrStationsService', 'jtrSettingsService', function ($scope, $http, $jtrServerService, $jtrStationsService, $jtrSettingsService) {
+angular.module('jtr').controller('recordings', ['$scope', '$http', 'jtrServerService', 'jtrStationsService', 'jtrSettingsService', function ($scope, $http, $jtrServerService, $jtrStationsService, $jtrSettingsService) {
 
     $scope.playRecordedShow = function (id) {
         console.log("playRecordedShow: " + id);

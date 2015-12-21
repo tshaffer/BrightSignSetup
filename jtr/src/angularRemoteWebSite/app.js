@@ -1,5 +1,5 @@
 angular
-    .module('myApp', ['ngRoute', 'ui.bootstrap'])
+    .module('jtr', ['ngRoute', 'ui.bootstrap'])
 
     .config(['$routeProvider', function ($routeProvider) {
 

@@ -1,7 +1,7 @@
 /**
  * Created by tedshaffer on 12/19/15.
  */
-angular.module('myApp').controller('cgRecordingOptionsDlg', function($scope, $uibModalInstance, modalTitle, startTimeIndex, stopTimeIndex) {
+angular.module('jtr').controller('cgRecordingOptionsDlg', function($scope, $uibModalInstance, modalTitle, startTimeIndex, stopTimeIndex) {
 
     $scope.startTimeOptions = ["15 minutes early", "10 minutes early", "5 minutes early", "On time", "5 minutes late", "10 minutes late", "15 minutes late"];
     $scope.stopTimeOptions = ["30 minutes early", "15 minutes early", "10 minutes early", "5 minutes early", "On time", "5 minutes late", "10 minutes late", "15 minutes late", "30 minute late", "1 hour late", "1 1/2 hours late", "2 hours late", "3 hours late"];

@@ -1,7 +1,7 @@
 /**
  * Created by tedshaffer on 12/20/15.
  */
-angular.module('myApp').service('jtrStationsService', ['jtrServerService', function($jtrServerService){
+angular.module('jtr').service('jtrStationsService', ['jtrServerService', function($jtrServerService){
 
     this.stations = [];
 

@@ -1,7 +1,7 @@
 /**
  * Created by tedshaffer on 12/13/15.
  */
-angular.module('myApp').controller('recordNow', ['$scope', '$http', 'jtrServerService', function($scope, $http, $jtrServerService) {
+angular.module('jtr').controller('recordNow', ['$scope', '$http', 'jtrServerService', function($scope, $http, $jtrServerService) {
 
     $scope.showChannel = function() {
         return $scope.inputSource == "tuner";

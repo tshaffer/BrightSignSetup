@@ -1,7 +1,7 @@
 /**
  * Created by tedshaffer on 12/13/15.
  */
-angular.module('myApp').controller('scheduledRecordings', ['$scope', '$http', 'jtrServerService', 'jtrStationsService', function($scope, $http, $jtrServerService, $jtrStationsService){
+angular.module('jtr').controller('scheduledRecordings', ['$scope', '$http', 'jtrServerService', 'jtrStationsService', function($scope, $http, $jtrServerService, $jtrStationsService){
 
     $scope.invokeScheduledRecordingAction = function(action, recordingId) {
 

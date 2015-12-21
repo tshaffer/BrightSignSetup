@@ -1,7 +1,7 @@
 /**
  * Created by tedshaffer on 12/13/15.
  */
-angular.module('myApp').controller('channelGuide', ['$scope', '$http', 'jtrServerService', 'jtrStationsService', 'jtrBroadcastService', '$uibModal', function($scope, $http, $jtrServerService, $jtrStationsService, $jtrBroadcastService, $uibModal) {
+angular.module('jtr').controller('channelGuide', ['$scope', '$http', 'jtrServerService', 'jtrStationsService', 'jtrBroadcastService', '$uibModal', function($scope, $http, $jtrServerService, $jtrStationsService, $jtrBroadcastService, $uibModal) {
 
     $scope.retrieveEpgData = function() {
         $scope.epgProgramSchedule = {};

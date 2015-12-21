@@ -1,7 +1,7 @@
 /**
  * Created by tedshaffer on 12/13/15.
  */
-angular.module('myApp').controller('footer', ['$scope', '$http', function($scope, $http){
+angular.module('jtr').controller('footer', ['$scope', '$http', function($scope, $http){
 
     $scope.invokeTrickMode = function(trickMode) {
         console.log("trickMode invoked: " + trickMode);
