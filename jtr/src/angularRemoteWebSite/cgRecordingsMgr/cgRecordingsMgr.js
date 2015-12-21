@@ -29,11 +29,7 @@ angular.module('myApp').controller('cgRecordingsMgr', ['$scope', '$http', 'jtrSe
 
         if (broadcastEventData.message == "cgRecordings") {
 
-            var promise = $jtrSettingsService.getSettings();
-            promise.then( function() {
-                $scope.show(broadcastEventData.args);
-            });
-
+            $scope.show(broadcastEventData.args);
         }
     });
 
@@ -74,14 +70,10 @@ angular.module('myApp').controller('cgRecordingsMgr', ['$scope', '$http', 'jtrSe
 
         $scope.scheduledRecordings = [];
 
-        var getStationsPromise = $jtrStationsService.getStations();
         var getScheduledRecordingsPromise = $jtrServerService.getScheduledRecordings(currentDateTime);
+        getScheduledRecordingsPromise.then(function(scheduledRecordings) {
 
-        Promise.all([getStationsPromise, getScheduledRecordingsPromise]).then(function(args) {
-            console.log("examine arg2, arg2, arg3");
-
-            // no result from getStationsPromise so getScheduledRecordings is in args[1]
-            $scope.scheduledRecordings =  args[1].data;
+            $scope.scheduledRecordings =  scheduledRecordings;
 
             $scope.cgSelectedProgram = programData.program;
             $scope.cgSelectedStationId = programData.stationId;

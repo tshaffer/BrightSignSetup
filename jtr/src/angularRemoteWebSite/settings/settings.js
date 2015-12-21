@@ -28,21 +28,18 @@ angular.module('myApp').controller('settings', ['$scope', 'jtrSettingsService', 
         $jtrSettingsService.setSettings($scope.settings);
     }
 
-    var promise = $jtrSettingsService.getSettings();
-    promise.then(function() {
-        console.log("received settings");
-        $scope.settings = $jtrSettingsService.getSettingsResult();
-        // RecordingBitRate
-        // SegmentRecordings
+    $scope.settings = $jtrSettingsService.getSettingsResult();
 
-        $scope.recordingBitRateStr = $scope.settings.RecordingBitRate.toString();
-        if ($scope.settings.SegmentRecordings == 0) {
-            $scope.segmentRecordingsOn = false;
-        }
-        else {
-            $scope.segmentRecordingsOn = true;
-        }
-    });
+    // RecordingBitRate
+    // SegmentRecordings
+
+    $scope.recordingBitRateStr = $scope.settings.RecordingBitRate.toString();
+    if ($scope.settings.SegmentRecordings == 0) {
+        $scope.segmentRecordingsOn = false;
+    }
+    else {
+        $scope.segmentRecordingsOn = true;
+    }
 
 }]);
 

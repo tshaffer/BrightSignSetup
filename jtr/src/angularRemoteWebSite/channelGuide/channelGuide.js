@@ -3,17 +3,6 @@
  */
 angular.module('myApp').controller('channelGuide', ['$scope', '$http', 'jtrServerService', 'jtrStationsService', 'jtrBroadcastService', '$uibModal', function($scope, $http, $jtrServerService, $jtrStationsService, $jtrBroadcastService, $uibModal) {
 
-    $scope.retrieveStations = function() {
-        $scope.getStationsPromise = $jtrStationsService.getStations();
-        $scope.getStationsPromise.then(function() {
-            console.log("getStations success");
-            $scope.stations = $jtrStationsService.getStationsResult();
-            return;
-        }, function(reason) {
-            console.log("getStations failure");
-        });
-    };
-
     $scope.retrieveEpgData = function() {
         $scope.epgProgramSchedule = {};
         $scope.epgProgramScheduleStartDateTime = Date.today().set({year: 2100, month: 0, day: 1, hour: 0});
@@ -602,11 +591,9 @@ angular.module('myApp').controller('channelGuide', ['$scope', '$http', 'jtrServe
     $scope.name = 'Channel Guide';
     console.log($scope.name + " screen displayed");
 
-    $scope.getStationsPromise = null;
     $scope.getEpgDataPromise = null;
 
-    $scope.stations = [];
-    $scope.retrieveStations();
+    $scope.stations = $jtrStationsService.getStationsResult();
 
     // initialize epg data
     $scope.numDaysEpgData = 3;
@@ -625,10 +612,10 @@ angular.module('myApp').controller('channelGuide', ['$scope', '$http', 'jtrServe
     $scope.channelGuideHoursDisplayed = 3;
 
     // display channel guide data
-    if ($scope.getStationsPromise != null && $scope.getEpgDataPromise != null) {
-        Promise.all([$scope.getStationsPromise, $scope.getEpgDataPromise]).then(function() {
-            $scope.show();
-        });
+    if ($scope.getEpgDataPromise != null) {
+        $scope.getEpgDataPromise.then(function() {
+                $scope.show();
+        })
     }
 }]);
 

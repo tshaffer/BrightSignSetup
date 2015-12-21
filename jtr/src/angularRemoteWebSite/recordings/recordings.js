@@ -1,7 +1,7 @@
 /**
  * Created by tedshaffer on 12/13/15.
  */
-angular.module('myApp').controller('recordings', ['$scope', '$http', 'jtrServerService', function ($scope, $http, $jtrServerService) {
+angular.module('myApp').controller('recordings', ['$scope', '$http', 'jtrServerService', 'jtrStationsService', 'jtrSettingsService', function ($scope, $http, $jtrServerService, $jtrStationsService, $jtrSettingsService) {
 
     $scope.playRecordedShow = function (id) {
         console.log("playRecordedShow: " + id);
@@ -112,8 +112,11 @@ angular.module('myApp').controller('recordings', ['$scope', '$http', 'jtrServerS
         })
     };
 
-    $scope.show();
-
+    var getStationsPromise = $jtrStationsService.getStations();
+    var getSettingsPromise = $jtrSettingsService.getSettings();
+    Promise.all([getStationsPromise, getSettingsPromise]).then(function () {
+        $scope.show();
+    });
 }
 ])
 ;
