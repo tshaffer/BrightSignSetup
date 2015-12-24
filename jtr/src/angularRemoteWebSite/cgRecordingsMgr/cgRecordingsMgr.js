@@ -71,9 +71,9 @@ angular.module('jtr').controller('cgRecordingsMgr', ['$scope', '$http', 'jtrServ
         $scope.scheduledRecordings = [];
 
         var getScheduledRecordingsPromise = $jtrServerService.getScheduledRecordings(currentDateTime);
-        getScheduledRecordingsPromise.then(function(scheduledRecordings) {
+        getScheduledRecordingsPromise.then(function(results) {
 
-            $scope.scheduledRecordings =  scheduledRecordings;
+            $scope.scheduledRecordings =  results.data;
 
             $scope.cgSelectedProgram = programData.program;
             $scope.cgSelectedStationId = programData.stationId;
@@ -275,7 +275,7 @@ angular.module('jtr').controller('cgRecordingsMgr', ['$scope', '$http', 'jtrServ
             "segmentRecording": 0
         };
 
-        var promise = serverInterface.browserCommand(commandData);
+        var promise = $jtrServerService.browserCommand(commandData);
         promise.then(function() {
             $scope.retrieveScheduledRecordings();
         })
@@ -335,10 +335,7 @@ angular.module('jtr').controller('cgRecordingsMgr', ['$scope', '$http', 'jtrServ
             $scope.startTimeIndex = args.startTimeIndex;
             $scope.stopTimeIndex = args.stopTimeIndex;
 
-            var promise = $scope.cgRecordProgramFromClient($scope.addRecordToDB);
-            promise.then(function() {
-                $scope.retrieveScheduledRecordings();
-            })
+            $scope.invokeRecordEpisode();
 
         }, function () {
             console.log('recordingOptionsDlg dismissed at: ' + new Date());
