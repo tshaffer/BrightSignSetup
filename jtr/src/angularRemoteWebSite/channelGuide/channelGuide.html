@@ -27,16 +27,9 @@
 
 <div id="cgData">
     <div id="cgTimeLine" class="timeLine"></div>
-    <div id="cgStation0Data" class="cgLine"></div>
-    <div id="cgStation1Data" class="cgLine"></div>
-    <div id="cgStation2Data" class="cgLine"></div>
-    <div id="cgStation3Data" class="cgLine"></div>
-    <div id="cgStation4Data" class="cgLine"></div>
-    <div id="cgStation5Data" class="cgLine"></div>
-    <div id="cgStation6Data" class="cgLine"></div>
-    <div id="cgStation7Data" class="cgLine"></div>
-    <div id="cgStation8Data" class="cgLine"></div>
-    <div id="cgStation9Data" class="cgLine"></div>
+    <div ng-repeat="station in cgData" class="cgLine" id="cgStation{{$index}}Data">
+        <cg-program ng-repeat="program in station.programs"></cg-program>
+    </div>
 </div>
 
 <div id="cgForward">

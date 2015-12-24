@@ -456,6 +456,10 @@ angular.module('jtr').controller('channelGuide', ['$scope', '$http', 'jtrServerS
 
         angular.forEach($scope.stations, function(station, stationIndex) {
 
+            var cgProgramsOnStation = {};
+            cgProgramsOnStation.stationData = station;
+            $scope.cgData.push(cgProgramsOnStation);
+
             // iterate through initialShowsByTimeSlot to get programs to display
             var programSlotIndices = $scope.getProgramSlotIndices(station.StationId);
 
@@ -466,7 +470,7 @@ angular.module('jtr').controller('channelGuide', ['$scope', '$http', 'jtrServerS
             var minutesAlreadyDisplayed = 0;
 
             // build id of div containing the UI elements of the programs for the current station
-            var cgProgramLineName = "#cgStation" + stationIndex.toString() + "Data";
+            var cgProgramLineName = "#cgProgramsOnStation" + stationIndex.toString() + "Data";
             $(cgProgramLineName).empty();
 
             // first show to display for this station
@@ -482,37 +486,27 @@ angular.module('jtr').controller('channelGuide', ['$scope', '$http', 'jtrServerS
             var slotIndex = 0;
             var uiElementCount = 0;
 
-            var toAppend = "";
+            //var toAppend = "";
+            var firstShowOnStation = true;
             minutesToDisplay = 0;
 
+            cgProgramsOnStation.programs = [];
+
             while (indexIntoProgramList < programList.length) {
+
+                showToDisplay.indexIntoProgramList = indexIntoProgramList;
+                cgProgramsOnStation.programs.push(showToDisplay);
 
                 var durationInMinutes = Number(showToDisplay.duration);
 
                 // perform reduction for only the first show in case it's already in progress at the beginning of this station's display
-                if (toAppend == "") {
+                if (firstShowOnStation) {
                     durationInMinutes -= timeDiffInMinutes;
+                    firstShowOnStation = false;
                 }
+                showToDisplay.durationInMinutes = durationInMinutes;
 
                 minutesToDisplay += durationInMinutes;
-
-                var cssClasses = "";
-                var widthSpec = "";
-                if (durationInMinutes == 30) {
-                    cssClasses = "'btn-secondary thirtyMinuteButton'";
-                }
-                else if (durationInMinutes == 60) {
-                    cssClasses = "'btn-secondary sixtyMinuteButton'";
-                }
-                else {
-                    cssClasses = "'btn-secondary variableButton'";
-                    var width = (durationInMinutes / 30) * $scope.widthOfThirtyMinutes;
-                    widthSpec = " style='width:" + width.toString() + "px'";
-                }
-                var id = "show-" + station.StationId + "-" + indexIntoProgramList.toString();
-                var title = showToDisplay.title;
-                toAppend +=
-                    "<button id='" + id + "' class=" + cssClasses + widthSpec + ">" + title + "</button>";
 
                 var programStartTime = minutesAlreadyDisplayed;                     // offset in minutes
                 var programEndTime = minutesAlreadyDisplayed + durationInMinutes;   // offset in minutes
@@ -529,7 +523,6 @@ angular.module('jtr').controller('channelGuide', ['$scope', '$http', 'jtrServerS
 
                 uiElementCount++;
             }
-            $(cgProgramLineName).append(toAppend);
 
             if (minutesToDisplay > maxMinutesToDisplay) {
                 maxMinutesToDisplay = minutesToDisplay;
@@ -590,6 +583,8 @@ angular.module('jtr').controller('channelGuide', ['$scope', '$http', 'jtrServerS
 
     $scope.name = 'Channel Guide';
     console.log($scope.name + " screen displayed");
+
+    $scope.cgData = [];
 
     $scope.getEpgDataPromise = null;
 
