@@ -45,17 +45,17 @@ angular.module('jtr').controller('scheduledRecordings', ['$scope', '$http', 'jtr
                 scheduledRecording.title = jtrScheduledRecording.Title;
                 scheduledRecording.channel = jtrScheduledRecording.Channel;
 
+                // unable to create a filter for this due to failure to properly interpolate - weird issue - try again later.
                 var currentDateTime = new Date();
                 var date = new Date(scheduledRecording.dateTime);
                 var endDateTime = new Date(scheduledRecording.endDateTime);
-
                 var clickAction = "delete";
-                icon = 'glyphicon-remove';
                 if (date <= currentDateTime && currentDateTime < endDateTime) {
                     clickAction = "stop";
-                    icon = 'glyphicon-stop';
                 }
+                scheduledRecording.action = clickAction;
 
+                // unable to create a filter due to jtrStationsService - try again later.
                 var channelParts = scheduledRecording.channel.split('-');
                 var station = $jtrStationsService.getStationFromAtsc(channelParts[0], channelParts[1]);
                 var stationName = "TBD";
@@ -63,9 +63,6 @@ angular.module('jtr').controller('scheduledRecordings', ['$scope', '$http', 'jtr
                     stationName = station.CommonName;
                 }
                 scheduledRecording.stationName = stationName;
-
-                scheduledRecording.icon = icon;
-                scheduledRecording.action = clickAction;
 
                 $scope.scheduledRecordings.push(scheduledRecording);
             }

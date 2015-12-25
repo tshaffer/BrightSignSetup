@@ -20,7 +20,24 @@ angular
         }
     })
 
-    .filter('formatScheduledRecordingFormatMonthDay', function() {
+    .filter('formatScheduledRecordingIcon', function() {
+
+        return function(startDT, endDT) {
+
+            var currentDateTime = new Date();
+            var startDateTime = new Date(startDT);
+            var endDateTime = new Date(endDT);
+
+            var icon = 'glyphicon-remove';
+            if (startDateTime <= currentDateTime && currentDateTime < endDateTime) {
+                icon = 'glyphicon-stop';
+            }
+
+            return icon;
+        }
+    })
+    
+    .filter('formatScheduledRecordingMonthDay', function() {
 
         return function(dateTime) {
 
