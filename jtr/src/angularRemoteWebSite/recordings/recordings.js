@@ -66,8 +66,6 @@ angular.module('jtr').controller('recordings', ['$scope', '$http', 'jtrServerSer
                 recording.transcodeComplete = jtrRecording.TranscodeComplete;
                 recording.path = jtrRecording.path;
 
-// implement the following in filters?
-
                 // IDs
                 var recordingIdStr = recording.recordingId.toString();
                 recording.playRecordingId = "recording" + recordingIdStr;
@@ -75,33 +73,6 @@ angular.module('jtr').controller('recordings', ['$scope', '$http', 'jtrServerSer
                 recording.repeatRecordingId = "repeat" + recordingIdStr;
                 recording.streamRecordingId = "stream" + recordingIdStr;
                 recording.infoRecordingId = "info" + recordingIdStr;
-
-                // RECORDING DATE
-                var weekday = new Array(7);
-                weekday[0] = "Sun";
-                weekday[1] = "Mon";
-                weekday[2] = "Tue";
-                weekday[3] = "Wed";
-                weekday[4] = "Thu";
-                weekday[5] = "Fri";
-                weekday[6] = "Sat";
-
-                var dt = recording.startDateTime;
-                var n = dt.indexOf(".");
-                var formattedDayDate;
-                if (n >= 0) {
-                    var dtCompatible = dt.substring(0, n);
-                    var date = new Date(dtCompatible);
-                    formattedDayDate = weekday[date.getDay()] + " " + (date.getMonth() + 1).toString() + "/" + date.getDate().toString();
-                }
-                else {
-                    formattedDayDate = "poop";
-                }
-                recording.startDateTime = formattedDayDate;
-
-                // POSITION
-                var lastViewedPositionInMinutes = Math.floor(recording.lastViewedPosition / 60);
-                recording.position = lastViewedPositionInMinutes.toString() + " of " + recording.duration.toString() + " minutes";
 
                 $scope.recordings.push(recording);
             }

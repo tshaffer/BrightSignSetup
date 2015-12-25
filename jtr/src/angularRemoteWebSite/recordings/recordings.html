@@ -22,10 +22,9 @@
                 <td><button type='button' class='btn btn-default recorded-shows-icon streamIcon' id='{{recording.streamRecordingId}}' ng-click="streamRecordedShow(recording.recordingId)" aria-label='Left Align'><span class='glyphicon glyphicon-random' aria-hidden='true'></span></button></td>
                 <td><a class='downloadIcon' id='download' href='{{recording.path}}' download='{{recording.title}}'><span class='glyphicon glyphicon-cloud-download' aria-hidden='true'></span></a></td>
                 <td>{{recording.title}}</td>
-                <td>{{recording.startDateTime}}</td>
+                <td>{{recording.startDateTime|formatStartDateTime}}</td>
                 <td><button type='button' class='btn btn-default recorded-shows-icon' id='{{recording.infoRecordingId}}' ng-click="infoRecordedShow(recording.recordingId)" aria-label='Left Align'><span class='glyphicon glyphicon-info-sign' aria-hidden='true'></span></button></td>
-                <!--<td>{{Position}}</td>-->
-                <td>{{recording.position}}</td>
+                <td>{{recording.lastViewedPosition|formatPosition:recording.duration}}</td>
             </tr>
         </tbody>
     </table>
