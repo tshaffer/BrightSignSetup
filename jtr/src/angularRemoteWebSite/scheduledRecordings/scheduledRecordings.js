@@ -45,26 +45,6 @@ angular.module('jtr').controller('scheduledRecordings', ['$scope', '$http', 'jtr
                 scheduledRecording.startTimeOffset = jtrScheduledRecording.StopTimeOffset;
                 scheduledRecording.title = jtrScheduledRecording.Title;
 
-                // implement the following in filters?
-                /*
-                 Delete / Stop icon
-                 DayOfWeek
-                 Date
-                 Time
-                 Channel
-                 Station Name
-                 Title
-                 */
-
-                var weekday = new Array(7);
-                weekday[0] = "Sun";
-                weekday[1] = "Mon";
-                weekday[2] = "Tue";
-                weekday[3] = "Wed";
-                weekday[4] = "Thu";
-                weekday[5] = "Fri";
-                weekday[6] = "Sat";
-
                 var currentDateTime = new Date();
                 var date = new Date(scheduledRecording.dateTime);
                 var endDateTime = new Date(scheduledRecording.endDateTime);
@@ -75,32 +55,6 @@ angular.module('jtr').controller('scheduledRecordings', ['$scope', '$http', 'jtr
                     clickAction = "stop";
                     icon = 'glyphicon-stop';
                 }
-
-                var dayOfWeek = weekday[date.getDay()];
-
-                var monthDay = (date.getMonth() + 1).toString() + "/" + date.getDate().toString();
-
-                var amPM = "am";
-
-                var numHours = date.getHours();
-                if (numHours == 0) {
-                    numHours = 12;
-                }
-                else if (numHours > 12) {
-                    numHours -= 12;
-                    amPM = "pm";
-                }
-                else if (numHours == 12) {
-                    amPM = "pm";
-                }
-                var hoursLbl = numHours.toString();
-
-                //if (hoursLbl.length == 1) hoursLbl = "&nbsp" + hoursLbl;
-                //if (hoursLbl.length == 1) hoursLbl = hoursLbl;
-
-                var minutesLbl = twoDigitFormat(date.getMinutes().toString());
-
-                var timeOfDay = hoursLbl + ":" + minutesLbl + amPM;
 
                 var channel = scheduledRecording.channel;
                 var channelParts = channel.split('-');
@@ -114,13 +68,8 @@ angular.module('jtr').controller('scheduledRecordings', ['$scope', '$http', 'jtr
                     stationName = station.CommonName;
                 }
 
-                var scheduledRecordingAttributes = {};
-                scheduledRecording.dayOfWeek = dayOfWeek;
-                scheduledRecording.monthDay = monthDay;
-                scheduledRecording.timeOfDay = timeOfDay;
                 scheduledRecording.channel = channel;
                 scheduledRecording.stationName = stationName;
-                //scheduledRecording.recordingId = clickAction + id;
                 scheduledRecording.icon = icon;
                 scheduledRecording.action = clickAction;
 
