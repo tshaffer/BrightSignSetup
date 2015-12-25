@@ -32,7 +32,6 @@ angular.module('jtr').controller('scheduledRecordings', ['$scope', '$http', 'jtr
                 var jtrScheduledRecording = result.data[i];
 
                 scheduledRecording = {};
-                scheduledRecording.channel = jtrScheduledRecording.Channel;
                 scheduledRecording.dateTime = jtrScheduledRecording.DateTime;
                 scheduledRecording.duration = jtrScheduledRecording.Duration;
                 scheduledRecording.endDateTime = jtrScheduledRecording.EndDateTime;
@@ -44,6 +43,7 @@ angular.module('jtr').controller('scheduledRecordings', ['$scope', '$http', 'jtr
                 scheduledRecording.startTimeOffset = jtrScheduledRecording.StartTimeOffset;
                 scheduledRecording.startTimeOffset = jtrScheduledRecording.StopTimeOffset;
                 scheduledRecording.title = jtrScheduledRecording.Title;
+                scheduledRecording.channel = jtrScheduledRecording.Channel;
 
                 var currentDateTime = new Date();
                 var date = new Date(scheduledRecording.dateTime);
@@ -56,20 +56,14 @@ angular.module('jtr').controller('scheduledRecordings', ['$scope', '$http', 'jtr
                     icon = 'glyphicon-stop';
                 }
 
-                var channel = scheduledRecording.channel;
-                var channelParts = channel.split('-');
-                if (channelParts.length == 2 && channelParts[1] == "1") {
-                    channel = channelParts[0];
-                }
-
+                var channelParts = scheduledRecording.channel.split('-');
                 var station = $jtrStationsService.getStationFromAtsc(channelParts[0], channelParts[1]);
                 var stationName = "TBD";
                 if (station != null) {
                     stationName = station.CommonName;
                 }
-
-                scheduledRecording.channel = channel;
                 scheduledRecording.stationName = stationName;
+
                 scheduledRecording.icon = icon;
                 scheduledRecording.action = clickAction;
 

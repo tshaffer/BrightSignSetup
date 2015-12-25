@@ -29,6 +29,18 @@ angular
         }
     })
 
+    .filter('formatScheduledRecordingChannel', function() {
+
+        return function(channel) {
+
+            var channelParts = channel.split('-');
+            if (channelParts.length == 2 && channelParts[1] == "1") {
+                channel = channelParts[0];
+            }
+            return channel;
+        }
+    })
+
     .filter('formatScheduledRecordingTimeOfDay', function() {
 
         return function(dateTime) {
