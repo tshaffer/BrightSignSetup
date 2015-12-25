@@ -161,6 +161,7 @@ ClientBin/
 *.publishsettings
 node_modules/
 staging/
+old_staging
 
 # RIA/Silverlight projects
 Generated_Code/
