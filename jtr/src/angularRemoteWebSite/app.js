@@ -36,7 +36,7 @@ angular
             return icon;
         }
     })
-    
+
     .filter('formatScheduledRecordingMonthDay', function() {
 
         return function(dateTime) {
