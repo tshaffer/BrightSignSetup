@@ -52,14 +52,8 @@
 <header>
     <nav class="navbar navbar-default">
         <div class="container">
-
-            <ul class="nav navbar-nav">
-                <li><a href="#/recordings"></i>Recordings</a></li>
-                <li><a href="#/channelGuide">Channel Guide</a></li>
-                <li><a href="#/scheduledRecordings">Scheduled Recordings</a></li>
-                <li><a href="#/manualRecord">Manual Record</a></li>
-                <li><a href="#/recordNow">Record Now</a></li>
-                <li><a href="#/settings">Settings</a></li>
+            <ul class="nav navbar-nav" ng-controller="NavsCtrl">
+                <li ng-class="navClass(nav)" ng-repeat="nav in navs"><a href="{{nav.link}}" ng-click="setSelectedNav(nav)">{{nav.label}}</a></li>
             </ul>
         </div>
     </nav>
