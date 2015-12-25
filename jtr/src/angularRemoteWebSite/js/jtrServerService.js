@@ -5,8 +5,16 @@ angular.module('jtr').service('jtrServerService', ['$http', function($http){
 
     var self = this;
 
-    this.baseUrl = "http://192.168.0.109:8080/";
-    //this.baseUrl = "http://10.1.0.241:8080/";
+    var baseURL = document.baseURI.replace("?", "");
+    if (baseURL.indexOf("localhost") >= 0) {
+        this.baseUrl = "http://192.168.0.109:8080/";
+    }
+    else
+    {
+        this.baseUrl = document.baseURI.substr(0, document.baseURI.lastIndexOf(":")) + ":8080/";
+    }
+
+    //this.baseUrl = "http://192.168.0.109:8080/";
 
     this.lastTunedChannelResult = null;
 
