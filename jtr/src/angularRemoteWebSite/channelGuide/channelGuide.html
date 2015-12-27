@@ -25,7 +25,7 @@
     <p class="cgStationLine">44 KBCW</p>
 </div>
 
-<div id="cgData">
+<div id="cgData" ng-keydown="handleKeyPress($event);">
     <div id="cgTimeLine" class="timeLine"></div>
     <div ng-repeat="station in cgData" class="cgLine" id="cgStation{{$index}}Data">
         <cg-program ng-repeat="program in station.programs"></cg-program>

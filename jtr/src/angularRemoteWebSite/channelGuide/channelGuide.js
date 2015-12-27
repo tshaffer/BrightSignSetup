@@ -3,6 +3,13 @@
  */
 angular.module('jtr').controller('channelGuide', ['$scope', 'jtrServerService', 'jtrStationsService', 'jtrBroadcastService','jtrEpgFactory', function($scope, $jtrServerService, $jtrStationsService, $jtrBroadcastService, $jtrEpgFactory) {
 
+    var constants = {};
+    constants.KEY_ENTER = 13;
+    constants.KEY_LEFT= 37;
+    constants.KEY_UP = 38;
+    constants.KEY_RIGHT = 39;
+    constants.KEY_DOWN = 40;
+
     $scope.getProgramScheduleStartDateTime = function() {
         return $scope.epgProgramScheduleStartDateTime;
     };
@@ -16,6 +23,134 @@ angular.module('jtr').controller('channelGuide', ['$scope', 'jtrServerService', 
         var programSlotIndices = programStationData.initialShowsByTimeSlot;
         return programSlotIndices;
     };
+
+    // get the index of the button in a row / div
+    $scope.getActiveButtonIndex = function (activeButton, buttonsInRow) {
+
+        var positionOfActiveElement = $(activeButton).position();
+
+        var indexOfActiveButton = -1;
+        $.each(buttonsInRow, function (buttonIndex, buttonInRow) {
+            var buttonPosition = $(buttonInRow).position();
+            if (buttonPosition.left == positionOfActiveElement.left) {
+                indexOfActiveButton = buttonIndex;
+                return false;
+            }
+        });
+        return indexOfActiveButton;
+    }
+
+    $scope.navigateChannelGuide = function (direction) {
+
+        // get div for current active button
+        var activeStationRowUIElement = $scope._currentSelectedProgramButton.parentElement;           // current row of the channel guide
+        var programUIElementsInStation = $(activeStationRowUIElement).children();                   // programs in that row
+
+        var indexOfSelectedProgramElement = $scope.getActiveButtonIndex($scope._currentSelectedProgramButton, programUIElementsInStation);
+        if (indexOfSelectedProgramElement >= 0) {
+            if (direction == "right") {
+
+                var programEndIsVisible = $scope.isProgramEndVisible($scope._currentSelectedProgramButton);
+
+                // if the end of the current program is fully visible, go to the next program
+                // if the start of the next program is not visible, scroll to the left by 30 minutes
+                // select the next program
+                if (programEndIsVisible) {
+                    var indexOfNewProgramElement = indexOfSelectedProgramElement + 1;
+                    if (indexOfNewProgramElement < $(programUIElementsInStation).length) {
+                        var newProgramElement = $(programUIElementsInStation)[indexOfNewProgramElement];
+                        var programStartIsVisible = $scope.isProgramStartVisible(newProgramElement);
+                        if (!programStartIsVisible) {
+                            newScrollToTime = new Date($scope.channelGuideDisplayCurrentDateTime).addMinutes(30);
+                            $scope.scrollToTime(newScrollToTime);
+                        }
+                        $scope.updateTextAlignment();
+                        $scope.selectProgram($scope._currentSelectedProgramButton, newProgramElement);
+                    }
+                }
+
+                // else if the current program's end point is not visible, move forward by 30 minutes.
+                else {
+                    newScrollToTime = new Date($scope.channelGuideDisplayCurrentDateTime).addMinutes(30);
+                    var proposedEndTime = new Date(newScrollToTime).addHours($scope.channelGuideHoursDisplayed);
+                    if (proposedEndTime > $scope.channelGuideDisplayEndDateTime) {
+                        newScrollToTime = new Date($scope.channelGuideDisplayEndDateTime).addHours(-$scope.channelGuideHoursDisplayed);
+                    }
+
+                    $scope.scrollToTime(newScrollToTime);
+                    $scope.updateTextAlignment();
+                }
+
+                // JTRTODO - check for limit on right side; either fetch more epg data or stop scrolling at the end
+            }
+            else if (direction == "left") {
+
+                var programStartIsVisible = $scope.isProgramStartVisible($scope._currentSelectedProgramButton);
+
+                // if the start of the current program is fully visible, go to the prior program
+                // if the end of the prior program is not visible, scroll to the right by 30 minutes
+                // select the prior program
+                if (programStartIsVisible) {
+                    if (indexOfSelectedProgramElement > 0) {
+                        var indexOfNewProgramElement = indexOfSelectedProgramElement - 1;
+                        if (indexOfNewProgramElement < $(programUIElementsInStation).length) {
+                            var newProgramElement = $(programUIElementsInStation)[indexOfNewProgramElement];
+                            var programEndIsVisible = $scope.isProgramEndVisible(newProgramElement);
+                            if (!programEndIsVisible) {
+                                newScrollToTime = new Date($scope.channelGuideDisplayCurrentDateTime).addMinutes(-30);
+                                $scope.scrollToTime(newScrollToTime);
+                            }
+                            $scope.selectProgram($scope._currentSelectedProgramButton, newProgramElement);
+                            $scope.updateTextAlignment();
+                        }
+                    }
+                }
+
+                // else if the current program's start point is not visible, move backward by 30 minutes.
+                else {
+                    newScrollToTime = new Date($scope.channelGuideDisplayCurrentDateTime).addMinutes(-30);
+
+                    if (newScrollToTime < $scope.channelGuideDisplayStartDateTime) {
+                        newScrollToTime = new Date($scope.channelGuideDisplayStartDateTime);
+                    }
+
+                    $scope.scrollToTime(newScrollToTime);
+                    $scope.updateTextAlignment();
+                }
+            }
+            else if (direction == "down" || direction == "up") {
+                if (($scope._currentStationIndex < $scope.stations.length - 1 && direction == "down") || ($scope._currentStationIndex > 0 && direction == "up")) {
+
+                    var newRowIndex;
+                    if (direction == "down") {
+                        newRowIndex = $scope._currentStationIndex + 1;
+                    }
+                    else {
+                        newRowIndex = $scope._currentStationIndex - 1;
+                    }
+
+                    // when moving up/down, don't scroll
+                    // select the program at the same time
+                    // if that program's start is visible, the $scope.selectProgramTime is the start time of the current selected program
+                    // if it's not visible, the $scope.selectProgramTime is the current start of display of the channel guide
+                    var selectProgramTime;
+                    var programStartIsVisible = $scope.isProgramStartVisible($scope._currentSelectedProgramButton);
+                    if (programStartIsVisible) {
+                        var programInfo = $scope.parseProgramId($scope._currentSelectedProgramButton);
+
+                        var programList = $scope.getProgramList(programInfo.stationId);
+                        selectProgramTime = programList[programInfo.programIndex].date;
+                    }
+                    else {
+                        selectProgramTime = $scope.channelGuideDisplayCurrentDateTime;
+                    }
+
+                    $scope.selectProgramAtTimeOnStation(selectProgramTime, newRowIndex, $scope._currentSelectedProgramButton);
+                    $scope.updateTextAlignment();
+                }
+            }
+        }
+    }
 
     $scope.updateTextAlignment = function () {
 
@@ -286,6 +421,61 @@ angular.module('jtr').controller('channelGuide', ['$scope', 'jtrServerService', 
         $scope.selectProgramAtTimeOnStation(newScrollToTime, $scope._currentStationIndex, $scope._currentSelectedProgramButton);
     }
 
+    $scope.handleKeyPress = function(keyEvent) {
+
+        var command = "";
+
+        var keyCode = keyEvent.which;
+        switch (keyCode) {
+            case constants.KEY_ENTER:
+                var programData = $scope.getSelectedStationAndProgram();
+                //$scope.trigger("displayCGPopup", programData);
+                return false;
+                break;
+            case constants.KEY_UP:
+                command = "up";
+                break;
+            case constants.KEY_DOWN:
+                command = "down";
+                break;
+            case constants.KEY_LEFT:
+                command = "left";
+                break;
+            case constants.KEY_RIGHT:
+                command = "right";
+                break;
+            //case "highest_speed_rw":
+            //    $scope.navigateBackwardOneDay();
+            //    return false;
+            //    break;
+            //case "highest_speed_fw":
+            //    $scope.navigateForwardOneDay();
+            //    return false;
+            //    break;
+            //case "prev":
+            //    $scope.navigateBackwardOneScreen();
+            //    return false;
+            //    break;
+            //case "next":
+            //    $scope.navigateForwardOneScreen();
+            //    return false;
+            //    break;
+            //case "exit":
+            //    $scope.trigger("eraseUI");
+            //    return false;
+            //    break;
+            //case "record":
+            //    $scope.invokeRecordSelectedProgram();
+            //    return false;
+            //    break;
+            default:
+                return false;
+                break;
+        }
+
+        $scope.navigateChannelGuide(command);
+        return false;
+    }
 
     $scope.show = function() {
 
