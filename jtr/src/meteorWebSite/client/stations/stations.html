@@ -1,2 +1,10 @@
 <button ui-sref="stations">Stations</button>
 <button ui-sref="settings">Settings</button>
+<br/>
+<br/>
+Number of stations is {{stationList.numStations}}
+<ul>
+    <li ng-repeat="station in stationList.stations">
+        {{station.Name}}
+    </li>
+</ul>
