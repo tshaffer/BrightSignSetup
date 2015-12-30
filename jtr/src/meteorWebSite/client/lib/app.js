@@ -8,12 +8,12 @@ angular.module('jtr').controller('$NavsCtrl', function($scope, $location){
     console.log("NavsCtrl");
 
     $scope.navs = [
-        { state: 'recordings', link : '#/recordings', label : 'Recordings'},
-        { state: 'channelGuide', link : '#/channelGuide', label : 'Channel Guide'},
-        { state: 'scheduledRecordings', link : '#/scheduledRecordings', label : 'Scheduled Recordings'},
-        { state: 'manualrecord', link : '#/manualRecord', label : 'Manual Record'},
-        { state: 'recordNow', link : '#/recordNow', label : 'Record Now'},
-        { state: 'settings', link : '#/settings', label : 'Settings'}
+        { state: 'recordings', label : 'Recordings'},
+        { state: 'channelGuide', label : 'Channel Guide'},
+        { state: 'scheduledRecordings', label : 'Scheduled Recordings'},
+        { state: 'manualrecord', label : 'Manual Record'},
+        { state: 'recordNow', label : 'Record Now'},
+        { state: 'settings', label : 'Settings'}
     ];
 
     $scope.selectedNav = $scope.navs[0];
