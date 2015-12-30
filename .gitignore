@@ -243,4 +243,8 @@ jtr/.idea
 jtr/src/.idea
 jtr/src/meteorWebSite/.idea
 jtr/src/meteorWebSite/.meteor
+.idea
+jtr/src/angularRemoteWebSite/.idea
+
+
 
