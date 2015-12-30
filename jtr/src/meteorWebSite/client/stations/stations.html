@@ -3,6 +3,9 @@
 <br/>
 <br/>
 Number of stations is {{stationList.numStations}}
+<!--Alternate station count is {{stationList.getStationCount()}}-->
+Alternate station count is {{stationList.stationCount}}
+
 <ul>
     <li ng-repeat="station in stationList.stations">
         {{station.Name}}

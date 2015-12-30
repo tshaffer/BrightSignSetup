@@ -10,6 +10,11 @@ angular.module('jtr').service('$jtrStationsService', ['$http', function($http) {
     this.sayHello = function () {
         console.log("hello");
     }
+
+    this.getStations = function() {
+        return Stations.find({});
+    }
+
     //this.settings = {};
     //this.settingsLoaded = false;
     //
