@@ -1,7 +1,7 @@
 /**
  * Created by tedshaffer on 12/28/15.
  */
-angular.module('jtr').directive('stations', function () {
+angular.module('jtr').directive('stations', ['$jtrStationsService', function ($jtrStationsService) {
     return {
         restrict: 'E',
         templateUrl: 'client/stations/stations.html',
@@ -18,6 +18,8 @@ angular.module('jtr').directive('stations', function () {
 
             this.helpers({
                 stations: () => {
+
+                    $jtrStationsService.sayHello();
 
                     return Stations.find({});
 
@@ -62,4 +64,4 @@ angular.module('jtr').directive('stations', function () {
             //}
         }
     }
-});
+}]);
