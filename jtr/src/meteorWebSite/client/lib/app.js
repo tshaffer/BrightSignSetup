@@ -3,6 +3,33 @@
  */
 angular.module('jtr', ['angular-meteor', 'ui.router']);
 
+angular.module('jtr').controller('$NavsCtrl', function($scope, $location){
+
+    console.log("NavsCtrl");
+
+    $scope.navs = [
+        { link : '#/recordings', label : 'Recordings'},
+        { link : '#/channelGuide', label : 'Channel Guide'},
+        { link : '#/scheduledRecordings', label : 'Scheduled Recordings'},
+        { link : '#/manualRecord', label : 'Manual Record'},
+        { link : '#/recordNow', label : 'Record Now'},
+        { link : '#/settings', label : 'Settings'}
+    ];
+
+    $scope.selectedNav = $scope.navs[0];
+    $scope.setSelectedNav = function(nav) {
+        $scope.selectedNav = nav;
+    }
+
+    $scope.navClass = function(nav) {
+        if ($scope.selectedNav == nav) {
+            return "active";
+        } else {
+            return "";
+        }
+    }
+});
+
 angular.module('jtr').service('$jtrStationsService', ['$http', function($http) {
 
     console.log("I am jtrStationsService");
