@@ -5,6 +5,10 @@ angular.module('jtr').config(function ($urlRouterProvider, $stateProvider, $loca
     $locationProvider.html5Mode(true);
 
     $stateProvider
+        .state('recordings', {
+            url: '/recordings',
+            template: '<recordings></recordings>'
+        })
         .state('stations', {
             url: '/stations',
             template: '<stations></stations>'
@@ -14,5 +18,5 @@ angular.module('jtr').config(function ($urlRouterProvider, $stateProvider, $loca
             template: '<settings></settings>'
         });
 
-    $urlRouterProvider.otherwise("/stations");
+    $urlRouterProvider.otherwise("/recordings");
 });
