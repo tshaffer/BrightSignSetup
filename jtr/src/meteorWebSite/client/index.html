@@ -10,26 +10,16 @@
         <div>
             <ul class="nav navbar-nav" ng-controller="$NavsCtrl">
                 <!--<li ng-class="navClass(nav)" ng-repeat="nav in navs"><a href="{{nav.link}}" ng-click="setSelectedNav(nav)">{{nav.label}}</a></li>-->
-                <li ng-class="navClass(nav)" ng-repeat="nav in navs"><a href="{{nav.link}}" ng-click="setSelectedNav(nav)">{{nav.label}}</a></li>
-                <!--<li><a href="#/recordings">Recordings</a></li>-->
-                <!--<li><a href="#/channelGuide">Channel Guide</a></li>-->
-                <!--<li><a href="#/scheduledRecordings">Scheduled Recordings</a></li>-->
-                <!--<li><a href="#/manualRecord">Manual Record</a></li>-->
+                <!--<li ng-class="navClass(nav)" ng-repeat="nav in navs"><a href="{{nav.link}}" ng-click="setSelectedNav(nav)">{{nav.label}}</a></li>-->
+                <li ng-class="navClass(nav)" ng-repeat="nav in navs"><button ui-sref="{{nav.state}}">{{nav.label}}</button>
+                <!--<a href="{{nav.link}}" ng-click="setSelectedNav(nav)">{{nav.label}}</a></li>-->
+                <!--<button ui-sref="settings">Settings</button>-->
+
             </ul>
         </div>
     </nav>
 </header>
 
 <div ui-view=""></div>
-
-<!--<div ng-app="jtr" ng-strict-di="">-->
-
-    <!--<h3>-->
-        <!--<a href="/recordings">Recordings</a>-->
-        <!--<a href="/stations">Stations</a>-->
-    <!--</h3>-->
-
-    <!--<div ui-view=""></div>-->
-<!--</div>-->
 
 </body>
