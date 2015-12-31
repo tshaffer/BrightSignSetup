@@ -21,26 +21,8 @@ angular.module('jtr').directive('scheduledRecordings', ['$jtrStationsService', f
             //    return $jtrStationsService.getStations();
             //}
             this.helpers({
-                stations: () => {
-
-                    //$jtrStationsService.sayHello();
-                    //
-                    //return $jtrStationsService.getStations();
-                    //return Stations.find({});
-
-                    //var theStations = Stations.find({});
-                    //
-                    //this.allStations = [];
-                    //
-                    //var self = this;
-                    //
-                    //angular.forEach(theStations, function(station, stationIndex) {
-                    //    self.allStations.push(station);
-                    //});
-                    //
-                    //this.numStations = this.allStations.length;
-                    //
-                    //return this.allStations;
+                scheduledRecordings: () => {
+                    return ScheduledRecordings.find({});
                 },
 
                 numStations: () => {

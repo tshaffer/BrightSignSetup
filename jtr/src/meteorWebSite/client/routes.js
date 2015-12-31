@@ -10,7 +10,7 @@ angular.module('jtr').config(function ($urlRouterProvider, $stateProvider, $loca
             template: '<recordings></recordings>'
         })
         .state('manualrecord', {
-            url: '/manualecord',
+            url: '/manualrecord',
             template: '<manualrecord></manualrecord>'
         })
         .state('scheduledRecordings', {

@@ -1,1 +1,23 @@
-No hyphen scheduled recordings
+<!--Scheduled recordings-->
+<!--<ul>-->
+    <!--<li ng-repeat="scheduledRecording in scheduledRecordingsList.scheduledRecordings">-->
+        <!--{{scheduledRecording.title}}-->
+    <!--</li>-->
+<!--</ul>-->
+<div id="scheduledRecordingsPage">
+    <p class="alignleft" id="scheduledRecordingsTitle">Scheduled Recordings</p>
+    <div style="clear: both;"></div>
+    <table class="table">
+        <tbody id="scheduledRecordingsTableBody">
+        <tr ng-repeat="scheduledRecording in scheduledRecordingsList.scheduledRecordings">
+            <td><button type='button' class='btn btn-default recorded-shows-icon' id='{{scheduledRecording.recordingId}}' ng-click="invokeScheduledRecordingAction(scheduledRecording.action, scheduledRecording.recordingId)" aria-label='Left Align'><span class='glyphicon {{scheduledRecording.dateTime|formatScheduledRecordingIcon:scheduledRecording.endDateTime}}' aria-hidden='true'></span></button></td>
+            <td>{{scheduledRecording.dateTime|formatScheduledRecordingDayOfWeek}}</td>
+            <td>{{scheduledRecording.dateTime|formatScheduledRecordingMonthDay}}</td>
+            <td>{{scheduledRecording.dateTime|formatScheduledRecordingTimeOfDay}}</td>
+            <td>{{scheduledRecording.channel|formatScheduledRecordingChannel}}</td>
+            <td>{{scheduledRecording.stationName}}</td>
+            <td>{{scheduledRecording.title}}</td>
+        </tr>
+        </tbody>
+    </table>
+</div>

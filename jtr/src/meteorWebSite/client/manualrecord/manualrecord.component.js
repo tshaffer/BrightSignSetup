@@ -9,6 +9,14 @@ angular.module('jtr').directive('manualrecord', ['$jtrStationsService', function
         controller: function ($scope, $reactive) {
             $reactive(this).attach($scope);
 
+            this.date = new Date();
+            var timeObj = new Date();
+            this.time = timeObj.set({
+                millisecond: 0,
+                second: 0,
+            });
+
+
             this.getRecordingTitle = function (title, dateObj, inputSource, channel) {
 
                 if (!title) {
@@ -54,6 +62,7 @@ angular.module('jtr').directive('manualrecord', ['$jtrStationsService', function
                 this.manualRecordingParameters.title = this.getRecordingTitle(this.title, dateObj, this.inputSource, this.channel);
                 this.manualRecordingParameters.dateTime = dateObj;
                 this.manualRecordingParameters.duration = this.duration;
+                this.manualRecordingParameters.endDateTime = dtEndOfRecording;
                 this.manualRecordingParameters.inputSource = this.inputSource;
                 this.manualRecordingParameters.channel = this.channel;
                 this.manualRecordingParameters.scheduledSeriesRecordingId = -1;
