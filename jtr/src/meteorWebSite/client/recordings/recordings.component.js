@@ -9,71 +9,13 @@ angular.module('jtr').directive('recordings', ['$jtrStationsService', function (
         controller: function ($scope, $reactive) {
             $reactive(this).attach($scope);
 
-            //this.numStations = 2;
+            console.log("I am recordings");
 
-            //this.getStationCount = function() {
-            //    //return this.allStations.length;
-            //    return 3;
-            //}
-
-            //this.stations = function() {
-            //    return $jtrStationsService.getStations();
-            //}
             this.helpers({
-                stations: () => {
-
-                    //$jtrStationsService.sayHello();
-                    //
-                    //return $jtrStationsService.getStations();
-                    //return Stations.find({});
-
-                    //var theStations = Stations.find({});
-                    //
-                    //this.allStations = [];
-                    //
-                    //var self = this;
-                    //
-                    //angular.forEach(theStations, function(station, stationIndex) {
-                    //    self.allStations.push(station);
-                    //});
-                    //
-                    //this.numStations = this.allStations.length;
-                    //
-                    //return this.allStations;
-                },
-
-                numStations: () => {
-                    return 4;
-                },
-
-                stationCount: () => {
-                    return 5;
+                recordings: () => {
+                    return Recordings.find({});
                 }
             })
-            //this.newParty = {};
-            //
-            //this.helpers({
-            //        parties: () => {
-            //            return Parties.find({});
-            //        }
-            //    }
-            //)
-            //;
-            //
-            //this.addParty = () => {
-            //    Parties.insert(this.newParty);
-            //    this.newParty = {};
-            //}
-            //;
-            //
-            ////this.addParty = function() {
-            ////    Parties.insert(this.newParty);
-            ////    this.newParty = {};
-            ////}.bind(this);
-            //
-            //this.removeParty = (party) => {
-            //    Parties.remove({_id: party._id});
-            //}
         }
     }
 }]);

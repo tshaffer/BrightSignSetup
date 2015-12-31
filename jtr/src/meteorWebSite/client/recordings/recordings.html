@@ -1,1 +1,30 @@
-Recorded Shows
+<div id="recordedShowsPage">
+    <table class="table">
+        <thead>
+        <tr>
+            <th class="play"></th>
+            <th class="delete"></th>
+            <th class="repeat"></th>
+            <th class="stream"></th>
+            <th class="download"></th>
+            <th class="replayGuideTitle">Title</th>
+            <th class="recorded">Recorded</th>
+            <th class="showInfo">Info</th>
+            <th class="position">Position</th>
+        </tr>
+        </thead>
+        <tbody id="recordedShowsTableBody">
+        <tr ng-repeat="recording in recordingsList.recordings">
+            <td><button type='button' class='btn btn-default recorded-shows-icon' id='{{recording.playRecordingId}}' ng-click="playRecordedShow(recording.recordingId)" aria-label='Left Align'><span class='glyphicon glyphicon-play' aria-hidden='true'></span></button></td>
+            <td><button type='button' class='btn btn-default recorded-shows-icon' id='{{recording.deleteRecordingId}}' ng-click="deleteRecordedShow(recording.recordingId)" aria-label='Left Align'><span class='glyphicon glyphicon-remove' aria-hidden='true'></span></button></td>
+            <td><button type='button' class='btn btn-default recorded-shows-icon' id='{{recording.repeatRecordingId}}' ng-click="repeatRecordedShow(recording.recordingId)" aria-label='Left Align'><span class='glyphicon glyphicon-repeat' aria-hidden='true'></span></button></td>
+            <td><button type='button' class='btn btn-default recorded-shows-icon streamIcon' id='{{recording.streamRecordingId}}' ng-click="streamRecordedShow(recording.recordingId)" aria-label='Left Align'><span class='glyphicon glyphicon-random' aria-hidden='true'></span></button></td>
+            <td><a class='downloadIcon' id='download' href='{{recording.Path}}' download='{{recording.Title}}'><span class='glyphicon glyphicon-cloud-download' aria-hidden='true'></span></a></td>
+            <td>{{recording.Title}}</td>
+            <td>{{recording.StartDateTime|formatStartDateTime}}</td>
+            <td><button type='button' class='btn btn-default recorded-shows-icon' id='{{recording.InfoRecordingId}}' ng-click="infoRecordedShow(recording.RecordingId)" aria-label='Left Align'><span class='glyphicon glyphicon-info-sign' aria-hidden='true'></span></button></td>
+            <td>{{recording.LastViewedPosition|formatPosition:recording.Duration}}</td>
+        </tr>
+        </tbody>
+    </table>
+</div>
