@@ -9,6 +9,7 @@ angular.module('jtr').directive('manualrecord', ['$jtrStationsService', function
         controller: function ($scope, $reactive) {
             $reactive(this).attach($scope);
 
+// initialize model variables
             this.date = new Date();
             var timeObj = new Date();
             this.time = timeObj.set({
@@ -16,6 +17,12 @@ angular.module('jtr').directive('manualrecord', ['$jtrStationsService', function
                 second: 0,
             });
 
+            this.inputSource = "tuner";
+
+// handlers
+            this.showChannel = function() {
+                return this.inputSource == "tuner";
+            };
 
             this.getRecordingTitle = function (title, dateObj, inputSource, channel) {
 
@@ -65,6 +72,12 @@ angular.module('jtr').directive('manualrecord', ['$jtrStationsService', function
                 this.manualRecordingParameters.endDateTime = dtEndOfRecording;
                 this.manualRecordingParameters.inputSource = this.inputSource;
                 this.manualRecordingParameters.channel = this.channel;
+                if (this.inputSource == "tuner") {
+                    this.manualRecordingParameters.stationName = "TBD";
+                }
+                else {
+                    this.manualRecordingParameters.stationName = "";
+                }
                 this.manualRecordingParameters.scheduledSeriesRecordingId = -1;
 
                 //$jtrServerService.manualRecording($scope.manualRecordingParameters);

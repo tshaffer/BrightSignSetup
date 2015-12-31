@@ -86,12 +86,16 @@ angular.module('jtr').filter('formatScheduledRecordingChannel', function() {
 
         return function(channel) {
 
-            return channel;
-            //var channelParts = channel.split('-');
-            //if (channelParts.length == 2 && channelParts[1] == "1") {
-            //    channel = channelParts[0];
-            //}
-            //return channel;
+            var channelSpec = "";
+
+            if (channel != undefined) {
+                channelSpec = channel;
+                var channelParts = channel.split('-');
+                if (channelParts.length == 2 && channelParts[1] == "1") {
+                    channelSpec = channelParts[0];
+                }
+            }
+            return channelSpec;
         }
     })
 
