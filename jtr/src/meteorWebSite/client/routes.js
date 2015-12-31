@@ -13,6 +13,10 @@ angular.module('jtr').config(function ($urlRouterProvider, $stateProvider, $loca
             url: '/manualecord',
             template: '<manualrecord></manualrecord>'
         })
+        .state('scheduledRecordings', {
+            url: '/scheduledRecordings',
+            template: '<scheduled-recordings></scheduled-recordings>'
+        })
         .state('stations', {
             url: '/stations',
             template: '<stations></stations>'
