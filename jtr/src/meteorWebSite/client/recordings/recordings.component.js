@@ -24,8 +24,9 @@ angular.module('jtr').directive('recordings', ['$jtrStationsService', '$jtrServe
                 })
             }
 
-            this.deleteRecordedShow = function(id) {
-                console.log("deleteRecordedShow: " + id.toString());
+            this.deleteRecordedShow = function(recording) {
+                console.log("deleteRecordedShow: " + recording.toString());
+                Recordings.remove({ _id: recording._id });
             }
 
             this.helpers({

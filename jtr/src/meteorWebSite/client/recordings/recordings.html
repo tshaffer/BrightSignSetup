@@ -16,7 +16,7 @@
         <tbody id="recordedShowsTableBody">
         <tr ng-repeat="recording in recordingsList.recordings">
             <td><button type='button' class='btn btn-default recorded-shows-icon' ng-click="recordingsList.playRecordedShow(recording.RecordingId)" aria-label='Left Align'><span class='glyphicon glyphicon-play' aria-hidden='true'></span></button></td>
-            <td><button type='button' class='btn btn-default recorded-shows-icon' ng-click="recordingsList.deleteRecordedShow(recording.RecordingId)" aria-label='Left Align'><span class='glyphicon glyphicon-remove' aria-hidden='true'></span></button></td>
+            <td><button type='button' class='btn btn-default recorded-shows-icon' ng-click="recordingsList.deleteRecordedShow(recording)" aria-label='Left Align'><span class='glyphicon glyphicon-remove' aria-hidden='true'></span></button></td>
             <td><button type='button' class='btn btn-default recorded-shows-icon' ng-click="repeatRecordedShow(recording.RecordingId)" aria-label='Left Align'><span class='glyphicon glyphicon-repeat' aria-hidden='true'></span></button></td>
             <td><button type='button' class='btn btn-default recorded-shows-icon streamIcon' id='{{recording.streamRecordingId}}' ng-click="streamRecordedShow(recording.recordingId)" aria-label='Left Align'><span class='glyphicon glyphicon-random' aria-hidden='true'></span></button></td>
             <td><a class='downloadIcon' id='download' href='{{recording.Path}}' download='{{recording.Title}}'><span class='glyphicon glyphicon-cloud-download' aria-hidden='true'></span></a></td>
