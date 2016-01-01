@@ -3,22 +3,35 @@
  */
 Meteor.startup(function () {
 
-    debugger;
-    console.log("invoke getRecordings");
     var url = "http://192.168.0.108:8080/getRecordings";
-    HTTP.call(
-        'GET',
-        url,
-        { },
-        function ( error, response ) {
-            if (error) {
-                console.log("error");
-            }
-            else {
-                console.log(response);
-            }
+
+    // meteor's HTTP  - the code below works
+    //debugger;
+    //console.log("invoke getRecordings");
+    //var url = "http://192.168.0.108:8080/getRecordings";
+    //HTTP.call(
+    //    'GET',
+    //    url,
+    //    { },
+    //    function ( error, response ) {
+    //        if (error) {
+    //            console.log("error");
+    //        }
+    //        else {
+    //            console.log(response);
+    //        }
+    //    }
+    //);
+
+    debugger;
+
+    var req = Npm.require("request");
+
+    req(url, function (error, response, body) {
+        if (!error && response.statusCode == 200) {
+            console.log(body) // Show the HTML for the Google homepage.
         }
-    );
+    })
 
     var numStations = Stations.find().count();
     console.log("numStations is " + numStations.toString());
