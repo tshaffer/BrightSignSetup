@@ -11,6 +11,14 @@ angular.module('jtr').directive('recordings', ['$jtrStationsService', function (
 
             console.log("I am recordings");
 
+            this.playRecordedShow = function(id) {
+                console.log("playRecordedShow: " + id.toString());
+            }
+
+            this.deleteRecordedShow = function(id) {
+                console.log("deleteRecordedShow: " + id.toString());
+            }
+
             this.helpers({
                 recordings: () => {
                     return Recordings.find({});

@@ -2,7 +2,9 @@
  * Created by tedshaffer on 12/28/15.
  */
 Meteor.startup(function () {
-    if (Stations.find().count() === 0) {
+    var numStations = Stations.find().count();
+    console.log("numStations is " + numStations.toString());
+    if (numStations == 0) {
         var stations = [
             {
                 'StationId': '19571',
