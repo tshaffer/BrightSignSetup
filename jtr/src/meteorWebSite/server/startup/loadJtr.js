@@ -2,6 +2,24 @@
  * Created by tedshaffer on 12/28/15.
  */
 Meteor.startup(function () {
+
+    debugger;
+    console.log("invoke getRecordings");
+    var url = "http://192.168.0.108:8080/getRecordings";
+    HTTP.call(
+        'GET',
+        url,
+        { },
+        function ( error, response ) {
+            if (error) {
+                console.log("error");
+            }
+            else {
+                console.log(response);
+            }
+        }
+    );
+
     var numStations = Stations.find().count();
     console.log("numStations is " + numStations.toString());
     if (numStations == 0) {
