@@ -5,6 +5,13 @@ Meteor.startup(function () {
 
     debugger;
 
+    Recordings.before.remove(function (userId, doc) {
+        debugger;
+        console.log("Recordings.before.remove invoked");
+        console.log("Delete file: " + doc.FileName);
+        return true;
+    });
+
     var url = "http://192.168.0.108:8080/getRecordings";
 
     // meteor's HTTP  - the code below works
