@@ -29,6 +29,7 @@ angular.module('jtr').service('$jtrServerService', ['$http', function($http){
         //});
         //return promise;
 
+        // code using Meteor's HTTP rather than angular $http
         HTTP.call(
             'GET',
             url,

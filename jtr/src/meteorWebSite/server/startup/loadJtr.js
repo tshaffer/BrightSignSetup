@@ -3,6 +3,8 @@
  */
 Meteor.startup(function () {
 
+    debugger;
+
     var url = "http://192.168.0.108:8080/getRecordings";
 
     // meteor's HTTP  - the code below works
@@ -23,15 +25,18 @@ Meteor.startup(function () {
     //    }
     //);
 
-    debugger;
-
-    var req = Npm.require("request");
-
-    req(url, function (error, response, body) {
-        if (!error && response.statusCode == 200) {
-            console.log(body) // Show the HTML for the Google homepage.
-        }
-    })
+    // using npm module 'request' worked with code below.
+    // also see:
+    ////      <root of webSite>/packages.json
+    //var request = Npm.require("request");
+    //request(url, function (error, response, body) {
+    //    if (error) {
+    //        console.log(error);
+    //    }
+    //    else if (response.statusCode == 200) {
+    //        console.log(body);
+    //    }
+    //})
 
     var numStations = Stations.find().count();
     console.log("numStations is " + numStations.toString());
