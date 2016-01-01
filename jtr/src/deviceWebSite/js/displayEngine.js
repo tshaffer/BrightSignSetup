@@ -214,10 +214,10 @@ displayEngineStateMachine.prototype.playSelectedShow = function (recordingId) {
     console.log("playSelectedShow " + recordingId);
 
     // if there's a current recording, save it for later possible jump
-    this.stateMachine.priorSelectedRecording = this.stateMachine.currentRecording;
+    //this.stateMachine.priorSelectedRecording = this.stateMachine.currentRecording;
 
     // set new recording
-    this.stateMachine.currentRecording = _currentRecordings[recordingId];
+    //this.stateMachine.currentRecording = _currentRecordings[recordingId];
 
     // save lastSelectedShowId in db
     var parts = [];
@@ -226,10 +226,8 @@ displayEngineStateMachine.prototype.playSelectedShow = function (recordingId) {
     var url = baseURL + "lastSelectedShow";
     $.post(url, paramString);
 
-    //eraseUI();
-
     // initialize value used by progress bar to last position viewed
-    this.stateMachine.currentOffset = this.stateMachine.currentRecording.LastViewedPosition;
+    //this.stateMachine.currentOffset = this.stateMachine.currentRecording.LastViewedPosition;
 
     bsMessage.PostBSMessage({ command: "playRecordedShow", "recordingId": recordingId });
 }
