@@ -36,19 +36,6 @@ Meteor.startup(function () {
         return true;
     });
 
-    //I20160102-05:17:42.641(-8)? ScheduledRecordings.after.insert
-    //I20160102-05:17:42.643(-8)? { title: 'newMR',
-    //I20160102-05:17:42.643(-8)?   dateTime: Sat Jan 02 2016 06:17:00 GMT-0800 (PST),
-    //I20160102-05:17:42.643(-8)?   duration: '5',
-    //I20160102-05:17:42.643(-8)?   endDateTime: Sat Jan 02 2016 06:22:00 GMT-0800 (PST),
-    //I20160102-05:17:42.643(-8)?   inputSource: 'tuner',
-    //I20160102-05:17:42.643(-8)?   channel: '5',
-    //I20160102-05:17:42.643(-8)?   stationName: 'TBD',
-    //I20160102-05:17:42.643(-8)?   scheduledSeriesRecordingId: -1,
-    //I20160102-05:17:42.644(-8)?   _id: 'moTT3vHQAXLDCyWBK' }
-
-
-
 
 
     //var url = "http://192.168.0.108:8080/getRecordings";
