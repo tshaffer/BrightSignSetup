@@ -241,4 +241,9 @@ $RECYCLE.BIN/
 .idea/workspace.xml
 jtr/.idea
 jtr/src/.idea
+jtr/src/meteorWebSite/.idea
+jtr/src/meteorWebSite/.meteor
+jtr/src/angularRemoteWebSite/.idea
+jtr/src/angularRemoteWebSite/.idea/workspace.xml
+
 
