@@ -5,13 +5,18 @@ angular.module('jtr').controller('scheduledRecordings', ['$scope', '$http', 'jtr
 
     $scope.invokeScheduledRecordingAction = function(action, recordingId) {
 
+        var promise;
+
         if (action == "stop") {
-            $jtrServerService.stopActiveRecording(recordingId);
+            promise = $jtrServerService.stopActiveRecording(recordingId);
         }
         else if (action == "delete") {
-            $jtrServerService.deleteScheduledRecording(recordingId);
+            promise = $jtrServerService.deleteScheduledRecording(recordingId);
         }
-        $scope.show();
+
+        promise.then(function() {
+            $scope.show();
+        });
     }
 
     $scope.show = function() {
