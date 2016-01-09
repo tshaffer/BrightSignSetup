@@ -62,8 +62,29 @@ Recording.find({ 'JtrStorageDevice': 'BigScreenJtr' }, function (err, recordings
         for (var key in bigScreenJtrNativeRecordings) {
           if (bigScreenJtrNativeRecordings.hasOwnProperty(key)) {
             if (!(key in bigScreenJtrRecordingsOnMongo)) {
-              var recordingToAddToMongo = bigScreenJtrNativeRecordings[key];
-              console.log("Add " + recordingToAddToMongo.Title + " to mongo");
+              var recording = bigScreenJtrNativeRecordings[key];
+
+              console.log("Add " + recording.Title + " to mongo");
+
+              var recordingForDB =  Recording({
+                Duration: recording.Duration,
+                FileName: recording.FileName,
+                HLSSegmentationComplete: recording.HLSSegmentationComplete === 1 ? true : false,
+                HLSUrl: recording.HLSUrl,
+                JtrStorageDevice: "BigScreenJtr",
+                LastViewedPosition: recording.LastViewedPosition,
+                path: recording.path,
+                RecordingId: recording.RecordingId,
+                StartDateTime: recording.StartDateTime,
+                Title: recording.Title,
+                TranscodeComplete: recording.TranscodeComplete === 1 ? true : false
+              });
+
+              recordingForDB.save(function(err) {
+                if (err) throw err;
+                console.log("recording " + recordingForDB.Title + " saved in db");
+              });
+
             }
           }
         }
