@@ -97,6 +97,25 @@ Recording.find({'JtrStorageDevice': 'BigScreenJtr'}, function (err, recordings) 
     });
 })
 
-var port = process.env.PORT || 3000;
+app.get('/', function(req, res) {
+    res.send('<html><head></head><body><h1>Hello world!</h1></body></html>');
+});
 
+app.get('/getRecordings', function(req, res) {
+    console.log("getRecordings invoked");
+    res.set('Access-Control-Allow-Origin', '*');
+    //res.send(new Buffer('<p>Eat more pizza!</p>'));
+    // next, retrieve recordings from jtr
+    var url = baseUrl + "getRecordings";
+    request(url, function (error, response, body) {
+            if (!error && response.statusCode == 200) {
+                var recordingsResponse = JSON.parse(body);
+                res.send(recordingsResponse);
+            }
+        }
+    );
+});
+
+
+var port = process.env.PORT || 3000;
 app.listen(port);

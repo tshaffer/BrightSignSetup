@@ -1,13 +1,13 @@
 /**
  * Created by tedshaffer on 12/13/15.
  */
-angular.module('jtr').controller('recordings', ['$scope', '$http', 'jtrServerService', 'jtrStationsService', 'jtrSettingsService', function ($scope, $http, $jtrServerService, $jtrStationsService, $jtrSettingsService) {
+angular.module('jtr').controller('recordings', ['$scope', '$http', 'jtrConnectService', 'jtrStationsService', 'jtrSettingsService', function ($scope, $http, $jtrConnectService, $jtrStationsService, $jtrSettingsService) {
 
     $scope.playRecordedShow = function (id) {
         console.log("playRecordedShow: " + id);
 
         var commandData = {"command": "playRecordedShow", "recordingId": id};
-        var promise = $jtrServerService.browserCommand(commandData);
+        var promise = $jtrConnectService.browserCommand(commandData);
         promise.then(function () {
             console.log("browserCommand successfully sent");
         })
@@ -17,7 +17,7 @@ angular.module('jtr').controller('recordings', ['$scope', '$http', 'jtrServerSer
 
         console.log("deleteRecordedShow: " + id);
         var commandData = {"command": "deleteRecordedShow", "recordingId": id};
-        var promise = $jtrServerService.browserCommand(commandData);
+        var promise = $jtrConnectService.browserCommand(commandData);
         promise.then(function () {
             console.log("browserCommand successfully sent");
             $scope.show();
@@ -41,7 +41,7 @@ angular.module('jtr').controller('recordings', ['$scope', '$http', 'jtrServerSer
 
     $scope.show = function () {
 
-        promise = $jtrServerService.getRecordings();
+        promise = $jtrConnectService.getRecordings();
         promise.then(function (result) {
             console.log("getRecordings success");
 
