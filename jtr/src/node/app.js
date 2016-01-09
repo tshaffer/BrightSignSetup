@@ -3,7 +3,7 @@ var request = require('request');
 var mongoose = require('mongoose');
 var app = express();
 
-//mongoose.connect('mongodb://ted:jtrTed@ds039125.mongolab.com:39125/jtr');
+mongoose.connect('mongodb://ted:jtrTed@ds039125.mongolab.com:39125/jtr');
 
 //var john = Person({
 //  firstname: 'John',
@@ -56,8 +56,11 @@ request(url, function (error, response, body) {
           Title: recording.Title,
           TranscodeComplete: recording.TranscodeComplete === 1 ? true : false
        });
-       
-       console.log(recordingForDB);
+
+      recordingForDB.save(function(err) {
+        if (err) throw err;
+        console.log("recording " + recordingForDB.Title + " saved in db");
+      });
     });
   }
 });
