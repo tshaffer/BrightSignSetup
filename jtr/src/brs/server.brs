@@ -136,10 +136,14 @@ Sub InitializeServer()
     m.restartScriptAA = { HandleEvent: restartScript, mVar: m }
     m.localServer.AddGetFromEvent({ url_path: "/ExitScript", user_data: m.restartScriptAA })
 
+' get ip address for Bonjour advertisement
+	nc = CreateObject("roNetworkConfiguration", 0)
+	networkConfig = nc.GetCurrentConfig()
+	ipAddress$ = networkConfig.ip4_address
+
 ' Bonjour advertisement
-'    service = { name: "JTR Web Service", type: "_http._tcp", port: 8080, _functionality: BSP.lwsConfig$, _serialNumber: sysInfo.deviceUniqueID$, _unitName: unitName$, _unitNamingMethod: unitNamingMethod$,  }
-    service = { name: "JTR Web Service", type: "_http._tcp", port: 8080 }
-    JTR.advert = CreateObject("roNetworkAdvertisement", service)
+    m.service = { name: "JTR Web Service", type: "_http._tcp", port: 8080, _model: m.logging.deviceModel$, _serialNumber: m.logging.deviceUniqueID$, _ipAddress: ipAddress$ }
+    m.advert = CreateObject("roNetworkAdvertisement", m.service)
 
 	serverDirectory$ = "remoteWebSite"
 	listOfServerFiles = []

@@ -1,6 +1,7 @@
 var express = require('express');
 var request = require('request');
 var mongoose = require('mongoose');
+var bonjour = require('bonjour')();
 var app = express();
 
 mongoose.connect('mongodb://ted:jtrTed@ds039125.mongolab.com:39125/jtr');
@@ -113,6 +114,16 @@ app.get('/getRecordings', function(req, res) {
         }
     );
 });
+
+// bonjour.find({ type: '_http._tcp.' }, function (service) {
+bonjour.find({ type: 'http' }, function (service) {
+//   console.log('Found an HTTP server:', service)
+  if (service.host.startsWith('BrightSign')) {
+      console.log("Found BrightSign model: " + service.txt.model);
+      console.log("Serial number: " + service.txt.serialnumber);
+      console.log("IP Address: " + service.txt.ipaddress);
+  }
+})
 
 
 var port = process.env.PORT || 3000;
