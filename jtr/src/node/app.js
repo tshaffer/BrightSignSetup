@@ -104,8 +104,6 @@ app.get('/', function(req, res) {
 app.get('/getRecordings', function(req, res) {
     console.log("getRecordings invoked");
     res.set('Access-Control-Allow-Origin', '*');
-    //res.send(new Buffer('<p>Eat more pizza!</p>'));
-    // next, retrieve recordings from jtr
     var url = baseUrl + "getRecordings";
     request(url, function (error, response, body) {
             if (!error && response.statusCode == 200) {
