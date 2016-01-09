@@ -5,8 +5,6 @@ var bonjour = require('bonjour')();
 var app = express();
 
 var deviceController = require('./controllers/deviceController');
-deviceController.printPizza();
-deviceController.printMS();
 
 mongoose.connect('mongodb://ted:jtrTed@ds039125.mongolab.com:39125/jtr');
 
@@ -33,74 +31,68 @@ var baseUrl = "http://192.168.0.105:8080/";
 // synchronize recordings table between BigScreenJtr and mongodb
 
 var bigScreenJtrRecordingsOnMongo = {};
+var dbRecordingsPromise = deviceController.getMongoDBRecordings(Recording);
+//dbRecordingsPromise.then(function(dbRecordings) {
+//    bigScreenJtrRecordingsOnMongo = dbRecordings;
+//});
+
 var bigScreenJtrNativeRecordings = {};
+var jtrRecordingsPromise = deviceController.getJtrRecordings(baseUrl);
+//jtrRecordingsPromise.then(function(jtrRecordings) {
+//    bigScreenJtrNativeRecordings = jtrRecordings;
+//});
 
-// retrieve recordings on BigScreenJtr that are in the mongodb
-Recording.find({'JtrStorageDevice': 'BigScreenJtr'}, function (err, recordings) {
-    if (err) throw err;
-    recordings.forEach(function (recording) {
-        bigScreenJtrRecordingsOnMongo[recording.RecordingId] = recording;
-    });
+// FIXME - ultimately can't do this as a JTR might not respond
+Promise.all([dbRecordingsPromise, jtrRecordingsPromise]).then(function (results) {
 
-    // next, retrieve recordings from jtr
-    var url = baseUrl + "getRecordings";
-    request(url, function (error, response, body) {
-        if (!error && response.statusCode == 200) {
-            var recordingsResponse = JSON.parse(body);
-            var freespace = recordingsResponse.freespace;
-            var recordings = recordingsResponse.recordings;
-            recordings.forEach(function (recording) {
-                bigScreenJtrNativeRecordings[recording.RecordingId] = recording;
-            });
+    bigScreenJtrRecordingsOnMongo = results[0];
+    bigScreenJtrNativeRecordings = results[1];
 
-            // remove any recordings that exist on mongodb but not jtr db from the mongo db
-            for (var key in bigScreenJtrRecordingsOnMongo) {
-                if (bigScreenJtrRecordingsOnMongo.hasOwnProperty(key)) {
-                    if (!(key in bigScreenJtrNativeRecordings)) {
-                        var recordingToRemoveFromMongo = bigScreenJtrRecordingsOnMongo[key];
-                        console.log("Remove " + recordingToRemoveFromMongo.Title + " from mongo");
-                        Recording.remove({_id: recordingToRemoveFromMongo._id}, function(err) {
-                            if (err) throw err;
-                        });
-                    }
-                }
+    // remove any recordings that exist on mongodb but not jtr db from the mongo db
+    for (var key in bigScreenJtrRecordingsOnMongo) {
+        if (bigScreenJtrRecordingsOnMongo.hasOwnProperty(key)) {
+            if (!(key in bigScreenJtrNativeRecordings)) {
+                var recordingToRemoveFromMongo = bigScreenJtrRecordingsOnMongo[key];
+                console.log("Remove " + recordingToRemoveFromMongo.Title + " from mongo");
+                Recording.remove({_id: recordingToRemoveFromMongo._id}, function (err) {
+                    if (err) throw err;
+                });
             }
-
-            // add any recordings that exist on jtr but not mongo db to the mongo db
-            for (var key in bigScreenJtrNativeRecordings) {
-                if (bigScreenJtrNativeRecordings.hasOwnProperty(key)) {
-                    if (!(key in bigScreenJtrRecordingsOnMongo)) {
-                        var recording = bigScreenJtrNativeRecordings[key];
-
-                        console.log("Add " + recording.Title + " to mongo");
-
-                        var recordingForDB = Recording({
-                            Duration: recording.Duration,
-                            FileName: recording.FileName,
-                            HLSSegmentationComplete: recording.HLSSegmentationComplete === 1 ? true : false,
-                            HLSUrl: recording.HLSUrl,
-                            JtrStorageDevice: "BigScreenJtr",
-                            LastViewedPosition: recording.LastViewedPosition,
-                            path: recording.path,
-                            RecordingId: recording.RecordingId,
-                            StartDateTime: recording.StartDateTime,
-                            Title: recording.Title,
-                            TranscodeComplete: recording.TranscodeComplete === 1 ? true : false
-                        });
-
-                        recordingForDB.save(function (err) {
-                            if (err) throw err;
-                            console.log("recording " + recordingForDB.Title + " saved in db");
-                        });
-                    }
-                }
-            }
-
-            console.log("done for now");
-
         }
-    });
-})
+    }
+
+    // add any recordings that exist on jtr but not mongo db to the mongo db
+    for (var key in bigScreenJtrNativeRecordings) {
+        if (bigScreenJtrNativeRecordings.hasOwnProperty(key)) {
+            if (!(key in bigScreenJtrRecordingsOnMongo)) {
+                var recording = bigScreenJtrNativeRecordings[key];
+
+                console.log("Add " + recording.Title + " to mongo");
+
+                var recordingForDB = Recording({
+                    Duration: recording.Duration,
+                    FileName: recording.FileName,
+                    HLSSegmentationComplete: recording.HLSSegmentationComplete === 1 ? true : false,
+                    HLSUrl: recording.HLSUrl,
+                    JtrStorageDevice: "BigScreenJtr",
+                    LastViewedPosition: recording.LastViewedPosition,
+                    path: recording.path,
+                    RecordingId: recording.RecordingId,
+                    StartDateTime: recording.StartDateTime,
+                    Title: recording.Title,
+                    TranscodeComplete: recording.TranscodeComplete === 1 ? true : false
+                });
+
+                recordingForDB.save(function (err) {
+                    if (err) throw err;
+                    console.log("recording " + recordingForDB.Title + " saved in db");
+                });
+            }
+        }
+    }
+
+    console.log("done for now");
+});
 
 app.get('/', function(req, res) {
     res.send('<html><head></head><body><h1>Hello world!</h1></body></html>');

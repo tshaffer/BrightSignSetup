@@ -1,15 +1,52 @@
 /**
  * Created by tedshaffer on 1/9/16.
  */
-function printPizza() {
-    console.log("eat pizza");
+var request = require('request');
+
+// FIXME - move to mongoController?
+function getMongoDBRecordings(Recording) {
+
+    return new Promise(function(resolve, reject) {
+
+        var dbRecordings = {};
+
+        Recording.find({'JtrStorageDevice': 'BigScreenJtr'}, function (err, recordings) {
+            if (err) {
+                reject();
+            }
+            recordings.forEach(function (recording) {
+                dbRecordings[recording.RecordingId] = recording;
+            });
+            resolve(dbRecordings);
+        });
+    });
 }
 
-function printMS() {
-    console.log("drink milkshakes");
+function getJtrRecordings(baseUrl) {
+
+    return new Promise(function(resolve, reject) {
+
+        var url = baseUrl + "getRecordings";
+        var jtrRecordings = {};
+
+        request(url, function (error, response, body) {
+            if (!error && response.statusCode == 200) {
+                var recordingsResponse = JSON.parse(body);
+                var freespace = recordingsResponse.freespace;
+                var recordings = recordingsResponse.recordings;
+                recordings.forEach(function (recording) {
+                    jtrRecordings[recording.RecordingId] = recording;
+                });
+                resolve(jtrRecordings);
+            }
+            else {
+                reject();
+            }
+        });
+    });
 }
 
 module.exports = {
-    printPizza : printPizza,
-    printMS : printMS
+    getMongoDBRecordings : getMongoDBRecordings,
+    getJtrRecordings: getJtrRecordings,
 }
