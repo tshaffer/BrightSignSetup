@@ -23,7 +23,7 @@ var recordingSchema = new Schema({
 
 var Recording = mongoose.model('Recording', recordingSchema);
 
-var baseUrl = "http://192.168.0.101:8080/";
+var baseUrl = "http://192.168.0.105:8080/";
 
 // synchronize recordings table between BigScreenJtr and mongodb
 
@@ -97,36 +97,6 @@ Recording.find({'JtrStorageDevice': 'BigScreenJtr'}, function (err, recordings) 
     });
 })
 
-//var url = baseUrl + "getRecordings";
-//request(url, function (error, response, body) {
-//  if (!error && response.statusCode == 200) {
-//    // console.log(body);
-//    var recordingsResponse = JSON.parse(body);
-//    var freespace = recordingsResponse.freespace;
-//    var recordings = recordingsResponse.recordings;
-//    recordings.forEach( function(recording) {
-//       var recordingForDB =  Recording({
-//          Duration: recording.Duration,
-//          FileName: recording.FileName,
-//          HLSSegmentationComplete: recording.HLSSegmentationComplete === 1 ? true : false,
-//          HLSUrl: recording.HLSUrl,
-//          JtrStorageDevice: "BigScreenJtr",
-//          LastViewedPosition: recording.LastViewedPosition,
-//          path: recording.path,
-//          RecordingId: recording.RecordingId,
-//          StartDateTime: recording.StartDateTime,
-//          Title: recording.Title,
-//          TranscodeComplete: recording.TranscodeComplete === 1 ? true : false
-//       });
-//
-//      recordingForDB.save(function(err) {
-//        if (err) throw err;
-//        console.log("recording " + recordingForDB.Title + " saved in db");
-//      });
-//    });
-//  }
-//});
+var port = process.env.PORT || 3000;
 
-//var port = process.env.PORT || 3000;
-//
-//app.listen(port);
+app.listen(port);

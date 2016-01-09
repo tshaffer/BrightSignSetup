@@ -1,0 +1,38 @@
+
+<h3 id="cgProgramName"></h3>
+<div id="cgDateTimeInfo"></div>
+<div id="cgEpisodeTitle"></div>
+<div id="cgDescription"></div>
+<div id="cgCastMembers"></div>
+<div id="episodeInfo"></div>
+
+<div id="cgBackward">
+    <button id="btnNavigateBackwardOneDay" type='button' class='btn btn-default' aria-label='Left Align' ng-click="navigateBackwardOneDay()"><span class='glyphicon glyphicon-step-backward' aria-hidden='true'></span></button>
+    <button id="btnNavigateBackwardOneScreen" type='button' class='btn btn-default' aria-label='Left Align' ng-click="navigateBackwardOneScreen()"><span class='glyphicon glyphicon-backward' aria-hidden='true'></span></button>
+</div>
+
+<div id="stationLabelDiv">
+    <p id="cgDayDate" class="cgStationLine">Thu 7/16</p>
+    <p class="cgStationLine">2 KTVU<br />Fox</p>
+    <p class="cgStationLine">4 KRON</p>
+    <p class="cgStationLine">5 KTVU CBS</p>
+    <p class="cgStationLine">7 KGO ABC</p>
+    <p class="cgStationLine">9 KQED PBS</p>
+    <p class="cgStationLine">9.1 KQED-2</p>
+    <p class="cgStationLine">9.2 KQED-3</p>
+    <p class="cgStationLine">11 KNTV NBC</p>
+    <p class="cgStationLine">36 KTVU</p>
+    <p class="cgStationLine">44 KBCW</p>
+</div>
+
+<div id="cgData" ng-keydown="handleKeyPress($event);">
+    <div id="cgTimeLine" class="timeLine"></div>
+    <div ng-repeat="station in cgData" class="cgLine" id="cgStation{{$index}}Data">
+        <cg-program ng-repeat="program in station.programs"></cg-program>
+    </div>
+</div>
+
+<div id="cgForward">
+    <button id="btnNavigateForwardOneScreen" type='button' class='btn btn-default' aria-label='Left Align' ng-click="navigateForwardOneScreen()"><span class='glyphicon glyphicon-forward' aria-hidden='true'></span></button>
+    <button id="btnNavigateForwardOneDay" type='button' class='btn btn-default' aria-label='Left Align' ng-click="navigateForwardOneDay()"><span class='glyphicon glyphicon-step-forward' aria-hidden='true'></span></button>
+</div>

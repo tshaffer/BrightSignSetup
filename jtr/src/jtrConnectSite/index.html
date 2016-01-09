@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="en-us" ng-app="jtr">
+<head>
+    <title>JTR</title>
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge">
+    <meta charset="UTF-8">
+
+    <!-- load bootstrap and fontawesome via CDN -->
+    <!--<link rel="stylesheet" href="//netdna.bootstrapcdn.com/bootstrap/3.2.0/css/bootstrap.min.css" />-->
+    <!--<link rel="stylesheet" href="css/bootstrap.min.css">-->
+    <link href="./lib/bootstrap/css/bootstrap.min.css" rel="stylesheet">
+    <link href="./css/main.css" rel="stylesheet">
+    <link href="./css/styles.css" rel="stylesheet">
+    <style>
+        html, body, input, select, textarea {
+            font-size: 1.05em;
+        }
+
+        .nav, .pagination, .carousel, .panel-title a {
+            cursor: pointer;
+        }
+    </style>
+
+    <script src="js/utils.js"></script>
+    <script src="lib/jquery.min.js"></script>
+    <script src="lib/date.js"></script>
+    <script src="lib/angular.js"></script>
+    <script src="lib/ui-bootstrap-tpls.js"></script>
+    <script src="lib/angular-route.min.js"></script>
+
+    <script src="app.js"></script>
+    <script src="js/jtrServerService.js"></script>
+    <script src="js/jtrBroadcastService.js"></script>
+    <script src="js/jtrStationsService.js"></script>
+    <script src="js/jtrSettingsService.js"></script>
+    <script src="js/jtrEpgFactory.js"></script>
+    <script src="js/jtrModal.js"></script>
+    <script src="cgRecordingsMgr/cgRecordingOptionsDlg.js"></script>
+    <script src="recordings/recordings.js"></script>
+    <script src="channelGuide/cgProgram.js"></script>
+    <script src="channelGuide/channelGuide.js"></script>
+    <script src="cgRecordingsMgr/cgRecordingsMgr.js"></script>
+    <script src="scheduledRecordings/scheduledRecordings.js"></script>
+    <script src="manualRecord/manualRecord.js"></script>
+    <script src="recordNow/recordNow.js"></script>
+    <script src="settings/settings.js"></script>
+    <script src="footer/footer.js"></script>
+
+</head>
+<body>
+
+<header>
+    <nav class="navbar navbar-default">
+        <div class="container">
+            <ul class="nav navbar-nav" ng-controller="NavsCtrl">
+                <li ng-class="navClass(nav)" ng-repeat="nav in navs"><a href="{{nav.link}}" ng-click="setSelectedNav(nav)">{{nav.label}}</a></li>
+            </ul>
+        </div>
+    </nav>
+</header>
+
+<div class="container">
+
+    <div ng-view></div>
+
+</div>
+
+<div id="footerArea" ng-controller="footer">
+
+    <p id="trickModeKeys" class="footerAlignCenter">
+
+        <button ng-repeat="trickMode in trickModes"
+                type='button' ng-click='invokeTrickMode(trickMode.command);' class='btn btn-default'
+                aria-label='Left Align'><span class='glyphicon {{trickMode.font}}' aria-hidden='true'></span>
+        </button>
+
+    </p>
+
+    <p class="footerAlignRight"/>
+
+</div>
+
+<div style="clear: both;"></div>
+​
+
+<div ng-controller="cgRecordingsMgr">
+</div>
+
+<script type="text/ng-template" id="jtr.html">
+    <div class="modal-header">
+        <h3 class="modal-title">{{modalTitle}}</h3>
+    </div>
+    <div class="modal-body">
+
+        <div ng-repeat="item in items">
+            <button type="button" class="btn btn-default btn-secondary modalButton" ng-click="$event.preventDefault(); selected.item = item;ok()">{{ item }}</button>
+            <br />
+        </div>
+
+        <!--<ul>-->
+            <!--<li ng-repeat="item in items">-->
+                <!--<a href="#" ng-click="$event.preventDefault(); selected.item = item;ok()">{{ item }}</a>-->
+            <!--</li>-->
+        <!--</ul>-->
+
+    </div>
+</script>
+
+
+<script type="text/ng-template" id="recordingOptionsDlg.html">
+    <div class="modal-header">
+        <h3 class="modal-title">{{modalTitle}}</h3>
+    </div>
+    <div class="modal-body">
+        <h3 id="cgRecordingOptionsTitle">Recording Options</h3>
+
+        <span class="modalButton">Start Time:</span>
+        <button type='button' class='btn btn-default modalLeftArrow modalButton'
+                ng-click="cgRecordOptionsNextEarlyStartTime()" aria-label='Left Align'><span
+                class='glyphicon glyphicon-arrow-left modalButton' aria-hidden='true'></span></button>
+        <button type='button' class='btn btn-default modalButton' id="cgRecordOptionsStartTimeLabel">{{startTime}}
+        </button>
+        <button type='button' class='btn btn-default modalRightArrow modalButton'
+                ng-click="cgRecordOptionsNextLateStartTime()" aria-label='Left Align'><span
+                class='glyphicon glyphicon-arrow-right' aria-hidden='true'></span></button>
+        <br/>
+
+        <span class="modalButton">Stop Time:</span>
+        <button type='button' class='btn btn-default modalLeftArrow modalButton'
+                ng-click="cgRecordOptionsNextEarlyStopTime()" aria-label='Left Align'><span
+                class='glyphicon glyphicon-arrow-left' aria-hidden='true'></span></button>
+        <button type='button' class='btn btn-default modalButton' id="cgRecordOptionsStopTimeLabel">{{stopTime}}
+        </button>
+        <button type='button' class='btn btn-default modalRightArrow modalButton'
+                ng-click="cgRecordOptionsNextLateStopTime()" aria-label='Left Align'><span
+                class='glyphicon glyphicon-arrow-right' aria-hidden='true'></span></button>
+        <br/>
+
+        <button type="button" class="btn btn-default btn-secondary modalButton" ng-click="ok()">Record with these
+            options
+        </button>
+        <br/>
+        <button type="button" class="btn btn-default btn-secondary modalButton" ng-click="cancel()">Cancel</button>
+        <br/>
+    </div>
+</script>
+
+</body>
+</html>
