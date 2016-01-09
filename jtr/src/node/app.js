@@ -4,6 +4,10 @@ var mongoose = require('mongoose');
 var bonjour = require('bonjour')();
 var app = express();
 
+var DeviceController = require('./controllers/deviceController')();
+DeviceController.printPizza();
+DeviceController.printMS();
+
 mongoose.connect('mongodb://ted:jtrTed@ds039125.mongolab.com:39125/jtr');
 
 var Schema = mongoose.Schema;
