@@ -7,7 +7,7 @@ angular.module('jtr').service('jtrServerService', ['$http', function($http){
 
     var baseURL = document.baseURI.replace("?", "");
     if (baseURL.indexOf("localhost") >= 0) {
-        this.baseUrl = "http://192.168.0.109:8080/";
+        this.baseUrl = "http://192.168.0.101:8080/";
     }
     else
     {
