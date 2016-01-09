@@ -4,9 +4,9 @@ var mongoose = require('mongoose');
 var bonjour = require('bonjour')();
 var app = express();
 
-var DeviceController = require('./controllers/deviceController')();
-DeviceController.printPizza();
-DeviceController.printMS();
+var deviceController = require('./controllers/deviceController');
+deviceController.printPizza();
+deviceController.printMS();
 
 mongoose.connect('mongodb://ted:jtrTed@ds039125.mongolab.com:39125/jtr');
 
