@@ -33,13 +33,18 @@ var Recording = mongoose.model('Recording', recordingSchema);
 
 
 // get the recordings table from Mongo.
-// FIXME - figure out how to synchronize db's with the strategy where you only pay attention when jtr's are discovered.
 // FIXME - when showing recordings, only show the ones that are either on the jtrConnect server or on a jtr that has been connected.
 // FIXME - or show the ones that are only on a non-connected JTR in a special color??
 var recordingsOnMongo = {};
 var dbRecordingsPromise = deviceController.getMongoDBRecordings(Recording);
 dbRecordingsPromise.then(function(dbRecordings) {
     recordingsOnMongo = dbRecordings;
+
+    // wait until recordings are retrieved from mongo before starting discovery service
+    bonjour.find({ type: 'http' }, function(service) {
+        bonjourServiceFound(service);
+    })
+
 });
 
 // synchronize recordings table between BigScreenJtr and mongodb
@@ -121,10 +126,7 @@ app.get('/getRecordings', function(req, res) {
     );
 });
 
-// FIXME - on startup, race condition between discovering devices and retrieving the data from the mongoDB
-// FIXME - discovering devices is faster; that doesn't work!!
-
-bonjour.find({ type: 'http' }, function (service) {
+function bonjourServiceFound(service) {
   if (service.host.startsWith('BrightSign')) {
       console.log("Found BrightSign model: " + service.txt.model);
       console.log("Serial number: " + service.txt.serialnumber);
@@ -187,9 +189,10 @@ bonjour.find({ type: 'http' }, function (service) {
                           JtrConnectPath: ""
                       });
 
+                      var recordingTitle = recordingForDB.Title;
                       recordingForDB.save(function (err) {
                           if (err) throw err;
-                          console.log("recording " + recordingForDB.Title + " saved in db");
+                          console.log("recording " + recordingTitle + " saved in db");
                       });
                   }
               }
@@ -198,7 +201,7 @@ bonjour.find({ type: 'http' }, function (service) {
           console.log("recordings synchronized between " + jtrName + " and mongoDB");
       });
   }
-})
+}
 
 
 var port = process.env.PORT || 3000;
