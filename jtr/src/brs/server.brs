@@ -140,9 +140,10 @@ Sub InitializeServer()
 	nc = CreateObject("roNetworkConfiguration", 0)
 	networkConfig = nc.GetCurrentConfig()
 	ipAddress$ = networkConfig.ip4_address
+	mac$ = networkConfig.ethernet_mac
 
 ' Bonjour advertisement
-    m.service = { name: "JTR Web Service", type: "_http._tcp", port: 8080, _model: m.logging.deviceModel$, _serialNumber: m.logging.deviceUniqueID$, _ipAddress: ipAddress$ }
+    m.service = { name: "JTR Web Service", type: "_http._tcp", port: 8080, _model: m.logging.deviceModel$, _serialNumber: m.logging.deviceUniqueID$, _ipAddress: ipAddress$, _macAddress: mac$, _friendlyName: "tigerJtr" }
     m.advert = CreateObject("roNetworkAdvertisement", m.service)
 
 	serverDirectory$ = "remoteWebSite"
@@ -735,7 +736,7 @@ Sub getRecordings(userData as Object, e as Object)
 	aa.AddReplace("value", json)
 
 	ok = mVar.htmlWidget.PostJSMessage(aa)
-	if not ok stop
+	' if not ok stop
 
 End Sub
 
