@@ -13,8 +13,12 @@ namespace transcoder
         //private static string _bsIPAddress = "192.168.2.6:8080";
         //private static string _bsIPAddress = "10.1.0.244:8080";
         //private static string _bsIPAddress = "192.168.2.6:8080";
-        private static string _bsIPAddress = "192.168.0.117:8080";
-        //private static string _bsIPAddress = "10.1.0.241:8080";
+        //private static string _bsIPAddress = "192.168.0.117:8080";
+        private static string _bsIPAddress = "10.1.0.241:8080";
+
+        //private static string _jtrConnectIPAddress = "http://192.168.0.106:3000/";
+        private static string _jtrConnectIPAddress = "http://10.1.0.73:3000/";
+
         private static StreamWriter _writer = null;
 
         private static int _timeToDelayAfterConversion = 60000;
@@ -64,7 +68,8 @@ namespace transcoder
 
                             HTTPGet httpGet = new HTTPGet();
 
-                            string url = String.Concat("http://192.168.0.106:3000/addRecording?", fullQueryString);
+                            //string url = String.Concat("http://192.168.0.106:3000/addRecording?", fullQueryString);
+                            string url = String.Concat(_jtrConnectIPAddress + "addRecording?", fullQueryString);
                             httpGet.Timeout = 5000;
                             httpGet.Request(url);
 

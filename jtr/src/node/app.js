@@ -83,10 +83,35 @@ app.get('/addRecording', function(req, res) {
     //StartDateTime:"2016/01/10 06:15:02.007"
     //Title:"t3"
     //TranscodeComplete:"1"
+
+    // FIXME - instead of adding this record to the db, it should find the corresponding record that's already in the db (from when the jtr recording completed)
+    // FIXME - and add to that record.
+    // FIXME - of course, that assumes that I have figured out a method adding a record to the MongoDB when a recording completes rather than waiting for another discovery to occur.
+
+    var recordingForDB = Recording({
+        Duration: Number(req.query.Duration),
+        FileName: req.query.FileName,
+        HLSSegmentationComplete: req.query.HLSSegmentationComplete === "1" ? true : false,
+        HLSUrl: req.query.HLSUrl,
+        JtrStorageDevice: req.query.JtrStorageDevice,
+        LastViewedPosition: Number(req.query.LastViewedPosition),
+        path: req.query.path,
+        RecordingId: Number(req.query.RecordingId),
+        StartDateTime: req.query.StartDateTime,
+        Title: req.query.Title,
+        TranscodeComplete: true,
+        OnJtrConnectServer: true,
+        JtrConnectPath: req.query.JtrConnectPath
+    });
+
+    recordingForDB.save(function (err) {
+        if (err) throw err;
+        console.log("recording added to JtrConnect db");
+    });
+
     res.set('Access-Control-Allow-Origin', '*');
     var response = {};
     res.send(response);
-
 });
 
 function bonjourServiceFound(service) {
@@ -99,6 +124,9 @@ function bonjourServiceFound(service) {
       var deviceUrl = "http://" + service.txt.ipaddress + ":" + service.port.toString() + "/";
       var jtrName = service.txt.friendlyname;
 
+      if (jtrName === "") {
+          return;
+      }
       // retrieve the recordings for this jtr
       // FIXME - only retrieve this the first time the device connects
       // FIXME - need to figure out how to update this when the device adds / removes recordings

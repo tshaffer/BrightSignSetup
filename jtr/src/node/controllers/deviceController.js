@@ -10,7 +10,7 @@ function getMongoDBRecordings(Recording) {
 
         var dbRecordings = {};
 
-        Recording.find({'JtrStorageDevice': 'BigScreenJtr'}, function (err, recordings) {
+        Recording.find({'JtrStorageDevice': 'tigerJtr'}, function (err, recordings) {
             if (err) {
                 reject();
             }
@@ -28,7 +28,8 @@ function getMongoDBRecordingsList(Recording) {
 
         var dbRecordings = [];
 
-        Recording.find({'JtrStorageDevice': 'BigScreenJtr'}, function (err, recordings) {
+        // FIXME - why is it only searching for tigerJtr? Why doesn't it get all the recordings?
+        Recording.find({'JtrStorageDevice': 'tigerJtr'}, function (err, recordings) {
             if (err) {
                 reject();
             }
