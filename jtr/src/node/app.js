@@ -23,7 +23,6 @@ var recordingSchema = new Schema({
     Title: String,
     TranscodeComplete: Boolean,
     OnJtrConnectServer: Boolean,
-    JtrOwner: String,
     JtrConnectPath: String
 });
 
@@ -61,6 +60,35 @@ app.get('/getRecordings', function(req, res) {
     });
 });
 
+app.get('/addRecording', function(req, res) {
+    console.log("addRecording invoked");
+
+    //var url_parts = url.parse(req.url, true);
+    //var query = url_parts.query;
+    //app.get('/', function(req, res){
+    //    res.send('id: ' + req.query.id);
+    //});
+    // parameters in
+    //req.query.*
+    //Duration:"2"
+    //FileName:"20160110T061502"
+    //HLSSegmentationComplete:"0"
+    //HLSUrl:""
+    //JtrConnectPath:"\\Mac\Home\Documents\Miscellaneous\Personal\jtrRecordings\20160110T061502.mp4"
+    //JtrStorageDevice:"lynxJtr"
+    //LastViewedPosition:"0"
+    //OnJtrConnectServer:"1"
+    //path:"C:\Users\tedshaffer\AppData\Local\transcoder\transcoder\1.0.0.0\tmp\20160110T061... (length: 86)"
+    //RecordingId:"128"
+    //StartDateTime:"2016/01/10 06:15:02.007"
+    //Title:"t3"
+    //TranscodeComplete:"1"
+    res.set('Access-Control-Allow-Origin', '*');
+    var response = {};
+    res.send(response);
+
+});
+
 function bonjourServiceFound(service) {
   if (service.host.startsWith('BrightSign')) {
       console.log("Found BrightSign model: " + service.txt.model);
@@ -86,8 +114,8 @@ function bonjourServiceFound(service) {
           // remove any recordings that exist on mongodb for this jtr but are not in the recordings just retrieved
           for (var key in recordingsOnMongo) {
               if (recordingsOnMongo.hasOwnProperty(key)) {
-                  // before checking the mongo recording, check to see if it's jtrOwner is the jtr that was just discovered
-                  if (recordingsOnMongo[key].JtrOwner === jtrName) {
+                  // before checking the mongo recording, check to see if it's JtrStorageDevice is the jtr that was just discovered
+                  if (recordingsOnMongo[key].JtrStorageDevice === jtrName) {
                       if (!(key in bigScreenJtrNativeRecordings)) {
                           var recordingToRemoveFromMongo = recordingsOnMongo[key];
                           console.log("Remove " + recordingToRemoveFromMongo.Title + " from mongo");
@@ -112,7 +140,7 @@ function bonjourServiceFound(service) {
                           FileName: recording.FileName,
                           HLSSegmentationComplete: recording.HLSSegmentationComplete === 1 ? true : false,
                           HLSUrl: recording.HLSUrl,
-                          JtrStorageDevice: "BigScreenJtr",
+                          JtrStorageDevice: jtrName,
                           LastViewedPosition: recording.LastViewedPosition,
                           path: recording.path,
                           RecordingId: recording.RecordingId,
@@ -120,7 +148,6 @@ function bonjourServiceFound(service) {
                           Title: recording.Title,
                           TranscodeComplete: recording.TranscodeComplete === 1 ? true : false,
                           OnJtrConnectServer: false,
-                          JtrOwner: jtrName,
                           JtrConnectPath: ""
                       });
 

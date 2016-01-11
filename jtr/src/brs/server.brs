@@ -865,14 +865,48 @@ Sub fileToTranscode(userData as Object, e as Object)
 		print "fileToTranscode: add endpoint " + "/" + fileToTranscodeRecord.path
 		mVar.localServer.AddGetFromFile({ url_path: "/" + fileToTranscodeRecord.path, filename: fileToTranscodeRecord.path, content_type: "video/mpeg"})
 
-		' information to return: id, path
+		' information to return: id, path, etc
 		fileToTranscodeElem = root.AddElement("FileToTranscode")
 
 		idElem = fileToTranscodeElem.AddElement("id")
-		idElem.SetBody(stri(fileToTranscodeRecord.RecordingId))
+		idElem.SetBody(StripLeadingSpaces(stri(fileToTranscodeRecord.RecordingId)))
 
 		pathElem = fileToTranscodeElem.AddElement("path")
 		pathElem.SetBody(fileToTranscodeRecord.path)
+
+		durationElem = fileToTranscodeElem.AddElement("duration")
+		durationElem.SetBody(StripLeadingSpaces(stri(fileToTranscodeRecord.Duration)))
+
+		fileNameElem = fileToTranscodeElem.AddElement("fileName")
+		fileNameElem.SetBody(fileToTranscodeRecord.FileName)
+
+		hlsSegmentationCompleteElem = fileToTranscodeElem.AddElement("hlsSegmentationComplete")
+		hlsSegmentationCompleteElem.SetBody(StripLeadingSpaces(stri(fileToTranscodeRecord.HLSSegmentationComplete)))
+
+		hlsUrlElem = fileToTranscodeElem.AddElement("hlsUrl")
+		hlsUrlElem.SetBody(fileToTranscodeRecord.HLSUrl)
+
+' FIXME
+		jtrStorageDeviceElem = fileToTranscodeElem.AddElement("jtrStorageDevice")
+		jtrStorageDeviceElem.SetBody("lynxJtr")
+
+		lastViewedPositionElem = fileToTranscodeElem.AddElement("lastViewedPosition")
+		lastViewedPositionElem.SetBody(StripLeadingSpaces(stri(fileToTranscodeRecord.LastViewedPosition)))
+
+		startDateTimeElem = fileToTranscodeElem.AddElement("startDateTime")
+		startDateTimeElem.SetBody(fileToTranscodeRecord.StartDateTime)
+
+		titleElem = fileToTranscodeElem.AddElement("title")
+		titleElem.SetBody(fileToTranscodeRecord.Title)
+
+'		transcodeCompleteElem = fileToTranscodeElem.AddElement("transcodeComplete")
+'		transcodeCompleteElem.SetBody(1)
+
+'		onJtrConnectServerElem = fileToTranscodeElem.AddElement("onJtrConnectServer")
+'		onJtrConnectServerElem.SetBody(1)
+
+'		jtrConnectPathElem = fileToTranscodeElem.AddElement("jtrConnectPath")
+'		jtrConnectPathElem.SetBody(fileToTranscodeRecord.JtrConnectPath)
 
 	    xml = root.GenXML({ indent: " ", newline: chr(10), header: true })
 

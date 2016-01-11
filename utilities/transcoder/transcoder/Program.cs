@@ -13,7 +13,7 @@ namespace transcoder
         //private static string _bsIPAddress = "192.168.2.6:8080";
         //private static string _bsIPAddress = "10.1.0.244:8080";
         //private static string _bsIPAddress = "192.168.2.6:8080";
-        private static string _bsIPAddress = "192.168.0.109:8080";
+        private static string _bsIPAddress = "192.168.0.117:8080";
         //private static string _bsIPAddress = "10.1.0.241:8080";
         private static StreamWriter _writer = null;
 
@@ -28,6 +28,11 @@ namespace transcoder
             {
                 Initialize();
 
+                //HTTPGet httpGet = new HTTPGet();
+                //httpGet.Timeout = 5000;
+                //string url = "http://192.168.0.106:3000/addRecording";
+                //httpGet.Request(url);
+
                 while (true)
                 {
                     FileToTranscode fileToTranscode = GetFileToTranscode();
@@ -39,20 +44,47 @@ namespace transcoder
 
                         if (!String.IsNullOrEmpty(transcodedFilePath))
                         {
-                            bool ok = UploadFileToServer(fileToTranscode.Id, transcodedFilePath);
+                            // add transcoded file to JtrConnect db
+                            NameValueCollection queryString = System.Web.HttpUtility.ParseQueryString(string.Empty);
 
-                            if (ok)
+                            queryString["Duration"] = fileToTranscode.Duration;
+                            queryString["FileName"] = fileToTranscode.FileName;
+                            queryString["HLSSegmentationComplete"] = fileToTranscode.HLSSegmentationComplete;
+                            queryString["HLSUrl"] = fileToTranscode.HLSUrl;
+                            queryString["JtrStorageDevice"] = fileToTranscode.JtrStorageDevice;
+                            queryString["LastViewedPosition"] = fileToTranscode.LastViewedPosition;
+                            queryString["path"] = fileToTranscode.Path;
+                            queryString["RecordingId"] = fileToTranscode.Id;
+                            queryString["StartDateTime"] = fileToTranscode.StartDateTime;
+                            queryString["Title"] = fileToTranscode.Title;
+                            queryString["TranscodeComplete"] = "1";
+                            queryString["OnJtrConnectServer"] = "1";
+                            queryString["JtrConnectPath"] = transcodedFilePath;
+                            string fullQueryString = queryString.ToString();
+
+                            HTTPGet httpGet = new HTTPGet();
+
+                            string url = String.Concat("http://192.168.0.106:3000/addRecording?", fullQueryString);
+                            httpGet.Timeout = 5000;
+                            httpGet.Request(url);
+
+                            if (httpGet.StatusCode == 200)
                             {
-                                // delete local files (downloaded file and converted file)
-                                LogMessage(GetTimeStamp() + " : Main: delete " + fileToTranscodePath);
-                                //File.Delete(fileToTranscodePath);
-                                LogMessage(GetTimeStamp() + " : Main: delete " + transcodedFilePath);
-                                //File.Delete(transcodedFilePath);
+                                bool ok = UploadFileToServer(fileToTranscode.Id, transcodedFilePath);
 
-                                LogMessage(GetTimeStamp() + " : Main: transcode successfully completed");
+                                if (ok)
+                                {
+                                    // delete local file (downloaded file)
+                                    LogMessage(GetTimeStamp() + " : Main: delete " + fileToTranscodePath);
+                                    // currently not deleting for purposes of debugging
+                                    //File.Delete(fileToTranscodePath);
+
+                                    LogMessage(GetTimeStamp() + " : Main: transcode successfully completed");
+
+                                }
+                                // delay some amount of time before looking for the next file
+                                Thread.Sleep(_timeToDelayAfterConversion);
                             }
-                            // delay some amount of time before looking for the next file
-                            Thread.Sleep(_timeToDelayAfterConversion);
                         }
                     }
                 }
@@ -118,27 +150,61 @@ namespace transcoder
                     XmlNodeList nodes = doc.GetElementsByTagName("FileToTranscode");
                     if (nodes.Count > 0)
                     {
-                        string id = String.Empty;
                         string relativeUrl = String.Empty;
 
                         XmlElement fileToTranscodeElem = (XmlElement)nodes[0];
+
+                        FileToTranscode fileToTranscode = new FileToTranscode();
 
                         XmlNodeList childNodes = fileToTranscodeElem.ChildNodes;
                         foreach (XmlNode childNode in childNodes)
                         {
                             if (childNode.Name == "id")
                             {
-                                id = childNode.InnerText;
+                                fileToTranscode.Id = childNode.InnerText;
                             }
                             else if (childNode.Name == "path")
                             {
                                 relativeUrl = childNode.InnerText;
+                                fileToTranscode.Path = relativeUrl;
+                            }
+                            else if (childNode.Name == "duration")
+                            {
+                                fileToTranscode.Duration = childNode.InnerText;
+                            }
+                            else if (childNode.Name == "fileName")
+                            {
+                                fileToTranscode.FileName = childNode.InnerText;
+                            }
+                            else if (childNode.Name == "hlsSegmentationComplete")
+                            {
+                                fileToTranscode.HLSSegmentationComplete = childNode.InnerText;
+                            }
+                            else if (childNode.Name == "hlsUrl")
+                            {
+                                fileToTranscode.HLSUrl = childNode.InnerText;
+                            }
+                            else if (childNode.Name == "jtrStorageDevice")
+                            {
+                                fileToTranscode.JtrStorageDevice = childNode.InnerText;
+                            }
+                            else if (childNode.Name == "lastViewedPosition")
+                            {
+                                fileToTranscode.LastViewedPosition = childNode.InnerText;
+                            }
+                            else if (childNode.Name == "startDateTime")
+                            {
+                                fileToTranscode.StartDateTime = childNode.InnerText;
+                            }
+                            else if (childNode.Name == "title")
+                            {
+                                fileToTranscode.Title = childNode.InnerText;
                             }
                         }
 
-                        if (id != String.Empty && relativeUrl != String.Empty)
+                        if (fileToTranscode.Id != String.Empty && relativeUrl != String.Empty)
                         {
-                            LogMessage(GetTimeStamp() + " : FileToTranscode: file spec retrieved, id=" + id.ToString() + ", relativeUrl=" + relativeUrl);
+                            LogMessage(GetTimeStamp() + " : FileToTranscode: file spec retrieved, id=" + fileToTranscode.Id.ToString() + ", relativeUrl=" + relativeUrl);
 
                             // XML contains the path of the file relative to root. Use that as the relative url; then use the last part of the relative Url as the file name
                             string tmpPath = System.IO.Path.Combine(_tmpFolder, relativeUrl);
@@ -156,11 +222,8 @@ namespace transcoder
                             {
                                 LogMessage(GetTimeStamp() + " : FileToTranscode: file retrieved and written to " + targetPath);
 
-                                return new FileToTranscode
-                                {
-                                    Id = id,
-                                    Path = targetPath
-                                };
+                                fileToTranscode.Path = targetPath;
+                                return fileToTranscode;
                             }
                             else
                             {
@@ -187,7 +250,10 @@ namespace transcoder
 
         public static string TranscodeFile(string sourcePath)
         {
-            string targetPath = System.IO.Path.Combine(_tmpFolder, System.IO.Path.GetFileNameWithoutExtension(sourcePath) + ".mp4");
+            //string targetPath = System.IO.Path.Combine(_tmpFolder, System.IO.Path.GetFileNameWithoutExtension(sourcePath) + ".mp4");
+            string targetPath = System.Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments);
+            targetPath = System.IO.Path.Combine(targetPath, "Miscellaneous", "Personal", "jtrRecordings", System.IO.Path.GetFileNameWithoutExtension(sourcePath) + ".mp4");
+            return targetPath;
 
             LogMessage(GetTimeStamp() + " : TranscodeFile " + sourcePath + " to " + targetPath);
 
@@ -292,6 +358,13 @@ namespace transcoder
     {
         public string Id { get; set; }
         public string Path { get; set; }
+        public string Duration { get; set; }
+        public string FileName { get; set; }
+        public string HLSSegmentationComplete { get; set; }
+        public string HLSUrl { get; set; }
+        public string JtrStorageDevice { get; set; }
+        public string LastViewedPosition { get; set; }
+        public string StartDateTime { get; set; }
+        public string Title { get; set; }
     }
-
 }

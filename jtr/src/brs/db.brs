@@ -558,7 +558,8 @@ Function GetDBFileToTranscode() As Object
 	selectData = {}
 	selectData.recording = invalid
 
-	select$ = "SELECT RecordingId, Title, StartDateTime, Duration, FileName, LastViewedPosition, TranscodeComplete FROM Recordings WHERE TranscodeComplete=0;"
+'	select$ = "SELECT RecordingId, Title, StartDateTime, Duration, FileName, LastViewedPosition, TranscodeComplete FROM Recordings WHERE TranscodeComplete=0;"
+	select$ = "SELECT RecordingId, Title, StartDateTime, Duration, FileName, LastViewedPosition, TranscodeComplete, HLSSegmentationComplete, HLSUrl FROM Recordings WHERE TranscodeComplete=0;"
 	m.ExecuteDBSelect(select$, GetDBFileToTranscodeCallback, selectData, invalid)
 
 	return selectData.recording
