@@ -32,11 +32,6 @@ namespace transcoder
             {
                 Initialize();
 
-                //HTTPGet httpGet = new HTTPGet();
-                //httpGet.Timeout = 5000;
-                //string url = "http://192.168.0.106:3000/addRecording";
-                //httpGet.Request(url);
-
                 while (true)
                 {
                     FileToTranscode fileToTranscode = GetFileToTranscode();
@@ -48,7 +43,7 @@ namespace transcoder
 
                         if (!String.IsNullOrEmpty(transcodedFilePath))
                         {
-                            // add transcoded file to JtrConnect db
+                            // add transcoded file to JtrConnect db / should involve updating an existing record
                             NameValueCollection queryString = System.Web.HttpUtility.ParseQueryString(string.Empty);
 
                             queryString["Duration"] = fileToTranscode.Duration;
@@ -68,8 +63,7 @@ namespace transcoder
 
                             HTTPGet httpGet = new HTTPGet();
 
-                            //string url = String.Concat("http://192.168.0.106:3000/addRecording?", fullQueryString);
-                            string url = String.Concat(_jtrConnectIPAddress + "addRecording?", fullQueryString);
+                            string url = String.Concat(_jtrConnectIPAddress + "updateRecording?", fullQueryString);
                             httpGet.Timeout = 5000;
                             httpGet.Request(url);
 
@@ -81,11 +75,10 @@ namespace transcoder
                                 {
                                     // delete local file (downloaded file)
                                     LogMessage(GetTimeStamp() + " : Main: delete " + fileToTranscodePath);
-                                    // currently not deleting for purposes of debugging
-                                    //File.Delete(fileToTranscodePath);
 
                                     LogMessage(GetTimeStamp() + " : Main: transcode successfully completed");
-
+                                    // For now, hold on to file for debugging purposes.
+                                    //File.Delete(transcodedFilePath);
                                 }
                                 // delay some amount of time before looking for the next file
                                 Thread.Sleep(_timeToDelayAfterConversion);
@@ -171,7 +164,6 @@ namespace transcoder
                             else if (childNode.Name == "path")
                             {
                                 relativeUrl = childNode.InnerText;
-                                fileToTranscode.Path = relativeUrl;
                             }
                             else if (childNode.Name == "duration")
                             {
@@ -211,9 +203,10 @@ namespace transcoder
                         {
                             LogMessage(GetTimeStamp() + " : FileToTranscode: file spec retrieved, id=" + fileToTranscode.Id.ToString() + ", relativeUrl=" + relativeUrl);
 
-                            // XML contains the path of the file relative to root. Use that as the relative url; then use the last part of the relative Url as the file name
-                            string tmpPath = System.IO.Path.Combine(_tmpFolder, relativeUrl);
-                            string targetPath = System.IO.Path.Combine(_tmpFolder, System.IO.Path.GetFileName(tmpPath));
+                            string targetPath = System.Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments);
+                            string path = System.IO.Path.Combine(targetPath, relativeUrl);
+
+                            targetPath = System.IO.Path.Combine(targetPath, "Miscellaneous", "Personal", "jtrRecordings", System.IO.Path.GetFileName(relativeUrl));
 
                             httpGet = new HTTPGet();
                             httpGet.Timeout = 120000;   // 2 minutes - long enough for large files?
@@ -255,10 +248,8 @@ namespace transcoder
 
         public static string TranscodeFile(string sourcePath)
         {
-            //string targetPath = System.IO.Path.Combine(_tmpFolder, System.IO.Path.GetFileNameWithoutExtension(sourcePath) + ".mp4");
-            string targetPath = System.Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments);
-            targetPath = System.IO.Path.Combine(targetPath, "Miscellaneous", "Personal", "jtrRecordings", System.IO.Path.GetFileNameWithoutExtension(sourcePath) + ".mp4");
-            return targetPath;
+            // old way
+            string targetPath = System.IO.Path.Combine(_tmpFolder, System.IO.Path.GetFileNameWithoutExtension(sourcePath) + ".mp4");
 
             LogMessage(GetTimeStamp() + " : TranscodeFile " + sourcePath + " to " + targetPath);
 
