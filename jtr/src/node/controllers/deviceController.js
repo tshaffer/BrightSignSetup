@@ -4,13 +4,36 @@
 var request = require('request');
 
 // FIXME - move to mongoController?
+function getMongoDBRecording(Recording, recording) {
+
+    return new Promise(function(resolve, reject) {
+
+        var dbRecordings = {};
+
+        //Recording.find({'JtrStorageDevice': 'tigerJtr'}, function (err, recordings) {
+        Recording.find(
+            {
+                'JtrStorageDevice': recording.JtrStorageDevice,
+                'RecordingId': recording.RecordingId,
+            },
+            function (err, dbRecording) {
+                if (err) {
+                    reject();
+                }
+                resolve(dbRecording);
+        });
+    });
+}
+
+
 function getMongoDBRecordings(Recording) {
 
     return new Promise(function(resolve, reject) {
 
         var dbRecordings = {};
 
-        Recording.find({'JtrStorageDevice': 'tigerJtr'}, function (err, recordings) {
+        //Recording.find({'JtrStorageDevice': 'tigerJtr'}, function (err, recordings) {
+        Recording.find({}, function (err, recordings) {
             if (err) {
                 reject();
             }
@@ -29,7 +52,8 @@ function getMongoDBRecordingsList(Recording) {
         var dbRecordings = [];
 
         // FIXME - why is it only searching for tigerJtr? Why doesn't it get all the recordings?
-        Recording.find({'JtrStorageDevice': 'tigerJtr'}, function (err, recordings) {
+        //Recording.find({'JtrStorageDevice': 'tigerJtr'}, function (err, recordings) {
+        Recording.find({}, function (err, recordings) {
             if (err) {
                 reject();
             }
@@ -90,6 +114,7 @@ function getJtrRecordingsList(baseUrl) {
 }
 
 module.exports = {
+    getMongoDBRecording: getMongoDBRecording,
     getMongoDBRecordings : getMongoDBRecordings,
     getMongoDBRecordingsList: getMongoDBRecordingsList,
     getJtrRecordings: getJtrRecordings,

@@ -60,8 +60,8 @@ app.get('/getRecordings', function(req, res) {
     });
 });
 
-app.get('/addRecording', function(req, res) {
-    console.log("addRecording invoked");
+app.get('/updateRecording', function(req, res) {
+    console.log("updateRecording invoked");
 
     //var url_parts = url.parse(req.url, true);
     //var query = url_parts.query;
@@ -83,11 +83,7 @@ app.get('/addRecording', function(req, res) {
     //StartDateTime:"2016/01/10 06:15:02.007"
     //Title:"t3"
     //TranscodeComplete:"1"
-
-    // FIXME - instead of adding this record to the db, it should find the corresponding record that's already in the db (from when the jtr recording completed)
-    // FIXME - and add to that record.
-    // FIXME - of course, that assumes that I have figured out a method adding a record to the MongoDB when a recording completes rather than waiting for another discovery to occur.
-
+    
     var recordingForDB = Recording({
         Duration: Number(req.query.Duration),
         FileName: req.query.FileName,
@@ -104,10 +100,21 @@ app.get('/addRecording', function(req, res) {
         JtrConnectPath: req.query.JtrConnectPath
     });
 
-    recordingForDB.save(function (err) {
-        if (err) throw err;
-        console.log("recording added to JtrConnect db");
+    var dbRecordingPromise = deviceController.getMongoDBRecording(Recording, recordingForDB);
+    dbRecordingPromise.then(function(dbRecording) {
+        recordingOnMongo = dbRecording;
+        //recordingOnMongo.size = 'large';
+        // the following is a strange way to do the update - see the link below for various ways to do updates
+        // http://mongoosejs.com/docs/documents.html
+        recordingForDB.save(function (err) {
+            if (err) throw err;
+        });
     });
+
+    //recordingForDB.save(function (err) {
+    //    if (err) throw err;
+    //    console.log("recording added to JtrConnect db");
+    //});
 
     res.set('Access-Control-Allow-Origin', '*');
     var response = {};
