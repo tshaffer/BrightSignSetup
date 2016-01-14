@@ -342,8 +342,9 @@ Sub jtrConnectIP(userData as Object, e as Object)
 
 	print "jtrConnectIP endpoint invoked"
 
-	stop
-	message = e.GetRequestParams()
+    mVar = userData.mVar
+
+	mVar.jtrConnectUrl = e.GetRequestParams().jtrConnectUrl
 
     e.AddResponseHeader("Content-type", "text/plain")
     e.AddResponseHeader("Access-Control-Allow-Origin", "*")

@@ -117,11 +117,11 @@ function sendJtrConnectIP(baseUrl, jtrConnectIP) {
 
     return new Promise(function(resolve, reject) {
 
-        var url = baseUrl + "sendJtrConnectIP";
+        var url = baseUrl + "jtrConnectIP";
 
         var params = { jtrConnectUrl: "http://" + jtrConnectIP + ":3000" };
 
-        request( { url: baseUrl, qs: params }, function(err, response, body) {
+        request( { url: url, qs: params }, function(err, response, body) {
             if (!err && response.statusCode == 200) {
                 console.log("Get response: " + response.statusCode);
                 resolve();
