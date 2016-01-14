@@ -113,10 +113,31 @@ function getJtrRecordingsList(baseUrl) {
     });
 }
 
+function sendJtrConnectIP(baseUrl, jtrConnectIP) {
+
+    return new Promise(function(resolve, reject) {
+
+        var url = baseUrl + "sendJtrConnectIP";
+
+        var params = { jtrConnectUrl: "http://" + jtrConnectIP + ":3000" };
+
+        request( { url: baseUrl, qs: params }, function(err, response, body) {
+            if (!err && response.statusCode == 200) {
+                console.log("Get response: " + response.statusCode);
+                resolve();
+            }
+            else {
+                reject();
+            }
+        });
+    });
+}
+
 module.exports = {
     getMongoDBRecording: getMongoDBRecording,
     getMongoDBRecordings : getMongoDBRecordings,
     getMongoDBRecordingsList: getMongoDBRecordingsList,
     getJtrRecordings: getJtrRecordings,
     getJtrRecordingsList: getJtrRecordingsList,
+    sendJtrConnectIP: sendJtrConnectIP
 }

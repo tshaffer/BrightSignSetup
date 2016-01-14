@@ -3,6 +3,9 @@ Sub InitializeServer()
     m.localServer = CreateObject("roHttpServer", { port: 8080 })
     m.localServer.SetPort(m.msgPort)
 
+	m.jtrConnectIPAA =				{ HandleEvent: jtrConnectIP, mVar: m}
+	m.localServer.AddGetFromEvent({ url_path: "/jtrConnectIP", user_data: m.jtrConnectIPAA })
+
 	m.manualRecordPostedAA =	{ HandleEvent: setManualRecording, mVar: m }
 	m.localServer.AddPostToString({ url_path: "/manualRecording", user_data: m.manualRecordPostedAA  })
 
@@ -334,6 +337,20 @@ Sub setRecordNow(userData as Object, e as Object)
 
 End Sub
 
+
+Sub jtrConnectIP(userData as Object, e as Object)
+
+	print "jtrConnectIP endpoint invoked"
+
+	stop
+	message = e.GetRequestParams()
+
+    e.AddResponseHeader("Content-type", "text/plain")
+    e.AddResponseHeader("Access-Control-Allow-Origin", "*")
+    e.SetResponseBodyString("ok")
+    e.SendResponse(200)
+
+End Sub
 
 
 ' endpoint invoked when browserCommand is invoked from a browser or external app

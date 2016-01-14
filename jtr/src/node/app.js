@@ -2,7 +2,13 @@ var express = require('express');
 var request = require('request');
 var mongoose = require('mongoose');
 var bonjour = require('bonjour')();
+var ip = require('ip');
+
 var app = express();
+
+//https://www.npmjs.com/package/ip
+var jtrConnectIPAddress = ip.address();
+console.log("jtrConnectIPAddress = " + jtrConnectIPAddress);
 
 var deviceController = require('./controllers/deviceController');
 
@@ -63,27 +69,6 @@ app.get('/getRecordings', function(req, res) {
 app.get('/updateRecording', function(req, res) {
     console.log("updateRecording invoked");
 
-    //var url_parts = url.parse(req.url, true);
-    //var query = url_parts.query;
-    //app.get('/', function(req, res){
-    //    res.send('id: ' + req.query.id);
-    //});
-    // parameters in
-    //req.query.*
-    //Duration:"2"
-    //FileName:"20160110T061502"
-    //HLSSegmentationComplete:"0"
-    //HLSUrl:""
-    //JtrConnectPath:"\\Mac\Home\Documents\Miscellaneous\Personal\jtrRecordings\20160110T061502.mp4"
-    //JtrStorageDevice:"lynxJtr"
-    //LastViewedPosition:"0"
-    //OnJtrConnectServer:"1"
-    //path:"C:\Users\tedshaffer\AppData\Local\transcoder\transcoder\1.0.0.0\tmp\20160110T061... (length: 86)"
-    //RecordingId:"128"
-    //StartDateTime:"2016/01/10 06:15:02.007"
-    //Title:"t3"
-    //TranscodeComplete:"1"
-    
     var recordingForDB = Recording({
         Duration: Number(req.query.Duration),
         FileName: req.query.FileName,
@@ -111,11 +96,6 @@ app.get('/updateRecording', function(req, res) {
         });
     });
 
-    //recordingForDB.save(function (err) {
-    //    if (err) throw err;
-    //    console.log("recording added to JtrConnect db");
-    //});
-
     res.set('Access-Control-Allow-Origin', '*');
     var response = {};
     res.send(response);
@@ -131,9 +111,16 @@ function bonjourServiceFound(service) {
       var deviceUrl = "http://" + service.txt.ipaddress + ":" + service.port.toString() + "/";
       var jtrName = service.txt.friendlyname;
 
-      if (jtrName === "") {
+      if (jtrName === undefined || jtrName === "") {
           return;
       }
+
+      // send jtrConnect's IP to jtr device
+      var sendJtrConnectIPPromise = deviceController.sendJtrConnectIP(deviceUrl, jtrConnectIPAddress);
+      sendJtrConnectIPPromise.then(function() {
+          console.log("jtr ip address send to JTR successfully");
+      });
+
       // retrieve the recordings for this jtr
       // FIXME - only retrieve this the first time the device connects
       // FIXME - need to figure out how to update this when the device adds / removes recordings
