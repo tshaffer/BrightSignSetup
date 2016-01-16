@@ -1,10 +1,17 @@
 /**
  * Created by tedshaffer on 12/13/15.
  */
-angular.module('jtr').controller('footer', ['$scope', '$http', function($scope, $http){
+angular.module('jtr').controller('footer', ['$scope', '$http', 'jtrServerService', function($scope, $http, $jtrServerService){
 
     $scope.invokeTrickMode = function(trickMode) {
         console.log("trickMode invoked: " + trickMode);
+
+        var commandData = {
+            "command": trickMode
+        };
+
+        var commandData = {"command": "remoteCommand", "value": trickMode};
+        var promise = $jtrServerService.browserCommand(commandData);
     };
 
     $scope.trickModes = [
