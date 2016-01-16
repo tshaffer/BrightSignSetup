@@ -74,6 +74,7 @@ Function newJTR(msgPort As Object) As Object
 
 	JTR.InitializeServer				= InitializeServer
 	JTR.AddHandlers						= AddHandlers
+	JTR.AddRecording					= AddRecording
 	
 	JTR.OpenDatabase					= OpenDatabase
 	JTR.CreateDBTable					= CreateDBTable

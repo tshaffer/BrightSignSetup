@@ -49,6 +49,29 @@ dbRecordingsPromise.then(function(dbRecordings) {
 
 });
 
+app.get('/addRecording', function(req, res) {
+    console.log("addRecording invoked from jtr");
+
+    var dt = req.query.dateTime;
+    var year = dt.substring(0,4);
+    var month = dt.substring(4, 6);
+    var day = dt.substring(6, 8);
+    var hours = dt.substring(9, 11);
+    var minutes = dt.substring(11, 13);
+    var seconds = dt.substring(13, 15);
+    var startDate = new Date(year, month, day, hours, minutes, seconds);
+
+    var duration = req.query.duration;
+
+    var title = req.query.title;
+
+    var fileName = req.query.fileName;
+
+    res.set('Access-Control-Allow-Origin', '*');
+    var response = {};
+    res.send(response);
+});
+
 app.get('/', function(req, res) {
     res.send('<html><head></head><body><h1>Hello jtr!</h1></body></html>');
 });

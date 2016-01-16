@@ -3,6 +3,7 @@ Sub InitializeServer()
     m.localServer = CreateObject("roHttpServer", { port: 8080 })
     m.localServer.SetPort(m.msgPort)
 
+	m.jtrConnectUrl = ""
 	m.jtrConnectIPAA =				{ HandleEvent: jtrConnectIP, mVar: m}
 	m.localServer.AddGetFromEvent({ url_path: "/jtrConnectIP", user_data: m.jtrConnectIPAA })
 
@@ -350,6 +351,43 @@ Sub jtrConnectIP(userData as Object, e as Object)
     e.AddResponseHeader("Access-Control-Allow-Origin", "*")
     e.SetResponseBodyString("ok")
     e.SendResponse(200)
+
+End Sub
+
+'recordingbitrate%:  6
+'duration%:  56000
+'segmentrecording: false
+'channel$: invalid
+'title$: a
+'filename$: 20160116T075700
+'datetime: 2016/01/16 07:57:00.009
+'escape()
+
+Sub addRecording(recording)
+
+	' add recording to local jtr database
+	m.AddDBRecording(recording)
+
+	' if jtrConnect is connected, send it the recording as well
+	if m.jtrConnectUrl <> "" then
+
+		url = m.jtrConnectUrl + "/addRecording"
+		url = url + "?title=" + recording.title$
+
+		dt = recording.dateTime.ToIsoString()
+		url = url + "&dateTime=" + dt
+
+		duration% = (recording.duration% + 30000) / 60000
+		url = url + "&duration=" + StripLeadingSpaces(stri(duration%))
+
+		url = url + "&fileName=" + recording.fileName$
+
+		m.xferToJtrConnect = CreateObject("roUrlTransfer")
+	    m.xferToJtrConnect.SetPort(m.msgPort)
+		ok = m.xferToJtrConnect.SetUrl(url)
+		res = m.xferToJtrConnect.AsyncGetToString()
+
+	endif
 
 End Sub
 

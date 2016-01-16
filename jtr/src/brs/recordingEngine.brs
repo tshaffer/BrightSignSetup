@@ -159,8 +159,8 @@ Sub re_EndManualRecord(duration As String, startSegmentation)
 	' finalize duration
 	m.scheduledRecording.duration% = int(val(duration))
 
-	' Add or update record in database
-	m.jtr.AddDBRecording(m.scheduledRecording)
+	' Add recording to db, jtrConnect
+	m.jtr.AddRecording(m.scheduledRecording)
 
 	' turn off record LED
 	m.jtr.SetRecordLED(false)
