@@ -1,5 +1,7 @@
 Sub InitializeServer()
 
+	m.jtrName = "jtrTiger"
+
     m.localServer = CreateObject("roHttpServer", { port: 8080 })
     m.localServer.SetPort(m.msgPort)
 
@@ -147,7 +149,7 @@ Sub InitializeServer()
 	mac$ = networkConfig.ethernet_mac
 
 ' Bonjour advertisement
-    m.service = { name: "JTR Web Service", type: "_http._tcp", port: 8080, _model: m.logging.deviceModel$, _serialNumber: m.logging.deviceUniqueID$, _ipAddress: ipAddress$, _macAddress: mac$, _friendlyName: "tigerJtr" }
+    m.service = { name: "JTR Web Service", type: "_http._tcp", port: 8080, _model: m.logging.deviceModel$, _serialNumber: m.logging.deviceUniqueID$, _ipAddress: ipAddress$, _macAddress: mac$, _friendlyName: m.jtrName }
     m.advert = CreateObject("roNetworkAdvertisement", m.service)
 
 	serverDirectory$ = "remoteWebSite"
@@ -354,19 +356,13 @@ Sub jtrConnectIP(userData as Object, e as Object)
 
 End Sub
 
-'recordingbitrate%:  6
-'duration%:  56000
-'segmentrecording: false
-'channel$: invalid
-'title$: a
-'filename$: 20160116T075700
-'datetime: 2016/01/16 07:57:00.009
-'escape()
 
 Sub addRecording(recording)
 
 	' add recording to local jtr database
 	m.AddDBRecording(recording)
+
+	recordingRow = m.GetDBRecordingByFileName(recording.fileName$)
 
 	' if jtrConnect is connected, send it the recording as well
 	if m.jtrConnectUrl <> "" then
@@ -381,6 +377,13 @@ Sub addRecording(recording)
 		url = url + "&duration=" + StripLeadingSpaces(stri(duration%))
 
 		url = url + "&fileName=" + recording.fileName$
+
+		url = url + "&recordingId=" + StripLeadingSpaces(stri(recordingRow.RecordingId))
+
+		url = url + "&jtrName=" + m.jtrName
+
+		' can't do this - path has a slash in it
+		' url = url + "&path=" + recordingRow.path
 
 		m.xferToJtrConnect = CreateObject("roUrlTransfer")
 	    m.xferToJtrConnect.SetPort(m.msgPort)

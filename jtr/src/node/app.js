@@ -52,6 +52,7 @@ dbRecordingsPromise.then(function(dbRecordings) {
 app.get('/addRecording', function(req, res) {
     console.log("addRecording invoked from jtr");
 
+    // retrieve BrightSign date and generate Javascript date
     var dt = req.query.dateTime;
     var year = dt.substring(0,4);
     var month = dt.substring(4, 6);
@@ -59,17 +60,33 @@ app.get('/addRecording', function(req, res) {
     var hours = dt.substring(9, 11);
     var minutes = dt.substring(11, 13);
     var seconds = dt.substring(13, 15);
-    var startDate = new Date(year, month, day, hours, minutes, seconds);
+    var startDateTime = new Date(year, month, day, hours, minutes, seconds);
 
-    var duration = req.query.duration;
+    var recordingForDB = Recording({
+        Duration: Number(req.query.duration),
+        FileName: req.query.fileName,
+        HLSSegmentationComplete: false,
+        HLSUrl: "",
+        JtrStorageDevice: req.query.jtrName,
+        LastViewedPosition: 0,
+        // path: req.query.path,
+        RecordingId: Number(req.query.recordingId),
+        StartDateTime: startDateTime,
+        Title: req.query.title,
+        TranscodeComplete: false,
+        OnJtrConnectServer: false,
+        JtrConnectPath: ""
+    });
 
-    var title = req.query.title;
+    recordingForDB.save(function (err) {
+        if (err) throw err;
+        console.log("recording saved in db");
 
-    var fileName = req.query.fileName;
+        res.set('Access-Control-Allow-Origin', '*');
+        var response = {};
+        res.send(response);
+    });
 
-    res.set('Access-Control-Allow-Origin', '*');
-    var response = {};
-    res.send(response);
 });
 
 app.get('/', function(req, res) {
