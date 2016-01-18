@@ -113,17 +113,7 @@ Sub de_EventHandler(event As Object)
 
 	if type(event) = "roHtmlWidgetEvent" then
 		m.HandleHttpEvent(event)
-	
-' {"code":0,"message":"OK","serverID":"20141201.web.1","token":"5801004984e3ccb3f9289232b745f797"}
-	else if type(event) = "roUrlEvent" then
-		if event.GetResponseCode() = 200 then
-			stop
-			if m.jtr.epgUrl.GetIdentity() = event.GetSourceIdentity() then
-				jsonStr$ = event.getstring()
-				aa=ParseJson(jsonstr$)
-				return
-			endif
-		endif
+
 	else if type(event) = "roTimerEvent" then
 
 		eventIdentity$ = stri(event.GetSourceIdentity())
