@@ -14,6 +14,8 @@ var deviceController = require('./controllers/deviceController');
 
 deviceController.getEpgData();
 
+return;
+
 mongoose.connect('mongodb://ted:jtrTed@ds039125.mongolab.com:39125/jtr');
 
 var Schema = mongoose.Schema;

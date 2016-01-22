@@ -4,51 +4,131 @@
 var request = require('request');
 
 // FIXME - move to epgController
+var schedulesDirectToken;
+
+function getSchedulesDirectToken() {
+
+    return new Promise(function (resolve, reject) {
+
+        var postData = {}
+
+        postData.username = "jtrDev";
+        postData.password = "3bacdc30b9598fb498dfefc00b2f2ad52150eef4";
+        var postDataStr = JSON.stringify(postData);
+
+        var url = "https://json.schedulesdirect.org/20141201/token";
+
+        request.post({
+            headers: {"User-Agent": "jtr"},
+            url:     url,
+            body:    postDataStr
+        }, function(error, response, body){
+
+            // check for error
+
+            console.log(body);
+
+            var data = JSON.parse(body);
+            //schedulesDirectToken = data.token;
+
+            resolve(data.token);
+        });
+    });
+}
+
+
+//function retrieveEpgDataStep2() {
+//
+//    var stationIds = [];
+//    var dates = [];
+//
+//    // step 2
+//    // build initial scheduleValidityByStationDate. That is, add keys, set values to initial /  default settings
+//    // one entry for each station, date combination
+//    $.each(stations, function (index, station) {
+//
+//        var startDate = new Date();
+//
+//        for (i = 0; i < numDaysEpgData; i++) {
+//            var date = new Date(startDate);
+//            date.setDate(date.getDate() + i);
+//            var dateVal = date.getFullYear() + "-" + twoDigitFormat((date.getMonth() + 1)) + "-" + twoDigitFormat(date.getDate());
+//
+//            var stationDate = station.StationId + "-" + dateVal;
+//
+//            var scheduleValidity = {};
+//            scheduleValidity.stationId = station.StationId;
+//            scheduleValidity.scheduleDate = dateVal;
+//            scheduleValidity.modifiedDate = "";
+//            scheduleValidity.md5 = "";
+//            scheduleValidity.status = "noData";
+//            scheduleValidityByStationDate[stationDate] = scheduleValidity;
+//
+//            if (stationIds.length == 0) {
+//                dates.push(dateVal);
+//            }
+//        }
+//
+//        stationIds.push(station.StationId);
+//    });
+//
+//    // dump initialized data structure
+//    ////console.log(JSON.stringify(scheduleValidityByStationDate, null, 4));
+//
+//    // retrieve last fetched station schedules from db
+//    var url = baseURL + "getStationSchedulesForSingleDay";
+//
+//    var jqxhr = $.ajax({
+//        type: "GET",
+//        url: url,
+//        dataType: "json",
+//    })
+//        .done(function (stationSchedulesForSingleDay) {
+//            //console.log("successful return from getStationSchedulesForSingleDay");
+//
+//            // dump StationSchedulesForSingleDay table from db
+//            ////console.log(JSON.stringify(result, null, 4));
+//
+//            // fill in scheduleValidityByStationDate with appropriate data from db
+//// JTR TODO
+//// change return value so that I dont have to use the nonsense on the next line.
+//            $.each(stationSchedulesForSingleDay, function (index, jtrStationScheduleForSingleDay) {
+//                var stationDate = jtrStationScheduleForSingleDay.StationId + "-" + jtrStationScheduleForSingleDay.ScheduleDate;
+//
+//                // is the station/date retrieved from db in the initialized data structure?
+//                // JTR TODO - if not, perhaps that implies that the information can be removed from the database
+//                // it won't be for dates now in the past
+//                if (stationDate in scheduleValidityByStationDate) {
+//                    var scheduleValidity = scheduleValidityByStationDate[stationDate];
+//                    scheduleValidity.modifiedDate = jtrStationScheduleForSingleDay.ModifiedDate;
+//                    scheduleValidity.md5 = jtrStationScheduleForSingleDay.MD5;
+//                    scheduleValidity.status = "dataCurrent";
+//                }
+//            });
+//
+//            // dump StationSchedulesForSingleDay as updated based on db data
+//            ////console.log(JSON.stringify(scheduleValidityByStationDate, null, 4));
+//
+//            // fetch data from Schedules Direct that will indicate the last changed date/information for relevant station/dates.
+//            getSchedulesDirectScheduleModificationData(stationIds, dates, retrieveEpgDataStep3);
+//        })
+//        .fail(function () {
+//            alert("getStationSchedulesForSingleDay failure");
+//        })
+//        .always(function () {
+//            alert("getStationSchedulesForSingleDay complete");
+//        });
+//
+//}
+
+
 function getEpgData() {
 
-    //request.post({
-    //    headers: {'content-type' : 'application/x-www-form-urlencoded'},
-    //    url:     'http://localhost/test2.php',
-    //    body:    "mes=heydude"
-    //}, function(error, response, body){
-    //    console.log(body);
-    //});
-
-
-    var postData = {}
-
-    postData.username = "jtrDev";
-    postData.password = "3bacdc30b9598fb498dfefc00b2f2ad52150eef4";
-    var postDataStr = JSON.stringify(postData);
-
-    var url = "https://json.schedulesdirect.org/20141201/token";
-
-    request.post({
-        //headers: {'content-type' : 'application/x-www-form-urlencoded'},
-        url:     url,
-        body:    postDataStr
-    }, function(error, response, body){
-        console.log(body);
+    var promise = getSchedulesDirectToken();
+    promise.then(function(token) {
+        schedulesDirectToken = token;
     });
 
-    //$.post(url, postDataStr, function (data) {
-    //    //console.log("returned from token (get from schedules direct) post");
-    //    //console.log(JSON.stringify(data, null, 4));
-    //    ////console.log(retVal);
-    //    ////console.log(data);
-    //    //{"code":0,"message":"OK","serverID":"20141201.web.1","token":"5801004984e3ccb3f9289232b745f797"}
-    //    //console.log("code: " + data.code);
-    //    //console.log("message: " + data.message);
-    //    //console.log("serverID: " + data.serverID);
-    //    //console.log("token: " + data.token);
-    //
-    //    schedulesDirectToken = data.token;
-    //
-    //    if (nextFunction != null) {
-    //        nextFunction();
-    //    }
-    //});
- 
 }
 
 // FIXME - move to mongoController?
