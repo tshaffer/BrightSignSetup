@@ -3,8 +3,20 @@
  */
 var request = require('request');
 
+// FIXME - put me elsewhere
+function twoDigitFormat(val) {
+    val = '' + val;
+    if (val.length === 1) {
+        val = '0' + val.slice(-2);
+    }
+    return val;
+}
+
+
 // FIXME - move to epgController
 var schedulesDirectToken;
+var numDaysEpgData = 3;
+var scheduleValidityByStationDate = {};     // schedule information for each station/date
 
 function getSchedulesDirectToken() {
 
@@ -24,7 +36,7 @@ function getSchedulesDirectToken() {
             body:    postDataStr
         }, function(error, response, body){
 
-            // check for error
+            // FIXME check for error
 
             console.log(body);
 
@@ -37,89 +49,107 @@ function getSchedulesDirectToken() {
 }
 
 
-//function retrieveEpgDataStep2() {
-//
-//    var stationIds = [];
-//    var dates = [];
-//
-//    // step 2
-//    // build initial scheduleValidityByStationDate. That is, add keys, set values to initial /  default settings
-//    // one entry for each station, date combination
-//    $.each(stations, function (index, station) {
-//
-//        var startDate = new Date();
-//
-//        for (i = 0; i < numDaysEpgData; i++) {
-//            var date = new Date(startDate);
-//            date.setDate(date.getDate() + i);
-//            var dateVal = date.getFullYear() + "-" + twoDigitFormat((date.getMonth() + 1)) + "-" + twoDigitFormat(date.getDate());
-//
-//            var stationDate = station.StationId + "-" + dateVal;
-//
-//            var scheduleValidity = {};
-//            scheduleValidity.stationId = station.StationId;
-//            scheduleValidity.scheduleDate = dateVal;
-//            scheduleValidity.modifiedDate = "";
-//            scheduleValidity.md5 = "";
-//            scheduleValidity.status = "noData";
-//            scheduleValidityByStationDate[stationDate] = scheduleValidity;
-//
-//            if (stationIds.length == 0) {
-//                dates.push(dateVal);
-//            }
-//        }
-//
-//        stationIds.push(station.StationId);
-//    });
-//
-//    // dump initialized data structure
-//    ////console.log(JSON.stringify(scheduleValidityByStationDate, null, 4));
-//
-//    // retrieve last fetched station schedules from db
-//    var url = baseURL + "getStationSchedulesForSingleDay";
-//
-//    var jqxhr = $.ajax({
-//        type: "GET",
-//        url: url,
-//        dataType: "json",
-//    })
-//        .done(function (stationSchedulesForSingleDay) {
-//            //console.log("successful return from getStationSchedulesForSingleDay");
-//
-//            // dump StationSchedulesForSingleDay table from db
-//            ////console.log(JSON.stringify(result, null, 4));
-//
-//            // fill in scheduleValidityByStationDate with appropriate data from db
-//// JTR TODO
-//// change return value so that I dont have to use the nonsense on the next line.
-//            $.each(stationSchedulesForSingleDay, function (index, jtrStationScheduleForSingleDay) {
-//                var stationDate = jtrStationScheduleForSingleDay.StationId + "-" + jtrStationScheduleForSingleDay.ScheduleDate;
-//
-//                // is the station/date retrieved from db in the initialized data structure?
-//                // JTR TODO - if not, perhaps that implies that the information can be removed from the database
-//                // it won't be for dates now in the past
-//                if (stationDate in scheduleValidityByStationDate) {
-//                    var scheduleValidity = scheduleValidityByStationDate[stationDate];
-//                    scheduleValidity.modifiedDate = jtrStationScheduleForSingleDay.ModifiedDate;
-//                    scheduleValidity.md5 = jtrStationScheduleForSingleDay.MD5;
-//                    scheduleValidity.status = "dataCurrent";
-//                }
-//            });
-//
-//            // dump StationSchedulesForSingleDay as updated based on db data
-//            ////console.log(JSON.stringify(scheduleValidityByStationDate, null, 4));
-//
-//            // fetch data from Schedules Direct that will indicate the last changed date/information for relevant station/dates.
-//            getSchedulesDirectScheduleModificationData(stationIds, dates, retrieveEpgDataStep3);
-//        })
-//        .fail(function () {
-//            alert("getStationSchedulesForSingleDay failure");
-//        })
-//        .always(function () {
-//            alert("getStationSchedulesForSingleDay complete");
-//        });
-//
-//}
+function retrieveEpgDataStep2() {
+
+    // where should stations come from?
+    var stations = [];
+
+    var station = {};
+    station.StationId = '19571';
+    station.AtscMajor = 2;
+    station.AtscMinor = 1;
+    station.CommonName = 'KTVU';
+    station.Name = 'KTVUDT (KTVU-DT)';
+    stations.push(station);
+
+    station = {};
+    station.StationId = '19573';
+    station.AtscMajor = 4;
+    station.AtscMinor = 1;
+    station.CommonName = 'KRON';
+    station.Name = 'KRONDT (KRON-DT)';
+    stations.push(station);
+
+    var stationIds = [];
+    var dates = [];
+
+    // step 2
+    // build initial scheduleValidityByStationDate. That is, add keys, set values to initial /  default settings
+    // one entry for each station, date combination
+    stations.forEach(function(station) {
+
+        var startDate = new Date();
+
+        for (i = 0; i < numDaysEpgData; i++) {
+            var date = new Date(startDate);
+            date.setDate(date.getDate() + i);
+            var dateVal = date.getFullYear() + "-" + twoDigitFormat((date.getMonth() + 1)) + "-" + twoDigitFormat(date.getDate());
+
+            var stationDate = station.StationId + "-" + dateVal;
+
+            var scheduleValidity = {};
+            scheduleValidity.stationId = station.StationId;
+            scheduleValidity.scheduleDate = dateVal;
+            scheduleValidity.modifiedDate = "";
+            scheduleValidity.md5 = "";
+            scheduleValidity.status = "noData";
+            scheduleValidityByStationDate[stationDate] = scheduleValidity;
+
+            if (stationIds.length == 0) {
+                dates.push(dateVal);
+            }
+        }
+
+        stationIds.push(station.StationId);
+    });
+
+// FIXME - havent done any of this code yet
+    
+    // retrieve last fetched station schedules from db
+    var url = baseURL + "getStationSchedulesForSingleDay";
+
+    var jqxhr = $.ajax({
+        type: "GET",
+        url: url,
+        dataType: "json",
+    })
+        .done(function (stationSchedulesForSingleDay) {
+            //console.log("successful return from getStationSchedulesForSingleDay");
+
+            // dump StationSchedulesForSingleDay table from db
+            ////console.log(JSON.stringify(result, null, 4));
+
+            // fill in scheduleValidityByStationDate with appropriate data from db
+// JTR TODO
+// change return value so that I dont have to use the nonsense on the next line.
+            $.each(stationSchedulesForSingleDay, function (index, jtrStationScheduleForSingleDay) {
+                var stationDate = jtrStationScheduleForSingleDay.StationId + "-" + jtrStationScheduleForSingleDay.ScheduleDate;
+
+                // is the station/date retrieved from db in the initialized data structure?
+                // JTR TODO - if not, perhaps that implies that the information can be removed from the database
+                // it won't be for dates now in the past
+                if (stationDate in scheduleValidityByStationDate) {
+                    var scheduleValidity = scheduleValidityByStationDate[stationDate];
+                    scheduleValidity.modifiedDate = jtrStationScheduleForSingleDay.ModifiedDate;
+                    scheduleValidity.md5 = jtrStationScheduleForSingleDay.MD5;
+                    scheduleValidity.status = "dataCurrent";
+                }
+            });
+
+            // dump StationSchedulesForSingleDay as updated based on db data
+            ////console.log(JSON.stringify(scheduleValidityByStationDate, null, 4));
+
+            // fetch data from Schedules Direct that will indicate the last changed date/information for relevant station/dates.
+            getSchedulesDirectScheduleModificationData(stationIds, dates, retrieveEpgDataStep3);
+        })
+        .fail(function () {
+            alert("getStationSchedulesForSingleDay failure");
+        })
+        .always(function () {
+            alert("getStationSchedulesForSingleDay complete");
+        });
+
+}
 
 
 function getEpgData() {
@@ -127,6 +157,7 @@ function getEpgData() {
     var promise = getSchedulesDirectToken();
     promise.then(function(token) {
         schedulesDirectToken = token;
+        retrieveEpgDataStep2();
     });
 
 }
