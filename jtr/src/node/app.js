@@ -12,6 +12,8 @@ console.log("jtrConnectIPAddress = " + jtrConnectIPAddress);
 
 var deviceController = require('./controllers/deviceController');
 
+deviceController.getEpgData();
+
 mongoose.connect('mongodb://ted:jtrTed@ds039125.mongolab.com:39125/jtr');
 
 var Schema = mongoose.Schema;

@@ -3,6 +3,54 @@
  */
 var request = require('request');
 
+// FIXME - move to epgController
+function getEpgData() {
+
+    //request.post({
+    //    headers: {'content-type' : 'application/x-www-form-urlencoded'},
+    //    url:     'http://localhost/test2.php',
+    //    body:    "mes=heydude"
+    //}, function(error, response, body){
+    //    console.log(body);
+    //});
+
+
+    var postData = {}
+
+    postData.username = "jtrDev";
+    postData.password = "3bacdc30b9598fb498dfefc00b2f2ad52150eef4";
+    var postDataStr = JSON.stringify(postData);
+
+    var url = "https://json.schedulesdirect.org/20141201/token";
+
+    request.post({
+        //headers: {'content-type' : 'application/x-www-form-urlencoded'},
+        url:     url,
+        body:    postDataStr
+    }, function(error, response, body){
+        console.log(body);
+    });
+
+    //$.post(url, postDataStr, function (data) {
+    //    //console.log("returned from token (get from schedules direct) post");
+    //    //console.log(JSON.stringify(data, null, 4));
+    //    ////console.log(retVal);
+    //    ////console.log(data);
+    //    //{"code":0,"message":"OK","serverID":"20141201.web.1","token":"5801004984e3ccb3f9289232b745f797"}
+    //    //console.log("code: " + data.code);
+    //    //console.log("message: " + data.message);
+    //    //console.log("serverID: " + data.serverID);
+    //    //console.log("token: " + data.token);
+    //
+    //    schedulesDirectToken = data.token;
+    //
+    //    if (nextFunction != null) {
+    //        nextFunction();
+    //    }
+    //});
+ 
+}
+
 // FIXME - move to mongoController?
 function getMongoDBRecording(Recording, recording) {
 
@@ -139,5 +187,6 @@ module.exports = {
     getMongoDBRecordingsList: getMongoDBRecordingsList,
     getJtrRecordings: getJtrRecordings,
     getJtrRecordingsList: getJtrRecordingsList,
-    sendJtrConnectIP: sendJtrConnectIP
+    sendJtrConnectIP: sendJtrConnectIP,
+    getEpgData: getEpgData
 }
