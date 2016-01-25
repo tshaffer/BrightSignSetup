@@ -12,9 +12,8 @@ console.log("jtrConnectIPAddress = " + jtrConnectIPAddress);
 
 var deviceController = require('./controllers/deviceController');
 
-deviceController.getEpgData();
-
-return;
+//deviceController.getEpgData();
+console.log(__dirname);
 
 mongoose.connect('mongodb://ted:jtrTed@ds039125.mongolab.com:39125/jtr');
 
@@ -52,6 +51,8 @@ dbRecordingsPromise.then(function(dbRecordings) {
     })
 
 });
+
+app.use('/assets', express.static(__dirname + '/public'));
 
 app.get('/addRecording', function(req, res) {
     console.log("addRecording invoked from jtr");
