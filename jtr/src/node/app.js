@@ -12,8 +12,67 @@ console.log("jtrConnectIPAddress = " + jtrConnectIPAddress);
 
 var deviceController = require('./controllers/deviceController');
 
+//var FfmpegCommand = require('fluent-ffmpeg');
+//var command = new FfmpegCommand();
+var ffmpeg = require('fluent-ffmpeg');
+
+ffmpeg.getAvailableFilters(function(err, filters) {
+    console.log("available filters");
+        
+});
+
+//var inputPath = __dirname + "/public/video/20160117T064800.ts";
+//var outputPath = __dirname + "/public/video/20160117T064800.mp4";
+
+var inputPath = __dirname + "/public/video/20160110T061102.ts";
+var outputPath = __dirname + "/public/video/20160110T061102.mp4";
+
+//ffmpeg -i GoodWife4.ts -bsf:a aac_adtstoasc -c copy GoodWife4.mp4
+
+//ffmpeg(inputPath)
+//    .output(outputPath)
+//    .on('end', function() {
+//        console.log('Finished processing');
+//    })
+//  .run();;
+
+//ffmpeg(inputPath)
+//     .outputOptions('-bsf:a aac_adtstoasc')
+//     .output(outputPath)
+//     .on('error', function(err) {
+//         console.log('An error occurred: ' + err.message);
+//     })
+//     .on('start', function() {
+//        console.log('processing started');
+//     })
+//     .on('end', function() {
+//         console.log('Processing finished !');
+//     })
+//    .run();
+
+inputPath = __dirname + "/public/video/in.ts";
+outputPath = __dirname + "/public/video/out.mp4";
+
+var execString = "ffmpeg -i " + inputPath + " -bsf:a aac_adtstoasc -c copy " + outputPath;
+
+var exec = require('child_process').exec;
+exec(execString, function callback(error, stdout, stderr){
+    console.log("ffmpeg complete");
+});
+
+// ffmpeg(inputPath)
+//     .on('error', function(err) {
+//         console.log('An error occurred: ' + err.message);
+//     })
+//     .on('end', function() {
+//         console.log('Processing finished !');
+//     })
+//     .save(outputPath);
+
 //deviceController.getEpgData();
 console.log(__dirname);
+
+return;
 
 mongoose.connect('mongodb://ted:jtrTed@ds039125.mongolab.com:39125/jtr');
 
@@ -147,6 +206,7 @@ app.get('/updateRecording', function(req, res) {
 });
 
 function bonjourServiceFound(service) {
+  console.log(service.host);
   if (service.host.startsWith('BrightSign')) {
       console.log("Found BrightSign model: " + service.txt.model);
       console.log("Serial number: " + service.txt.serialnumber);
