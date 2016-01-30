@@ -201,7 +201,11 @@ app.post('/addRecording', function (req, res) {
     // FIXME
     // file name hack (extension)
     var targetPath = __dirname + "/public/video/" + req.headers.filename + ".ts";
-    deviceController.uploadRecordingFromJtr(jtrUrl + "/" + path, targetPath);
+    var uploadPromise = deviceController.uploadRecordingFromJtr(jtrUrl + "/" + path, targetPath);
+    uploadPromise.then(function() {
+        console.log("uploadRecordingFromJtr completed successfully");
+    });
+
     res.set('Access-Control-Allow-Origin', '*');
     var response = {};
     res.send(response);

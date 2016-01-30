@@ -276,31 +276,18 @@ function getJtrRecordingsList(baseUrl) {
 
 function uploadRecordingFromJtr(url, targetPath) {
 
-    var stream = request(url).pipe(fs.createWriteStream(targetPath));
-    stream.on('finish', function() {
-        console.log("stream write complete");
+    return new Promise(function(resolve, reject) {
+
+        var stream = request(url).pipe(fs.createWriteStream(targetPath));
+        stream.on('finish', function() {
+            console.log("stream write to " + targetPath + " complete.");
+            resolve();
+        });
+        stream.on('error', function(error) {
+            reject(error);
+        })
+
     });
-    stream.on('error', function(error) {
-        throw error;
-    })
-
-    //return new Promise(function(resolve, reject) {
-    //
-    //    var url = baseUrl + "jtrConnectIP";
-    //
-    //    var params = { jtrConnectUrl: "http://" + jtrConnectIP + ":3000" };
-    //
-    //    request( { url: url, qs: params }, function(err, response, body) {
-    //        if (!err && response.statusCode == 200) {
-    //            console.log("Get response: " + response.statusCode);
-    //            resolve();
-    //        }
-    //        else {
-    //            reject();
-    //        }
-    //    });
-    //});
-
 }
 
 function sendJtrConnectIP(baseUrl, jtrConnectIP) {
