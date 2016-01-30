@@ -158,6 +158,10 @@ app.get('/updateRecording', function(req, res) {
 });
 
 
+//var jtrUrl = "http://" + "192.168.0.105:8080";
+//var path = "content/20160130T075300.ts"
+//deviceController.uploadRecordingFromJtr(jtrUrl, path);
+
 app.post('/addRecording', function (req, res) {
     console.log(req.body);
     console.log("post request to addRecording");
@@ -192,7 +196,10 @@ app.post('/addRecording', function (req, res) {
         JtrConnectPath: ""
     });
 
-    deviceController.uploadRecordingFromJtr(jtrUrl, path);
+    // FIXME
+    // file name hack (extension)
+    var targetPath = __dirname + "/video/" + req.headers.filename + ".ts";
+    deviceController.uploadRecordingFromJtr(jtrUrl, path, targetPath);
     res.set('Access-Control-Allow-Origin', '*');
     var response = {};
     res.send(response);
@@ -209,10 +216,6 @@ app.post('/addRecording', function (req, res) {
     //});
 
 });
-
-var jtrUrl = "http://" + "192.168.0.105:8080";
-var path = "content/20160130T075300.ts"
-deviceController.uploadRecordingFromJtr(jtrUrl, path);
 
 function bonjourServiceFound(service) {
   console.log(service.host);

@@ -2,6 +2,7 @@
  * Created by tedshaffer on 1/9/16.
  */
 var request = require('request');
+var fs = require("fs");
 
 // FIXME - put me elsewhere
 function twoDigitFormat(val) {
@@ -272,6 +273,38 @@ function getJtrRecordingsList(baseUrl) {
     });
 }
 
+
+function uploadRecordingFromJtr(url, path, targetPath) {
+
+    var fullUrl = url + "/" + path;
+
+    var stream = request(fullUrl).pipe(fs.createWriteStream(targetPath));
+    stream.on('finish', function() {
+        console.log("stream write complete");
+    });
+    stream.on('error', function(error) {
+        throw error;
+    })
+
+    //return new Promise(function(resolve, reject) {
+    //
+    //    var url = baseUrl + "jtrConnectIP";
+    //
+    //    var params = { jtrConnectUrl: "http://" + jtrConnectIP + ":3000" };
+    //
+    //    request( { url: url, qs: params }, function(err, response, body) {
+    //        if (!err && response.statusCode == 200) {
+    //            console.log("Get response: " + response.statusCode);
+    //            resolve();
+    //        }
+    //        else {
+    //            reject();
+    //        }
+    //    });
+    //});
+
+}
+
 function sendJtrConnectIP(baseUrl, jtrConnectIP) {
 
     return new Promise(function(resolve, reject) {
@@ -298,6 +331,7 @@ module.exports = {
     getMongoDBRecordingsList: getMongoDBRecordingsList,
     getJtrRecordings: getJtrRecordings,
     getJtrRecordingsList: getJtrRecordingsList,
+    uploadRecordingFromJtr: uploadRecordingFromJtr,
     sendJtrConnectIP: sendJtrConnectIP,
     getEpgData: getEpgData
 }
