@@ -3,6 +3,7 @@ var request = require('request');
 var mongoose = require('mongoose');
 var bonjour = require('bonjour')();
 var ip = require('ip');
+var requestIp = require('request-ip');
 
 var app = express();
 
@@ -105,11 +106,13 @@ app.use('/assets', express.static(__dirname + '/public'));
 //
 //});
 
+
 app.get('/', function(req, res) {
     res.send('<html><head></head><body><h1>Hello jtr!</h1></body></html>');
 });
 
 app.get('/getRecordings', function(req, res) {
+
     console.log("getRecordings invoked");
     res.set('Access-Control-Allow-Origin', '*');
 
@@ -158,16 +161,15 @@ app.get('/updateRecording', function(req, res) {
 });
 
 
-//var jtrUrl = "http://" + "192.168.0.105:8080";
-//var path = "content/20160130T075300.ts"
-//deviceController.uploadRecordingFromJtr(jtrUrl, path);
-
 app.post('/addRecording', function (req, res) {
     console.log(req.body);
     console.log("post request to addRecording");
 
-    //var jtrUrl = "http://" + req.headers.host;
-    var jtrUrl = "http://" + "192.168.0.105:8080";
+    var jtrIp = requestIp.getClientIp(req);
+    if (jtrIp.startsWith("::ffff:")) {
+        jtrIp = jtrIp.substr(7);
+    }
+    var jtrUrl = "http://" + jtrIp + ":8080";
 
     var dt = req.headers.datetime;
     var year = dt.substring(0,4);
@@ -198,8 +200,8 @@ app.post('/addRecording', function (req, res) {
 
     // FIXME
     // file name hack (extension)
-    var targetPath = __dirname + "/video/" + req.headers.filename + ".ts";
-    deviceController.uploadRecordingFromJtr(jtrUrl, path, targetPath);
+    var targetPath = __dirname + "/public/video/" + req.headers.filename + ".ts";
+    deviceController.uploadRecordingFromJtr(jtrUrl + "/" + path, targetPath);
     res.set('Access-Control-Allow-Origin', '*');
     var response = {};
     res.send(response);

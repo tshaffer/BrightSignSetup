@@ -274,11 +274,9 @@ function getJtrRecordingsList(baseUrl) {
 }
 
 
-function uploadRecordingFromJtr(url, path, targetPath) {
+function uploadRecordingFromJtr(url, targetPath) {
 
-    var fullUrl = url + "/" + path;
-
-    var stream = request(fullUrl).pipe(fs.createWriteStream(targetPath));
+    var stream = request(url).pipe(fs.createWriteStream(targetPath));
     stream.on('finish', function() {
         console.log("stream write complete");
     });
