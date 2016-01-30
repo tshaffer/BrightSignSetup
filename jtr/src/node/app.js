@@ -1,102 +1,10 @@
-//var express = require('express');
+var express = require('express')
 var request = require('request');
 var mongoose = require('mongoose');
 var bonjour = require('bonjour')();
 var ip = require('ip');
 
-
-var express = require('express')
 var app = express();
-
-//app.post('/', function (req, res) {
-//    console.log(req.body);
-//    console.log("post request to homepage");
-//
-//    res.send('POST request to homepage');
-//});
-
-app.post('/addRecording', function (req, res) {
-    console.log(req.body);
-    console.log("post request to addRecording");
-
-    var dt = req.headers.datetime;
-    var year = dt.substring(0,4);
-    var month = dt.substring(4, 6);
-    var day = dt.substring(6, 8);
-    var hours = dt.substring(9, 11);
-    var minutes = dt.substring(11, 13);
-    var seconds = dt.substring(13, 15);
-    var startDateTime = new Date(year, month, day, hours, minutes, seconds);
-
-    var recordingForDB = Recording({
-        Duration: Number(req.headers.duration),
-        FileName: req.headers.filename,
-        HLSSegmentationComplete: false,
-        HLSUrl: "",
-        JtrStorageDevice: req.headers.jtrname,
-        LastViewedPosition: 0,
-        // path: req.query.path,
-        RecordingId: Number(req.headers.recordingid),
-        StartDateTime: startDateTime,
-        Title: req.headers.title,
-        TranscodeComplete: false,
-        OnJtrConnectServer: false,
-        JtrConnectPath: ""
-    });
-
-    recordingForDB.save(function (err) {
-        if (err) throw err;
-        console.log("recording saved in db");
-
-        res.set('Access-Control-Allow-Origin', '*');
-        var response = {};
-        res.send(response);
-    });
-
-    //res.send('POST request to addRecording');
-});
-
-//var multer  = require('multer')
-//var upload = multer({ dest: 'uploads/' })
-
-//var storage =   multer.diskStorage({
-//    destination: function (req, file, callback) {
-//        console.log("destination: ");
-//        console.log(req);
-//        console.log(file);
-//        callback(null, './uploads');
-//    },
-//    filename: function (req, file, callback) {
-//        console.log("filename: ");
-//        console.log(req);
-//        console.log(file);
-//        // use file.originalname instead or somehow have file.fieldname set appropriately?
-//        callback(null, file.fieldname + '-' + Date.now());
-//    }
-//});
-//var upload = multer({ storage : storage}).single('userPhoto');
-//
-////app.get('/',function(req,res){
-////    res.sendFile(__dirname + "/index.html");
-////});
-////
-//app.post('/api/photo',function(req,res){
-//    upload(req,res,function(err) {
-//        if(err) {
-//            return res.end("Error uploading file.");
-//        }
-//        res.end("File is uploaded");
-//    });
-//});
-
-//app.post('/photos/upload', upload.array('photos', 12), function (req, res, next) {
-//app.post('/photos/upload', upload.single('fileName'), function (req, res, next) {
-//    // req.files is array of `photos` files
-//    // req.body will contain the text fields, if there were any
-//    console.log(req.body) // form fields
-//    console.log(req.files) // form files
-//    res.status(204).end()
-//})
 
 //https://www.npmjs.com/package/ip
 var jtrConnectIPAddress = ip.address();
@@ -104,45 +12,7 @@ console.log("jtrConnectIPAddress = " + jtrConnectIPAddress);
 
 var deviceController = require('./controllers/deviceController');
 
-//var FfmpegCommand = require('fluent-ffmpeg');
-//var command = new FfmpegCommand();
-//var ffmpeg = require('fluent-ffmpeg');
-
-//ffmpeg.getAvailableFilters(function(err, filters) {
-//    console.log("available filters");
-//
-//});
-
-//var inputPath = __dirname + "/public/video/20160117T064800.ts";
-//var outputPath = __dirname + "/public/video/20160117T064800.mp4";
-
-//var inputPath = __dirname + "/public/video/20160110T061102.ts";
-//var outputPath = __dirname + "/public/video/20160110T061102.mp4";
-//
-//ffmpeg -i GoodWife4.ts -bsf:a aac_adtstoasc -c copy GoodWife4.mp4
-
-//ffmpeg(inputPath)
-//    .output(outputPath)
-//    .on('end', function() {
-//        console.log('Finished processing');
-//    })
-//  .run();;
-
-//ffmpeg(inputPath)
-//     .outputOptions('-bsf:a aac_adtstoasc')
-//     .output(outputPath)
-//     .on('error', function(err) {
-//         console.log('An error occurred: ' + err.message);
-//     })
-//     .on('start', function() {
-//        console.log('processing started');
-//     })
-//     .on('end', function() {
-//         console.log('Processing finished !');
-//     })
-//    .run();
-
-// chosen code
+// chosen code for running ffmpeg
 //inputPath = __dirname + "/public/video/in.ts";
 //outputPath = __dirname + "/public/video/out.mp4";
 //
@@ -152,15 +22,6 @@ var deviceController = require('./controllers/deviceController');
 //exec(execString, function callback(error, stdout, stderr){
 //    console.log("ffmpeg complete");
 //});
-
-// ffmpeg(inputPath)
-//     .on('error', function(err) {
-//         console.log('An error occurred: ' + err.message);
-//     })
-//     .on('end', function() {
-//         console.log('Processing finished !');
-//     })
-//     .save(outputPath);
 
 //deviceController.getEpgData();
 console.log(__dirname);
@@ -204,45 +65,45 @@ dbRecordingsPromise.then(function(dbRecordings) {
 
 app.use('/assets', express.static(__dirname + '/public'));
 
-app.get('/addRecording', function(req, res) {
-    console.log("addRecording invoked from jtr");
-
-    // retrieve BrightSign date and generate Javascript date
-    var dt = req.query.dateTime;
-    var year = dt.substring(0,4);
-    var month = dt.substring(4, 6);
-    var day = dt.substring(6, 8);
-    var hours = dt.substring(9, 11);
-    var minutes = dt.substring(11, 13);
-    var seconds = dt.substring(13, 15);
-    var startDateTime = new Date(year, month, day, hours, minutes, seconds);
-
-    var recordingForDB = Recording({
-        Duration: Number(req.query.duration),
-        FileName: req.query.fileName,
-        HLSSegmentationComplete: false,
-        HLSUrl: "",
-        JtrStorageDevice: req.query.jtrName,
-        LastViewedPosition: 0,
-        // path: req.query.path,
-        RecordingId: Number(req.query.recordingId),
-        StartDateTime: startDateTime,
-        Title: req.query.title,
-        TranscodeComplete: false,
-        OnJtrConnectServer: false,
-        JtrConnectPath: ""
-    });
-
-    recordingForDB.save(function (err) {
-        if (err) throw err;
-        console.log("recording saved in db");
-
-        res.set('Access-Control-Allow-Origin', '*');
-        var response = {};
-        res.send(response);
-    });
-
-});
+//app.get('/addRecording', function(req, res) {
+//    console.log("addRecording invoked from jtr");
+//
+//    // retrieve BrightSign date and generate Javascript date
+//    var dt = req.query.dateTime;
+//    var year = dt.substring(0,4);
+//    var month = dt.substring(4, 6);
+//    var day = dt.substring(6, 8);
+//    var hours = dt.substring(9, 11);
+//    var minutes = dt.substring(11, 13);
+//    var seconds = dt.substring(13, 15);
+//    var startDateTime = new Date(year, month, day, hours, minutes, seconds);
+//
+//    var recordingForDB = Recording({
+//        Duration: Number(req.query.duration),
+//        FileName: req.query.fileName,
+//        HLSSegmentationComplete: false,
+//        HLSUrl: "",
+//        JtrStorageDevice: req.query.jtrName,
+//        LastViewedPosition: 0,
+//        // path: req.query.path,
+//        RecordingId: Number(req.query.recordingId),
+//        StartDateTime: startDateTime,
+//        Title: req.query.title,
+//        TranscodeComplete: false,
+//        OnJtrConnectServer: false,
+//        JtrConnectPath: ""
+//    });
+//
+//    recordingForDB.save(function (err) {
+//        if (err) throw err;
+//        console.log("recording saved in db");
+//
+//        res.set('Access-Control-Allow-Origin', '*');
+//        var response = {};
+//        res.send(response);
+//    });
+//
+//});
 
 app.get('/', function(req, res) {
     res.send('<html><head></head><body><h1>Hello jtr!</h1></body></html>');
@@ -295,6 +156,63 @@ app.get('/updateRecording', function(req, res) {
     var response = {};
     res.send(response);
 });
+
+
+app.post('/addRecording', function (req, res) {
+    console.log(req.body);
+    console.log("post request to addRecording");
+
+    //var jtrUrl = "http://" + req.headers.host;
+    var jtrUrl = "http://" + "192.168.0.105:8080";
+
+    var dt = req.headers.datetime;
+    var year = dt.substring(0,4);
+    var month = dt.substring(4, 6);
+    var day = dt.substring(6, 8);
+    var hours = dt.substring(9, 11);
+    var minutes = dt.substring(11, 13);
+    var seconds = dt.substring(13, 15);
+    var startDateTime = new Date(year, month, day, hours, minutes, seconds);
+
+    var path = req.headers.path;
+
+    var recordingForDB = Recording({
+        Duration: Number(req.headers.duration),
+        FileName: req.headers.filename,
+        HLSSegmentationComplete: false,
+        HLSUrl: "",
+        JtrStorageDevice: req.headers.jtrname,
+        LastViewedPosition: 0,
+        path: path,
+        RecordingId: Number(req.headers.recordingid),
+        StartDateTime: startDateTime,
+        Title: req.headers.title,
+        TranscodeComplete: false,
+        OnJtrConnectServer: false,
+        JtrConnectPath: ""
+    });
+
+    deviceController.uploadRecordingFromJtr(jtrUrl, path);
+    res.set('Access-Control-Allow-Origin', '*');
+    var response = {};
+    res.send(response);
+
+    //recordingForDB.save(function (err) {
+    //    if (err) throw err;
+    //    console.log("recording saved in db");
+    //
+    //    deviceController.uploadRecordingFromJtr(jtrUrl, path);
+    //
+    //    res.set('Access-Control-Allow-Origin', '*');
+    //    var response = {};
+    //    res.send(response);
+    //});
+
+});
+
+var jtrUrl = "http://" + "192.168.0.105:8080";
+var path = "content/20160130T075300.ts"
+deviceController.uploadRecordingFromJtr(jtrUrl, path);
 
 function bonjourServiceFound(service) {
   console.log(service.host);
