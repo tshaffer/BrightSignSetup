@@ -364,31 +364,62 @@ Sub addRecording(recording)
 
 	recordingRow = m.GetDBRecordingByFileName(recording.fileName$)
 
+stop
+
 	' if jtrConnect is connected, send it the recording as well
 	if m.jtrConnectUrl <> "" then
 
 		url = m.jtrConnectUrl + "/addRecording"
-		url = url + "?title=" + recording.title$
-
 		dt = recording.dateTime.ToIsoString()
-		url = url + "&dateTime=" + dt
-
 		duration% = (recording.duration% + 30000) / 60000
-		url = url + "&duration=" + StripLeadingSpaces(stri(duration%))
+        duration$ = StripLeadingSpaces(stri(duration%))
+        recordingId = StripLeadingSpaces(stri(recordingRow.RecordingId))
+        path = recordingRow.path
 
-		url = url + "&fileName=" + recording.fileName$
+		m.xferToJtrConnect = CreateObject("roUrlTransfer")
 
-		url = url + "&recordingId=" + StripLeadingSpaces(stri(recordingRow.RecordingId))
+		m.xferToJtrConnect.SetHeaders({})
+		m.xferToJtrConnect.AddHeader("title", recording.title$)
+		m.xferToJtrConnect.AddHeader("dateTime", dt)
+		m.xferToJtrConnect.AddHeader("duration", duration$)
+		m.xferToJtrConnect.AddHeader("fileName", recording.fileName$)
+		m.xferToJtrConnect.AddHeader("recordingId", recording.title$)
+		m.xferToJtrConnect.AddHeader("jtrName", m.jtrName)
+		m.xferToJtrConnect.AddHeader("path", path)
 
-		url = url + "&jtrName=" + m.jtrName
+' setup handler so this file can be retrieved
+		print "addRecording: add endpoint " + "/" + path
+		m.localServer.AddGetFromFile({ url_path: "/" + path, filename: path, content_type: "video/mpeg"})
+
+	    m.xferToJtrConnect.SetPort(m.msgPort)
+		ok = m.xferToJtrConnect.SetUrl(url)
+        if not ok stop
+        ok = m.xferToJtrConnect.PostFromString("addRecording")
+
+' old approach using get
+''        url.AddHeader("title", recording.title$)
+''
+''		url = url + "?title=" + recording.title$
+''
+''		dt = recording.dateTime.ToIsoString()
+''		url = url + "&dateTime=" + dt
+''
+''		duration% = (recording.duration% + 30000) / 60000
+''		url = url + "&duration=" + StripLeadingSpaces(stri(duration%))
+''
+''		url = url + "&fileName=" + recording.fileName$
+''
+''		url = url + "&recordingId=" + StripLeadingSpaces(stri(recordingRow.RecordingId))
+''
+''		url = url + "&jtrName=" + m.jtrName
 
 		' can't do this - path has a slash in it
 		' url = url + "&path=" + recordingRow.path
 
-		m.xferToJtrConnect = CreateObject("roUrlTransfer")
-	    m.xferToJtrConnect.SetPort(m.msgPort)
-		ok = m.xferToJtrConnect.SetUrl(url)
-		res = m.xferToJtrConnect.AsyncGetToString()
+''		m.xferToJtrConnect = CreateObject("roUrlTransfer")
+''	    m.xferToJtrConnect.SetPort(m.msgPort)
+''		ok = m.xferToJtrConnect.SetUrl(url)
+''		res = m.xferToJtrConnect.AsyncGetToString()
 
 	endif
 
