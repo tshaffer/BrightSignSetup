@@ -381,7 +381,7 @@ Sub addRecording(recording)
 		m.xferToJtrConnect.AddHeader("dateTime", dt)
 		m.xferToJtrConnect.AddHeader("duration", duration$)
 		m.xferToJtrConnect.AddHeader("fileName", recording.fileName$)
-		m.xferToJtrConnect.AddHeader("recordingId", recording.title$)
+		m.xferToJtrConnect.AddHeader("recordingId", recordingId)
 		m.xferToJtrConnect.AddHeader("jtrName", m.jtrName)
 		m.xferToJtrConnect.AddHeader("path", path)
 

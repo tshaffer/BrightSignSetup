@@ -206,21 +206,14 @@ app.post('/addRecording', function (req, res) {
         console.log("uploadRecordingFromJtr completed successfully");
     });
 
-    res.set('Access-Control-Allow-Origin', '*');
-    var response = {};
-    res.send(response);
-
-    //recordingForDB.save(function (err) {
-    //    if (err) throw err;
-    //    console.log("recording saved in db");
-    //
-    //    deviceController.uploadRecordingFromJtr(jtrUrl, path);
-    //
-    //    res.set('Access-Control-Allow-Origin', '*');
-    //    var response = {};
-    //    res.send(response);
-    //});
-
+    recordingForDB.save(function (err) {
+        if (err) throw err;
+        console.log("recording saved in db");
+        
+        res.set('Access-Control-Allow-Origin', '*');
+        var response = {};
+        res.send(response);
+    });
 });
 
 function bonjourServiceFound(service) {
