@@ -200,21 +200,55 @@ app.post('/addRecording', function (req, res) {
 
     // FIXME
     // file name hack (extension)
-    var targetPath = __dirname + "/public/video/" + req.headers.filename + ".ts";
-    var uploadPromise = deviceController.uploadRecordingFromJtr(jtrUrl + "/" + path, targetPath);
+    var fileName = req.headers.filename;
+    var pathWithoutExtension = __dirname + "/public/video/" + fileName;
+    var tsPath = pathWithoutExtension + ".ts";
+    var mp4Path = pathWithoutExtension + ".mp4";
+    var uploadPromise = deviceController.uploadRecordingFromJtr(jtrUrl + "/" + path, tsPath);
     uploadPromise.then(function() {
         console.log("uploadRecordingFromJtr completed successfully");
+        var ffmpegPromise = convertTSToMP4(tsPath, mp4Path);
+        ffmpegPromise.then(function() {
+            console.log("ffmpeg complete");
+            var url = jtrUrl + "/TranscodedFile";
+            var downloadPromise = deviceController.downloadMP4ToJtr(url, fileName + ".mp4", req.headers.recordingid);
+            downloadPromise.then(function() {
+                console.log("mp4 download to jtr complete");
+            })
+        })
     });
 
     recordingForDB.save(function (err) {
         if (err) throw err;
         console.log("recording saved in db");
-        
+
         res.set('Access-Control-Allow-Origin', '*');
         var response = {};
         res.send(response);
     });
 });
+
+function convertTSToMP4(inputPath, outputPath) {
+
+    //inputPath = __dirname + "/public/video/in.ts";
+    //outputPath = __dirname + "/public/video/out.mp4";
+
+    return new Promise(function(resolve, reject) {
+        var execString = "ffmpeg -i " + inputPath + " -bsf:a aac_adtstoasc -c copy " + outputPath;
+
+        var exec = require('child_process').exec;
+        exec(execString, function callback(error, stdout, stderr){
+            console.log("ffmpeg complete");
+            if (error == undefined) {
+                resolve();
+            }
+            else {
+                reject(error);
+            }
+        });
+    })
+
+}
 
 function bonjourServiceFound(service) {
   console.log(service.host);
