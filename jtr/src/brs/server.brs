@@ -377,14 +377,6 @@ Sub addRecording(recording)
 		m.xferToJtrConnect = CreateObject("roUrlTransfer")
 
 		m.xferToJtrConnect.SetHeaders({})
-		m.xferToJtrConnect.AddHeader("title", recording.title$)
-		m.xferToJtrConnect.AddHeader("dateTime", dt)
-		m.xferToJtrConnect.AddHeader("duration", duration$)
-		m.xferToJtrConnect.AddHeader("fileName", recording.fileName$)
-		m.xferToJtrConnect.AddHeader("recordingId", recordingId)
-		m.xferToJtrConnect.AddHeader("jtrName", m.jtrName)
-		m.xferToJtrConnect.AddHeader("path", path)
-
         m.xferToJtrConnect.AddHeader("Content-Type", "application/json")
 
         body = {}
@@ -406,8 +398,8 @@ print "/" + path
 	    m.xferToJtrConnect.SetPort(m.msgPort)
 		ok = m.xferToJtrConnect.SetUrl(url)
         if not ok stop
-''        ok = m.xferToJtrConnect.PostFromString("addRecording")
-        ok = m.xferToJtrConnect.PostFromString(body$)
+        rc = m.xferToJtrConnect.PostFromString(body$)
+        if rc <> 200 stop
 
 	endif
 

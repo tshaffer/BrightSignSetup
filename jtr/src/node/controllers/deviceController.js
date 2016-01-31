@@ -295,6 +295,8 @@ function downloadMP4ToJtr(url, filePath, fileName, recordingId) {
 
     return new Promise(function(resolve, reject) {
 
+        console.log("downloadMP4ToJtr: post to jtr");
+
         var headers = {};
         headers["Destination-Filename"] = "content/" + fileName;
         headers["Friendly-Filename"] = fileName;
@@ -306,9 +308,9 @@ function downloadMP4ToJtr(url, filePath, fileName, recordingId) {
                 headers: headers
             }, function (err, resp, body) {
                 if (err) {
-                    console.log('Error!');
+                    console.log('downloadMP4ToJtr: Error!');
                 } else {
-                    console.log('URL: ' + body);
+                    console.log("downloadMP4ToJtr: post successfully completed");
                 }
             });
 

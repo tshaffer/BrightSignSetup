@@ -133,36 +133,40 @@ app.post('/addRecording', function (req, res) {
     }
     var jtrUrl = "http://" + jtrIp + ":8080";
 
+    var dateTime = req.body["datetime"];
+    var duration = req.body["duration"];
+    var fileName = req.body["filename"];
+    var jtrName = req.body["jtrname"];
+    var path = req.body["path"];
+    var recordingId = req.body["recordingid"];
+    var title = req.body["title"];
+
     var dt = req.headers.datetime;
-    var year = dt.substring(0,4);
-    var month = dt.substring(4, 6);
-    var day = dt.substring(6, 8);
-    var hours = dt.substring(9, 11);
-    var minutes = dt.substring(11, 13);
-    var seconds = dt.substring(13, 15);
+    var year = dateTime.substring(0,4);
+    var month = dateTime.substring(4, 6);
+    var day = dateTime.substring(6, 8);
+    var hours = dateTime.substring(9, 11);
+    var minutes = dateTime.substring(11, 13);
+    var seconds = dateTime.substring(13, 15);
     var startDateTime = new Date(year, month, day, hours, minutes, seconds);
 
-    var path = req.headers.path;
-
     var recordingForDB = Recording({
-        Duration: Number(req.headers.duration),
-        FileName: req.headers.filename,
+        Duration: Number(duration),
+        FileName: fileName,
         HLSSegmentationComplete: false,
         HLSUrl: "",
-        JtrStorageDevice: req.headers.jtrname,
+        JtrStorageDevice: jtrName,
         LastViewedPosition: 0,
         path: path,
-        RecordingId: Number(req.headers.recordingid),
+        RecordingId: Number(recordingId),
         StartDateTime: startDateTime,
-        Title: req.headers.title,
+        Title: title,
         TranscodeComplete: false,
         OnJtrConnectServer: false,
         JtrConnectPath: ""
     });
 
-    // FIXME
-    // file name hack (extension)
-    var fileName = req.headers.filename;
+    // FIXME - file name hack (extension) - that is, code assume that the file has a '.ts' extension
     var pathWithoutExtension = __dirname + "/public/video/" + fileName;
     var tsPath = pathWithoutExtension + ".ts";
     var mp4Path = pathWithoutExtension + ".mp4";
@@ -171,9 +175,9 @@ app.post('/addRecording', function (req, res) {
         console.log("uploadRecordingFromJtr completed successfully");
         var ffmpegPromise = convertTSToMP4(tsPath, mp4Path);
         ffmpegPromise.then(function() {
-            console.log("ffmpeg complete");
+            console.log("addRecording: ffmpeg complete");
             var url = jtrUrl + "/TranscodedFile";
-            var downloadPromise = deviceController.downloadMP4ToJtr(url, mp4Path, fileName + ".mp4", req.headers.recordingid);
+            var downloadPromise = deviceController.downloadMP4ToJtr(url, mp4Path, fileName + ".mp4", recordingId);
             downloadPromise.then(function() {
                 console.log("mp4 download to jtr complete");
             })
@@ -192,17 +196,17 @@ app.post('/addRecording', function (req, res) {
 
 function convertTSToMP4(inputPath, outputPath) {
 
-    //inputPath = __dirname + "/public/video/in.ts";
-    //outputPath = __dirname + "/public/video/out.mp4";
-
     return new Promise(function(resolve, reject) {
         var execString = "ffmpeg -i " + inputPath + " -bsf:a aac_adtstoasc -c copy " + outputPath;
 
+        console.log("convertTSToMP4: exec ffmpeg");
+
         var exec = require('child_process').exec;
         exec(execString, function callback(error, stdout, stderr){
-            console.log("ffmpeg complete");
+            console.log("convertTSToMP4: ffmpeg complete");
             if (error == undefined) {
                 resolve();
+                console.log("convertTSToMP4 successfully completed");
             }
             else {
                 reject(error);
