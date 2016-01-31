@@ -4,6 +4,7 @@ var mongoose = require('mongoose');
 var bonjour = require('bonjour')();
 var ip = require('ip');
 var requestIp = require('request-ip');
+var bodyParser = require('body-parser');
 
 var app = express();
 
@@ -66,46 +67,7 @@ dbRecordingsPromise.then(function(dbRecordings) {
 
 app.use('/assets', express.static(__dirname + '/public'));
 
-//app.get('/addRecording', function(req, res) {
-//    console.log("addRecording invoked from jtr");
-//
-//    // retrieve BrightSign date and generate Javascript date
-//    var dt = req.query.dateTime;
-//    var year = dt.substring(0,4);
-//    var month = dt.substring(4, 6);
-//    var day = dt.substring(6, 8);
-//    var hours = dt.substring(9, 11);
-//    var minutes = dt.substring(11, 13);
-//    var seconds = dt.substring(13, 15);
-//    var startDateTime = new Date(year, month, day, hours, minutes, seconds);
-//
-//    var recordingForDB = Recording({
-//        Duration: Number(req.query.duration),
-//        FileName: req.query.fileName,
-//        HLSSegmentationComplete: false,
-//        HLSUrl: "",
-//        JtrStorageDevice: req.query.jtrName,
-//        LastViewedPosition: 0,
-//        // path: req.query.path,
-//        RecordingId: Number(req.query.recordingId),
-//        StartDateTime: startDateTime,
-//        Title: req.query.title,
-//        TranscodeComplete: false,
-//        OnJtrConnectServer: false,
-//        JtrConnectPath: ""
-//    });
-//
-//    recordingForDB.save(function (err) {
-//        if (err) throw err;
-//        console.log("recording saved in db");
-//
-//        res.set('Access-Control-Allow-Origin', '*');
-//        var response = {};
-//        res.send(response);
-//    });
-//
-//});
-
+app.use(bodyParser.json());
 
 app.get('/', function(req, res) {
     res.send('<html><head></head><body><h1>Hello jtr!</h1></body></html>');

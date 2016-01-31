@@ -385,6 +385,18 @@ Sub addRecording(recording)
 		m.xferToJtrConnect.AddHeader("jtrName", m.jtrName)
 		m.xferToJtrConnect.AddHeader("path", path)
 
+        m.xferToJtrConnect.AddHeader("Content-Type", "application/json")
+
+        body = {}
+        body.title = recording.title$
+        body.datetime = dt
+        body.duration = duration$
+        body.filename = recording.fileName$
+        body.recordingid = recordingId
+        body.jtrname = m.jtrName
+        body.path = path
+        body$ = FormatJson(body)
+
 ' setup handler so this file can be retrieved
 		print "addRecording: add endpoint " + "/" + path
 		m.localServer.AddGetFromFile({ url_path: "/" + path, filename: path, content_type: "video/mpeg"})
@@ -394,7 +406,8 @@ print "/" + path
 	    m.xferToJtrConnect.SetPort(m.msgPort)
 		ok = m.xferToJtrConnect.SetUrl(url)
         if not ok stop
-        ok = m.xferToJtrConnect.PostFromString("addRecording")
+''        ok = m.xferToJtrConnect.PostFromString("addRecording")
+        ok = m.xferToJtrConnect.PostFromString(body$)
 
 	endif
 
