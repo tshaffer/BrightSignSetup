@@ -211,7 +211,7 @@ app.post('/addRecording', function (req, res) {
         ffmpegPromise.then(function() {
             console.log("ffmpeg complete");
             var url = jtrUrl + "/TranscodedFile";
-            var downloadPromise = deviceController.downloadMP4ToJtr(url, fileName + ".mp4", req.headers.recordingid);
+            var downloadPromise = deviceController.downloadMP4ToJtr(url, mp4Path, fileName + ".mp4", req.headers.recordingid);
             downloadPromise.then(function() {
                 console.log("mp4 download to jtr complete");
             })
@@ -336,7 +336,6 @@ function bonjourServiceFound(service) {
       });
   }
 }
-
 
 var port = process.env.PORT || 3000;
 app.listen(port);

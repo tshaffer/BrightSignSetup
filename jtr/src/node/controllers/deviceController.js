@@ -291,35 +291,31 @@ function uploadRecordingFromJtr(url, targetPath) {
 }
 
 
-function downloadMP4ToJtr(url, fileName, recordingId) {
+function downloadMP4ToJtr(url, filePath, fileName, recordingId) {
 
     return new Promise(function(resolve, reject) {
-
-        //var postData = {}
-        //
-        //postData["Destination-Filename"] = "content/" + fileName;
-        //postData["Friendly-Filename"] = fileName;
-        //postData["DB-Id"] = recordingId;
-        //var postDataStr = JSON.stringify(postData);
 
         var headers = {};
         headers["Destination-Filename"] = "content/" + fileName;
         headers["Friendly-Filename"] = fileName;
         headers["DB-Id"] = recordingId;
 
-        request.post({
-            headers: headers,
-            url:     url,
-            body:    ""
-        }, function(error, response, body){
-            if (error) {
-                reject(error);
-            }
-            else {
-                resolve();
-            }
-        });
+        var req = request.post(
+            {
+                url: url,
+                headers: headers
+            }, function (err, resp, body) {
+                if (err) {
+                    console.log('Error!');
+                } else {
+                    console.log('URL: ' + body);
+                }
+            });
 
+        var form = req.form();
+        form.append('file', fs.createReadStream(filePath), {
+            headers
+        });
     });
 }
 
