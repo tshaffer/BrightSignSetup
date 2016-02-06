@@ -197,9 +197,14 @@ function getMongoDBRecordings(Recording) {
             if (err) {
                 reject();
             }
-            recordings.forEach(function (recording) {
+            var numRecordings = recordings.length;
+            for (i = 0; i < numRecordings; i++) {
+                recording = recordings[i];
                 dbRecordings[recording.RecordingId] = recording;
-            });
+            }
+            //recordings.forEach(function (recording) {
+            //    dbRecordings[recording.RecordingId] = recording;
+            //});
             resolve(dbRecordings);
         });
     });

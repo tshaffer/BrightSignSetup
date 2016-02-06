@@ -41,10 +41,12 @@ angular.module('jtr').controller('recordings', ['$scope', '$http', 'jtrServerSer
 
     $scope.show = function () {
 
-        //var promise = $jtrServerService.getJtrConnectRecordings();
-        //promise.then(function(result) {
-        //   console.log("getJtrConnectRecordings success");
-        //});
+        var promise = $jtrServerService.getJtrConnectRecordings();
+        promise.then(function(result) {
+           console.log("getJtrConnectRecordings success");
+        });
+
+        return;
 
         promise = $jtrServerService.getRecordings();
         promise.then(function (result) {

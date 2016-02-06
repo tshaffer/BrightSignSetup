@@ -830,14 +830,9 @@ stop
 		url = mVar.jtrConnectUrl + "/getRecordings"
 		xfer = CreateObject("roUrlTransfer")
 		ok = xfer.SetUrl(url)
-        response = xfer.GetToString()
-        json = ParseJson(response)
+        json = xfer.GetToString()
 
 	endif
-
-	response = {}
-
-	' PopulateRecordings(mVar, response)
 
     e.AddResponseHeader("Content-type", "text/json")
     e.AddResponseHeader("Access-Control-Allow-Origin", "*")
@@ -846,11 +841,11 @@ stop
 
 	' send data directly to js (for the case where the request came from the browser or an external app)
 
-	aa = {}
-	aa.AddReplace("command", "recordings")
-	aa.AddReplace("value", json)
+''	aa = {}
+''	aa.AddReplace("command", "recordings")
+''	aa.AddReplace("value", json)
 
-	ok = mVar.htmlWidget.PostJSMessage(aa)
+''	ok = mVar.htmlWidget.PostJSMessage(aa)
 
 End Sub
 

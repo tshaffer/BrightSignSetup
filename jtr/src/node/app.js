@@ -34,7 +34,7 @@ var recordingSchema = new Schema({
     TranscodeComplete: Boolean,
     OnJtrConnectServer: Boolean,
     JtrConnectPath: String,
-    RelativeUrl: String
+    RelativeUrl: String,
 });
 
 var Recording = mongoose.model('Recording', recordingSchema);
@@ -67,11 +67,14 @@ app.get('/getRecordings', function(req, res) {
     console.log("getRecordings invoked");
     res.set('Access-Control-Allow-Origin', '*');
 
-    var recordingsPromise = deviceController.getMongoDBRecordingsList(Recording);
+    //var recordingsPromise = deviceController.getMongoDBRecordingsList(Recording);
+    var recordingsPromise = deviceController.getMongoDBRecordings(Recording);
     recordingsPromise.then(function(recordingsList) {
         var response = {};
         response.freeSpace = "";
         response.recordings = recordingsList;
+        //res.setHeader('Content-Type', 'application/json');
+        //res.send(JSON.stringify(response));
         res.send(response);
     });
 });
