@@ -64,6 +64,10 @@ Sub InitializeServer()
 	m.getRecordingsAA =					{ HandleEvent: getRecordings, mVar: m }
 	m.localServer.AddGetFromEvent({ url_path: "/getRecordings", user_data: m.getRecordingsAA })
 
+    ' retrieve and return information about all recordings on jtrConnect'
+    m.getJtrConnectRecordingsAA =       { HandleEvent: getJtrConnectRecordings, mVar: m }
+    m.localServer.AddGetFromEvent({ url_path: "/getJtrConnectRecordings", user_data: m.getJtrConnectRecordingsAA })
+
 	' backbone handler
 	m.recordedShowsAA =					{ HandleEvent: getRecordedShows, mVar: m }
 	m.localServer.AddGetFromEvent({ url_path: "/recordedShows", user_data: m.recordedShowsAA })
@@ -807,6 +811,46 @@ Sub getRecordings(userData as Object, e as Object)
 
 	ok = mVar.htmlWidget.PostJSMessage(aa)
 	' if not ok stop
+
+End Sub
+
+
+Sub getJtrConnectRecordings(userData as Object, e as Object)
+
+	print "getJtrConnectRecordings endpoint invoked"
+
+    mVar = userData.mVar
+
+    json = {}
+
+stop
+
+	if mVar.jtrConnectUrl <> "" then
+
+		url = mVar.jtrConnectUrl + "/getRecordings"
+		xfer = CreateObject("roUrlTransfer")
+		ok = xfer.SetUrl(url)
+        response = xfer.GetToString()
+        json = ParseJson(response)
+
+	endif
+
+	response = {}
+
+	' PopulateRecordings(mVar, response)
+
+    e.AddResponseHeader("Content-type", "text/json")
+    e.AddResponseHeader("Access-Control-Allow-Origin", "*")
+    e.SetResponseBodyString(json)
+    e.SendResponse(200)
+
+	' send data directly to js (for the case where the request came from the browser or an external app)
+
+	aa = {}
+	aa.AddReplace("command", "recordings")
+	aa.AddReplace("value", json)
+
+	ok = mVar.htmlWidget.PostJSMessage(aa)
 
 End Sub
 

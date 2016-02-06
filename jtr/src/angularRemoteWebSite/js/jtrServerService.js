@@ -63,6 +63,14 @@ angular.module('jtr').service('jtrServerService', ['$http', function($http){
         return promise;
     };
 
+    this.getJtrConnectRecordings = function() {
+
+        var url = self.baseUrl + "getJtrConnectRecordings";
+
+        var promise = $http.get(url, {});
+        return promise;
+    };
+
     this.getScheduledRecordings = function(currentDateTime) {
 
         var url = self.baseUrl + "scheduledRecordings";

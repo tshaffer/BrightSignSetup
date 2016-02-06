@@ -14,17 +14,6 @@ console.log("jtrConnectIPAddress = " + jtrConnectIPAddress);
 
 var deviceController = require('./controllers/deviceController');
 
-// chosen code for running ffmpeg
-//inputPath = __dirname + "/public/video/in.ts";
-//outputPath = __dirname + "/public/video/out.mp4";
-//
-//var execString = "ffmpeg -i " + inputPath + " -bsf:a aac_adtstoasc -c copy " + outputPath;
-//
-//var exec = require('child_process').exec;
-//exec(execString, function callback(error, stdout, stderr){
-//    console.log("ffmpeg complete");
-//});
-
 //deviceController.getEpgData();
 console.log(__dirname);
 
@@ -39,13 +28,13 @@ var recordingSchema = new Schema({
     HLSUrl: String,
     JtrStorageDevice: String,
     LastViewedPosition: Number,
-    path: String,
     RecordingId: Number,
     StartDateTime: Date,
     Title: String,
     TranscodeComplete: Boolean,
     OnJtrConnectServer: Boolean,
-    JtrConnectPath: String
+    JtrConnectPath: String,
+    RelativeUrl: String
 });
 
 var Recording = mongoose.model('Recording', recordingSchema);
@@ -87,40 +76,40 @@ app.get('/getRecordings', function(req, res) {
     });
 });
 
-app.get('/updateRecording', function(req, res) {
-    console.log("updateRecording invoked");
-
-    var recordingForDB = Recording({
-        Duration: Number(req.query.Duration),
-        FileName: req.query.FileName,
-        HLSSegmentationComplete: req.query.HLSSegmentationComplete === "1" ? true : false,
-        HLSUrl: req.query.HLSUrl,
-        JtrStorageDevice: req.query.JtrStorageDevice,
-        LastViewedPosition: Number(req.query.LastViewedPosition),
-        path: req.query.path,
-        RecordingId: Number(req.query.RecordingId),
-        StartDateTime: req.query.StartDateTime,
-        Title: req.query.Title,
-        TranscodeComplete: true,
-        OnJtrConnectServer: true,
-        JtrConnectPath: req.query.JtrConnectPath
-    });
-
-    var dbRecordingPromise = deviceController.getMongoDBRecording(Recording, recordingForDB);
-    dbRecordingPromise.then(function(dbRecording) {
-        recordingOnMongo = dbRecording;
-        //recordingOnMongo.size = 'large';
-        // the following is a strange way to do the update - see the link below for various ways to do updates
-        // http://mongoosejs.com/docs/documents.html
-        recordingForDB.save(function (err) {
-            if (err) throw err;
-        });
-    });
-
-    res.set('Access-Control-Allow-Origin', '*');
-    var response = {};
-    res.send(response);
-});
+//app.get('/updateRecording', function(req, res) {
+//    console.log("updateRecording invoked");
+//
+//    var recordingForDB = Recording({
+//        Duration: Number(req.query.Duration),
+//        FileName: req.query.FileName,
+//        HLSSegmentationComplete: req.query.HLSSegmentationComplete === "1" ? true : false,
+//        HLSUrl: req.query.HLSUrl,
+//        JtrStorageDevice: req.query.JtrStorageDevice,
+//        LastViewedPosition: Number(req.query.LastViewedPosition),
+//        path: req.query.path,
+//        RecordingId: Number(req.query.RecordingId),
+//        StartDateTime: req.query.StartDateTime,
+//        Title: req.query.Title,
+//        TranscodeComplete: true,
+//        OnJtrConnectServer: true,
+//        JtrConnectPath: req.query.JtrConnectPath
+//    });
+//
+//    var dbRecordingPromise = deviceController.getMongoDBRecording(Recording, recordingForDB);
+//    dbRecordingPromise.then(function(dbRecording) {
+//        recordingOnMongo = dbRecording;
+//        //recordingOnMongo.size = 'large';
+//        // the following is a strange way to do the update - see the link below for various ways to do updates
+//        // http://mongoosejs.com/docs/documents.html
+//        recordingForDB.save(function (err) {
+//            if (err) throw err;
+//        });
+//    });
+//
+//    res.set('Access-Control-Allow-Origin', '*');
+//    var response = {};
+//    res.send(response);
+//});
 
 
 app.post('/addRecording', function (req, res) {
@@ -150,22 +139,6 @@ app.post('/addRecording', function (req, res) {
     var seconds = dateTime.substring(13, 15);
     var startDateTime = new Date(year, month, day, hours, minutes, seconds);
 
-    var recordingForDB = Recording({
-        Duration: Number(duration),
-        FileName: fileName,
-        HLSSegmentationComplete: false,
-        HLSUrl: "",
-        JtrStorageDevice: jtrName,
-        LastViewedPosition: 0,
-        path: path,
-        RecordingId: Number(recordingId),
-        StartDateTime: startDateTime,
-        Title: title,
-        TranscodeComplete: false,
-        OnJtrConnectServer: false,
-        JtrConnectPath: ""
-    });
-
     // FIXME - file name hack (extension) - that is, code assume that the file has a '.ts' extension
     var pathWithoutExtension = __dirname + "/public/video/" + fileName;
     var tsPath = pathWithoutExtension + ".ts";
@@ -176,6 +149,34 @@ app.post('/addRecording', function (req, res) {
         var ffmpegPromise = convertTSToMP4(tsPath, mp4Path);
         ffmpegPromise.then(function() {
             console.log("addRecording: ffmpeg complete");
+
+            // file is now stored locally - add to db
+            var recordingForDB = Recording({
+                Duration: Number(duration),
+                FileName: fileName,
+                HLSSegmentationComplete: false,
+                HLSUrl: "",
+                JtrStorageDevice: jtrName,
+                LastViewedPosition: 0,
+                RecordingId: Number(recordingId),
+                StartDateTime: startDateTime,
+                Title: title,
+                TranscodeComplete: true,
+                OnJtrConnectServer: true,
+                JtrConnectPath: mp4Path,
+                RelativeUrl: "/assets/video/" + fileName + ".mp4"
+            });
+
+            recordingForDB.save(function (err) {
+                if (err) throw err;
+                console.log("recording saved in db");
+
+                res.set('Access-Control-Allow-Origin', '*');
+                var response = {};
+                res.send(response);
+            });
+
+            // no reason to wait for the db write to start the file download
             var url = jtrUrl + "/TranscodedFile";
             var downloadPromise = deviceController.downloadMP4ToJtr(url, mp4Path, fileName + ".mp4", recordingId);
             downloadPromise.then(function() {
@@ -184,14 +185,6 @@ app.post('/addRecording', function (req, res) {
         })
     });
 
-    recordingForDB.save(function (err) {
-        if (err) throw err;
-        console.log("recording saved in db");
-
-        res.set('Access-Control-Allow-Origin', '*');
-        var response = {};
-        res.send(response);
-    });
 });
 
 function convertTSToMP4(inputPath, outputPath) {
@@ -234,7 +227,7 @@ function bonjourServiceFound(service) {
       // send jtrConnect's IP to jtr device
       var sendJtrConnectIPPromise = deviceController.sendJtrConnectIP(deviceUrl, jtrConnectIPAddress);
       sendJtrConnectIPPromise.then(function() {
-          console.log("jtr ip address send to JTR successfully");
+          console.log("jtr ip address sent to JTR successfully");
       });
 
       // retrieve the recordings for this jtr
@@ -250,53 +243,53 @@ function bonjourServiceFound(service) {
           // FIXME - using the recordingId as the unique identifier won't work because recordingId's are not guaranteed to be unique across jtr's
 
           // remove any recordings that exist on mongodb for this jtr but are not in the recordings just retrieved
-          for (var key in recordingsOnMongo) {
-              if (recordingsOnMongo.hasOwnProperty(key)) {
-                  // before checking the mongo recording, check to see if it's JtrStorageDevice is the jtr that was just discovered
-                  if (recordingsOnMongo[key].JtrStorageDevice === jtrName) {
-                      if (!(key in bigScreenJtrNativeRecordings)) {
-                          var recordingToRemoveFromMongo = recordingsOnMongo[key];
-                          console.log("Remove " + recordingToRemoveFromMongo.Title + " from mongo");
-                          Recording.remove({_id: recordingToRemoveFromMongo._id}, function (err) {
-                              if (err) throw err;
-                          });
-                      }
-                  }
-              }
-          }
+          //for (var key in recordingsOnMongo) {
+          //    if (recordingsOnMongo.hasOwnProperty(key)) {
+          //        // before checking the mongo recording, check to see if it's JtrStorageDevice is the jtr that was just discovered
+          //        if (recordingsOnMongo[key].JtrStorageDevice === jtrName) {
+          //            if (!(key in bigScreenJtrNativeRecordings)) {
+          //                var recordingToRemoveFromMongo = recordingsOnMongo[key];
+          //                console.log("Remove " + recordingToRemoveFromMongo.Title + " from mongo");
+          //                Recording.remove({_id: recordingToRemoveFromMongo._id}, function (err) {
+          //                    if (err) throw err;
+          //                });
+          //            }
+          //        }
+          //    }
+          //}
 
           // add any recordings from the discovered jtr that are not on the mongo db to the mongo db
-          for (var key in jtrRecordings) {
-              if (jtrRecordings.hasOwnProperty(key)) {
-                  if (!(key in recordingsOnMongo)) {
-                      var recording = jtrRecordings[key];
-
-                      console.log("Add " + recording.Title + " to mongo");
-
-                      var recordingForDB = Recording({
-                          Duration: recording.Duration,
-                          FileName: recording.FileName,
-                          HLSSegmentationComplete: recording.HLSSegmentationComplete === 1 ? true : false,
-                          HLSUrl: recording.HLSUrl,
-                          JtrStorageDevice: jtrName,
-                          LastViewedPosition: recording.LastViewedPosition,
-                          path: recording.path,
-                          RecordingId: recording.RecordingId,
-                          StartDateTime: recording.StartDateTime,
-                          Title: recording.Title,
-                          TranscodeComplete: recording.TranscodeComplete === 1 ? true : false,
-                          OnJtrConnectServer: false,
-                          JtrConnectPath: ""
-                      });
-
-                      var recordingTitle = recordingForDB.Title;
-                      recordingForDB.save(function (err) {
-                          if (err) throw err;
-                          console.log("recording " + recordingTitle + " saved in db");
-                      });
-                  }
-              }
-          }
+          //for (var key in jtrRecordings) {
+          //    if (jtrRecordings.hasOwnProperty(key)) {
+          //        if (!(key in recordingsOnMongo)) {
+          //            var recording = jtrRecordings[key];
+          //
+          //            console.log("Add " + recording.Title + " to mongo");
+          //
+          //            var recordingForDB = Recording({
+          //                Duration: recording.Duration,
+          //                FileName: recording.FileName,
+          //                HLSSegmentationComplete: recording.HLSSegmentationComplete === 1 ? true : false,
+          //                HLSUrl: recording.HLSUrl,
+          //                JtrStorageDevice: jtrName,
+          //                LastViewedPosition: recording.LastViewedPosition,
+          //                path: recording.path,
+          //                RecordingId: recording.RecordingId,
+          //                StartDateTime: recording.StartDateTime,
+          //                Title: recording.Title,
+          //                TranscodeComplete: recording.TranscodeComplete === 1 ? true : false,
+          //                OnJtrConnectServer: false,
+          //                JtrConnectPath: ""
+          //            });
+          //
+          //            var recordingTitle = recordingForDB.Title;
+          //            recordingForDB.save(function (err) {
+          //                if (err) throw err;
+          //                console.log("recording " + recordingTitle + " saved in db");
+          //            });
+          //        }
+          //    }
+          //}
 
           console.log("recordings synchronized between " + jtrName + " and mongoDB");
       });
