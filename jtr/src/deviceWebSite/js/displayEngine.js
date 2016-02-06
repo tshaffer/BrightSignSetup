@@ -22,6 +22,7 @@
     this.stIdle.HStateEventHandler = this.STIdleEventHandler;
     this.stIdle.superState = this.stDisplayer;
     this.stIdle.playSelectedShow = this.playSelectedShow;
+    this.stIdle.streamSelectedShow = this.streamSelectedShow;
     this.stIdle.toggleClock = this.toggleClock;
     this.stIdle.formatCurrentTime = this.formatCurrentTime;
 
@@ -38,6 +39,7 @@
     this.stLiveVideo.HStateEventHandler = this.STLiveVideoEventHandler;
     this.stLiveVideo.superState = this.stShowingVideo;
     this.stLiveVideo.playSelectedShow = this.playSelectedShow;
+    this.stLiveVideo.streamSelectedShow = this.streamSelectedShow;
     this.stLiveVideo.startChannelEntryTimer = this.startChannelEntryTimer;
     this.stLiveVideo.tuneLiveVideoChannel = this.tuneLiveVideoChannel;
     this.stLiveVideo.getChannelIdFromChannel = this.getChannelIdFromChannel;
@@ -53,22 +55,26 @@
     this.stPlaying.HStateEventHandler = this.STPlayingEventHandler;
     this.stPlaying.superState = this.stShowingVideo;
     this.stPlaying.playSelectedShow = this.playSelectedShow;
+    this.stPlaying.streamSelectedShow = this.streamSelectedShow;
     this.stPlaying.jump = this.jump;
 
     this.stPaused = new HState(this, "Paused");
     this.stPaused.HStateEventHandler = this.STPausedEventHandler;
     this.stPaused.superState = this.stShowingVideo;
     this.stPaused.playSelectedShow = this.playSelectedShow;
+    this.stPaused.streamSelectedShow = this.streamSelectedShow;
 
     this.stFastForwarding = new HState(this, "FastForwarding");
     this.stFastForwarding.HStateEventHandler = this.STFastForwardingEventHandler;
     this.stFastForwarding.superState = this.stShowingVideo;
     this.stFastForwarding.playSelectedShow = this.playSelectedShow;
+    this.stFastForwarding.streamSelectedShow = this.streamSelectedShow;
 
     this.stRewinding = new HState(this, "Rewinding");
     this.stRewinding.HStateEventHandler = this.STRewindingEventHandler;
     this.stRewinding.superState = this.stShowingVideo;
     this.stRewinding.playSelectedShow = this.playSelectedShow;
+    this.stRewinding.streamSelectedShow = this.streamSelectedShow;
 
     this.topState = this.stTop;
 }
@@ -133,11 +139,15 @@ displayEngineStateMachine.prototype.STIdleEventHandler = function (event, stateD
         console.log(this.id + ": exit signal");
         return "HANDLED";
     }
-    else if (event["EventType"] == "PLAY_RECORDED_SHOW") {
-        var recordingId = event["EventData"];
-        this.playSelectedShow(recordingId);
+    else if (event["EventType"] == "PLAY_RECORDED_SHOW" || event["EventType"] == "STREAM_RECORDED_SHOW") {
+        if (event["EventType"] == "PLAY_RECORDED_SHOW") {
+            this.playSelectedShow(event["EventData"]);
+        }
+        else {
+            this.streamSelectedShow(event["EventData"]);
+        }
         TransportIconSingleton.getInstance().displayIcon(null, "play", this.stateMachine.playIconDisplayTime);
-        stateData.nextState = this.stateMachine.stPlaying
+        stateData.nextState = this.stateMachine.stPlaying;
         return "TRANSITION"
     }
     else if (event["EventType"] == "TUNE_LIVE_VIDEO") {
@@ -232,6 +242,31 @@ displayEngineStateMachine.prototype.playSelectedShow = function (recordingId) {
     this.stateMachine.currentOffset = this.stateMachine.currentRecording.LastViewedPosition;
 
     bsMessage.PostBSMessage({ command: "playRecordedShow", "recordingId": recordingId });
+}
+
+
+displayEngineStateMachine.prototype.streamSelectedShow = function (relativeUrl) {
+
+    console.log("streamSelectedShow " + relativeUrl);
+
+    // if there's a current recording, save it for later possible jump
+    this.stateMachine.priorSelectedRecording = this.stateMachine.currentRecording;
+
+    // set new recording
+    //this.stateMachine.currentRecording = _currentRecordings[recordingId];
+
+    // save lastSelectedShowId in db
+    //var parts = [];
+    //parts.push("lastSelectedShowId" + '=' + recordingId.toString());
+    //var paramString = parts.join('&');
+    //var url = baseURL + "lastSelectedShow";
+    //$.post(url, paramString);
+
+    // initialize value used by progress bar to last position viewed
+    //this.stateMachine.currentOffset = this.stateMachine.currentRecording.LastViewedPosition;
+    this.stateMachine.currentOffset = 0;
+
+    bsMessage.PostBSMessage({ command: "streamRecordedShow", "relativeUrl": relativeUrl });
 }
 
 
@@ -654,6 +689,11 @@ displayEngineStateMachine.prototype.STPlayingEventHandler = function (event, sta
         this.playSelectedShow(recordingId);
         return "HANDLED"
     }
+    else if (event["EventType"] == "STREAM_RECORDED_SHOW") {
+        var relativeUrl = event["EventData"];
+        this.streamSelectedShow(relativeUrl);
+        return "HANDLED"
+    }
     else if (event["EventType"] == "MEDIA_END") {
         // executeRemoteCommand("pause");
         stateData.nextState = this.stateMachine.stPaused
@@ -742,11 +782,15 @@ displayEngineStateMachine.prototype.STPausedEventHandler = function (event, stat
     else if (event["EventType"] == "EXIT_SIGNAL") {
         console.log(this.id + ": exit signal");
     }
-    else if (event["EventType"] == "PLAY_RECORDED_SHOW") {
-        var recordingId = event["EventData"];
-        this.playSelectedShow(recordingId);
+    else if (event["EventType"] == "PLAY_RECORDED_SHOW" || event["EventType"] == "STREAM_RECORDED_SHOW") {
+        if (event["EventType"] == "PLAY_RECORDED_SHOW") {
+            this.playSelectedShow(event["EventData"]);
+        }
+        else {
+            this.streamSelectedShow(event["EventData"]);
+        }
         TransportIconSingleton.getInstance().displayIcon(null, "play", this.stateMachine.playIconDisplayTime);
-        stateData.nextState = this.stateMachine.stPlaying
+        stateData.nextState = this.stateMachine.stPlaying;
         return "TRANSITION"
     }
     // events to expect include
@@ -795,11 +839,29 @@ displayEngineStateMachine.prototype.STFastForwardingEventHandler = function (eve
     else if (event["EventType"] == "EXIT_SIGNAL") {
         console.log(this.id + ": exit signal");
     }
-    else if (event["EventType"] == "PLAY_RECORDED_SHOW") {
-        var recordingId = event["EventData"];
-        this.playSelectedShow(recordingId);
-        TransportIconSingleton.getInstance().displayIcon(null, "quickSkip", this.stateMachine.miscIconDisplayTime);
-        stateData.nextState = this.stateMachine.stPlaying
+    //else if (event["EventType"] == "PLAY_RECORDED_SHOW") {
+    //    var recordingId = event["EventData"];
+    //    this.playSelectedShow(recordingId);
+    //    TransportIconSingleton.getInstance().displayIcon(null, "quickSkip", this.stateMachine.miscIconDisplayTime);
+    //    stateData.nextState = this.stateMachine.stPlaying
+    //    return "TRANSITION"
+    //}
+    //else if (event["EventType"] == "STREAM_RECORDED_SHOW") {
+    //    var recordingId = event["EventData"];
+    //    this.streamSelectedShow(recordingId);
+    //    TransportIconSingleton.getInstance().displayIcon(null, "quickSkip", this.stateMachine.miscIconDisplayTime);
+    //    stateData.nextState = this.stateMachine.stPlaying
+    //    return "TRANSITION"
+    //}
+    else if (event["EventType"] == "PLAY_RECORDED_SHOW" || event["EventType"] == "STREAM_RECORDED_SHOW") {
+        if (event["EventType"] == "PLAY_RECORDED_SHOW") {
+            this.playSelectedShow(event["EventData"]);
+        }
+        else {
+            this.streamSelectedShow(event["EventData"]);
+        }
+        TransportIconSingleton.getInstance().displayIcon(null, "play", this.stateMachine.playIconDisplayTime);
+        stateData.nextState = this.stateMachine.stPlaying;
         return "TRANSITION"
     }
         // events to expect include
@@ -876,11 +938,22 @@ displayEngineStateMachine.prototype.STRewindingEventHandler = function (event, s
     else if (event["EventType"] == "EXIT_SIGNAL") {
         console.log(this.id + ": exit signal");
     }
-    else if (event["EventType"] == "PLAY_RECORDED_SHOW") {
-        var recordingId = event["EventData"];
-        this.playSelectedShow(recordingId);
+    //else if (event["EventType"] == "PLAY_RECORDED_SHOW") {
+    //    var recordingId = event["EventData"];
+    //    this.playSelectedShow(recordingId);
+    //    TransportIconSingleton.getInstance().displayIcon(null, "play", this.stateMachine.playIconDisplayTime);
+    //    stateData.nextState = this.stateMachine.stPlaying
+    //    return "TRANSITION"
+    //}
+    else if (event["EventType"] == "PLAY_RECORDED_SHOW" || event["EventType"] == "STREAM_RECORDED_SHOW") {
+        if (event["EventType"] == "PLAY_RECORDED_SHOW") {
+            this.playSelectedShow(event["EventData"]);
+        }
+        else {
+            this.streamSelectedShow(event["EventData"]);
+        }
         TransportIconSingleton.getInstance().displayIcon(null, "play", this.stateMachine.playIconDisplayTime);
-        stateData.nextState = this.stateMachine.stPlaying
+        stateData.nextState = this.stateMachine.stPlaying;
         return "TRANSITION"
     }
         // events to expect include

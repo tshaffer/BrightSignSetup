@@ -67,8 +67,8 @@ app.get('/getRecordings', function(req, res) {
     console.log("getRecordings invoked");
     res.set('Access-Control-Allow-Origin', '*');
 
-    //var recordingsPromise = deviceController.getMongoDBRecordingsList(Recording);
-    var recordingsPromise = deviceController.getMongoDBRecordings(Recording);
+    var recordingsPromise = deviceController.getMongoDBRecordingsList(Recording);
+    //var recordingsPromise = deviceController.getMongoDBRecordings(Recording);
     recordingsPromise.then(function(recordingsList) {
         var response = {};
         response.freeSpace = "";

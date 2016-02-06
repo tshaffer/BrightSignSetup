@@ -118,7 +118,7 @@ angular
     .filter('formatPosition', function() {
         return function(lastViewedPosition, duration) {
 
-            var lastViewedPositionInMinutes = Math.floor(recording.lastViewedPosition / 60);
+            var lastViewedPositionInMinutes = Math.floor(lastViewedPosition / 60);
             var position = lastViewedPositionInMinutes.toString() + " of " + duration.toString() + " minutes";
 
             return position;

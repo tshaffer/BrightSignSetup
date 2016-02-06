@@ -3,10 +3,18 @@
  */
 angular.module('jtr').controller('recordings', ['$scope', '$http', 'jtrServerService', 'jtrStationsService', 'jtrSettingsService', function ($scope, $http, $jtrServerService, $jtrStationsService, $jtrSettingsService) {
 
-    $scope.playRecordedShow = function (id) {
-        console.log("playRecordedShow: " + id);
+    $scope.playRecordedShow = function (id, relativeUrl) {
+        console.log("playRecordedShow: " + id + ", " + relativeUrl);
 
-        var commandData = {"command": "playRecordedShow", "recordingId": id};
+        var commandData;
+
+        if (relativeUrl != "") {
+            commandData = {"command": "streamRecordedShow", "relativeUrl": relativeUrl};
+        }
+        else {
+            commandData = {"command": "playRecordedShow", "recordingId": id};
+        }
+
         var promise = $jtrServerService.browserCommand(commandData);
         promise.then(function () {
             console.log("browserCommand successfully sent");
@@ -39,17 +47,41 @@ angular.module('jtr').controller('recordings', ['$scope', '$http', 'jtrServerSer
     $scope.name = 'Recordings';
     $scope.recordings = [];
 
+    $scope.convertRecording = function (dbRecording) {
+
+        var recording = {};
+
+        recording.duration = dbRecording.Duration;
+        recording.fileName = dbRecording.FileName;
+        recording.hlsSegmentationComplete = dbRecording.HLSSegmentationComplete;
+        recording.hlsUrl = dbRecording.HLSUrl;
+        recording.lastViewedPosition = dbRecording.LastViewedPosition;
+        recording.recordingId = dbRecording.RecordingId;
+        recording.startDateTime = dbRecording.StartDateTime;
+        recording.title = dbRecording.Title;
+        recording.transcodeComplete = dbRecording.TranscodeComplete;
+        recording.path = dbRecording.path;
+
+        // IDs
+        var recordingIdStr = recording.recordingId.toString();
+        recording.playRecordingId = "recording" + recordingIdStr;
+        recording.deleteRecordingId = "delete" + recordingIdStr;
+        recording.repeatRecordingId = "repeat" + recordingIdStr;
+        recording.streamRecordingId = "stream" + recordingIdStr;
+        recording.infoRecordingId = "info" + recordingIdStr;
+
+        // placeholder
+        recording.relativeUrl = "";
+
+        return recording;
+    }
+
     $scope.show = function () {
 
-        var promise = $jtrServerService.getJtrConnectRecordings();
-        promise.then(function(result) {
-           console.log("getJtrConnectRecordings success");
-        });
+        var recordingsByIdentifier = {};
 
-        return;
-
-        promise = $jtrServerService.getRecordings();
-        promise.then(function (result) {
+        var getJtrRecordingsPromise = $jtrServerService.getRecordings();
+        getJtrRecordingsPromise.then(function (result) {
             console.log("getRecordings success");
 
             // recordings are in result.data.recordings
@@ -59,32 +91,41 @@ angular.module('jtr').controller('recordings', ['$scope', '$http', 'jtrServerSer
 
             //for (recording of result.data.recordings)
             for (var i = 0; i < result.data.recordings.length; i++) {
+
                 var jtrRecording = result.data.recordings[i];
-
-                recording = {};
-                recording.duration = jtrRecording.Duration;
-                recording.fileName = jtrRecording.FileName;
-                recording.hlsSegmentationComplete = jtrRecording.HLSSegmentationComplete;
-                recording.hlsUrl = jtrRecording.HLSUrl;
-                recording.lastViewedPosition = jtrRecording.LastViewedPosition;
-                recording.recordingId = jtrRecording.RecordingId;
-                recording.startDateTime = jtrRecording.StartDateTime;
-                recording.title = jtrRecording.Title;
-                recording.transcodeComplete = jtrRecording.TranscodeComplete;
-                recording.path = jtrRecording.path;
-
-                // IDs
-                var recordingIdStr = recording.recordingId.toString();
-                recording.playRecordingId = "recording" + recordingIdStr;
-                recording.deleteRecordingId = "delete" + recordingIdStr;
-                recording.repeatRecordingId = "repeat" + recordingIdStr;
-                recording.streamRecordingId = "stream" + recordingIdStr;
-                recording.infoRecordingId = "info" + recordingIdStr;
+                var recording = $scope.convertRecording(jtrRecording);
+                recording.storageLocation = "local";
 
                 $scope.recordings.push(recording);
+
+                var key = recording.title + "::" + recording.fileName;
+                recordingsByIdentifier[key] = recording;
             }
 
-            return;
+            var getJtrConnectRecordingsPromise = $jtrServerService.getJtrConnectRecordings();
+            getJtrConnectRecordingsPromise.then(function(result) {
+                console.log("getJtrConnectRecordings success");
+
+                for (var i = 0; i < result.data.recordings.length; i++) {
+
+                    var jtrConnectRecording = result.data.recordings[i];
+                    var recording = $scope.convertRecording(jtrConnectRecording);
+
+                    // check to see if this recording matches a recording on the local jtr
+                    var key = recording.title + "::" + recording.fileName;
+                    if (key in recordingsByIdentifier) {
+                        // recording exists both locally and on jtrConnect
+                        var existingRecording = recordingsByIdentifier[key];
+                        existingRecording.storageLocation = "both";
+                        existingRecording.relativeUrl = jtrConnectRecording.RelativeUrl;
+                    }
+                    else {
+                        recording.storageLocation = "server";
+                        recording.relativeUrl = jtrConnectRecording.RelativeUrl;
+                        $scope.recordings.push(recording);
+                    }
+                }
+            });
         }, function (reason) {
             console.log("getRecordings failure");
         })

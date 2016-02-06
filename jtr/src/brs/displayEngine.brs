@@ -14,6 +14,7 @@ Function newDisplayEngine(jtr As Object) As Object
 	DisplayEngine.HandleHttpEvent				= de_HandleHttpEvent
 	DisplayEngine.TuneLiveVideo					= de_TuneLiveVideo
 	DisplayEngine.StartPlayback					= de_StartPlayback
+DisplayEngine.StreamPlayback					= de_StreamPlayback
 	DisplayEngine.PausePlayback					= de_PausePlayback
 	DisplayEngine.ResumePlayFromPaused			= de_ResumePlayFromPaused
 	DisplayEngine.QuickSkipVideo				= de_QuickSkipVideo
@@ -216,6 +217,16 @@ Sub de_HandleHttpEvent(event)
 					aa = {}
 					aa.AddReplace("command", "serverLaunchedVideo")
 					m.htmlWidget.PostJSMessage(aa)
+                else if command$ = "streamRecordedShow" then
+					print "streamRecordedShow: relativeUrl=";aa.relativeUrl
+					url = m.jtr.GetJtrConnectUrl()
+					url = url + aa.relativeUrl
+					m.StreamPlayback(url)
+
+					' tell client that video was launched
+					aa = {}
+					aa.AddReplace("command", "serverLaunchedVideo")
+					m.htmlWidget.PostJSMessage(aa)
 
 				else if command$ = "deleteRecordedShow" then
 					print "deleteRecordedShow: recordingId=";aa.recordingId
@@ -358,6 +369,47 @@ Sub de_StartPlayback(recording As Object)
 		
 	m.UpdateProgressBar()
 	m.SeekToCurrentVideoPosition()
+
+	m.StartVideoPlaybackTimer()
+
+End Sub
+
+
+Sub de_StreamPlayback(url As Object)
+
+	' pause current video
+	m.PausePlayback()
+
+	' save the playback position for the current show before starting playback on a new show
+	if type(m.selectedRecording) = "roAssociativeArray" then
+
+		' save current position
+		m.UpdateLastViewedPosition(m.selectedRecording, m.currentVideoPosition%)
+
+		m.selectedRecording.LastViewedPosition = m.currentVideoPosition%
+
+	endif
+
+   m.currentVideoPosition% = 0 ''- do this when executing 'play from beginning'
+''	m.currentVideoPosition% = recording.LastViewedPosition
+
+	print "LaunchVideo from StreamPlayback, url is: " + url
+
+    m.rtspStream = CreateObject("roRtspStream", url)
+
+    aa = {}
+    aa["Rtsp"] = m.rtspStream
+    m.videoPlayer.SetLoopMode(0)
+
+    ok = m.videoPlayer.PlayFile(aa)
+
+''	if not ok stop
+''	ok = m.videoPlayer.SetPlaybackSpeed(1.0)
+''	if not ok stop
+	m.playbackSpeedIndex% = m.normalPlaybackSpeedIndex%
+
+	m.UpdateProgressBar()
+''	m.SeekToCurrentVideoPosition()
 
 	m.StartVideoPlaybackTimer()
 

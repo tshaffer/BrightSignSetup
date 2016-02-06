@@ -345,6 +345,13 @@ Sub setRecordNow(userData as Object, e as Object)
 End Sub
 
 
+Function GetJtrConnectUrl()
+
+    return m.jtrConnectUrl
+
+End Function
+
+
 Sub jtrConnectIP(userData as Object, e as Object)
 
 	print "jtrConnectIP endpoint invoked"
@@ -823,20 +830,18 @@ Sub getJtrConnectRecordings(userData as Object, e as Object)
 
     json = {}
 
-stop
-
 	if mVar.jtrConnectUrl <> "" then
 
 		url = mVar.jtrConnectUrl + "/getRecordings"
 		xfer = CreateObject("roUrlTransfer")
 		ok = xfer.SetUrl(url)
-        json = xfer.GetToString()
+        response = xfer.GetToString()
 
 	endif
 
     e.AddResponseHeader("Content-type", "text/json")
     e.AddResponseHeader("Access-Control-Allow-Origin", "*")
-    e.SetResponseBodyString(json)
+    e.SetResponseBodyString(response)
     e.SendResponse(200)
 
 	' send data directly to js (for the case where the request came from the browser or an external app)

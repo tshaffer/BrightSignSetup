@@ -6,7 +6,6 @@ Library "eventHandler.brs"
 Library "recordingEngine.brs"
 Library "displayEngine.brs"
 
-
 REM Update whenever any of the scripts change
 Function GetScriptVersion() As String
 	return "0.0.1"
@@ -75,7 +74,8 @@ Function newJTR(msgPort As Object) As Object
 	JTR.InitializeServer				= InitializeServer
 	JTR.AddHandlers						= AddHandlers
 	JTR.AddRecording					= AddRecording
-	
+	JTR.GetJtrConnectUrl                = GetJtrConnectUrl
+
 	JTR.OpenDatabase					= OpenDatabase
 	JTR.CreateDBTable					= CreateDBTable
 	JTR.GetDBVersion					= GetDBVersion

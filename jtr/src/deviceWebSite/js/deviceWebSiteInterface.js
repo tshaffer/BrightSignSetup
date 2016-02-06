@@ -104,6 +104,12 @@ define(function () {
                         event["EventData"] = message.recordingId;
                         postMessage(event);
                         break;
+                    case "streamRecordedShow":
+                        console.log("--------------------------------------STREAM_RECORDED_SHOW" + message.relativeUrl);
+                        event["EventType"] = "STREAM_RECORDED_SHOW";
+                        event["EventData"] = message.relativeUrl;
+                        postMessage(event);
+                        break;
                     case "stopRecording":
                         event["EventType"] = "STOP_RECORDING";
                         event["EventData"] = message.value;
