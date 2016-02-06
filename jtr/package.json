@@ -10,10 +10,10 @@
   "dependencies": {
     "body-parser": "^1.14.2",
     "bonjour": "^3.0.0",
-    "ejs": "^2.3.4",
     "express": "^4.13.3",
     "ip": "^1.1.0",
     "mongoose": "^4.3.4",
+    "request": "^2.69.0",
     "request-ip": "^1.2.2"
   }
 }
