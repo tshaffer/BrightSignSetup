@@ -3,17 +3,18 @@
  */
 angular.module('jtr').controller('recordings', ['$scope', '$http', 'jtrServerService', 'jtrStationsService', 'jtrSettingsService', function ($scope, $http, $jtrServerService, $jtrStationsService, $jtrSettingsService) {
 
-    $scope.playRecordedShow = function (id, relativeUrl) {
+    $scope.playRecordedShow = function (id, relativeUrl, storageLocation) {
         console.log("playRecordedShow: " + id + ", " + relativeUrl);
 
         var commandData;
 
-        if (relativeUrl != "") {
-            commandData = {"command": "streamRecordedShow", "relativeUrl": relativeUrl};
-        }
-        else {
-            commandData = {"command": "playRecordedShow", "recordingId": id};
-        }
+        //if (relativeUrl != "") {
+        //    commandData = {"command": "streamRecordedShow", "relativeUrl": relativeUrl};
+        //}
+        //else {
+        //    commandData = {"command": "playRecordedShow", "recordingId": id};
+        //}
+        commandData = {"command": "playRecordedShow", "recordingId": id, "relativeUrl": relativeUrl, "storageLocation": storageLocation};
 
         var promise = $jtrServerService.browserCommand(commandData);
         promise.then(function () {
