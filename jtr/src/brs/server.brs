@@ -837,6 +837,13 @@ Sub getJtrConnectRecordings(userData as Object, e as Object)
 		ok = xfer.SetUrl(url)
         response = xfer.GetToString()
 
+    else
+
+        responseData = {}
+        responseData.freeSpace = ""
+        responseData.recordings = []
+    	response = FormatJson(responseData, 0)
+
 	endif
 
     e.AddResponseHeader("Content-type", "text/json")
