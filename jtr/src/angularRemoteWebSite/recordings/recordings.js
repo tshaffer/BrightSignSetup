@@ -8,12 +8,6 @@ angular.module('jtr').controller('recordings', ['$scope', '$http', 'jtrServerSer
 
         var commandData;
 
-        //if (relativeUrl != "") {
-        //    commandData = {"command": "streamRecordedShow", "relativeUrl": relativeUrl};
-        //}
-        //else {
-        //    commandData = {"command": "playRecordedShow", "recordingId": id};
-        //}
         commandData = {"command": "playRecordedShow", "recordingId": id, "relativeUrl": relativeUrl, "storageLocation": storageLocation};
 
         var promise = $jtrServerService.browserCommand(commandData);

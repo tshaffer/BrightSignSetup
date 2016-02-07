@@ -258,7 +258,7 @@ displayEngineStateMachine.prototype.streamSelectedShow = function (relativeUrl) 
     console.log("streamSelectedShow " + relativeUrl);
 
     // if there's a current recording, save it for later possible jump
-    this.stateMachine.priorSelectedRecording = this.stateMachine.currentRecording;
+    //this.stateMachine.priorSelectedRecording = this.stateMachine.currentRecording;
 
     // set new recording
     //this.stateMachine.currentRecording = _currentRecordings[recordingId];
@@ -694,7 +694,6 @@ displayEngineStateMachine.prototype.STPlayingEventHandler = function (event, sta
     }
     else if (event["EventType"] == "PLAY_RECORDED_SHOW") {
         var recordingId = event["EventData"];
-        //this.playSelectedShow(recordingId);
         this.playSelectedShow(event);
         return "HANDLED"
     }
@@ -793,12 +792,8 @@ displayEngineStateMachine.prototype.STPausedEventHandler = function (event, stat
     }
     else if (event["EventType"] == "PLAY_RECORDED_SHOW" || event["EventType"] == "STREAM_RECORDED_SHOW") {
         if (event["EventType"] == "PLAY_RECORDED_SHOW") {
-            //this.playSelectedShow(event["EventData"]);
             this.playSelectedShow(event);
         }
-        //else {
-        //    this.streamSelectedShow(event["EventData"]);
-        //}
         TransportIconSingleton.getInstance().displayIcon(null, "play", this.stateMachine.playIconDisplayTime);
         stateData.nextState = this.stateMachine.stPlaying;
         return "TRANSITION"
@@ -849,28 +844,11 @@ displayEngineStateMachine.prototype.STFastForwardingEventHandler = function (eve
     else if (event["EventType"] == "EXIT_SIGNAL") {
         console.log(this.id + ": exit signal");
     }
-    //else if (event["EventType"] == "PLAY_RECORDED_SHOW") {
-    //    var recordingId = event["EventData"];
-    //    this.playSelectedShow(recordingId);
-    //    TransportIconSingleton.getInstance().displayIcon(null, "quickSkip", this.stateMachine.miscIconDisplayTime);
-    //    stateData.nextState = this.stateMachine.stPlaying
-    //    return "TRANSITION"
-    //}
-    //else if (event["EventType"] == "STREAM_RECORDED_SHOW") {
-    //    var recordingId = event["EventData"];
-    //    this.streamSelectedShow(recordingId);
-    //    TransportIconSingleton.getInstance().displayIcon(null, "quickSkip", this.stateMachine.miscIconDisplayTime);
-    //    stateData.nextState = this.stateMachine.stPlaying
-    //    return "TRANSITION"
-    //}
     else if (event["EventType"] == "PLAY_RECORDED_SHOW" || event["EventType"] == "STREAM_RECORDED_SHOW") {
         if (event["EventType"] == "PLAY_RECORDED_SHOW") {
             //this.playSelectedShow(event["EventData"]);
             this.playSelectedShow(event);
         }
-        //else {
-        //    this.streamSelectedShow(event["EventData"]);
-        //}
         TransportIconSingleton.getInstance().displayIcon(null, "play", this.stateMachine.playIconDisplayTime);
         stateData.nextState = this.stateMachine.stPlaying;
         return "TRANSITION"
@@ -949,21 +927,11 @@ displayEngineStateMachine.prototype.STRewindingEventHandler = function (event, s
     else if (event["EventType"] == "EXIT_SIGNAL") {
         console.log(this.id + ": exit signal");
     }
-    //else if (event["EventType"] == "PLAY_RECORDED_SHOW") {
-    //    var recordingId = event["EventData"];
-    //    this.playSelectedShow(recordingId);
-    //    TransportIconSingleton.getInstance().displayIcon(null, "play", this.stateMachine.playIconDisplayTime);
-    //    stateData.nextState = this.stateMachine.stPlaying
-    //    return "TRANSITION"
-    //}
     else if (event["EventType"] == "PLAY_RECORDED_SHOW" || event["EventType"] == "STREAM_RECORDED_SHOW") {
         if (event["EventType"] == "PLAY_RECORDED_SHOW") {
             //this.playSelectedShow(event["EventData"]);
             this.playSelectedShow(event);
         }
-        //else {
-        //    this.streamSelectedShow(event["EventData"]);
-        //}
         TransportIconSingleton.getInstance().displayIcon(null, "play", this.stateMachine.playIconDisplayTime);
         stateData.nextState = this.stateMachine.stPlaying;
         return "TRANSITION"
