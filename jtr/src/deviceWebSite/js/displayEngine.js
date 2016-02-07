@@ -22,6 +22,7 @@
     this.stIdle.HStateEventHandler = this.STIdleEventHandler;
     this.stIdle.superState = this.stDisplayer;
     this.stIdle.playSelectedShow = this.playSelectedShow;
+    this.stIdle.getStoredRecording = this.getStoredRecording;
     this.stIdle.streamSelectedShow = this.streamSelectedShow;
     this.stIdle.toggleClock = this.toggleClock;
     this.stIdle.formatCurrentTime = this.formatCurrentTime;
@@ -39,6 +40,7 @@
     this.stLiveVideo.HStateEventHandler = this.STLiveVideoEventHandler;
     this.stLiveVideo.superState = this.stShowingVideo;
     this.stLiveVideo.playSelectedShow = this.playSelectedShow;
+    this.stLiveVideo.getStoredRecording = this.getStoredRecording;
     this.stLiveVideo.streamSelectedShow = this.streamSelectedShow;
     this.stLiveVideo.startChannelEntryTimer = this.startChannelEntryTimer;
     this.stLiveVideo.tuneLiveVideoChannel = this.tuneLiveVideoChannel;
@@ -55,6 +57,7 @@
     this.stPlaying.HStateEventHandler = this.STPlayingEventHandler;
     this.stPlaying.superState = this.stShowingVideo;
     this.stPlaying.playSelectedShow = this.playSelectedShow;
+    this.stIdle.getStoredRecording = this.getStoredRecording;
     this.stPlaying.streamSelectedShow = this.streamSelectedShow;
     this.stPlaying.jump = this.jump;
 
@@ -62,18 +65,21 @@
     this.stPaused.HStateEventHandler = this.STPausedEventHandler;
     this.stPaused.superState = this.stShowingVideo;
     this.stPaused.playSelectedShow = this.playSelectedShow;
+    this.stPaused.getStoredRecording = this.getStoredRecording;
     this.stPaused.streamSelectedShow = this.streamSelectedShow;
 
     this.stFastForwarding = new HState(this, "FastForwarding");
     this.stFastForwarding.HStateEventHandler = this.STFastForwardingEventHandler;
     this.stFastForwarding.superState = this.stShowingVideo;
     this.stFastForwarding.playSelectedShow = this.playSelectedShow;
+    this.stFastForwarding.getStoredRecording = this.getStoredRecording;
     this.stFastForwarding.streamSelectedShow = this.streamSelectedShow;
 
     this.stRewinding = new HState(this, "Rewinding");
     this.stRewinding.HStateEventHandler = this.STRewindingEventHandler;
     this.stRewinding.superState = this.stShowingVideo;
     this.stRewinding.playSelectedShow = this.playSelectedShow;
+    this.stRewinding.getStoredRecording = this.getStoredRecording;
     this.stRewinding.streamSelectedShow = this.streamSelectedShow;
 
     this.topState = this.stTop;
@@ -218,16 +224,24 @@ displayEngineStateMachine.prototype.toggleClock = function () {
 }
 
 
+displayEngineStateMachine.prototype.getStoredRecording = function (event) {
+
+    var storedRecording = { recordingId: event["RecordingId"], relativeUrl: event["RelativeUrl"], storageLocation: event["StorageLocation"] };
+    return storedRecording;
+
+}
 displayEngineStateMachine.prototype.playSelectedShow = function (event) {
 
-    var recordingId = event["RecordingId"];
-    var relativeUrl = event["RelativeUrl"];
-    var storageLocation = event["StorageLocation"];
+    var storedRecording = event.getStoredRecording();
+
+    var recordingId = storedRecording.recordingId;
+    var relativeUrl = storedRecording.relativeUrl;
+    var storageLocation = storedRecording.relativeUrl;
 
     console.log("playSelectedShow " + recordingId);
 
     if (storageLocation == "server") {
-        this.streamSelectedShow(relativeUrl)
+        this.streamSelectedShow(storedRecording)
     }
     else {
         // if there's a current recording, save it for later possible jump
@@ -253,7 +267,11 @@ displayEngineStateMachine.prototype.playSelectedShow = function (event) {
 }
 
 
-displayEngineStateMachine.prototype.streamSelectedShow = function (relativeUrl) {
+displayEngineStateMachine.prototype.streamSelectedShow = function (storedRecording) {
+
+    var recordingId = storedRecording.recordingId;
+    var relativeUrl = storedRecording.relativeUrl;
+    var storageLocation = storedRecording.relativeUrl;
 
     console.log("streamSelectedShow " + relativeUrl);
 
