@@ -365,6 +365,9 @@ Sub jtrConnectIP(userData as Object, e as Object)
     e.SetResponseBodyString("ok")
     e.SendResponse(200)
 
+    ' check for recordings to transcode
+    mVar.GetRecordingToTranscode()
+
 End Sub
 
 
@@ -967,6 +970,60 @@ Sub currentJTRState(userData as Object, e as Object)
 	e.SendResponse(200)
 
 End Sub
+
+
+Function GetRecordingToTranscode()
+
+	recording = m.GetDBFileToTranscode()
+
+	if type(recording) = "roAssociativeArray" then
+
+		dt = recording.StartDateTime
+
+        duration% = recording.Duration
+		duration% = (duration% + 30000) / 60000
+        duration$ = StripLeadingSpaces(stri(duration%))
+
+        recordingId = StripLeadingSpaces(stri(recording.RecordingId))
+
+    ' FIXME - duplicated code with addRecording'
+	'StartDateTime
+	'Duration
+	'RecordingId
+	'Title
+	'FileName
+	'path
+
+		body = {}
+		body.title = recording.Title
+        body.datetime = dt
+        body.duration = duration$
+        body.filename = recording.FileName
+        body.recordingid = recordingId
+        body.jtrname = m.jtrName
+        body.path = recording.path
+        body$ = FormatJson(body)
+
+		url = m.jtrConnectUrl + "/addRecording"
+		m.xferToJtrConnect = CreateObject("roUrlTransfer")
+
+		m.xferToJtrConnect.SetHeaders({})
+        m.xferToJtrConnect.AddHeader("Content-Type", "application/json")
+
+' setup handler so this file can be retrieved
+		print "addRecording: add endpoint " + "/" + body.path
+		m.localServer.AddGetFromFile({ url_path: "/" + body.path, filename: body.path, content_type: "video/mpeg"})
+print "--------------------------------------- path to file is:"
+print "/" + body.path
+
+	    m.xferToJtrConnect.SetPort(m.msgPort)
+		ok = m.xferToJtrConnect.SetUrl(url)
+        if not ok stop
+        rc = m.xferToJtrConnect.PostFromString(body$)
+        if rc <> 200 stop
+	endif
+
+End Function
 
 
 Sub fileToTranscode(userData as Object, e as Object)

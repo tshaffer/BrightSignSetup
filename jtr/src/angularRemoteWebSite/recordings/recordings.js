@@ -120,7 +120,10 @@ angular.module('jtr').controller('recordings', ['$scope', '$http', 'jtrServerSer
                         $scope.recordings.push(recording);
                     }
                 }
-            });
+            }, function(reason) {
+                console.log("getJtrConnectRecordings failure");
+            }
+            );
         }, function (reason) {
             console.log("getRecordings failure");
         })
