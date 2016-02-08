@@ -119,6 +119,11 @@ app.post('/addRecording', function (req, res) {
     console.log(req.body);
     console.log("post request to addRecording");
 
+    // send response now - prevent client from timing out while waiting for potentially extremely large files to transfer across network
+    res.set('Access-Control-Allow-Origin', '*');
+    var response = {};
+    res.send(response);
+
     var jtrIp = requestIp.getClientIp(req);
     if (jtrIp.startsWith("::ffff:")) {
         jtrIp = jtrIp.substr(7);
@@ -133,16 +138,21 @@ app.post('/addRecording', function (req, res) {
     var recordingId = req.body["recordingid"];
     var title = req.body["title"];
 
-    var dt = req.headers.datetime;
-    var year = dateTime.substring(0,4);
-    var month = dateTime.substring(4, 6);
-    var day = dateTime.substring(6, 8);
-    var hours = dateTime.substring(9, 11);
-    var minutes = dateTime.substring(11, 13);
-    var seconds = dateTime.substring(13, 15);
-    var startDateTime = new Date(year, month, day, hours, minutes, seconds);
+    var startDateTime;
+    if (dateTime.length == 23) {
+        startDateTime = new Date(dateTime);
+    }
+    else {
+        var year = dateTime.substring(0,4);
+        var month = dateTime.substring(4, 6);
+        var day = dateTime.substring(6, 8);
+        var hours = dateTime.substring(9, 11);
+        var minutes = dateTime.substring(11, 13);
+        var seconds = dateTime.substring(13, 15);
+        startDateTime = new Date(year, month, day, hours, minutes, seconds);
+    }
 
-    // FIXME - file name hack (extension) - that is, code assume that the file has a '.ts' extension
+    // FIXME - file name hack (extension) - that is, code assumes that the file has a '.ts' extension
     var pathWithoutExtension = __dirname + "/public/video/" + fileName;
     var tsPath = pathWithoutExtension + ".ts";
     var mp4Path = pathWithoutExtension + ".mp4";
@@ -173,10 +183,6 @@ app.post('/addRecording', function (req, res) {
             recordingForDB.save(function (err) {
                 if (err) throw err;
                 console.log("recording saved in db");
-
-                res.set('Access-Control-Allow-Origin', '*');
-                var response = {};
-                res.send(response);
             });
 
             // no reason to wait for the db write to start the file download
