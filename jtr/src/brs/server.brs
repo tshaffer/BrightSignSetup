@@ -1129,6 +1129,10 @@ Sub filePosted(userData as Object, e as Object)
 	e.SetResponseBodyString("RECEIVED")
     e.SendResponse(200)
 
+    ' check to see if there are any other files pending transcode - if yes, start the process'
+    ' check for recordings to transcode
+    mVar.GetRecordingToTranscode()
+
 End Sub
 
 
