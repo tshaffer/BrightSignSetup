@@ -56,6 +56,9 @@ angular.module('jtr').controller('recordings', ['$scope', '$http', 'jtrServerSer
         recording.title = dbRecording.Title;
         recording.transcodeComplete = dbRecording.TranscodeComplete;
         recording.path = dbRecording.path;
+        recording.storageDevice = dbRecording.StorageDevice;
+        recording.storageLocation = dbRecording.StorageLocation;
+        recording.relativeUrl = dbRecording.RelativeUrl;
 
         // IDs
         var recordingIdStr = recording.recordingId.toString();

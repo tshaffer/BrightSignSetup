@@ -223,6 +223,7 @@ function getMongoDBRecordingsList(Recording) {
                 reject();
             }
             recordings.forEach(function (recording) {
+                recording.StorageLocation = "server";
                 dbRecordings.push(recording);
             });
             resolve(dbRecordings);

@@ -753,6 +753,7 @@ Sub getPrograms(userData as Object, e as Object)
 End Sub
 
 
+' not clear that anyone calls this'
 Sub getRecordedShows(userData as Object, e as Object)
 
 	mVar = userData.mvar
@@ -814,10 +815,10 @@ Sub getRecordings(userData as Object, e as Object)
     e.SendResponse(200)
 
 	' send data directly to js (for the case where the request came from the browser or an external app)
-	
 	aa = {}
 	aa.AddReplace("command", "recordings")
-	aa.AddReplace("value", json)
+	aa.AddReplace("source", "jtrTiger")
+	aa.AddReplace("recordings", json)
 
 	ok = mVar.htmlWidget.PostJSMessage(aa)
 	' if not ok stop
@@ -840,6 +841,14 @@ Sub getJtrConnectRecordings(userData as Object, e as Object)
 		ok = xfer.SetUrl(url)
         response = xfer.GetToString()
 
+        json = ParseJson(response)
+        for each recording in json.recordings
+            recording.StorageLocation = "server"
+            recording.StorageDevice = recording.JtrStorageDevice
+            recording.RelativeUrl = recording.RelativeUrl
+        next
+        response = FormatJson(json, 0)
+
     else
 
         responseData = {}
@@ -855,12 +864,12 @@ Sub getJtrConnectRecordings(userData as Object, e as Object)
     e.SendResponse(200)
 
 	' send data directly to js (for the case where the request came from the browser or an external app)
+	aa = {}
+	aa.AddReplace("command", "recordings")
+	aa.AddReplace("source", "jtrConnect")
+	aa.AddReplace("recordings", response)
 
-''	aa = {}
-''	aa.AddReplace("command", "recordings")
-''	aa.AddReplace("value", json)
-
-''	ok = mVar.htmlWidget.PostJSMessage(aa)
+	ok = mVar.htmlWidget.PostJSMessage(aa)
 
 End Sub
 
@@ -876,6 +885,10 @@ Sub PopulateRecordings(mVar As Object, response As Object)
 		' only include the entry if the file actually exists
 		readFile = CreateObject("roReadFile", recording.Path)
 		if type(readFile) = "roReadFile" then
+
+            recording.StorageDevice = mVar.jtrName
+            recording.StorageLocation = "local"
+            recording.RelativeUrl = ""
 
 			response.recordings.push(recording)
 

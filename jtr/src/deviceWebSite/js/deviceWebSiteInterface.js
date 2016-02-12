@@ -25,6 +25,9 @@ define(function () {
                 console.log("********************************************************************* UNABLE TO CREATE IR_RECEIVER ***************************** ");
             }
 
+            // initialize _currentRecordings
+            _currentRecordings = {};
+
             // Create displayEngine state machine
             displayEngineHSM = new displayEngineStateMachine();
 
@@ -91,12 +94,20 @@ define(function () {
                         postMessage(event);
                         break;
                     case "recordings":
-                        //initializeEpgData();
-                        var recordings = JSON.parse(message.value);
+                        var source = message.source;
+                        var recordings = JSON.parse(message.recordings);
                         var jtrRecordings = recordings.recordings;
-                        _currentRecordings = {};
                         $.each(jtrRecordings, function (index, jtrRecording) {
-                            _currentRecordings[jtrRecording.RecordingId] = jtrRecording;
+                            var key = jtrRecording.storagedevice + "-" + jtrRecording.RecordingId;
+                            if (key in _currentRecordings) {
+                                var existingRecording = _currentRecordings[key];
+                                if (existingRecording.storagelocation != "local" && jtrRecording.storagelocation == "local") {
+                                    _currentRecordings[key] = jtrRecording;
+                                }
+                            }
+                            else {
+                                _currentRecordings[key] = jtrRecording;
+                            }
                         });
                         break;
                     case "playRecordedShow":
