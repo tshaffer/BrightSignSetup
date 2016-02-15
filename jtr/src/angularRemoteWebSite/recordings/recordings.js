@@ -3,12 +3,21 @@
  */
 angular.module('jtr').controller('recordings', ['$scope', '$http', 'jtrServerService', 'jtrStationsService', 'jtrSettingsService', function ($scope, $http, $jtrServerService, $jtrStationsService, $jtrSettingsService) {
 
-    $scope.playRecordedShow = function (id, relativeUrl, storageLocation) {
-        console.log("playRecordedShow: " + id + ", " + relativeUrl);
+    //$scope.playRecordedShow = function (id, relativeUrl, storageLocation) {
+    $scope.playRecordedShow = function (recording) {
+        //console.log("playRecordedShow: " + id + ", " + relativeUrl);
 
         var commandData;
 
-        commandData = {"command": "playRecordedShow", "recordingId": id, "relativeUrl": relativeUrl, "storageLocation": storageLocation};
+        var storedRecording = {
+            recordingId: recording.recordingId,
+            relativeUrl: recording.relativeUrl,
+            storageLocation: recording.storageLocation,
+            storageDevice: recording.storageDevice
+        };
+
+        //commandData = {"command": "playRecordedShow", "recordingId": id, "relativeUrl": relativeUrl, "storageLocation": storageLocation};
+        commandData = {"command": "playRecordedShow", "storedRecording": storedRecording };
 
         var promise = $jtrServerService.browserCommand(commandData);
         promise.then(function () {
@@ -56,9 +65,9 @@ angular.module('jtr').controller('recordings', ['$scope', '$http', 'jtrServerSer
         recording.title = dbRecording.Title;
         recording.transcodeComplete = dbRecording.TranscodeComplete;
         recording.path = dbRecording.path;
-        recording.storageDevice = dbRecording.StorageDevice;
-        recording.storageLocation = dbRecording.StorageLocation;
-        recording.relativeUrl = dbRecording.RelativeUrl;
+        recording.storageDevice = dbRecording.storagedevice;
+        recording.storageLocation = dbRecording.storagelocation;
+        recording.relativeUrl = dbRecording.relativeurl;
 
         // IDs
         var recordingIdStr = recording.recordingId.toString();

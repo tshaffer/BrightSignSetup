@@ -147,7 +147,7 @@ displayEngineStateMachine.prototype.STIdleEventHandler = function (event, stateD
     }
     else if (event["EventType"] == "PLAY_RECORDED_SHOW" || event["EventType"] == "STREAM_RECORDED_SHOW") {
         if (event["EventType"] == "PLAY_RECORDED_SHOW") {
-            this.playSelectedShow(event);
+            this.playSelectedShow(event.StoredRecording);
         }
         //else {
         //    this.streamSelectedShow(event["EventData"]);
@@ -224,23 +224,11 @@ displayEngineStateMachine.prototype.toggleClock = function () {
 }
 
 
-displayEngineStateMachine.prototype.getStoredRecording = function (event) {
+displayEngineStateMachine.prototype.playSelectedShow = function (storedRecording) {
 
-    var storedRecording = { recordingId: event["RecordingId"], relativeUrl: event["RelativeUrl"], storageLocation: event["StorageLocation"] };
-    return storedRecording;
+    //console.log("playSelectedShow " + recordingId);
 
-}
-displayEngineStateMachine.prototype.playSelectedShow = function (event) {
-
-    var storedRecording = event.getStoredRecording();
-
-    var recordingId = storedRecording.recordingId;
-    var relativeUrl = storedRecording.relativeUrl;
-    var storageLocation = storedRecording.relativeUrl;
-
-    console.log("playSelectedShow " + recordingId);
-
-    if (storageLocation == "server") {
+    if (storedRecording.storageLocation == "server") {
         this.streamSelectedShow(storedRecording)
     }
     else {
@@ -248,11 +236,12 @@ displayEngineStateMachine.prototype.playSelectedShow = function (event) {
         this.stateMachine.priorSelectedRecording = this.stateMachine.currentRecording;
 
         // set new recording
-        this.stateMachine.currentRecording = _currentRecordings[recordingId];
+        var key = storedRecording.storageDevice + "-" + storedRecording.recordingId;
+        this.stateMachine.currentRecording = _currentRecordings[key];
 
         // save lastSelectedShowId in db
         var parts = [];
-        parts.push("lastSelectedShowId" + '=' + recordingId.toString());
+        parts.push("lastSelectedShowId" + '=' + storedRecording.recordingId.toString());
         var paramString = parts.join('&');
         var url = baseURL + "lastSelectedShow";
         $.post(url, paramString);
@@ -262,7 +251,7 @@ displayEngineStateMachine.prototype.playSelectedShow = function (event) {
         // initialize value used by progress bar to last position viewed
         this.stateMachine.currentOffset = this.stateMachine.currentRecording.LastViewedPosition;
 
-        bsMessage.PostBSMessage({ command: "playRecordedShow", "recordingId": recordingId });
+        bsMessage.PostBSMessage({ command: "playRecordedShow", "recordingId": storedRecording.recordingId });
     }
 }
 
@@ -273,7 +262,7 @@ displayEngineStateMachine.prototype.streamSelectedShow = function (storedRecordi
     var relativeUrl = storedRecording.relativeUrl;
     var storageLocation = storedRecording.relativeUrl;
 
-    console.log("streamSelectedShow " + relativeUrl);
+    console.log("streamSelectedShow " + storedRecording.RelativeUrl);
 
     // if there's a current recording, save it for later possible jump
     //this.stateMachine.priorSelectedRecording = this.stateMachine.currentRecording;
@@ -292,7 +281,7 @@ displayEngineStateMachine.prototype.streamSelectedShow = function (storedRecordi
     //this.stateMachine.currentOffset = this.stateMachine.currentRecording.LastViewedPosition;
     this.stateMachine.currentOffset = 0;
 
-    bsMessage.PostBSMessage({ command: "streamRecordedShow", "relativeUrl": relativeUrl });
+    //bsMessage.PostBSMessage({ command: "streamRecordedShow", "relativeUrl": relativeUrl });
 }
 
 
@@ -524,7 +513,7 @@ displayEngineStateMachine.prototype.STLiveVideoEventHandler = function (event, s
     else if (event["EventType"] == "PLAY_RECORDED_SHOW") {
         console.log({ command: "debugPrint", "debugMessage": "STLiveVideoEventHandler: play recorded show" });
         //var recordingId = event["EventData"];
-        this.playSelectedShow(event);
+        this.playSelectedShow(event.StoredRecording);
         TransportIconSingleton.getInstance().displayIcon(null, "play", this.stateMachine.playIconDisplayTime);
         stateData.nextState = this.stateMachine.stPlaying
         return "TRANSITION"
@@ -711,7 +700,7 @@ displayEngineStateMachine.prototype.STPlayingEventHandler = function (event, sta
         console.log(this.id + ": exit signal");
     }
     else if (event["EventType"] == "PLAY_RECORDED_SHOW") {
-        this.playSelectedShow(event);
+        this.playSelectedShow(event.StoredRecording);
         return "HANDLED"
     }
     //else if (event["EventType"] == "STREAM_RECORDED_SHOW") {
@@ -809,7 +798,7 @@ displayEngineStateMachine.prototype.STPausedEventHandler = function (event, stat
     }
     else if (event["EventType"] == "PLAY_RECORDED_SHOW" || event["EventType"] == "STREAM_RECORDED_SHOW") {
         if (event["EventType"] == "PLAY_RECORDED_SHOW") {
-            this.playSelectedShow(event);
+            this.playSelectedShow(event.StoredRecording);
         }
         TransportIconSingleton.getInstance().displayIcon(null, "play", this.stateMachine.playIconDisplayTime);
         stateData.nextState = this.stateMachine.stPlaying;
@@ -864,7 +853,7 @@ displayEngineStateMachine.prototype.STFastForwardingEventHandler = function (eve
     else if (event["EventType"] == "PLAY_RECORDED_SHOW" || event["EventType"] == "STREAM_RECORDED_SHOW") {
         if (event["EventType"] == "PLAY_RECORDED_SHOW") {
             //this.playSelectedShow(event["EventData"]);
-            this.playSelectedShow(event);
+            this.playSelectedShow(event.StoredRecording);
         }
         TransportIconSingleton.getInstance().displayIcon(null, "play", this.stateMachine.playIconDisplayTime);
         stateData.nextState = this.stateMachine.stPlaying;
@@ -947,7 +936,7 @@ displayEngineStateMachine.prototype.STRewindingEventHandler = function (event, s
     else if (event["EventType"] == "PLAY_RECORDED_SHOW" || event["EventType"] == "STREAM_RECORDED_SHOW") {
         if (event["EventType"] == "PLAY_RECORDED_SHOW") {
             //this.playSelectedShow(event["EventData"]);
-            this.playSelectedShow(event);
+            this.playSelectedShow(event.StoredRecording);
         }
         TransportIconSingleton.getInstance().displayIcon(null, "play", this.stateMachine.playIconDisplayTime);
         stateData.nextState = this.stateMachine.stPlaying;

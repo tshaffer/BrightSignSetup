@@ -16,7 +16,8 @@
         </thead>
         <tbody id="recordedShowsTableBody">
             <tr ng-repeat="recording in recordings">
-                <td><button type='button' class='btn btn-default recorded-shows-icon' id='{{recording.playRecordingId}}' ng-click="playRecordedShow(recording.recordingId, recording.relativeUrl, recording.storageLocation)" aria-label='Left Align'><span class='glyphicon glyphicon-play' aria-hidden='true'></span></button></td>
+                <!--<td><button type='button' class='btn btn-default recorded-shows-icon' id='{{recording.playRecordingId}}' ng-click="playRecordedShow(recording.recordingId, recording.relativeUrl, recording.storageLocation)" aria-label='Left Align'><span class='glyphicon glyphicon-play' aria-hidden='true'></span></button></td>-->
+                <td><button type='button' class='btn btn-default recorded-shows-icon' id='{{recording.playRecordingId}}' ng-click="playRecordedShow(recording)" aria-label='Left Align'><span class='glyphicon glyphicon-play' aria-hidden='true'></span></button></td>
                 <td><button type='button' class='btn btn-default recorded-shows-icon' id='{{recording.deleteRecordingId}}' ng-click="deleteRecordedShow(recording.recordingId)" aria-label='Left Align'><span class='glyphicon glyphicon-remove' aria-hidden='true'></span></button></td>
                 <td><button type='button' class='btn btn-default recorded-shows-icon' id='{{recording.repeatRecordingId}}' ng-click="repeatRecordedShow(recording.recordingId)" aria-label='Left Align'><span class='glyphicon glyphicon-repeat' aria-hidden='true'></span></button></td>
                 <td><button type='button' class='btn btn-default recorded-shows-icon streamIcon' id='{{recording.streamRecordingId}}' ng-click="streamRecordedShow(recording.recordingId)" aria-label='Left Align'><span class='glyphicon glyphicon-random' aria-hidden='true'></span></button></td>

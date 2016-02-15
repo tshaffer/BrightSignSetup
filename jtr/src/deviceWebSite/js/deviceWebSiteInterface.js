@@ -5,9 +5,6 @@ define(function () {
 
     console.log("******************* - creating deviceWebSiteInit module");
 
-    // ??
-    // _currentRecordings
-
     var hostController = {
 
         appController: null,
@@ -111,10 +108,14 @@ define(function () {
                         });
                         break;
                     case "playRecordedShow":
+
                         event["EventType"] = "PLAY_RECORDED_SHOW";
-                        event["RelativeUrl"] = message.relativeUrl;
-                        event["RecordingId"] = message.recordingId;
-                        event["StorageLocation"] = message.storageLocation;
+                        event["StoredRecording"] = JSON.parse(message.storedRecording);
+
+                        //event["RelativeUrl"] = message.relativeUrl;
+                        //event["RecordingId"] = message.recordingId;
+                        //event["StorageLocation"] = message.storageLocation;
+
                         postMessage(event);
                         break;
                     case "stopRecording":
