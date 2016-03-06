@@ -199,7 +199,7 @@ app.post('/addRecording', function (req, res) {
 function convertTSToMP4(inputPath, outputPath) {
 
     return new Promise(function(resolve, reject) {
-        var execString = "ffmpeg -i " + inputPath + " -bsf:a aac_adtstoasc -c copy " + outputPath;
+        var execString = "ffmpeg -i " + inputPath + " -bsf:a aac_adtstoasc -c copy -y " + outputPath;
 
         console.log("convertTSToMP4: exec ffmpeg");
 
