@@ -16,7 +16,8 @@ define(['serverInterface'], function (serverInterface) {
             lastViewedPosition: 0,
             transcodeComplete: 0,
             hlsSegmentationComplete: 0,
-            hlsUrl: ''
+            hlsUrl: '',
+            programId: -1
         },
 
         //GET  /books/ .... collection.fetch();

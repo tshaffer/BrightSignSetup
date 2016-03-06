@@ -295,6 +295,8 @@ Sub setManualRecording(userData as Object, e as Object)
 	addManualRecordMessage["scheduledSeriesRecordingId"] = -1
 	addManualRecordMessage["startTimeOffset"] = 0
 	addManualRecordMessage["stopTimeOffset"] = 0
+	addManualRecordMessage["programId"] = -1
+
 	ok = mVar.htmlWidget.PostJSMessage(addManualRecordMessage)
 	if not ok then
 		stop
@@ -484,6 +486,7 @@ Sub addScheduledRecording(userData As Object, e as Object)
 	scheduledRecording.scheduledSeriesRecordingId% = int(val(requestParams.scheduledSeriesRecordingId))
 	scheduledRecording.startTimeOffset% = int(val(requestParams.startTimeOffset))
 	scheduledRecording.stopTimeOffset% = int(val(requestParams.stopTimeOffset))
+    scheduledRecording.programId% = int(val(requestParams.programId))
 
 	mVar.AddDBScheduledRecording(scheduledRecording)
 
@@ -1076,6 +1079,9 @@ Sub fileToTranscode(userData as Object, e as Object)
 
 		hlsUrlElem = fileToTranscodeElem.AddElement("hlsUrl")
 		hlsUrlElem.SetBody(fileToTranscodeRecord.HLSUrl)
+
+		programIdElem = fileToTranscodeElem.AddElement("programId")
+		programIdElem.SetBody(StripLeadingSpaces(stri(fileToTranscodeRecord.ProgramId)))
 
 ' FIXME
 		jtrStorageDeviceElem = fileToTranscodeElem.AddElement("jtrStorageDevice")

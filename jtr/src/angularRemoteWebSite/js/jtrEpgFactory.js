@@ -50,6 +50,7 @@ angular.module('jtr').factory('jtrEpgFactory', ['jtrServerService', function($jt
                         program.shortDescription = sdProgram.ShortDescription;
                         program.longDescription = sdProgram.LongDescription;
                         program.showType = sdProgram.ShowType;
+                        program.programId = sdProgram.ProgramId;
 
                         if (sdProgram.NewShow == undefined) {
                             program.newShow = 1;

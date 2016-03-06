@@ -89,6 +89,8 @@ Sub re_HandleHttpEvent(event As Object)
 					systemTime = CreateObject("roSystemTime")
 					scheduledRecording.dateTime = systemTime.GetLocalDateTime()
 
+                    scheduledRecording.programId% = -1
+
 					m.scheduledRecording = scheduledRecording
 
 					m.StartManualRecord()

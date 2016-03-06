@@ -152,6 +152,7 @@ define(function () {
                         event["ScheduledSeriesRecordingId"] = message.scheduledSeriesRecordingId;
                         event["StartTimeOffset"] = message.startTimeOffset;
                         event["StopTimeOffset"] = message.stopTimeOffset;
+                        event["ProgramId"] = message.programId;
                         postMessage(event);
                         break;
                     case "addSeries":
@@ -173,6 +174,7 @@ define(function () {
                         event["RecordingBitRate"] = message.recordingBitRate;
                         event["SegmentRecording"] = message.segmentRecording;
                         event["ScheduledSeriesRecordingId"] = -1;
+                        event["ProgramId"] = -1;
                         postMessage(event);
                         break;
                     case "manualRecord":
@@ -187,6 +189,7 @@ define(function () {
                         event["ScheduledSeriesRecordingId"] = -1;
                         event["StartTimeOffset"] = 0;
                         event["StopTimeOffset"] = 0;
+                        event["ProgramId"] = -1;
                         postMessage(event);
                         break;
                     case "tuneLiveVideoChannel":

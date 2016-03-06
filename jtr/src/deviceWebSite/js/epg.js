@@ -826,6 +826,7 @@ function updateScheduledRecordings() {
                                     scheduledEpisode.SegmentRecording = scheduledSeriesRecording.SegmentRecording;
                                     scheduledEpisode.Title = scheduledSeriesRecording.Title;
                                     scheduledEpisode.ScheduledSeriesRecordingId = scheduledSeriesRecording.Id;
+                                    scheduledEpisode.ProgramId = sdProgram.ProgramId;
 
                                     // add scheduledEpisode to scheduledRecordings
                                     aUrl = baseURL + "addScheduledRecording";
@@ -843,7 +844,8 @@ function updateScheduledRecordings() {
                                         "segmentRecording": scheduledEpisode.SegmentRecording,
                                         "scheduledSeriesRecordingId": scheduledEpisode.ScheduledSeriesRecordingId,
                                         "startTimeOffset": 0,
-                                        "stopTimeOffset": 0
+                                        "stopTimeOffset": 0,
+                                        "programId": scheduledEpisode.ProgramId
                                     };
 
                                     $.get(aUrl, recordingData)

@@ -132,7 +132,8 @@ define(['serverInterface','settingsModel'], function (serverInterface,settingsMo
                 "segmentRecording": settingsModel.getInstance().getSegmentRecordings(),
                 "scheduledSeriesRecordingId": -1,
                 "startTimeOffset": 0,
-                "stopTimeOffset": 0
+                "stopTimeOffset": 0,
+                "programId": -1
             };
 
             return serverInterface.browserCommand(commandData);

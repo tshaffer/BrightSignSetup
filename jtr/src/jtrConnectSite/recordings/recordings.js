@@ -64,6 +64,7 @@ angular.module('jtr').controller('recordings', ['$scope', '$http', 'jtrConnectSe
                 recording.startDateTime = jtrRecording.StartDateTime;
                 recording.title = jtrRecording.Title;
                 recording.transcodeComplete = jtrRecording.TranscodeComplete;
+                recording.programId = jtrRecording.ProgramId;
                 recording.path = jtrRecording.path;
 
                 // IDs

@@ -308,7 +308,7 @@ recordingEngineStateMachine.prototype.STIdleEventHandler = function (event, stat
 }
 
 
-recordingEngineStateMachine.prototype.addProgramToDB = function (dateTime, title, durationInMinutes, inputSource, channel, recordingBitRate, segmentRecording, scheduledSeriesRecordingId, startTimeOffset, stopTimeOffset, idle) {
+recordingEngineStateMachine.prototype.addProgramToDB = function (dateTime, title, durationInMinutes, inputSource, channel, recordingBitRate, segmentRecording, scheduledSeriesRecordingId, startTimeOffset, stopTimeOffset, idle, programId) {
 
     var aUrl;
     var recordingData;
@@ -324,7 +324,7 @@ recordingEngineStateMachine.prototype.addProgramToDB = function (dateTime, title
     var isoEndDate = endDateTime.toISOString();
 
     recordingData = { "dateTime": isoDateTime, "endDateTime": isoEndDate, "title": title, "duration": durationInMinutes, "inputSource": inputSource, "channel": channel, "recordingBitRate": recordingBitRate, "segmentRecording": segmentRecording, "scheduledSeriesRecordingId": scheduledSeriesRecordingId,
-        "startTimeOffset": startTimeOffset, "stopTimeOffset": stopTimeOffset };
+        "startTimeOffset": startTimeOffset, "stopTimeOffset": stopTimeOffset, "programId": programId };
 
     var self = this;
 
@@ -411,7 +411,8 @@ recordingEngineStateMachine.prototype.addSeriesToDB = function (title, inputSour
                                 "segmentRecording": segmentRecording,
                                 "scheduledSeriesRecordingId": scheduledSeriesRecordingId,
                                 "startTimeOffset": 0,
-                                "stopTimeOffset": 0
+                                "stopTimeOffset": 0,
+                                "programId": seriesEpisode.ProgramId
                             };
                             $.get(aUrl, recordingData)
                                 .then(function (result) {
@@ -453,6 +454,7 @@ recordingEngineStateMachine.prototype.handleAddRecord = function (event, stateDa
     var scheduledSeriesRecordingId = event["ScheduledSeriesRecordingId"];
     var startTimeOffset = event["StartTimeOffset"];
     var stopTimeOffset = event["StopTimeOffset"];
+    var programId = event["ProgramId"];
 
     // ignore manual recordings that are in the past
     // EXTENDOMATIC - need to take into account startTimeOffset, stopTimeOffset
@@ -466,7 +468,7 @@ recordingEngineStateMachine.prototype.handleAddRecord = function (event, stateDa
 
     // add the recording to the db
     this.addProgramToDB(dateTime, title, durationInMinutes, inputSource, channel, recordingBitRate, segmentRecording, scheduledSeriesRecordingId,
-        startTimeOffset, stopTimeOffset, idle);
+        startTimeOffset, stopTimeOffset, idle, programId);
 }
 
 

@@ -345,7 +345,8 @@ define(['serverInterface','settingsModel'], function (serverInterface, SettingsM
                     "segmentRecording": this.settingsModel.getSegmentRecordings(),
                     "scheduledSeriesRecordingId": this.cgSelectedProgram.scheduledSeriesRecordingId,
                     "startTimeOffset": this.cgSelectedProgram.startTimeOffset,
-                    "stopTimeOffset": this.cgSelectedProgram.stopTimeOffset
+                    "stopTimeOffset": this.cgSelectedProgram.stopTimeOffset,
+                    "programId": -1
                 };
             }
             else {
