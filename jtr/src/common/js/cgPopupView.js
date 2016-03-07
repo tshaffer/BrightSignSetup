@@ -346,7 +346,7 @@ define(['serverInterface','settingsModel'], function (serverInterface, SettingsM
                     "scheduledSeriesRecordingId": this.cgSelectedProgram.scheduledSeriesRecordingId,
                     "startTimeOffset": this.cgSelectedProgram.startTimeOffset,
                     "stopTimeOffset": this.cgSelectedProgram.stopTimeOffset,
-                    "programId": -1
+                    "programId": ""
                 };
             }
             else {

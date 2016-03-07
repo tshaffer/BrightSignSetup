@@ -295,7 +295,7 @@ Sub setManualRecording(userData as Object, e as Object)
 	addManualRecordMessage["scheduledSeriesRecordingId"] = -1
 	addManualRecordMessage["startTimeOffset"] = 0
 	addManualRecordMessage["stopTimeOffset"] = 0
-	addManualRecordMessage["programId"] = -1
+	addManualRecordMessage["programId"] = ""
 
 	ok = mVar.htmlWidget.PostJSMessage(addManualRecordMessage)
 	if not ok then
@@ -334,6 +334,7 @@ Sub setRecordNow(userData as Object, e as Object)
 	recordNowMessage["scheduledSeriesRecordingId"] = -1
 	recordNowMessage["startTimeOffset"] = 0
 	recordNowMessage["stopTimeOffset"] = 0
+stop
 	ok = mVar.htmlWidget.PostJSMessage(recordNowMessage)
 	if not ok then
 		stop
@@ -486,7 +487,7 @@ Sub addScheduledRecording(userData As Object, e as Object)
 	scheduledRecording.scheduledSeriesRecordingId% = int(val(requestParams.scheduledSeriesRecordingId))
 	scheduledRecording.startTimeOffset% = int(val(requestParams.startTimeOffset))
 	scheduledRecording.stopTimeOffset% = int(val(requestParams.stopTimeOffset))
-    scheduledRecording.programId% = int(val(requestParams.programId))
+    scheduledRecording.programId = requestParams.programId
 
 	mVar.AddDBScheduledRecording(scheduledRecording)
 
@@ -1036,7 +1037,8 @@ print "/" + body.path
 		ok = m.xferToJtrConnect.SetUrl(url)
         if not ok stop
         rc = m.xferToJtrConnect.PostFromString(body$)
-        if rc <> 200 stop
+        ' post may fail if jtrConnect node server has gone away - don't crash if it has.
+        ' if rc <> 200 stop
 	endif
 
 End Function

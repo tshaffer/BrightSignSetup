@@ -133,7 +133,7 @@ define(['serverInterface','settingsModel'], function (serverInterface,settingsMo
                 "scheduledSeriesRecordingId": -1,
                 "startTimeOffset": 0,
                 "stopTimeOffset": 0,
-                "programId": -1
+                "programId": ""
             };
 
             return serverInterface.browserCommand(commandData);
